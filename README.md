@@ -1,1 +1,1 @@
-# Dynatrace-OpenTelemetry-Collector-Distribution
+# dynatrace-otel-collector

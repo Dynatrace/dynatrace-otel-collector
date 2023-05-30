@@ -1,11 +1,9 @@
-GO ?= go
-
 OTELCOL_BUILDER_VERSION ?= 0.78.2
 OTELCOL_BUILDER_DIR ?= ${HOME}/bin
 OTELCOL_BUILDER ?= ${OTELCOL_BUILDER_DIR}/ocb
 
 build: go ocb
-	${OTELCOL_BUILDER} --go ${GO} --config manifest.yaml
+	${OTELCOL_BUILDER} --config manifest.yaml
 	build/otelcol-dynatrace components
 
 .PHONY: ocb
@@ -30,8 +28,8 @@ endif
 .PHONY: go
 go:
 	@{ \
-		if ! command -v '$(GO)' >/dev/null 2>/dev/null; then \
-			echo >&2 '$(GO) command not found. Please install golang. https://go.dev/doc/install'; \
+		if ! command -v 'go' >/dev/null 2>/dev/null; then \
+			echo >&2 'go command not found. Please install golang. https://go.dev/doc/install'; \
 			exit 1; \
 		fi \
 	}

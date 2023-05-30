@@ -23,4 +23,4 @@ jobs:
           check-latest: true
 
       - name: Verify
-        run: make ci
+        run: make build

@@ -4,7 +4,7 @@ dist:
   description: Dynatrace OpenTelemetry Collector Distribution
   otelcol_version: 0.78.2
   output_path: ./build
-  version: 0.1.0
+  version: 0.0.1-alpha
 
 receivers:
   - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.78.2

@@ -6,6 +6,7 @@ OTELCOL_BUILDER ?= ${OTELCOL_BUILDER_DIR}/ocb
 
 build: go ocb
 	${OTELCOL_BUILDER} --go ${GO} --config manifest.yaml
+	build/otelcol-dynatrace components
 
 .PHONY: ocb
 ocb:

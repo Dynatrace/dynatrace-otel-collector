@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/require"
@@ -34,8 +35,12 @@ func Test_CollectorStarts(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	resp, err := http.Get("http://localhost:9090/metrics")
-	require.NoError(t, err)
+	var resp *http.Response
+	require.Eventually(t, func() bool {
+		resp, err = http.Get("http://localhost:9090/metrics")
+
+		return err == nil
+	}, 3*time.Second, 1*time.Second)
 
 	body, err := io.ReadAll(resp.Body)
 	require.NoError(t, err)

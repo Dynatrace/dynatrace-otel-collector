@@ -34,6 +34,9 @@ go:
 		fi \
 	}
 
+test: build
+	go test ./...
+
 .PHONY: clean
 clean:
 	rm -rf build

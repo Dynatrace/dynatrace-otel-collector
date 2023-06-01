@@ -1,19 +1,26 @@
 package smoke
 
 import (
+	"bytes"
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/component"
+	"gopkg.in/yaml.v3"
 )
 
-func Test_CollectorStarts(t *testing.T) {
-	os.Chmod("../../build/otelcol-dynatrace", os.ModePerm)
+var outputDir = "../../build/otelcol-dynatrace"
+
+func collectorSetup(t *testing.T) {
+	os.Chmod(outputDir, os.ModePerm)
 	os.Mkdir("../../bin", os.ModePerm+os.ModePerm)
 
 	abs, err := filepath.Abs("../../build/otelcol-dynatrace")
@@ -21,6 +28,15 @@ func Test_CollectorStarts(t *testing.T) {
 
 	// The testbed runner doesn't currently allow configuring the binary path.
 	os.Symlink(abs, "../../bin/oteltestbedcol_linux_amd64")
+}
+
+func collectorTeardown() {
+	os.RemoveAll("../../bin")
+}
+
+func TestCollectorStarts(t *testing.T) {
+	collectorSetup(t)
+	defer collectorTeardown()
 
 	col := testbed.NewChildProcessCollector()
 
@@ -48,6 +64,75 @@ func Test_CollectorStarts(t *testing.T) {
 
 	stopped, _ := col.Stop()
 	require.True(t, stopped)
+}
 
-	os.RemoveAll("../../bin")
+type componentsOutput struct {
+	BuildInfo  component.BuildInfo
+	Receivers  []component.Type
+	Processors []component.Type
+	Exporters  []component.Type
+	Connectors []component.Type
+	Extensions []component.Type
+}
+
+type gomod struct {
+	Gomod string
+}
+
+type manifest struct {
+	Receivers  []gomod
+	Processors []gomod
+	Exporters  []gomod
+	Connectors []gomod
+	Extensions []gomod
+}
+
+func TestCollectorIsBuiltFromManifest(t *testing.T) {
+	cmd := exec.Command(outputDir, "components")
+	var stdout bytes.Buffer
+
+	cmd.Stdout = &stdout
+
+	err := cmd.Run()
+	require.NoError(t, err)
+
+	output, _ := io.ReadAll(&stdout)
+	components := componentsOutput{}
+	err = yaml.Unmarshal(output, &components)
+	require.NoError(t, err)
+
+	b, err := os.ReadFile("../../manifest.yaml")
+	require.NoError(t, err)
+	manifestComponents := manifest{}
+	err = yaml.Unmarshal(b, &manifestComponents)
+	require.NoError(t, err)
+
+	exceptions := map[component.Type]component.Type{
+		"memory_ballast": "ballast",
+		"memory_limiter": "memorylimiter",
+	}
+
+	for i, con := range components.Connectors {
+		assert.Contains(t, manifestComponents.Connectors[i].Gomod, "/"+string(con)+"connector")
+	}
+	for i, ext := range components.Extensions {
+		name := ext
+		if val, ok := exceptions[ext]; ok {
+			name = val
+		}
+		assert.Contains(t, manifestComponents.Extensions[i].Gomod, "/"+string(name)+"extension")
+	}
+	for i, prs := range components.Processors {
+		name := prs
+		if val, ok := exceptions[prs]; ok {
+			name = val
+		}
+		assert.Contains(t, manifestComponents.Processors[i].Gomod, "/"+string(name)+"processor")
+	}
+	for i, rcv := range components.Receivers {
+		assert.Contains(t, manifestComponents.Receivers[i].Gomod, "/"+string(rcv)+"receiver")
+	}
+	for i, exp := range components.Exporters {
+		assert.Contains(t, manifestComponents.Exporters[i].Gomod, "/"+string(exp)+"exporter")
+	}
 }

@@ -107,32 +107,10 @@ func TestCollectorIsBuiltFromManifest(t *testing.T) {
 	err = yaml.Unmarshal(b, &manifestComponents)
 	require.NoError(t, err)
 
-	exceptions := map[component.Type]component.Type{
-		"memory_ballast": "ballast",
-		"memory_limiter": "memorylimiter",
-	}
-
-	for i, con := range components.Connectors {
-		assert.Contains(t, manifestComponents.Connectors[i].Gomod, "/"+string(con)+"connector")
-	}
-	for i, ext := range components.Extensions {
-		name := ext
-		if val, ok := exceptions[ext]; ok {
-			name = val
-		}
-		assert.Contains(t, manifestComponents.Extensions[i].Gomod, "/"+string(name)+"extension")
-	}
-	for i, prs := range components.Processors {
-		name := prs
-		if val, ok := exceptions[prs]; ok {
-			name = val
-		}
-		assert.Contains(t, manifestComponents.Processors[i].Gomod, "/"+string(name)+"processor")
-	}
-	for i, rcv := range components.Receivers {
-		assert.Contains(t, manifestComponents.Receivers[i].Gomod, "/"+string(rcv)+"receiver")
-	}
-	for i, exp := range components.Exporters {
-		assert.Contains(t, manifestComponents.Exporters[i].Gomod, "/"+string(exp)+"exporter")
-	}
+	// Will assert on connectors starting in Collector version 0.79
+	// https://github.com/open-telemetry/opentelemetry-collector/pull/7809
+	assert.Equal(t, len(components.Exporters), len(manifestComponents.Exporters))
+	assert.Equal(t, len(components.Extensions), len(manifestComponents.Extensions))
+	assert.Equal(t, len(components.Processors), len(manifestComponents.Processors))
+	assert.Equal(t, len(components.Receivers), len(manifestComponents.Receivers))
 }

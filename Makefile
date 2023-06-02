@@ -1,41 +1,33 @@
+BUILD_DIR = build
+DEPS_DIR = deps
+
+EXE = $(BUILD_DIR)/otelcol-dynatrace
+OCB = $(DEPS_DIR)/ocb
 OTELCOL_BUILDER_VERSION ?= 0.78.2
-OTELCOL_BUILDER_DIR ?= ${HOME}/bin
-OTELCOL_BUILDER ?= ${OTELCOL_BUILDER_DIR}/ocb
 
-build: go ocb
-	${OTELCOL_BUILDER} --config manifest.yaml
+OS=$(shell uname | tr A-Z a-z)
+MACHINE=$(shell uname -m)
 
-.PHONY: ocb
-ocb:
-ifeq (, $(shell command -v ocb 2>/dev/null))
+$(EXE): $(OCB)
+	$(OCB) --config manifest.yaml
+
+$(DEPS_DIR):
+	mkdir $(DEPS_DIR)
+
+$(OCB): | $(DEPS_DIR)
 	@{ \
-	[ ! -x '$(OTELCOL_BUILDER)' ] || exit 0; \
 	set -e ;\
-	os=$$(uname | tr A-Z a-z) ;\
-	machine=$$(uname -m) ;\
-	[ "$${machine}" != x86 ] || machine=386 ;\
-	[ "$${machine}" != x86_64 ] || machine=amd64 ;\
-	echo "Installing ocb ($${os}/$${machine}) at $(OTELCOL_BUILDER_DIR)";\
-	mkdir -p $(OTELCOL_BUILDER_DIR) ;\
-	curl -sfLo $(OTELCOL_BUILDER) "https://github.com/open-telemetry/opentelemetry-collector/releases/download/cmd%2Fbuilder%2Fv$(OTELCOL_BUILDER_VERSION)/ocb_$(OTELCOL_BUILDER_VERSION)_$${os}_$${machine}" ;\
-	chmod +x $(OTELCOL_BUILDER) ;\
-	}
-else
-OTELCOL_BUILDER=$(shell command -v ocb)
-endif
-
-.PHONY: go
-go:
-	@{ \
-		if ! command -v 'go' >/dev/null 2>/dev/null; then \
-			echo >&2 'go command not found. Please install golang. https://go.dev/doc/install'; \
-			exit 1; \
-		fi \
+	[ "$(MACHINE)" != x86 ] || machine=386 ;\
+	[ "$(MACHINE)" != x86_64 ] || machine=amd64 ;\
+	echo "Getting ocb ($(OS)/$(MACHINE))";\
+	curl -sfLo $(OCB) "https://github.com/open-telemetry/opentelemetry-collector/releases/download/cmd%2Fbuilder%2Fv$(OTELCOL_BUILDER_VERSION)/ocb_$(OTELCOL_BUILDER_VERSION)_$(OS)_$${machine}" ;\
+	chmod +x $(OCB) ;\
 	}
 
-test: build
+.PHONY: test
+test: $(EXE)
 	go test ./...
 
 .PHONY: clean
 clean:
-	rm -rf build
+	rm -rf $(BUILD_DIR) $(DEPS_DIR)

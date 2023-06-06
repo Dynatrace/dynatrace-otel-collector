@@ -1,6 +1,6 @@
 BUILD_DIR = build
 DEPS_DIR = lib
-OUT_DIR = bin
+OUT_DIR = dist
 
 OCB = $(DEPS_DIR)/ocb
 OTELCOL_BUILDER_VERSION ?= 0.78.2
@@ -33,16 +33,8 @@ else
     endif
 endif
 
-GOOS = $(OS)
-GOARCH = $(MACHINE)
-
-EXE = $(OUT_DIR)/otelcol_dynatrace_$(GOOS)_$(GOARCH)
-
-.PHONY: compile
-compile: $(EXE)
-
-$(EXE): $(BUILD_DIR)/main.go
-	cd build && GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ../$(OUT_DIR)/otelcol_dynatrace_$(GOOS)_$(GOARCH) .
+.PHONY: generate
+generate: $(BUILD_DIR)/main.go
 
 $(BUILD_DIR)/main.go: $(OCB)
 	$(OCB) --config manifest.yaml --skip-compilation
@@ -57,9 +49,7 @@ $(OCB):
 	curl -sfLo $(OCB) "https://github.com/open-telemetry/opentelemetry-collector/releases/download/cmd%2Fbuilder%2Fv$(OTELCOL_BUILDER_VERSION)/ocb_$(OTELCOL_BUILDER_VERSION)_$(OS)_$(MACHINE)"
 	chmod +x $(OCB)
 
-.PHONY: ci deps test clean
-
-ci: clean deps $(EXE) test
+.PHONY: deps clean
 
 deps: $(OCB)
 

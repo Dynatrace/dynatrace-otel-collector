@@ -1,8 +1,6 @@
-name: Build Binaries
+name: Pull Request Binary Previews
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
@@ -10,37 +8,21 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        exclude:
-          - GOOS: darwin
-            GOARCH: "386"
-        GOOS:
-          - linux
-          - darwin
-          - windows
-        GOARCH:
-          - "386"
-          - amd64
-          - arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - name: Setup Go
-        uses: actions/setup-go@v4
+      - uses: actions/setup-go@v4
         with:
-          go-version: "~1.20.4"
-          check-latest: true
-
-      - name: Compile
-        run: make compile GOOS=${{ matrix.GOOS }} GOARCH=${{ matrix.GOARCH }}
+          go-version: stable
+      - name: Generate Distribution code
+        run: make generate
+      - name: Compile Artifacts
+        run: goreleaser build --snapshot --clean
       
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: otelcol_dynatrace_${{ matrix.GOOS }}_${{ matrix.GOARCH }}
-          path: bin/otelcol_dynatrace_${{ matrix.GOOS }}_${{ matrix.GOARCH }}
+          name: otelcol_dynatrace_all
+          path: dist

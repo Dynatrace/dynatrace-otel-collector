@@ -109,8 +109,7 @@ func TestCollectorIsBuiltFromManifest(t *testing.T) {
 	err = yaml.Unmarshal(b, &manifestComponents)
 	require.NoError(t, err)
 
-	// Will assert on connectors starting in Collector version 0.79
-	// https://github.com/open-telemetry/opentelemetry-collector/pull/7809
+	assert.Equal(t, len(components.Connectors), len(manifestComponents.Connectors))
 	assert.Equal(t, len(components.Exporters), len(manifestComponents.Exporters))
 	assert.Equal(t, len(components.Extensions), len(manifestComponents.Extensions))
 	assert.Equal(t, len(components.Processors), len(manifestComponents.Processors))

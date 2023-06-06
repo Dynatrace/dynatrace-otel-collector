@@ -16,11 +16,12 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: stable
-      - name: Generate Distribution code
-        run: make generate
       - name: Compile Artifacts
-        run: goreleaser build --snapshot --clean
-      
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: build --snapshot --clean
       - name: Upload
         uses: actions/upload-artifact@v3
         with:

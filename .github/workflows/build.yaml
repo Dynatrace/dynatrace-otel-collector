@@ -27,5 +27,5 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v3
         with:
-          name: otelcol_dynatrace_${{ github.event.pull_request.number }}_${{ github.run_number }}.zip
+          name: otelcol_dynatrace_${{ github.event.pull_request.number }}_${{ github.run_number }}
           path: dist

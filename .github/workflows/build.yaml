@@ -1,4 +1,4 @@
-name: Pull Request Binary Previews
+name: Build
 
 on:
   pull_request:
@@ -22,8 +22,9 @@ jobs:
           distribution: goreleaser
           version: latest
           args: build --snapshot --clean
-      - name: Upload
+      - name: Upload Pull Request Preview
+        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v3
         with:
-          name: otelcol_dynatrace_all
+          name: otelcol_dynatrace_${{ github.event.pull_request.number }}_${{ github.run_number }}.zip
           path: dist

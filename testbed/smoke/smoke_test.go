@@ -2,11 +2,13 @@ package smoke
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -27,7 +29,7 @@ func collectorSetup(t *testing.T) {
 	require.NoError(t, err)
 
 	// The testbed runner doesn't currently allow configuring the binary path.
-	os.Symlink(abs, "../../bin/oteltestbedcol_linux_amd64")
+	os.Symlink(abs, fmt.Sprintf("../../bin/oteltestbedcol_%s_%s", runtime.GOOS, runtime.GOARCH))
 }
 
 func collectorTeardown() {

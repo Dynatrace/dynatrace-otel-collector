@@ -3,12 +3,15 @@ DEPS_DIR = deps
 
 EXE = $(BUILD_DIR)/otelcol-dynatrace
 OCB = $(DEPS_DIR)/ocb
-OTELCOL_BUILDER_VERSION ?= 0.78.2
+OTELCOL_BUILDER_VERSION ?= 0.79.0
 
 OS=$(shell uname | tr A-Z a-z)
 MACHINE=$(shell uname -m)
 
-$(EXE): $(OCB)
+.PHONY: build
+build: $(EXE)
+
+$(EXE): $(OCB) manifest.yaml
 	$(OCB) --config manifest.yaml
 
 $(DEPS_DIR):

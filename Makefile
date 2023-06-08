@@ -33,14 +33,16 @@ else
     endif
 endif
 
-.PHONY: generate
+.PHONY: generate test clean deps
 generate: $(BUILD_DIR)/main.go
+deps: $(OCB)
+test: $(EXE)
+	go test ./...
+clean:
+	rm -rf $(BUILD_DIR) $(DEPS_DIR)
 
 $(BUILD_DIR)/main.go: $(OCB)
 	$(OCB) --config manifest.yaml --skip-compilation
-
-$(OUT_DIR):
-	mkdir $(OUT_DIR)
 
 $(OCB):
 	$(info OS=$(OS))
@@ -49,9 +51,22 @@ $(OCB):
 	curl -sfLo $(OCB) "https://github.com/open-telemetry/opentelemetry-collector/releases/download/cmd%2Fbuilder%2Fv$(OTELCOL_BUILDER_VERSION)/ocb_$(OTELCOL_BUILDER_VERSION)_$(OS)_$(MACHINE)"
 	chmod +x $(OCB)
 
-.PHONY: deps clean
 
-deps: $(OCB)
+OS=$(shell uname | tr A-Z a-z)
+MACHINE=$(shell uname -m)
 
-clean:
-	rm -rf $(BUILD_DIR) $(DEPS_DIR) $(OUT_DIR)
+$(EXE): $(OCB) manifest.yaml
+	$(OCB) --config manifest.yaml
+
+$(DEPS_DIR):
+	mkdir $(DEPS_DIR)
+
+$(OCB): | $(DEPS_DIR)
+	@{ \
+	set -e ;\
+	[ "$(MACHINE)" != x86 ] || machine=386 ;\
+	[ "$(MACHINE)" != x86_64 ] || machine=amd64 ;\
+	echo "Getting ocb ($(OS)/$(MACHINE))";\
+	curl -sfLo $(OCB) "https://github.com/open-telemetry/opentelemetry-collector/releases/download/cmd%2Fbuilder%2Fv$(OTELCOL_BUILDER_VERSION)/ocb_$(OTELCOL_BUILDER_VERSION)_$(OS)_$${machine}" ;\
+	chmod +x $(OCB) ;\
+	}

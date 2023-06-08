@@ -1,6 +1,7 @@
 BUILD_DIR = build
 DEPS_DIR = lib
-OUT_DIR = dist
+DIST_DIR = dist
+BIN_DIR = bin
 
 OCB = $(DEPS_DIR)/ocb
 OTELCOL_BUILDER_VERSION ?= 0.78.2
@@ -33,13 +34,22 @@ else
     endif
 endif
 
-.PHONY: generate test clean deps
+BIN = $(BIN_DIR)/oteltestbedcol_$(OS)_$(MACHINE)
+
+.PHONY: build test clean deps build components
+build: $(BIN)
 generate: $(BUILD_DIR)/main.go
 deps: $(OCB)
-test: $(EXE)
+test: $(BIN)
 	go test ./...
 clean:
-	rm -rf $(BUILD_DIR) $(DEPS_DIR)
+	rm -rf $(BUILD_DIR) $(DEPS_DIR) $(DIST_DIR) $(BIN_DIR)
+components: $(BIN)
+	$(BIN) components
+
+
+$(BIN): $(OCB)
+	goreleaser build --single-target --snapshot --clean -o $(BIN)
 
 $(BUILD_DIR)/main.go: $(OCB)
 	$(OCB) --config manifest.yaml --skip-compilation
@@ -51,22 +61,8 @@ $(OCB):
 	curl -sfLo $(OCB) "https://github.com/open-telemetry/opentelemetry-collector/releases/download/cmd%2Fbuilder%2Fv$(OTELCOL_BUILDER_VERSION)/ocb_$(OTELCOL_BUILDER_VERSION)_$(OS)_$(MACHINE)"
 	chmod +x $(OCB)
 
-
-OS=$(shell uname | tr A-Z a-z)
-MACHINE=$(shell uname -m)
-
 $(EXE): $(OCB) manifest.yaml
 	$(OCB) --config manifest.yaml
 
 $(DEPS_DIR):
 	mkdir $(DEPS_DIR)
-
-$(OCB): | $(DEPS_DIR)
-	@{ \
-	set -e ;\
-	[ "$(MACHINE)" != x86 ] || machine=386 ;\
-	[ "$(MACHINE)" != x86_64 ] || machine=amd64 ;\
-	echo "Getting ocb ($(OS)/$(MACHINE))";\
-	curl -sfLo $(OCB) "https://github.com/open-telemetry/opentelemetry-collector/releases/download/cmd%2Fbuilder%2Fv$(OTELCOL_BUILDER_VERSION)/ocb_$(OTELCOL_BUILDER_VERSION)_$(OS)_$${machine}" ;\
-	chmod +x $(OCB) ;\
-	}

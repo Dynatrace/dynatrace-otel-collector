@@ -26,7 +26,7 @@ jobs:
         run: make build
 
       - name: Print components
-        run: build/otelcol-dynatrace components
+        run: make components
 
       - name: Verify
         run: make test

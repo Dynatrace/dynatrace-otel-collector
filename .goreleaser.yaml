@@ -1,6 +1,7 @@
 before:
   hooks:
     - make generate
+    - mkdir -p bin
 
 builds:
   - env:

@@ -2,12 +2,10 @@ package smoke
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
-	"runtime"
 	"testing"
 	"time"
 
@@ -18,10 +16,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var outputDir = fmt.Sprintf("../../bin/oteltestbedcol_%s_%s", runtime.GOOS, runtime.GOARCH)
+var execPath = "../../bin/otelcol-dynatrace"
 
 func TestCollectorStarts(t *testing.T) {
-	col := testbed.NewChildProcessCollector()
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(execPath))
 
 	cfg, err := os.ReadFile("../testdata/config-smoke.yaml")
 	require.NoError(t, err)
@@ -71,7 +69,7 @@ type manifest struct {
 }
 
 func TestCollectorIsBuiltFromManifest(t *testing.T) {
-	cmd := exec.Command(outputDir, "components")
+	cmd := exec.Command(execPath, "components")
 	var stdout bytes.Buffer
 
 	cmd.Stdout = &stdout

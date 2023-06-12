@@ -1,4 +1,4 @@
-build/
 bin/
-
-deps/
+build/
+dist/
+lib/

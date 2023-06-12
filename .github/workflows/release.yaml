@@ -1,0 +1,30 @@
+name: Build and Release
+
+on:
+  push:
+    # run only against version tags
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Release
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v4
+        with:
+          go-version: stable
+      - uses: anchore/sbom-action/download-syft@v0.14.2
+      - name: Create release for version tag
+        if: ${{ github.event_name == 'push' }}
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

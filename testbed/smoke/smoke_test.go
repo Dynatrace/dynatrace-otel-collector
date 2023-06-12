@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"testing"
 	"time"
@@ -19,27 +18,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var outputDir = "../../build/otelcol-dynatrace"
-
-func collectorSetup(t *testing.T) {
-	os.Chmod(outputDir, os.ModePerm)
-	os.Mkdir("../../bin", os.ModePerm+os.ModePerm)
-
-	abs, err := filepath.Abs("../../build/otelcol-dynatrace")
-	require.NoError(t, err)
-
-	// The testbed runner doesn't currently allow configuring the binary path.
-	os.Symlink(abs, fmt.Sprintf("../../bin/oteltestbedcol_%s_%s", runtime.GOOS, runtime.GOARCH))
-}
-
-func collectorTeardown() {
-	os.RemoveAll("../../bin")
-}
+var outputDir = fmt.Sprintf("../../bin/oteltestbedcol_%s_%s", runtime.GOOS, runtime.GOARCH)
 
 func TestCollectorStarts(t *testing.T) {
-	collectorSetup(t)
-	defer collectorTeardown()
-
 	col := testbed.NewChildProcessCollector()
 
 	cfg, err := os.ReadFile("../testdata/config-smoke.yaml")

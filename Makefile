@@ -61,15 +61,15 @@ install-tools: $(TOOLS_BIN_NAMES)
 $(TOOLS_BIN_DIR):
 	mkdir -p $@
 
-$(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod | $(TOOLS_BIN_DIR)
+$(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod $(TOOLS_BIN_DIR)
 	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
-$(BIN): .goreleaser.yaml | $(GORELEASER)
+$(BIN): .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
-$(BUILD_DIR)/main.go: | $(BUILDER)
+$(BUILD_DIR)/main.go: $(BUILDER)
 	$(BUILDER) --config manifest.yaml --skip-compilation
 
-$(EXE): manifest.yaml | $(BUILDER) 
+$(EXE): manifest.yaml $(BUILDER) 
 	$(BUILDER) --config manifest.yaml
 

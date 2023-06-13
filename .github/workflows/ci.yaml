@@ -21,6 +21,13 @@ jobs:
         with:
           go-version: "~1.20.4"
           check-latest: true
+          cache-dependency-path: go.work.sum
+      
+      - name: Cache tools
+        uses: actions/cache@v3
+        with:
+          path: .tools
+          key: tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
 
       - name: Build
         run: make build

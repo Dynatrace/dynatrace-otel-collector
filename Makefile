@@ -53,7 +53,7 @@ generate: $(BUILD_DIR)/main.go
 test: $(BIN)
 	go test ./...
 clean:
-	rm -rf $(BUILD_DIR) $(DEPS_DIR) $(DIST_DIR) $(BIN_DIR) $(TOOLS_BIN_DIR)
+	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR) $(TOOLS_BIN_DIR)
 components: $(BIN)
 	$(BIN) components
 install-tools: $(TOOLS_BIN_NAMES)
@@ -64,12 +64,12 @@ $(TOOLS_BIN_DIR):
 $(TOOLS_BIN_NAMES): $(TOOLS_BIN_DIR) $(TOOLS_MOD_DIR)/go.mod
 	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
-$(BIN): $(GORELEASER) .goreleaser.yaml
+$(BIN): .goreleaser.yaml | $(GORELEASER)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
-$(BUILD_DIR)/main.go: $(BUILDER)
+$(BUILD_DIR)/main.go: | $(BUILDER)
 	$(BUILDER) --config manifest.yaml --skip-compilation
 
-$(EXE): $(BUILDER) manifest.yaml
+$(EXE): manifest.yaml | $(BUILDER) 
 	$(BUILDER) --config manifest.yaml
 

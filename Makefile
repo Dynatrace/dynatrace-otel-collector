@@ -64,7 +64,7 @@ $(TOOLS_BIN_DIR):
 $(TOOLS_BIN_NAMES): $(TOOLS_BIN_DIR) $(TOOLS_MOD_DIR)/go.mod
 	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
-$(BIN): $(GORELEASER)
+$(BIN): $(GORELEASER) .goreleaser.yaml
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
 $(BUILD_DIR)/main.go: $(BUILDER)

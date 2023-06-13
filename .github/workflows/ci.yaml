@@ -29,6 +29,11 @@ jobs:
           path: .tools
           key: tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
 
+      - name: Touch tools
+        run: |
+          mkdir -p .tools
+          touch .tools/*
+
       - name: Build
         run: make build
 

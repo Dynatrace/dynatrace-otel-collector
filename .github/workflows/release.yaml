@@ -19,6 +19,15 @@ jobs:
         with:
           go-version: stable
       - uses: anchore/sbom-action/download-syft@v0.14.2
+      - name: Cache tools
+        uses: actions/cache@v3
+        with:
+          path: .tools
+          key: release-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+      - name: Touch tools
+        run: |
+          mkdir -p .tools
+          touch .tools/*
       - name: Create release for version tag
         if: ${{ github.event_name == 'push' }}
         uses: goreleaser/goreleaser-action@v4

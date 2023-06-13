@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .tools
-          key: tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+          key: ci-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
 
       - name: Touch tools
         run: |

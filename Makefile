@@ -1,10 +1,11 @@
 BUILD_DIR = build
-DEPS_DIR = lib
 DIST_DIR = dist
 BIN_DIR = bin
 
-OCB = $(DEPS_DIR)/ocb
-OTELCOL_BUILDER_VERSION ?= 0.78.2
+OTELCOL_BUILDER_VERSION = 0.79.0
+GORELEASER_VERSION = 1.18.2
+OCB = go run go.opentelemetry.io/collector/cmd/builder@v$(OTELCOL_BUILDER_VERSION)
+GORELEASER = go run github.com/goreleaser/goreleaser@v$(GORELEASER_VERSION)
 
 ifeq ($(OS),Windows_NT)
 	OS = windows
@@ -39,30 +40,19 @@ BIN = $(BIN_DIR)/oteltestbedcol_$(OS)_$(MACHINE)
 .PHONY: build test clean deps build components
 build: $(BIN)
 generate: $(BUILD_DIR)/main.go
-deps: $(OCB)
 test: $(BIN)
 	go test ./...
 clean:
-	rm -rf $(BUILD_DIR) $(DEPS_DIR) $(DIST_DIR) $(BIN_DIR)
+	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
 components: $(BIN)
 	$(BIN) components
 
 
-$(BIN): $(OCB)
-	goreleaser build --single-target --snapshot --clean -o $(BIN)
+$(BIN):
+	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
-$(BUILD_DIR)/main.go: $(OCB)
+$(BUILD_DIR)/main.go: 
 	$(OCB) --config manifest.yaml --skip-compilation
 
-$(OCB):
-	$(info OS=$(OS))
-	$(info MACHINE=$(MACHINE))
-	mkdir -p $(DEPS_DIR)
-	curl -sfLo $(OCB) "https://github.com/open-telemetry/opentelemetry-collector/releases/download/cmd%2Fbuilder%2Fv$(OTELCOL_BUILDER_VERSION)/ocb_$(OTELCOL_BUILDER_VERSION)_$(OS)_$(MACHINE)"
-	chmod +x $(OCB)
-
-$(EXE): $(OCB) manifest.yaml
+$(EXE):  manifest.yaml
 	$(OCB) --config manifest.yaml
-
-$(DEPS_DIR):
-	mkdir $(DEPS_DIR)

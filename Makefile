@@ -3,8 +3,8 @@ DEPS_DIR = lib
 DIST_DIR = dist
 BIN_DIR = bin
 
-OCB = $(DEPS_DIR)/ocb
-OTELCOL_BUILDER_VERSION ?= 0.78.2
+# SRC_ROOT is the top of the source tree.
+SRC_ROOT := $(shell git rev-parse --show-toplevel)
 
 ifeq ($(OS),Windows_NT)
 	OS = windows
@@ -36,10 +36,30 @@ endif
 
 BIN = $(BIN_DIR)/oteltestbedcol_$(OS)_$(MACHINE)
 
+# Taken from:
+# https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/820510e537167f621c857caaa0109f0dad021d74/Makefile.Common
+TOOLS_MOD_DIR    := $(SRC_ROOT)/internal/tools
+TOOLS_MOD_REGEX  := "\s+_\s+\".*\""
+TOOLS_PKG_NAMES  := $(shell grep -E $(TOOLS_MOD_REGEX) < $(TOOLS_MOD_DIR)/tools.go | tr -d " _\"")
+TOOLS_BIN_DIR    := $(SRC_ROOT)/.tools
+TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
+
+.PHONY: install-tools
+install-tools: $(TOOLS_BIN_NAMES)
+
+$(TOOLS_BIN_DIR):
+	mkdir -p $@
+
+$(TOOLS_BIN_NAMES): $(TOOLS_BIN_DIR) $(TOOLS_MOD_DIR)/go.mod
+	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
+
+GORELEASER        := $(TOOLS_BIN_DIR)/goreleaser
+BUILDER           := $(TOOLS_BIN_DIR)/builder
+
 .PHONY: build test clean deps build components
 build: $(BIN)
 generate: $(BUILD_DIR)/main.go
-deps: $(OCB)
+deps: $(BUILDER) $(GORELEASER)
 test: $(BIN)
 	go test ./...
 clean:
@@ -48,21 +68,12 @@ components: $(BIN)
 	$(BIN) components
 
 
-$(BIN): $(OCB)
-	goreleaser build --single-target --snapshot --clean -o $(BIN)
+$(BIN): $(GORELEASER)
+	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
-$(BUILD_DIR)/main.go: $(OCB)
-	$(OCB) --config manifest.yaml --skip-compilation
+$(BUILD_DIR)/main.go: $(BUILDER)
+	$(BUILDER) --config manifest.yaml --skip-compilation
 
-$(OCB):
-	$(info OS=$(OS))
-	$(info MACHINE=$(MACHINE))
-	mkdir -p $(DEPS_DIR)
-	curl -sfLo $(OCB) "https://github.com/open-telemetry/opentelemetry-collector/releases/download/cmd%2Fbuilder%2Fv$(OTELCOL_BUILDER_VERSION)/ocb_$(OTELCOL_BUILDER_VERSION)_$(OS)_$(MACHINE)"
-	chmod +x $(OCB)
+$(EXE): $(BUILDER) manifest.yaml
+	$(BUILDER) --config manifest.yaml
 
-$(EXE): $(OCB) manifest.yaml
-	$(OCB) --config manifest.yaml
-
-$(DEPS_DIR):
-	mkdir $(DEPS_DIR)

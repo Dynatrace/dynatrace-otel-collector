@@ -52,8 +52,8 @@ TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
 GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
 BUILDER    := $(TOOLS_BIN_DIR)/builder
 
-.PHONY: build generate test clean components install-tools
-build: $(BIN) $(CP_FILES_DEST)
+.PHONY: build generate test clean components install-tools snapshot release
+build: $(BIN)
 generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)
 	go test ./...
@@ -62,6 +62,10 @@ clean:
 components: $(BIN)
 	$(BIN) components
 install-tools: $(TOOLS_BIN_NAMES)
+snapshot: .goreleaser.yaml $(GORELEASER)
+	$(GORELEASER) release --snapshot --clean
+release: .goreleaser.yaml $(GORELEASER)
+	$(GORELEASER) release --clean
 
 $(TOOLS_BIN_DIR):
 	mkdir -p $@

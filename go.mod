@@ -3,7 +3,7 @@ module github.com/Dynatrace/dynatrace-otel-collector
 go 1.20
 
 require (
-	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.79.1-0.20230614092235-19e2a2d48735
+	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.79.1-0.20230614180935-f66845fcd50c
 	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector/component v0.79.1-0.20230609201858-ed8547a8e5d6
 	gopkg.in/yaml.v3 v3.0.1
@@ -85,10 +85,12 @@ require (
 	go.opentelemetry.io/collector/exporter/loggingexporter v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
 	go.opentelemetry.io/collector/exporter/otlpexporter v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
 	go.opentelemetry.io/collector/exporter/otlphttpexporter v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/extension v0.0.0-20230609200026-525adf4a682a // indirect
 	go.opentelemetry.io/collector/extension/ballastextension v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
 	go.opentelemetry.io/collector/extension/zpagesextension v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
 	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0012.0.20230609201858-ed8547a8e5d6 // indirect
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0012.0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/processor v0.0.0-20230609193203-89d1060c7606 // indirect
 	go.opentelemetry.io/collector/processor/batchprocessor v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
 	go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
 	go.opentelemetry.io/collector/receiver v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
@@ -118,3 +120,7 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+// Fixes ambiguous import, will be fixed once the Go instrumentation is updated
+// See https://github.com/open-telemetry/opentelemetry-go-contrib/pull/3968
+replace cloud.google.com/go => cloud.google.com/go v0.110.2

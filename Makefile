@@ -8,35 +8,7 @@ BIN_DIR = bin
 # SRC_ROOT is the top of the source tree.
 SRC_ROOT := $(shell git rev-parse --show-toplevel)
 
-ifeq ($(OS),Windows_NT)
-	OS = windows
-    ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
-        MACHINE = amd64
-    endif
-    ifeq ($(PROCESSOR_ARCHITECTURE),x86)
-        MACHINE = 386
-    endif
-else
-    UNAME_S := $(shell uname -s)
-    ifeq ($(UNAME_S),Linux)
-        OS = linux
-    endif
-    ifeq ($(UNAME_S),Darwin)
-        OS = darwin
-    endif
-    UNAME_M := $(shell uname -m)
-    ifeq ($(UNAME_M),x86)
-        MACHINE = 386
-    endif
-    ifeq ($(UNAME_M),x86_64)
-        MACHINE = amd64
-    endif
-    ifneq ($(filter arm%,$(UNAME_M)),)
-        MACHINE = arm64
-    endif
-endif
-
-BIN = $(BIN_DIR)/oteltestbedcol_$(OS)_$(MACHINE)
+BIN = $(BIN_DIR)/otelcol-dynatrace
 MAIN = $(BUILD_DIR)/main.go
 
 # Files to be copied directly from the project root

@@ -27,14 +27,8 @@ jobs:
           mkdir -p .tools
           touch .tools/*
       - name: Create Snapshot for Pull Request
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: goreleaser/goreleaser-action@v4
-        with:
-          distribution: goreleaser
-          version: latest
-          args: release --snapshot
+        run: make snapshot
       - name: Upload Pull Request Preview
-        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v3
         with:
           name: otelcol_dynatrace_${{ github.event.pull_request.number }}_${{ github.run_number }}

@@ -52,7 +52,7 @@ TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
 GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
 BUILDER    := $(TOOLS_BIN_DIR)/builder
 
-.PHONY: build test clean components install-tools
+.PHONY: build generate test clean components install-tools
 build: $(BIN) $(CP_FILES_DEST)
 generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)

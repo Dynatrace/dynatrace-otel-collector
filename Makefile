@@ -37,6 +37,11 @@ else
 endif
 
 BIN = $(BIN_DIR)/oteltestbedcol_$(OS)_$(MACHINE)
+MAIN = $(BUILD_DIR)/main.go
+
+# Files to be copied directly from the project root
+CP_FILES = LICENSE README.md
+CP_FILES_DEST = $(addprefix $(BUILD_DIR)/, $(CP_FILES))
 
 TOOLS_MOD_DIR    := $(SRC_ROOT)/internal/tools
 TOOLS_MOD_REGEX  := "\s+_\s+\".*\""
@@ -49,7 +54,7 @@ BUILDER    := $(TOOLS_BIN_DIR)/builder
 
 .PHONY: build test clean components install-tools snapshot release
 build: $(BIN)
-generate: $(BUILD_DIR)/main.go
+generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)
 	go test ./...
 clean:
@@ -71,8 +76,11 @@ $(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod | $(TOOLS_BIN_DIR)
 $(BIN): .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
-$(BUILD_DIR)/main.go: $(BUILDER)
+$(MAIN): $(BUILDER)
 	$(BUILDER) --config manifest.yaml --skip-compilation
 
 $(EXE): manifest.yaml $(BUILDER) 
 	$(BUILDER) --config manifest.yaml
+
+$(CP_FILES_DEST): $(MAIN)
+	cp $(notdir $@) $@

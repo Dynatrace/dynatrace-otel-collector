@@ -3,9 +3,9 @@ module github.com/Dynatrace/dynatrace-otel-collector
 go 1.20
 
 require (
-	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.79.1-0.20230612110913-6249ae8d927e
+	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.79.1-0.20230614092235-19e2a2d48735
 	github.com/stretchr/testify v1.8.4
-	go.opentelemetry.io/collector/component v0.79.0
+	go.opentelemetry.io/collector/component v0.79.1-0.20230609201858-ed8547a8e5d6
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -78,22 +78,22 @@ require (
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.opentelemetry.io/collector v0.79.0 // indirect
-	go.opentelemetry.io/collector/confmap v0.79.0 // indirect
-	go.opentelemetry.io/collector/consumer v0.79.0 // indirect
-	go.opentelemetry.io/collector/exporter v0.79.0 // indirect
-	go.opentelemetry.io/collector/exporter/loggingexporter v0.79.0 // indirect
-	go.opentelemetry.io/collector/exporter/otlpexporter v0.79.0 // indirect
-	go.opentelemetry.io/collector/exporter/otlphttpexporter v0.79.0 // indirect
-	go.opentelemetry.io/collector/extension/ballastextension v0.79.0 // indirect
-	go.opentelemetry.io/collector/extension/zpagesextension v0.79.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0012 // indirect
-	go.opentelemetry.io/collector/pdata v1.0.0-rcv0012 // indirect
-	go.opentelemetry.io/collector/processor/batchprocessor v0.79.0 // indirect
-	go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.79.0 // indirect
-	go.opentelemetry.io/collector/receiver v0.79.0 // indirect
-	go.opentelemetry.io/collector/receiver/otlpreceiver v0.79.0 // indirect
-	go.opentelemetry.io/collector/semconv v0.79.0 // indirect
+	go.opentelemetry.io/collector v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/confmap v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/consumer v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/exporter v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/exporter/loggingexporter v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/exporter/otlpexporter v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/exporter/otlphttpexporter v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/extension/ballastextension v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/extension/zpagesextension v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0012.0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/pdata v1.0.0-rcv0012.0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/processor/batchprocessor v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/receiver v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/receiver/otlpreceiver v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
+	go.opentelemetry.io/collector/semconv v0.79.1-0.20230609201858-ed8547a8e5d6 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.42.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0 // indirect
 	go.opentelemetry.io/contrib/propagators/b3 v1.17.0 // indirect
@@ -109,8 +109,8 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	gonum.org/v1/gonum v0.13.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect

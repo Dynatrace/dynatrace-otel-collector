@@ -1,0 +1,10 @@
+processors:
+  filter/eec:
+    metrics:
+      metric:
+      - "true"
+
+service:
+  pipelines:
+    metrics/eec:
+      processors: [filter/eec]

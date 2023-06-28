@@ -21,7 +21,7 @@ processors:
   filter/eec:
     metrics:
       metric:
-      - "true"
+        - "true"
 
 exporters:
   logging/eec:

@@ -2,7 +2,7 @@ processors:
   filter/eec:
     metrics:
       metric:
-      - "true"
+        - "true"
 
 service:
   pipelines:

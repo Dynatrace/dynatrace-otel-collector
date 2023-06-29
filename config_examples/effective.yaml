@@ -1,0 +1,43 @@
+receivers:
+  httpcheck/eec:
+    endpoint: ${env:heartbeat_url}/${env:heartbeat_id}
+    method: POST
+    collection_interval: 10s
+    headers:
+      Authorization: "Api-Token ${env:token}"
+    metrics:
+      httpcheck.duration:
+        enabled: false
+      httpcheck.error:
+        enabled: false
+      httpcheck.status:
+        enabled: false
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+processors:
+  filter/eec:
+    metrics:
+      metric:
+        - "true"
+
+exporters:
+  logging/eec:
+    verbosity: detailed
+  logging:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+service:
+  pipelines:
+    metrics/eec:
+      receivers: [httpcheck/eec]
+      processors: [filter/eec]
+      exporters: [logging/eec]
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [logging]

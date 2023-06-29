@@ -26,6 +26,8 @@ BUILDER    := $(TOOLS_BIN_DIR)/builder
 
 .PHONY: build generate test clean clean-all components install-tools snapshot release
 build: $(BIN)
+build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
+	$(GORELEASER) build --snapshot --clean
 generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)
 	go test ./...
@@ -52,9 +54,6 @@ $(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN)
 
 $(MAIN): $(BUILDER) manifest.yaml
 	$(BUILDER) --config manifest.yaml --skip-compilation
-
-$(EXE): manifest.yaml $(BUILDER) 
-	$(BUILDER) --config manifest.yaml
 
 $(CP_FILES_DEST): $(MAIN)
 	cp $(notdir $@) $@

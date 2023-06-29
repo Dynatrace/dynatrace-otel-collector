@@ -24,10 +24,8 @@ TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
 GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
 BUILDER    := $(TOOLS_BIN_DIR)/builder
 
-.PHONY: build list generate test clean clean-all components install-tools snapshot release
+.PHONY: build generate test clean clean-all components install-tools snapshot release
 build: $(BIN)
-list:
-	@LC_ALL=C $(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/(^|\n)# Files(\n|$$)/,/(^|\n)# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep -E -v -e '^[^[:alnum:]]' -e '^$@$$'
 build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --snapshot --clean
 generate: $(MAIN) $(CP_FILES_DEST)

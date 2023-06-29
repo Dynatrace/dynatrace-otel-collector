@@ -28,6 +28,8 @@ BUILDER    := $(TOOLS_BIN_DIR)/builder
 build: $(BIN)
 list:
 	@LC_ALL=C $(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/(^|\n)# Files(\n|$$)/,/(^|\n)# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep -E -v -e '^[^[:alnum:]]' -e '^$@$$'
+build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
+	$(GORELEASER) build --snapshot --clean
 generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)
 	go test ./...
@@ -50,14 +52,11 @@ $(TOOLS_BIN_DIR):
 $(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod | $(TOOLS_BIN_DIR)
 	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
-$(BIN): .goreleaser.yaml $(GORELEASER)
+$(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
-$(MAIN): $(BUILDER)
+$(MAIN): $(BUILDER) manifest.yaml
 	$(BUILDER) --config manifest.yaml --skip-compilation
-
-$(EXE): manifest.yaml $(BUILDER) 
-	$(BUILDER) --config manifest.yaml
 
 $(CP_FILES_DEST): $(MAIN)
 	cp $(notdir $@) $@

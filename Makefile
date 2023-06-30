@@ -33,8 +33,9 @@ test: $(BIN)
 	go test ./...
 clean:
 	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
-clean-all: clean
+clean-tools:
 	rm -rf $(TOOLS_BIN_DIR)
+clean-all: clean clean-tools
 components: $(BIN)
 	$(BIN) components
 install-tools: $(TOOLS_BIN_NAMES)

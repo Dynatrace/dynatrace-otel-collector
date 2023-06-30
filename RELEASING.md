@@ -30,4 +30,4 @@ git tag v0.0.1
 git push --tags
 ```
 
-Once you have completed the above steps, the [Build and Release](./.github/workflows/release.yaml) workflow will use [goreleaser](https://goreleaser.com) to create a new draft release on Github. When it completes the release will be viewable to users with permission at [Releases](https://github.com/Dynatrace/dynatrace-otel-collector/releases). The changelog and title for the release is created automatically, but may be modified. When you are happy with the state of the release, publish the release and it will become publicly visible.
+Once you have completed the above steps, the [Build and Release](./.github/workflows/release.yaml) workflow will use [goreleaser](https://goreleaser.com) to create a new draft release on GitHub. When it completes, the release will be visible to users with the required permissions at [Releases](https://github.com/Dynatrace/dynatrace-otel-collector/releases). The changelog and title for the release is created automatically, but may be modified. When you are happy with the state of the release, publish the release and it will become publicly visible.

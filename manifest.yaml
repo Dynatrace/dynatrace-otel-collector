@@ -2,7 +2,6 @@ dist:
   module: github.com/Dynatrace/dynatrace-otel-collector
   name: otelcol-dynatrace
   description: Dynatrace OpenTelemetry Collector Distribution
-  otelcol_version: 0.82.0
   output_path: ./build
   version: 0.0.1-alpha
 

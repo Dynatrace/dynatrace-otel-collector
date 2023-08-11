@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/goreleaser/goreleaser v1.20.0
-	go.opentelemetry.io/collector/cmd/builder v0.82.0
+	go.opentelemetry.io/collector/cmd/builder v0.81.0
 )
 
 require (

@@ -5,7 +5,7 @@
     ],
     "packageRules": [
       {
-        "matchPackagePatterns": ["^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)/([A-Za-z0-9]+/)*[A-Za-z0-9]+"],
+        "matchPackagePatterns": ["^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)"],
         "groupName": "OpenTelemetry Collector"
       }
     ],

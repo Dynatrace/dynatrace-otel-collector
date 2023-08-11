@@ -139,7 +139,3 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-// Fixes ambiguous import, will be fixed once the Go instrumentation is updated
-// See https://github.com/open-telemetry/opentelemetry-go-contrib/pull/3968
-replace cloud.google.com/go => cloud.google.com/go v0.110.7

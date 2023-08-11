@@ -3,6 +3,12 @@
     "extends": [
       "config:base"
     ],
+    "packageRules": [
+      {
+        "matchPackagePatterns": ["^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)"],
+        "groupName": "OpenTelemetry Collector"
+      }
+    ],
     "regexManagers": [
         {
           "fileMatch": ["^manifest.yaml$"],

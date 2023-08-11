@@ -142,4 +142,4 @@ require (
 
 // Fixes ambiguous import, will be fixed once the Go instrumentation is updated
 // See https://github.com/open-telemetry/opentelemetry-go-contrib/pull/3968
-replace cloud.google.com/go => cloud.google.com/go v0.110.2
+replace cloud.google.com/go => cloud.google.com/go v0.110.7

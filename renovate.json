@@ -12,7 +12,7 @@
     "regexManagers": [
         {
           "fileMatch": ["^manifest.yaml$"],
-          "matchStrings": ["- gomod: (?<depName>.*?) (?<currentValue>.*)\\n"],
+          "matchStrings": ["- gomod: (?<depName>(go.opentelemetry.io/collector|github.com/open-telemetry/opentelemetry-collector-contrib|github.com/dynatrace/dynatrace-otel-collector)/.+?) (?<currentValue>.+)\\n"],
           "datasourceTemplate": "go"
         }
     ]

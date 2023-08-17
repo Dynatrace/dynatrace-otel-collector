@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/tools
 
-go 1.20
+go 1.21
 
 require (
 	github.com/goreleaser/goreleaser v1.20.0

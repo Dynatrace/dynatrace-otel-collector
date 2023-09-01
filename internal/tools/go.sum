@@ -2260,6 +2260,8 @@ github.com/mitchellh/mapstructure v1.4.2/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RR
 github.com/mitchellh/mapstructure v1.4.3/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
+github.com/mitchellh/mapstructure v1.5.1-0.20220423185008-bf980b35cac4 h1:BpfhmLKZf+SjVanKKhCgf3bg+511DmU9eDQTen7LLbY=
+github.com/mitchellh/mapstructure v1.5.1-0.20220423185008-bf980b35cac4/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/mitchellh/osext v0.0.0-20151018003038-5e2d6d41470f/go.mod h1:OkQIRizQZAeMln+1tSwduZz7+Af5oFlKirV/MSYes2A=
 github.com/mitchellh/reflectwalk v1.0.0/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zxSIeXaQ=
@@ -2806,6 +2808,8 @@ go.opentelemetry.io/collector/cmd/builder v0.82.0 h1:Ps1QQ1kSB7duGn0IBIbH4b/7EyF
 go.opentelemetry.io/collector/cmd/builder v0.82.0/go.mod h1:9CbdjNrv6+Y83ko1zh2viVWM20yNT3X+Rvl5FUb4B+4=
 go.opentelemetry.io/collector/cmd/builder v0.83.0 h1:qxwO+GZ7BvZu2+nFEy0gJtrq9v70I8xULYoEjyY4k7M=
 go.opentelemetry.io/collector/cmd/builder v0.83.0/go.mod h1:6YT4C/WlJiJanhbfqmskN2l/ckp6eyNwxhFxDhLonqs=
+go.opentelemetry.io/collector/cmd/builder v0.84.0 h1:OKq0BeTfidXdB5vea1NMCG8Mt4lR/NY6D0CAOpRLUiY=
+go.opentelemetry.io/collector/cmd/builder v0.84.0/go.mod h1:dVLzZ3iF3I/O+yr9Pe4mUE5Z0aZgaT7UPr3SY204a+c=
 go.opentelemetry.io/contrib v0.20.0/go.mod h1:G/EtFaa6qaN7+LxqfIAT3GiZa7Wv5DTBUzl5H4LY0Kc=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.20.0/go.mod h1:oVGt1LRbBOBq1A5BQLlUg9UaU/54aiHw8cgjV3aWZ/E=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.28.0/go.mod h1:vEhqr0m4eTc+DWxfsXoXue2GBgV2uUwVznkGIHW/e5w=

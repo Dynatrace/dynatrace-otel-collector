@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/goreleaser/goreleaser v1.20.0
-	go.opentelemetry.io/collector/cmd/builder v0.83.0
+	go.opentelemetry.io/collector/cmd/builder v0.84.0
 )
 
 require (
@@ -173,7 +173,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/mitchellh/mapstructure v1.5.1-0.20220423185008-bf980b35cac4 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/muesli/mango v0.1.0 // indirect
 	github.com/muesli/mango-cobra v1.2.0 // indirect

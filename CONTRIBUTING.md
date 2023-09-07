@@ -40,7 +40,7 @@ In order to remove them run `make clean-tools` or `make clean-all`.
 
 ### Building the collector
 
-The command `make` or `make build` (the default target) will build the collector for your operating system and CPU architecture. The resulting binary will be `bin/otelcol-dynatrace`.
+The command `make` or `make build` (the default target) will build the collector for your operating system and CPU architecture. The resulting binary will be `bin/dynatrace-otel-collector`.
 
 #### Cross-compiling other architectures
 

@@ -8,7 +8,7 @@ BIN_DIR = bin
 # SRC_ROOT is the top of the source tree.
 SRC_ROOT := $(shell git rev-parse --show-toplevel)
 
-BIN = $(BIN_DIR)/otelcol-dynatrace
+BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
 
 # Files to be copied directly from the project root

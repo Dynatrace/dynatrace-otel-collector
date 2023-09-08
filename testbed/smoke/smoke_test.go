@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var execPath = "../../bin/otelcol-dynatrace"
+var execPath = "../../bin/dynatrace-otel-collector"
 
 func TestCollectorStarts(t *testing.T) {
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(execPath))
@@ -27,7 +27,7 @@ func TestCollectorStarts(t *testing.T) {
 	col.PrepareConfig(string(cfg))
 
 	err = col.Start(testbed.StartParams{
-		Name:        "otelcol-dynatrace",
+		Name:        "dynatrace-otel-collector",
 		LogFilePath: "col.log",
 	})
 	require.NoError(t, err)

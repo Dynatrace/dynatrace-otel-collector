@@ -47,13 +47,18 @@ func TestCollectorStarts(t *testing.T) {
 	require.True(t, stopped)
 }
 
+type componentMetadata struct {
+	Name      component.Type
+	Stability map[string]string
+}
+
 type componentsOutput struct {
 	BuildInfo  component.BuildInfo
-	Receivers  []component.Type
-	Processors []component.Type
-	Exporters  []component.Type
-	Connectors []component.Type
-	Extensions []component.Type
+	Receivers  []componentMetadata
+	Processors []componentMetadata
+	Exporters  []componentMetadata
+	Connectors []componentMetadata
+	Extensions []componentMetadata
 }
 
 type gomod struct {

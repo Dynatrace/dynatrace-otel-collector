@@ -2812,6 +2812,8 @@ go.opentelemetry.io/collector/cmd/builder v0.84.0 h1:OKq0BeTfidXdB5vea1NMCG8Mt4l
 go.opentelemetry.io/collector/cmd/builder v0.84.0/go.mod h1:dVLzZ3iF3I/O+yr9Pe4mUE5Z0aZgaT7UPr3SY204a+c=
 go.opentelemetry.io/collector/cmd/builder v0.85.0 h1:ujVDFwY07D3qHTD9s7xVFrUa8pM3XBQXl3fd66aRlaQ=
 go.opentelemetry.io/collector/cmd/builder v0.85.0/go.mod h1:Wd9XLkKAv61Ba8acQrXZDxV4kqeWFJHoCK2MM0A9zEs=
+go.opentelemetry.io/collector/cmd/builder v0.86.0 h1:ukcSLQuGuJAamsyT0C3Cp/lyncHYUKjXN/hkHBH/7cs=
+go.opentelemetry.io/collector/cmd/builder v0.86.0/go.mod h1:FkfKpr2bdVcgfaS/gBz/yxTHGDUbJDePHVvz40cE+3E=
 go.opentelemetry.io/contrib v0.20.0/go.mod h1:G/EtFaa6qaN7+LxqfIAT3GiZa7Wv5DTBUzl5H4LY0Kc=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.20.0/go.mod h1:oVGt1LRbBOBq1A5BQLlUg9UaU/54aiHw8cgjV3aWZ/E=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.28.0/go.mod h1:vEhqr0m4eTc+DWxfsXoXue2GBgV2uUwVznkGIHW/e5w=
@@ -2908,6 +2910,8 @@ go.uber.org/zap v1.24.0 h1:FiJd5l1UOLj0wCgbSE0rwwXHzEdAZS6hiiSnxJN/D60=
 go.uber.org/zap v1.24.0/go.mod h1:2kMP+WWQ8aoFoedH3T2sq6iJ2yDWpHbP0f6MQbS9Gkg=
 go.uber.org/zap v1.25.0 h1:4Hvk6GtkucQ790dqmj7l1eEnRdKm3k3ZUrUMS2d5+5c=
 go.uber.org/zap v1.25.0/go.mod h1:JIAUzQIH94IC4fOJQm7gMmBJP5k7wQfdcnYdPoEXJYk=
+go.uber.org/zap v1.26.0 h1:sI7k6L95XOKS281NhVKOFCUNIvv9e0w4BF8N3u+tCRo=
+go.uber.org/zap v1.26.0/go.mod h1:dtElttAiwGvoJ/vj4IwHBS/gXsEu/pZ50mUIRWuG0so=
 gocloud.dev v0.29.0 h1:fBy0jwJSmxs0IjT0fE32MO+Mj+307VZQwyHaTyFZbC4=
 gocloud.dev v0.29.0/go.mod h1:E3dAjji80g+lIkq4CQeF/BTWqv1CBeTftmOb+gpyapQ=
 gocloud.dev v0.30.0 h1:PRgA+DXUz8/uuTJDA7wc8o2Hwj9yZ2qAsShZ60esbE8=

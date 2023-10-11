@@ -2846,6 +2846,8 @@ go.opentelemetry.io/collector/cmd/builder v0.85.0 h1:ujVDFwY07D3qHTD9s7xVFrUa8pM
 go.opentelemetry.io/collector/cmd/builder v0.85.0/go.mod h1:Wd9XLkKAv61Ba8acQrXZDxV4kqeWFJHoCK2MM0A9zEs=
 go.opentelemetry.io/collector/cmd/builder v0.86.0 h1:ukcSLQuGuJAamsyT0C3Cp/lyncHYUKjXN/hkHBH/7cs=
 go.opentelemetry.io/collector/cmd/builder v0.86.0/go.mod h1:FkfKpr2bdVcgfaS/gBz/yxTHGDUbJDePHVvz40cE+3E=
+go.opentelemetry.io/collector/cmd/builder v0.87.0 h1:aufcsLe27Ag77WWZIKU1ZR7NpM60HOJWoRIAL7VroQE=
+go.opentelemetry.io/collector/cmd/builder v0.87.0/go.mod h1:FkfKpr2bdVcgfaS/gBz/yxTHGDUbJDePHVvz40cE+3E=
 go.opentelemetry.io/contrib v0.20.0/go.mod h1:G/EtFaa6qaN7+LxqfIAT3GiZa7Wv5DTBUzl5H4LY0Kc=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.20.0/go.mod h1:oVGt1LRbBOBq1A5BQLlUg9UaU/54aiHw8cgjV3aWZ/E=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.28.0/go.mod h1:vEhqr0m4eTc+DWxfsXoXue2GBgV2uUwVznkGIHW/e5w=

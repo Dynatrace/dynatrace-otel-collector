@@ -34,3 +34,6 @@ processors:
 
 connectors:
   - gomod: go.opentelemetry.io/collector/connector/forwardconnector v0.87.0
+
+replaces:
+  - google.golang.org/grpc => google.golang.org/grpc v1.58.3

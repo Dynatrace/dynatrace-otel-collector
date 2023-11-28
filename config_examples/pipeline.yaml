@@ -10,9 +10,13 @@ receivers:
       grpc:
       http:
 
+extensions:
+  health_check:
+
 service:
   pipelines:
     metrics:
       receivers: [otlp]
       processors: []
       exporters: [logging]
+  extensions: [health_check]

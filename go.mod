@@ -155,4 +155,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace cloud.google.com/go => cloud.google.com/go v0.110.10
+replace cloud.google.com/go => cloud.google.com/go v0.111.0

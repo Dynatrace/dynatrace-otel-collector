@@ -24,9 +24,9 @@ processors:
         - "true"
 
 exporters:
-  logging/eec:
+  debug/eec:
     verbosity: detailed
-  logging:
+  debug:
     verbosity: detailed
     sampling_initial: 5
     sampling_thereafter: 200
@@ -36,8 +36,8 @@ service:
     metrics/eec:
       receivers: [httpcheck/eec]
       processors: [filter/eec]
-      exporters: [logging/eec]
+      exporters: [debug/eec]
     metrics:
       receivers: [otlp]
       processors: []
-      exporters: [logging]
+      exporters: [debug]

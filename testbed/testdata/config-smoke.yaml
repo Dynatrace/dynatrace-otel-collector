@@ -5,14 +5,14 @@ receivers:
         endpoint: localhost:4318
 
 exporters:
-  logging:
+  debug:
     verbosity: detailed
 
 service:
   pipelines:
     metrics:
       receivers: [otlp]
-      exporters: [logging]
+      exporters: [debug]
   telemetry:
     metrics:
       level: normal

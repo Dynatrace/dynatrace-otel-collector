@@ -15,11 +15,11 @@ receivers:
         enabled: false
 
 exporters:
-  logging/eec:
+  debug/eec:
     verbosity: detailed
 
 service:
   pipelines:
     metrics/eec:
       receivers: [httpcheck/eec]
-      exporters: [logging/eec]
+      exporters: [debug/eec]

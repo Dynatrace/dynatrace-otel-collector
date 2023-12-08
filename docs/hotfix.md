@@ -1,7 +1,7 @@
 # Applying a hotfix
 
 This document describes the process to apply a hotfix to an upstream component.
-For this document, we will use the `loggingexporter` as an example.
+For this document, we will use the `debugexporter` as an example.
 
 1. If it does not already exist, create the `hotfixes` directory.
    
@@ -18,7 +18,7 @@ git clone -b v0.79.0 https://github.com/open-telemetry/opentelemetry-collector/
 3. Copy the files from upstream into the `hotfixes` directory.
 
 ```sh
-cp -r opentelemetry-collector/exporter/loggingexporter hotfixes/loggingexporter
+cp -r opentelemetry-collector/exporter/debugexporter hotfixes/debugexporter
 ```
 
 4. Delete the temporary clone of the upstream repo.
@@ -37,8 +37,8 @@ index 476710d..1dad064 100644
 @@ -14,6 +14,7 @@ receivers:
  
  exporters:
-   - gomod: go.opentelemetry.io/collector/exporter/loggingexporter v0.79.0
-+    path: ./hotfixes/loggingexporter
+   - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.79.0
++    path: ./hotfixes/debugexporter
    - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.79.0
    - gomod: go.opentelemetry.io/collector/exporter/otlphttpexporter v0.79.0
 ```

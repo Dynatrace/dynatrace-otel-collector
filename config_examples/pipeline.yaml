@@ -1,5 +1,5 @@
 exporters:
-  logging:
+  debug:
     verbosity: detailed
     sampling_initial: 5
     sampling_thereafter: 200
@@ -18,5 +18,5 @@ service:
     metrics:
       receivers: [otlp]
       processors: []
-      exporters: [logging]
+      exporters: [debug]
   extensions: [health_check]

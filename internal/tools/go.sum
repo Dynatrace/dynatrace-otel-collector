@@ -864,6 +864,8 @@ go.opentelemetry.io/collector/cmd/builder v0.90.0 h1:1I+YJneCX+7Yp23zwWUpy0szYXK
 go.opentelemetry.io/collector/cmd/builder v0.90.0/go.mod h1:wcxXrQyLrzvYKXCG3CqDkFpbL35cBCHke6wk2RFvmZk=
 go.opentelemetry.io/collector/cmd/builder v0.90.1 h1:fAepJ5LVdGsBvkADMInAp6UOs1LM7plk2AeIaxkn0ck=
 go.opentelemetry.io/collector/cmd/builder v0.90.1/go.mod h1:wcxXrQyLrzvYKXCG3CqDkFpbL35cBCHke6wk2RFvmZk=
+go.opentelemetry.io/collector/cmd/builder v0.91.0 h1:+XleULVc+kfCMIjVBDVru9x5dIjTG1EfDY8nZxBqK/o=
+go.opentelemetry.io/collector/cmd/builder v0.91.0/go.mod h1:wcxXrQyLrzvYKXCG3CqDkFpbL35cBCHke6wk2RFvmZk=
 go.uber.org/automaxprocs v1.5.3 h1:kWazyxZUrS3Gs4qUpbwo5kEIMGe/DAvi5Z4tl2NW4j8=
 go.uber.org/automaxprocs v1.5.3/go.mod h1:eRbA25aqJrxAbsLO0xy5jVwPt7FQnRgjW+efnwa1WM0=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=

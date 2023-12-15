@@ -8,8 +8,7 @@ Dynatrace over [OTLP/HTTP](https://opentelemetry.io/docs/specs/otlp/).
 
 > [!WARNING]
 > The Dynatrace OpenTelemetry Collector Distribution is currently in
-> alpha. As such, it is not intended to be used in production and is not
-> currently considered an offering by Dynatrace Support.
+> alpha.
 
 ## Troubleshooting
 

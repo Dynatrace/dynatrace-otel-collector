@@ -9,7 +9,6 @@ receivers:
     protocols:
       thrift_http:
 
-
 service:
   pipelines:
     traces:

@@ -48,7 +48,6 @@ guide](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/
 
 ### Extensions
 
-* [ballastextension](https://github.com/open-telemetry/opentelemetry-collector/tree/main/extension/ballastextension)
 * [healthcheckextension](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/healthcheckextension)
 * [zpagesextension](https://github.com/open-telemetry/opentelemetry-collector/tree/main/extension/zpagesextension)
 

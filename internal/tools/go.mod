@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/goreleaser/goreleaser v1.23.0
-	go.opentelemetry.io/collector/cmd/builder v0.91.0
+	go.opentelemetry.io/collector/cmd/builder v0.92.0
 )
 
 require (

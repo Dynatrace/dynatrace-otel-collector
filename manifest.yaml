@@ -39,3 +39,4 @@ processors:
 
 connectors:
   - gomod: go.opentelemetry.io/collector/connector/forwardconnector v0.92.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/spanmetricsconnector v0.92.0

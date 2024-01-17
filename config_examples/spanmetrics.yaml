@@ -1,0 +1,71 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  transform:
+    metric_statements:
+    - context: metric
+      statements:
+      # Extract sum and count metrics from the service. We can use these metrics
+      # to get the average request duration by using a metric query like so:
+      # requests.duration_sum:splitBy("service.name")/requests.duration_count:splitBy("service.name")
+      # Note that the resulting values in the above query will be unitless.
+      - extract_count_metric(false) where type == METRIC_DATA_TYPE_HISTOGRAM
+      - extract_sum_metric(false) where type == METRIC_DATA_TYPE_HISTOGRAM
+  filter:
+    metrics:
+      metric:
+      # The Dynatrace OTLP metrics ingest doesn't currently support histograms, so filter them out.
+      - type == METRIC_DATA_TYPE_HISTOGRAM
+  transform/spanmetrics:
+    metric_statements:
+    - context: datapoint
+      statements:
+      # Not required, but simplifies queries in Dynatrace by removing the requirement for a `.count`
+      # suffix on the metric name in the query.
+      - convert_sum_to_gauge() where IsMatch(metric.name, "^requests.*_sum") and metric.type == METRIC_DATA_TYPE_SUM
+    - context: metric
+      statements:
+      # Map the units to something that explicitly counts them in Dynatrace.
+      - set(unit, "{requests}")  where IsMatch(name, "^requests.duration_count")
+      - set(unit, "{requests}")  where IsMatch(name, "^requests.calls")
+  tail_sampling:
+    # This config keeps all traces just as a demonstration. Adjust with policies of your choice.
+    policies:
+      - name: keep-traces
+        type: always_sample
+    decision_wait: 30s
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: Api-Token ${env:API_TOKEN}
+  debug:
+    verbosity: normal
+
+connectors:
+  spanmetrics:
+    aggregation_temporality: "AGGREGATION_TEMPORALITY_DELTA"
+    namespace: "requests"
+    metrics_flush_interval: 15s
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [tail_sampling]
+      exporters: [otlphttp, debug]
+    traces/spanmetrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [spanmetrics]
+    metrics:
+      receivers: [spanmetrics]
+      processors: [transform, filter, transform/spanmetrics]
+      exporters: [otlphttp, debug]

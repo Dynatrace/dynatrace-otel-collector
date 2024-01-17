@@ -24,9 +24,12 @@ func NewTraceSampleConfigsValidator(t *testing.T, expectedTraces ptrace.Traces) 
 }
 
 func (v *SampleConfigsValidator) Validate(tc *testbed.TestCase) {
-	actualSpans := tc.MockBackend.DataItemsReceived()
+	actualSpans := 0
+	for _, td := range tc.MockBackend.ReceivedTraces {
+		actualSpans += td.SpanCount()
+	}
 
-	assert.EqualValues(v.t, v.expectedTraces.SpanCount(), actualSpans, "Received and expected number of spans do not match.")
+	assert.EqualValues(v.t, v.expectedTraces.SpanCount(), actualSpans, "Expected %d spans, received %d.", v.expectedTraces.SpanCount(), actualSpans)
 	assertExpectedSpansAreInReceived(v.t, []ptrace.Traces{v.expectedTraces}, tc.MockBackend.ReceivedTraces)
 }
 

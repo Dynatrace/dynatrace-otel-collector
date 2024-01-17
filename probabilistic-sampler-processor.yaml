@@ -1,0 +1,54 @@
+exporters:
+  otlphttp:
+    endpoint: https://${env:HOST}/api/v2/otlp
+    headers:
+      Authorization: Api-Token ${env:API_TOKEN}
+  debug:
+    verbosity: normal
+
+receivers:
+  otlp:
+    protocols:
+      http:
+  prometheus/own_metrics:
+    config:
+      scrape_configs:
+        - job_name: 'otel-collector'
+          scrape_interval: 10s
+          static_configs:
+            - targets: ['localhost:8888']  
+
+processors:
+  probabilistic_sampler:
+    hash_seed: 22
+    sampling_percentage: 15.3
+  cumulativetodelta:
+  transform:
+    metric_statements:
+    - context: metric
+      statements:
+      - extract_count_metric(false) where type == METRIC_DATA_TYPE_HISTOGRAM
+      - extract_sum_metric(false) where type == METRIC_DATA_TYPE_HISTOGRAM
+  filter:
+    metrics:
+      metric:
+      - type == METRIC_DATA_TYPE_HISTOGRAM
+  resource:
+    attributes:
+    - key: jira.ticket
+      value: "OSPO-2176"
+      action: upsert
+
+service:
+  telemetry:
+    metrics:
+      address: ":8888"
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [resource]
+      exporters: [otlphttp, debug]
+    metrics/own_metrics:
+      receivers: [prometheus/own_metrics]
+      processors: [transform, filter, cumulativetodelta]
+      exporters: [otlphttp, debug]

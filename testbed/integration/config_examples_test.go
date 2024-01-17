@@ -12,6 +12,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
+	semconv "go.opentelemetry.io/collector/semconv/v1.18.0"
 )
 
 func TestConfigTailSampling(t *testing.T) {
@@ -308,6 +309,109 @@ func TestConfigHistogramTransform(t *testing.T) {
 
 	tc.WaitForN(func() bool {
 		return tc.MockBackend.DataItemsReceived() == uint64(expectedMetricData.MetricCount())
+	}, 5*time.Second, "all data items received")
+
+	// assert
+	tc.ValidateData()
+}
+
+func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
+	// arrange
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	cfg, err := os.ReadFile("../../config_examples/spanmetrics.yaml")
+	require.NoError(t, err)
+
+	receiverPort := testbed.GetAvailablePort(t)
+	exporterPort := testbed.GetAvailablePort(t)
+
+	parsedConfig := string(cfg)
+	parsedConfig = replaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
+	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+
+	// replaces the sampling decision wait so the test doesn't timeout
+	parsedConfig = strings.Replace(parsedConfig, "decision_wait: 30s", "decision_wait: 10ms", 1)
+
+	// replaces the metrics flush interval so the test doesn't timeout
+	parsedConfig = strings.Replace(parsedConfig, "metrics_flush_interval: 15s", "metrics_flush_interval: 15ms", 1)
+
+	configCleanup, err := col.PrepareConfig(parsedConfig)
+	require.NoError(t, err)
+	t.Cleanup(configCleanup)
+
+	actualSpansData := ptrace.NewTraces()
+	rss := actualSpansData.ResourceSpans().AppendEmpty()
+	actualSpans := rss.ScopeSpans().AppendEmpty().Spans()
+
+	expectedSpansData := ptrace.NewTraces()
+	expectedSpans := expectedSpansData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
+	startTime := time.Now()
+
+	rss.Resource().Attributes().PutStr(semconv.AttributeServiceName, "integration.test")
+
+	// Error ers
+	ers := actualSpans.AppendEmpty()
+	ers.SetTraceID(uInt64ToTraceID(0, uint64(1)))
+	ers.SetSpanID(uInt64ToSpanID(uint64(1)))
+	ers.SetName("Error span")
+	ers.SetKind(ptrace.SpanKindServer)
+	ers.Status().SetCode(ptrace.StatusCodeError)
+	ers.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime))
+	ers.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond * 501)))
+
+	// Ok span
+	oks := actualSpans.AppendEmpty()
+	oks.SetTraceID(uInt64ToTraceID(0, uint64(2)))
+	oks.SetSpanID(uInt64ToSpanID(uint64(2)))
+	oks.SetName("OK span")
+	oks.SetKind(ptrace.SpanKindServer)
+	oks.Status().SetCode(ptrace.StatusCodeOk)
+	oks.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
+	oks.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond * 3)))
+
+	// Long-running span
+	lrs := actualSpans.AppendEmpty()
+	lrs.SetTraceID(uInt64ToTraceID(0, uint64(3)))
+	lrs.SetSpanID(uInt64ToSpanID(uint64(3)))
+	lrs.SetName("Long-running span")
+	lrs.SetKind(ptrace.SpanKindServer)
+	lrs.Status().SetCode(ptrace.StatusCodeOk)
+	lrs.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
+	lrs.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Second * 1)))
+
+	// We're expecting all spans for the sample config
+	actualSpans.CopyTo(expectedSpans)
+
+	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
+	sender := testbed.NewOTLPTraceDataSender(testbed.DefaultHost, receiverPort)
+	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
+	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+
+	tc := testbed.NewTestCase(
+		t,
+		dataProvider,
+		sender,
+		receiver,
+		col,
+		validator,
+		&testbed.CorrectnessResults{},
+	)
+	t.Cleanup(tc.Stop)
+
+	tc.EnableRecording()
+	tc.StartBackend()
+	tc.StartAgent()
+
+	// act
+	tc.StartLoad(testbed.LoadOptions{
+		DataItemsPerSecond: 3,
+		ItemsPerBatch:      3,
+	})
+	tc.Sleep(2 * time.Second)
+	tc.StopLoad()
+
+	tc.WaitForN(func() bool {
+		// Verify we received all 3 spans, plus a data point per span for each of the 3 metrics produced by the span metrics connector.
+		return tc.MockBackend.DataItemsReceived() == uint64(expectedSpansData.SpanCount()+expectedSpansData.SpanCount()*3)
 	}, 5*time.Second, "all data items received")
 
 	// assert

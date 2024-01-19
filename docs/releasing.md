@@ -4,11 +4,11 @@ This document describes the steps to release a new version of the OpenTelemetry 
 
 ## Collector release prerequisites
 
-1. Ensure the manifest contains all desired collector components.
+Ensure the manifest contains all desired collector components.
 
-   Collector components are controlled by the same `manifest.yaml`.
-   It is recommended that the component versions depend on the same version of the collector.
-   For components in the upstream collector repos, most of the time this means they will be the same version as the collector version.
+Collector components are controlled by the same `manifest.yaml`.
+It is recommended that the component versions depend on the same version of the collector.
+For components in the upstream collector repos, most of the time this means they will be the same version as the collector version.
 
 ## Making a production release
 

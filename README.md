@@ -1,20 +1,33 @@
 # Dynatrace OpenTelemetry Collector Distribution
 
 The Dynatrace OpenTelemetry Collector Distribution is a distribution of the
-[OpenTelemetry
-Collector](https://github.com/open-telemetry/opentelemetry-collector) that
-allows collecting observability data from a variety of sources for sending to
-Dynatrace over [OTLP/HTTP](https://opentelemetry.io/docs/specs/otlp/).
+[OpenTelemetry Collector] that allows collecting observability data from a
+variety of sources for sending to Dynatrace over [OTLP/HTTP]. It includes a set
+of Collector components that have been verified to work well for common use
+cases.
+
+[OpenTelemetry Collector]: https://github.com/open-telemetry/opentelemetry-collector
+[OTLP/HTTP]: https://opentelemetry.io/docs/specs/otlp/
 
 > [!WARNING]
-> The Dynatrace OpenTelemetry Collector Distribution is currently in
-> alpha.
+> The Dynatrace OpenTelemetry Collector Distribution is currently considered
+> early access.
+
+## Support
+
+After the distribution is declared Generally Available, it will be supported by
+the Dynatrace Support team, as described on the Dynatrace [support page]. Github
+issues will also be considered on a case-by-case basis regardless of support
+contracts or commercial relationships with Dynatrace.
+
+[support page]: https://support.dynatrace.com/
 
 ## Troubleshooting
 
 For help troubleshooting issues, please see the OpenTelemetry Collector's
-[troubleshooting
-guide](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/troubleshooting.md).
+[troubleshooting guide].
+
+[troubleshooting guide]: https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/troubleshooting.md
 
 ## Components
 

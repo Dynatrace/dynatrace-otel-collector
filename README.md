@@ -20,6 +20,12 @@ contracts or commercial relationships with Dynatrace.
 
 [support page]: https://support.dynatrace.com/
 
+## Installation
+
+For deployment instructions, please see [Dynatrace's documentation].
+
+[Dynatrace's documentation]: https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/deployment
+
 ## Troubleshooting
 
 For help troubleshooting issues, please see the [OpenTelemetry documentation]

@@ -24,9 +24,10 @@ contracts or commercial relationships with Dynatrace.
 
 ## Troubleshooting
 
-For help troubleshooting issues, please see the OpenTelemetry Collector's
-[troubleshooting guide].
+For help troubleshooting issues, please see the [OpenTelemetry documentation]
+and the Collector's [troubleshooting guide].
 
+[OpenTelemetry documentation]: https://opentelemetry.io/docs/collector/troubleshooting/
 [troubleshooting guide]: https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/troubleshooting.md
 
 ## Components

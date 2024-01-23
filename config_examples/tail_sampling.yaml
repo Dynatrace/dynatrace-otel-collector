@@ -1,0 +1,32 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  # example which only saves spans with status codes ERROR and UNSET (OK spans dropped)
+  # and traces which have a duration longer than 500ms
+  # Test with the following commands:
+    # go/bin/telemetrygen traces --otlp-insecure --traces 1 --status-code Error
+    # go/bin/telemetrygen traces --otlp-insecure --traces 1 --status-code Ok
+    # go/bin/telemetrygen traces --otlp-insecure --traces 1 --status-code Ok --span-duration 1s
+  tail_sampling:
+    policies:
+      - name: keep-errors
+        type: status_code
+        status_code: {status_codes: [ERROR, UNSET]}
+      - name: keep-slow-traces
+        type: latency
+        latency: {threshold_ms: 500}
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [tail_sampling]
+      exporters: [debug]

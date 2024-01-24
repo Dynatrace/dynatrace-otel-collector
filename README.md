@@ -57,3 +57,4 @@ guide](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/
 ### Connectors
 
 * [forwardconnector](https://github.com/open-telemetry/opentelemetry-collector/tree/main/connector/forwardconnector)
+* [spanmetricsconnector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/spanmetricsconnector)

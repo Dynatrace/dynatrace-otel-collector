@@ -14,9 +14,9 @@ components that have been verified to work well for common Dynatrace use cases.
 ## Support
 
 After the distribution is declared Generally Available, it will be supported by
-the Dynatrace Support team, as described on the Dynatrace [support page]. Github
-issues will also be considered on a case-by-case basis regardless of support
-contracts or commercial relationships with Dynatrace.
+the Dynatrace Support team, as described on the Dynatrace [support page]. For
+issues reported via GitHub, support contracts and SLAs do not apply. Please
+reach out via our official support channels for full coverage.
 
 [support page]: https://support.dynatrace.com/
 

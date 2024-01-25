@@ -1,20 +1,29 @@
 # Dynatrace OpenTelemetry Collector Distribution
 
 The Dynatrace OpenTelemetry Collector Distribution is a distribution of the
-[OpenTelemetry
-Collector](https://github.com/open-telemetry/opentelemetry-collector) that
-allows collecting observability data from a variety of sources for sending to
-Dynatrace over [OTLP/HTTP](https://opentelemetry.io/docs/specs/otlp/).
+[OpenTelemetry Collector] that allows collecting observability data from a
+variety of sources for sending to Dynatrace. It includes a set of Collector
+components that have been verified to work well for common Dynatrace use cases.
+
+[OpenTelemetry Collector]: https://github.com/open-telemetry/opentelemetry-collector
 
 > [!WARNING]
-> The Dynatrace OpenTelemetry Collector Distribution is currently in
-> alpha.
+> The Dynatrace OpenTelemetry Collector Distribution is currently considered
+> pre-release.
+
+## Installation
+
+For deployment instructions, please see [Dynatrace's documentation].
+
+[Dynatrace's documentation]: https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/deployment
 
 ## Troubleshooting
 
-For help troubleshooting issues, please see the OpenTelemetry Collector's
-[troubleshooting
-guide](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/troubleshooting.md).
+For help troubleshooting issues, please see the [OpenTelemetry documentation]
+and the Collector's [troubleshooting guide].
+
+[OpenTelemetry documentation]: https://opentelemetry.io/docs/collector/troubleshooting/
+[troubleshooting guide]: https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/troubleshooting.md
 
 ## Components
 
@@ -58,3 +67,12 @@ guide](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/
 
 * [forwardconnector](https://github.com/open-telemetry/opentelemetry-collector/tree/main/connector/forwardconnector)
 * [spanmetricsconnector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/spanmetricsconnector)
+
+## Support
+
+After the distribution is declared Generally Available, it will be supported by
+the Dynatrace Support team, as described on the Dynatrace [support page]. For
+issues reported via GitHub, support contracts and SLAs do not apply. Please
+reach out via our official support channels for full coverage.
+
+[support page]: https://support.dynatrace.com/

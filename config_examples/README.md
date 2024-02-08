@@ -13,8 +13,8 @@ Here you can find a collection of example collector configurations.
 
 ## Sending data to Dynatrace
 
-In addition with the `debug` exporter, some samples are also configured with the `otlphttp` exporter,
-so you can also see it in your Dynatrace environment.
+In addition to the `debug` exporter, some samples are also configured with the `otlphttp` exporter
+so you can also aend and see it in your Dynatrace environment.
 
 Before running the samples, make sure you have the following environment variables set:
 

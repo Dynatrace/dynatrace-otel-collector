@@ -9,23 +9,6 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-type LoadOptions struct {
-	// DataItemsPerSecond specifies how many spans, metric data points, or log
-	// records to generate each second.
-	DataItemsPerSecond int
-
-	// ItemsPerBatch specifies how many spans, metric data points, or log
-	// records per batch to generate. Should be greater than zero. The number
-	// of batches generated per second will be DataItemsPerSecond/ItemsPerBatch.
-	ItemsPerBatch int
-
-	// Attributes to add to each generated data item. Can be empty.
-	Attributes map[string]string
-
-	// Parallel specifies how many goroutines to send from.
-	Parallel int
-}
-
 // sampleConfigsDataProvider in an implementation of the DataProvider
 // for use to e2e test the configuration examples in ./config_examples
 type sampleConfigsDataProvider struct {

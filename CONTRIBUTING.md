@@ -61,7 +61,10 @@ The following commands delete generated files and compiled binaries:
 - `make clean-tools` removes all build tools
 - `make clean-all` removes all generated files and build tools
 
-### Updating collector components
+### Updating Collector components
 
 The file [`manifest.yaml`](./manifest.yaml) describes all components in the collector distribution.
 See https://github.com/open-telemetry/opentelemetry-collector/tree/main/cmd/builder#configuration for details on the format of this file.
+
+When adding a component, an example configuration for the component must be added to `testbed/testdata/config-allcomponents.yaml`
+to test that it works with a basic configuration.

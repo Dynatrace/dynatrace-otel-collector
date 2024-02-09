@@ -30,6 +30,9 @@ You can try each configuration example by simply passing the file to the collect
 ```shell
 docker run --rm \
   --name dt-otelcol \
+  --env DT_OTLP_ENDPOINT=$DT_OTLP_ENDPOINT \
+  --env API_TOKEN=$API_TOKEN \
+  -p 4317:4317 \
   -v $(pwd)/config_examples/tail_sampling.yaml:/collector.yaml \
   ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest \
   --config collector.yaml

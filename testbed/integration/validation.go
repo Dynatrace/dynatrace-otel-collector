@@ -9,8 +9,8 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-// SampleConfigsValidator implements TestCaseValidator.
-// It validates the received traces against the provided expected traces.
+var _ testbed.TestCaseValidator = &SampleConfigsValidator{}
+
 type SampleConfigsValidator struct {
 	expectedTraces ptrace.Traces
 	t              *testing.T
@@ -48,7 +48,7 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 					assert.Contains(t,
 						spansMap,
 						traceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
-						fmt.Sprintf("Span with ID: '%s' not found among expected spans", recdSpan.SpanID()))
+						fmt.Sprintf("Span with ID: %q not found among expected spans", recdSpan.SpanID()))
 				}
 			}
 		}

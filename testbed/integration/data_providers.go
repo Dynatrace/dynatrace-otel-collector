@@ -16,17 +16,14 @@ type sampleConfigsDataProvider struct {
 	dataItemsGenerated *atomic.Uint64
 }
 
-// GenerateLogs implements testbed.DataProvider.
 func (*sampleConfigsDataProvider) GenerateLogs() (plog.Logs, bool) {
 	return plog.NewLogs(), true
 }
 
-// GenerateMetrics implements testbed.DataProvider.
 func (*sampleConfigsDataProvider) GenerateMetrics() (pmetric.Metrics, bool) {
 	return pmetric.NewMetrics(), true
 }
 
-// GenerateTraces implements testbed.DataProvider.
 func (dp *sampleConfigsDataProvider) GenerateTraces() (ptrace.Traces, bool) {
 	// We want to send a fixed number of spans always
 	if int(dp.dataItemsGenerated.Load()) == dp.traces.SpanCount() {
@@ -37,7 +34,6 @@ func (dp *sampleConfigsDataProvider) GenerateTraces() (ptrace.Traces, bool) {
 	return dp.traces, false
 }
 
-// SetLoadGeneratorCounters implements testbed.DataProvider.
 func (dp *sampleConfigsDataProvider) SetLoadGeneratorCounters(dataItemsGenerated *atomic.Uint64) {
 	dp.dataItemsGenerated = dataItemsGenerated
 }

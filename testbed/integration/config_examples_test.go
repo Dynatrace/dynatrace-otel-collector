@@ -26,9 +26,11 @@ func TestConfigTailSampling(t *testing.T) {
 	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
 	// replaces the sampling decision wait so the test doesn't timeout
-	parsedConfig = strings.Replace(parsedConfig, "decision_wait: 30s", "decision_wait: 3s", 1)
+	parsedConfig = strings.Replace(parsedConfig, "decision_wait: 30s", "decision_wait: 10ms", 1)
 
-	col.PrepareConfig(parsedConfig)
+	configCleanup, err := col.PrepareConfig(parsedConfig)
+	require.NoError(t, err)
+	t.Cleanup(configCleanup)
 
 	actualSpansData := ptrace.NewTraces()
 	actualSpans := actualSpansData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
@@ -85,7 +87,7 @@ func TestConfigTailSampling(t *testing.T) {
 		validator,
 		&testbed.CorrectnessResults{},
 	)
-	defer tc.Stop()
+	t.Cleanup(tc.Stop)
 
 	tc.EnableRecording()
 	tc.StartBackend()
@@ -102,8 +104,6 @@ func TestConfigTailSampling(t *testing.T) {
 	tc.WaitForN(func() bool {
 		return tc.MockBackend.DataItemsReceived() == uint64(expectedSpansData.SpanCount())
 	}, 5*time.Second, "all data items received")
-
-	tc.StopAgent()
 
 	// assert
 	tc.ValidateData()

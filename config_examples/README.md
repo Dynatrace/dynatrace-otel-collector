@@ -1,6 +1,6 @@
 # Collector example configurations
 
-Here you can find a collection of example collector configurations.
+Here you can find a collection of example Collector configurations.
 
 ## Samples
 
@@ -14,7 +14,7 @@ Here you can find a collection of example collector configurations.
 ## Sending data to Dynatrace
 
 In addition to the `debug` exporter, some samples are also configured with the `otlphttp` exporter
-so you can also aend and see it in your Dynatrace environment.
+so you can also see the data in your Dynatrace environment.
 
 Before running the samples, make sure you have the following environment variables set:
 
@@ -25,11 +25,21 @@ Before running the samples, make sure you have the following environment variabl
 
 ## Trying out the configuration examples
 
-You can try each configuration example by simply passing it to the collector when starting up:
+You can try each configuration example by simply passing the file to the collector when starting up:
 
 ```shell
 docker run --rm \
+  --name dt-otelcol \
   -v $(pwd)/config_examples/tail_sampling.yaml:/collector.yaml \
-  --name dt-otelcol ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest \
+  ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest \
   --config collector.yaml
+```
+
+Or try it out from the GitHub repo if you don't have it cloned:
+
+```shell
+docker run --rm \
+  --name dt-otelcol \
+ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest \
+  --config https://raw.githubusercontent.com/Dynatrace/dynatrace-otel-collector/main/config_examples/tail_sampling.yaml
 ```

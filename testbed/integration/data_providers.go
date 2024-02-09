@@ -9,8 +9,8 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-// sampleConfigsDataProvider in an implementation of the DataProvider
-// for use to e2e test the configuration examples in ./config_examples
+var _ testbed.DataProvider = &sampleConfigsDataProvider{}
+
 type sampleConfigsDataProvider struct {
 	traces             ptrace.Traces
 	dataItemsGenerated *atomic.Uint64

@@ -43,6 +43,9 @@ Or try it out from the GitHub repo if you don't have it cloned:
 ```shell
 docker run --rm \
   --name dt-otelcol \
-ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest \
+  --env DT_OTLP_ENDPOINT=$DT_OTLP_ENDPOINT \
+  --env API_TOKEN=$API_TOKEN \
+  -p 4317:4317 \
+  ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest \
   --config https://raw.githubusercontent.com/Dynatrace/dynatrace-otel-collector/main/config_examples/tail_sampling.yaml
 ```

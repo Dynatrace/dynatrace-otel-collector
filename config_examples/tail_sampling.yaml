@@ -19,14 +19,19 @@ processors:
       - name: keep-slow-traces
         type: latency
         latency: {threshold_ms: 500}
+    decision_wait: 30s
 
 exporters:
   debug:
     verbosity: detailed
+  otlphttp:
+    endpoint: ${env:DT_OTLP_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [tail_sampling]
-      exporters: [debug]
+      exporters: [otlphttp, debug]

@@ -1,0 +1,165 @@
+receivers:
+  filelog:
+    include: [/dev/null]
+  fluentforward:
+    endpoint: 0.0.0.0:8006
+  hostmetrics:
+    scrapers:
+      cpu:
+  jaeger:
+    protocols:
+      grpc:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-collector'
+          scrape_interval: 5s
+          static_configs:
+            - targets: ['0.0.0.0:8888']
+        - job_name: k8s
+          kubernetes_sd_configs:
+          - role: pod
+          relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            regex: "true"
+            action: keep
+          metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: "(request_duration_seconds.*|response_duration_seconds.*)"
+            action: keep
+  syslog:
+    tcp:
+      listen_address: "0.0.0.0:54526"
+    protocol: rfc5424
+  httpcheck:
+    targets:
+      - endpoint: http://endpoint:80
+        method: GET
+      - endpoint: http://localhost:8080/health
+        method: GET
+      - endpoint: http://localhost:8081/health
+        method: POST
+        headers:
+          test-header: "test-value"
+    collection_interval: 10s
+  otlp:
+    protocols:
+      grpc:
+        endpoint: localhost:4317
+      http:
+        endpoint: localhost:4318
+
+processors:
+  attributes:
+    actions:
+      - key: db.table
+        action: delete
+      - key: redacted_span
+        value: true
+        action: upsert
+      - key: copy_key
+        from_attribute: key_original
+        action: update
+      - key: account_id
+        value: 2245
+        action: insert
+      - key: account_password
+        action: delete
+      - key: account_email
+        action: hash
+      - key: http.status_code
+        action: convert
+        converted_type: int
+  batch:
+  cumulativetodelta:
+  filter:
+    error_mode: ignore
+    traces:
+      span:
+        - 'attributes["container.name"] == "app_container_1"'
+        - 'resource.attributes["host.name"] == "localhost"'
+        - 'name == "app_3"'
+      spanevent:
+        - 'attributes["grpc"] == true'
+        - 'IsMatch(name, ".*grpc.*")'
+    metrics:
+      metric:
+          - 'name == "my.metric" and resource.attributes["my_label"] == "abc123"'
+          - 'type == METRIC_DATA_TYPE_HISTOGRAM'
+      datapoint:
+          - 'metric.type == METRIC_DATA_TYPE_SUMMARY'
+          - 'resource.attributes["service.name"] == "my_service_name"'
+    logs:
+      log_record:
+        - 'IsMatch(body, ".*password.*")'
+        - 'severity_number < SEVERITY_NUMBER_WARN'
+  k8sattributes:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 4000
+    spike_limit_mib: 800
+  probabilistic_sampler:
+  resourcedetection:
+    detectors: [env]
+    timeout: 2s
+    override: false
+  resource:
+    attributes:
+    - key: cloud.availability_zone
+      value: "zone-1"
+      action: upsert
+    - key: k8s.cluster.name
+      from_attribute: k8s-cluster
+      action: insert
+    - key: redundant-attribute
+      action: delete
+  tail_sampling:
+    policies:
+      - name: keep-errors
+        type: status_code
+        status_code: {status_codes: [ERROR, UNSET]}
+      - name: keep-slow-traces
+        type: latency
+        latency: {threshold_ms: 500}
+  transform:
+    error_mode: ignore
+    trace_statements:
+    - context: span
+      statements:
+      - set(attributes["dt.test"], "otel-collector")
+
+exporters:
+  debug:
+    verbosity: detailed
+  otlp:
+    endpoint: https://localhost:4312
+  otlphttp:
+    endpoint: https://localhost:7821
+
+connectors:
+  forward:
+  spanmetrics:
+
+extensions:
+  zpages:
+  health_check:
+    endpoint: "localhost:13000"
+    tls:
+      ca_file: "/path/to/ca.crt"
+      cert_file: "/path/to/cert.crt"
+      key_file: "/path/to/key.key"
+    path: "/health/status"
+    check_collector_pipeline:
+      enabled: true
+      interval: "5m"
+      exporter_failure_threshold: 5
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      exporters: [debug]
+  telemetry:
+    metrics:
+      level: normal
+      address: localhost:9090

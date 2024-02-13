@@ -5,7 +5,7 @@ Here you can find a collection of example Collector configurations.
 ## Samples
 
 - [Drop](drop.yaml)
-- [Effective](effective.yaml.yaml)
+- [Effective](effective.yaml)
 - [Health check](healthcheck.yaml)
 - [Jaeger Receiver](jaeger.yaml)
 - [Pipeline](pipeline.yaml)

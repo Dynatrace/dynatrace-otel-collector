@@ -6,17 +6,14 @@ defaults:
     shell: bash
 
 jobs:
-  docker:
-    runs-on: ubuntu-latest
+  run-e2e-test:
+    name: Run E2E Tests
+    runs-on: ubuntu-22.04
     services:
       registry:
         image: registry:2
         ports:
           - 5000:5000
-
-  run-e2e-test:
-    name: Run E2E Tests
-    runs-on: ubuntu-22.04
     steps:
       - name: Check out code
         uses: actions/checkout@v4

@@ -34,7 +34,7 @@ runs:
         helm repo update
 
         cd .github/actions/deploy-collector
-        helm upgrade -i --wait collector open-telemetry/opentelemetry-collector \
+        helm upgrade -i --wait dynatrace open-telemetry/opentelemetry-collector \
           -f values.yaml \
           -n otel-collector \
           --timeout 5m

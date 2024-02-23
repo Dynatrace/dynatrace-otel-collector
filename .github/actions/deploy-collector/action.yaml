@@ -47,11 +47,11 @@ runs:
         DT_API_TOKEN: "${{ inputs.DT_API_TOKEN }}"
       shell: bash
       run: |
-        echo "Installing Keptn using helm"
+        echo "Installing Dynatrace Collector using helm"
         helm version
 
         kubectl create namespace otel-collector
-        kubectl -n otel-collector create secret generic dynatrace-otelcol-dt-api-credentials --from-literal=DT_API_ENDPOINT=$DT_API_TOKEN" --from-literal=DT_API_TOKEN=$DT_API_TOKEN
+        kubectl -n otel-collector create secret generic dynatrace-otelcol-dt-api-credentials --from-literal=DT_API_ENDPOINT=$DT_API_TOKEN --from-literal=DT_API_TOKEN=$DT_API_TOKEN
 
         helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
         helm repo update

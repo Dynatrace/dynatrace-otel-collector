@@ -49,6 +49,7 @@ jobs:
           context: ./bin
           file: Dockerfile
           push: false
+          load: true
           tags: localhost:5000/collector:e2e-test
 
       - name: Install Chainsaw

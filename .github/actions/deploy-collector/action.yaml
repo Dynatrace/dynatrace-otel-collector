@@ -61,3 +61,6 @@ runs:
           -f values.yaml \
           -n otel-collector \
           --timeout 1m
+
+        # show the collector logs
+        kubectl -n otel-collector logs -l app.kubernetes.io/name=opentelemetry-collector

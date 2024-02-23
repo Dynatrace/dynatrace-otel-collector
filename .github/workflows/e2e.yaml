@@ -20,11 +20,11 @@ jobs:
           k8s-version: "v1.27.3"
           runtime_tag: "latest"
           cluster-name: "test-cluster"
-          
+
       - name: Setup Prometheus Node Exporter
         uses: ./.github/actions/deploy-prometheus
 
-      - name: Setup cluster
+      - name: Deploy Collector
         uses: ./.github/actions/deploy-collector
         with:
           collector-version: "latest"

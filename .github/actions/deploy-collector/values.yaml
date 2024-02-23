@@ -19,33 +19,38 @@ resources:
   limits:
     memory: 512Mi
 config:
-    receivers:
-      prometheus:
-        config:
-          scrape_configs:
-          - job_name: 'node-exporter'
-            scrape_interval: 60s
-            static_configs:
-            - targets: ['prometheus-node-exporter.prometheus-node-exporter:9100']
-          - job_name: opentelemetry-collector
-            scrape_interval: 60s
-            static_configs:
-            - targets:
-                - 127.0.0.1:8888
+  receivers:
+    jaeger: null
+    zipkin: null  
+    prometheus:
+      config:
+        scrape_configs:
+        - job_name: 'node-exporter'
+          scrape_interval: 60s
+          static_configs:
+          - targets: ['prometheus-node-exporter.prometheus-node-exporter:9100']
+        - job_name: opentelemetry-collector
+          scrape_interval: 60s
+          static_configs:
+          - targets:
+              - 127.0.0.1:8888
 
-    processors:
-      cumulativetodelta:
+  processors:
+    cumulativetodelta:
 
-    exporters:
-      otlphttp:
-        endpoint: "$DT_API_ENDPOINT"
-        headers:
-          Authorization: "Api-Token $DT_API_TOKEN"
+  exporters:
+    logging: null
+    otlphttp:
+      endpoint: "$DT_API_ENDPOINT"
+      headers:
+        Authorization: "Api-Token $DT_API_TOKEN"
 
-    service:
-      pipelines:
-        metrics:
-          receivers: [prometheus]
-          processors: [cumulativetodelta]
-          exporters: [otlphttp]
+  service:
+    pipelines:
+      logs: null
+      traces: null
+      metrics:
+        receivers: [prometheus]
+        processors: [cumulativetodelta]
+        exporters: [otlphttp]
 

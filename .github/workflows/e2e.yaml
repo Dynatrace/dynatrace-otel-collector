@@ -1,0 +1,21 @@
+name: E2E-Test
+on:
+  workflow_dispatch:
+    
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  run-e2e-test:
+    name: Run E2E Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup cluster
+        uses: ./.github/actions/deploy-collector
+
+      - name: Setup Prometheus Node Exporter
+        uses: ./.github/actions/deploy-prometheus

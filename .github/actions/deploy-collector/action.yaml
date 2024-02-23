@@ -1,0 +1,57 @@
+name: "Deploy Collector on GH cluster"
+description: "Creates a Kind cluster and deploys Dynatrace Collector"
+inputs:
+  kind-version:
+    required: false
+    description: "Version of kind that should be used"
+    # renovate: datasource=github-releases depName=kubernetes-sigs/kind
+    default: "v0.18.0"
+  k8s-version:
+    required: false
+    description: "Kubernetes version that should be used"
+    # renovate: datasource=github-releases depName=kubernetes/kubernetes
+    default: "v1.27.3"
+  runtime_tag:
+    description: "Tag for the runner image"
+    required: true
+  cluster-name:
+    required: false
+    description: "Name of the kind cluster"
+    default: "test-cluster"
+  collector-version:
+    required: true
+    description: "Dynatrace Collector version which should be used"
+    # renovate: datasource=github-releases depName=kubernetes/kubernetes
+    default: "latest"    
+runs:
+  using: "composite"
+  steps:
+
+    - name: "Create single kind Cluster"
+      uses: helm/kind-action@v1.9.0
+      with:
+        cluster_name: ${{ inputs.cluster-name }}
+        version: ${{ inputs.kind-version }}
+        node_image: "kindest/node:${{ inputs.k8s-version }}"
+        kubectl_version: ${{ inputs.k8s-version }}
+
+    - name: Install Dynatrace Collector with helm
+      env:
+        DT_API_ENDPOINT: ${{ secrets.DT_API_ENDPOINT }}
+        DT_API_TOKEN: ${{ secrets.DT_API_TOKEN }}
+      shell: bash
+      run: |
+        echo "Installing Keptn using helm"
+        helm version
+
+        kubectl create namespace otel-collector
+        kubectl -n otel-collector create secret generic dynatrace-otelcol-dt-api-credentials --from-literal=DT_API_ENDPOINT=$DT_API_TOKEN" --from-literal=DT_API_TOKEN=$DT_API_TOKEN
+
+        helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+        helm repo update
+
+        cd .github/actions/deploy-collector
+        helm upgrade -i --wait collector open-telemetry/opentelemetry-collector \
+          -f values.yaml \
+          -n otel-collector \
+          --timeout 1m

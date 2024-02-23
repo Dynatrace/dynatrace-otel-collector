@@ -1,6 +1,6 @@
 mode: deployment
 image:
-  repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
+  repository: localhost:5000/collector
   tag: latest
 command:
   name: dynatrace-otel-collector

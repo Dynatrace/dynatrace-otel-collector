@@ -15,6 +15,10 @@ jobs:
 
       - name: Setup cluster
         uses: ./.github/actions/deploy-collector
+        with:
+          collector-version: "latest"
+          DT_API_ENDPOINT: ${{ secrets.DT_API_ENDPOINT }}
+          DT_API_TOKEN: ${{ secrets.DT_API_TOKEN }}
 
       - name: Setup Prometheus Node Exporter
         uses: ./.github/actions/deploy-prometheus

@@ -12,4 +12,4 @@ runs:
         helm install prometheus-node-exporter prometheus-community/prometheus-node-exporter --namespace prometheus-node-exporter
         
         # Wait until the node exporter is up and running
-        kubectl wait --for=condition=available --timeout=600s deployment/prometheus-node-exporter
+        kubectl rollout --timeout 120s status daemonset/prometheus-node-exporter -n prometheus-node-exporter

@@ -1,6 +1,5 @@
 name: E2E-Test
-on:
-  workflow_dispatch:
+on: workflow_dispatch
     
 defaults:
   run:

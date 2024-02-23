@@ -15,9 +15,13 @@ func replaceOtlpGrpcReceiverPort(cfg string, receiverPort int) string {
 	return strings.Replace(cfg, "4317", strconv.Itoa(receiverPort), 1)
 }
 
+func replaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "14250", strconv.Itoa(receiverPort), 1)
+}
+
 func replaceDynatraceExporterEndpoint(cfg string, exporterPort int) string {
 	r := strings.NewReplacer(
-		"${env:DT_OTLP_ENDPOINT}", fmt.Sprintf("http://0.0.0.0:%v", exporterPort),
+		"${env:DT_ENDPOINT}", fmt.Sprintf("http://0.0.0.0:%v", exporterPort),
 		"${env:API_TOKEN}", "",
 	)
 	return r.Replace(cfg)

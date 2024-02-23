@@ -13,6 +13,14 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Create Kind Cluster
+        uses: ./.github/actions/create-cluster
+        with:
+          kind-version: "v0.18.0"
+          k8s-version: "v1.27.3"
+          runtime_tag: "latest"
+          cluster-name: "test-cluster"
+          
       - name: Setup Prometheus Node Exporter
         uses: ./.github/actions/deploy-prometheus
 

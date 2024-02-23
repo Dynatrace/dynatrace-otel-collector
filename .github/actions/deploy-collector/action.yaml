@@ -1,23 +1,9 @@
 name: "Deploy Collector on GH cluster"
 description: "Creates a Kind cluster and deploys Dynatrace Collector"
 inputs:
-  kind-version:
-    required: false
-    description: "Version of kind that should be used"
-    # renovate: datasource=github-releases depName=kubernetes-sigs/kind
-    default: "v0.18.0"
-  k8s-version:
-    required: false
-    description: "Kubernetes version that should be used"
-    # renovate: datasource=github-releases depName=kubernetes/kubernetes
-    default: "v1.27.3"
   runtime_tag:
     description: "Tag for the runner image"
     required: true
-  cluster-name:
-    required: false
-    description: "Name of the kind cluster"
-    default: "test-cluster"
   collector-version:
     required: true
     description: "Dynatrace Collector version which should be used"

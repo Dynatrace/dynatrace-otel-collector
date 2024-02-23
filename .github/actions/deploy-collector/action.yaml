@@ -60,7 +60,7 @@ runs:
         helm upgrade -i --wait collector open-telemetry/opentelemetry-collector \
           -f values.yaml \
           -n otel-collector \
-          --timeout 1m
+          --timeout 5m
 
         # show the collector logs
         kubectl -n otel-collector logs -l app.kubernetes.io/name=opentelemetry-collector

@@ -1,17 +1,17 @@
-exporters:
-  otlphttp:
-    endpoint: https://${env:HOST}/api/v2/otlp
-    headers:
-      Authorization: Api-Token ${env:API_TOKEN}
-
 receivers:
   jaeger:
     protocols:
-      thrift_http:
+      grpc:
+        endpoint: 0.0.0.0:14250
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
 
 service:
   pipelines:
     traces:
       receivers: [jaeger]
-      processors: []
       exporters: [otlphttp]

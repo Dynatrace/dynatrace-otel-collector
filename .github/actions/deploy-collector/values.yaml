@@ -18,6 +18,19 @@ extraEnvs:
 resources:
   limits:
     memory: 512Mi
+ports:
+  syslog-tcp:
+    enabled: true
+    containerPort: 54526
+    servicePort: 54526
+    hostPort: 54526
+    protocol: TCP
+  syslog-udp:
+    enabled: true
+    containerPort: 54527
+    servicePort: 54527
+    hostPort: 54527
+    protocol: UDP    
 config:
   receivers:
     jaeger: null
@@ -34,6 +47,28 @@ config:
           static_configs:
           - targets:
               - 127.0.0.1:8888
+    syslog/tcp:
+      tcp:
+        listen_address: "0.0.0.0:54526"
+      protocol: rfc5424
+      operators:
+        - type: add
+          field: attributes.log.source
+          value: syslog
+        - type: add
+          field: attributes.device.type
+          value: "github-tcp-rfc5424"
+    syslog/udp:
+      udp:
+        listen_address: "0.0.0.0:54527"
+      protocol: rfc5424
+      operators:
+        - type: add
+          field: attributes.log.source
+          value: syslog
+        - type: add
+          field: attributes.device.type
+          value: "github-udp-rfc5424"
 
   processors:
     cumulativetodelta:
@@ -47,7 +82,9 @@ config:
 
   service:
     pipelines:
-      logs: null
+      logs:
+        receivers: [syslog/tcp, syslog/udp]
+        exporters: [otlphttp]
       traces: null
       metrics:
         receivers: [prometheus]

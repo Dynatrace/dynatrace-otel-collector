@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: syslog-receiver-test
+spec:
+  steps:
+    - name: step-00
+      try:
+        - assert:
+            file: 00-assert.yaml  
+    - name: step-01
+      try:
+        - script:
+            content: |
+              # Send a test syslog message to the collector
+              kubectl port-forward -n otel-collector svc/dynatrace-opentelemetry-collector 54526:54526 > /dev/null 2>&1 &
+              port_forward_syslog_54526_pid=$!
+              trap 'kill $port_forward_syslog_54526_pid' EXIT
+              # Wait till kubectl port-forward is ready
+              sleep 10
+              echo "<14>Test TCP syslog message from GitHub Test" | nc -v -w 0 127.0.0.1 54526
+              # Wait for the message to be processed in Dynatrace - approx 90 seconds
+            timeout: 40s
+            check:
+              # Basic check to see if the metrics are available
+              ($error == null): true

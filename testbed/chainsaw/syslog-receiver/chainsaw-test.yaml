@@ -21,6 +21,7 @@ spec:
               sleep 10
               echo "<14>Test TCP syslog message from GitHub Test" | nc -v -w 0 127.0.0.1 54526
               # Wait for the message to be processed in Dynatrace - approx 90 seconds
+              sleep 20
             timeout: 40s
             check:
               # Basic check to see if the metrics are available

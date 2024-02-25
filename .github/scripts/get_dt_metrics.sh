@@ -33,7 +33,7 @@ do
     # Check if METRICS is empty
     if [ -z "$METRICS" ]; then
         echo "No metrics found with given selector: $1"
-        sleep 10
+        sleep 30
     else
         echo "Metrics found with given selector: $1"
         echo "$METRICS"

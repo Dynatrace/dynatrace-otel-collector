@@ -17,7 +17,7 @@ spec:
               sleep 30
               echo "Checking if metrics are available..."
               bash ../../../.github/scripts/get_dt_metrics.sh "(node_dmi_info:filter(and(or(eq(\"otel.scope.name\",\"otelcol/prometheusreceiver\")),or(eq(product_name,kind)))):splitBy(product_name):sort(value(auto,descending)):limit(20)):limit(100):names"
-            timeout: 300s
+            timeout: 600s
             check:
               # Basic check to see if the metrics are available
               ($error == null): true

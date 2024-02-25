@@ -37,3 +37,5 @@ do
         exit 0
     fi
 done
+
+exit 1

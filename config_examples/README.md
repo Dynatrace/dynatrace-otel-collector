@@ -6,6 +6,7 @@ Here you can find a collection of example Collector configurations.
 
 - [Jaeger Receiver](jaeger.yaml)
 - [Tail sampling](tail_sampling.yaml)
+- [Splitting `sum`/`count` from Histogram metrics](split_histogram.yaml)
 
 ## Sending data to Dynatrace
 

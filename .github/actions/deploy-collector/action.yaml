@@ -23,4 +23,6 @@ runs:
         DT_API_ENDPOINT: "${{ inputs.DT_API_ENDPOINT }}"
         DT_API_TOKEN: "${{ inputs.DT_API_TOKEN }}"
       shell: bash
-      run: ../../testbed/scripts/install_dt_collector_helm.sh
+      working-directory: testbed/scripts
+      run: ./install_dt_collector_helm.sh
+

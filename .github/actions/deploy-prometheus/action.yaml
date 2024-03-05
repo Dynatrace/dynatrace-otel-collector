@@ -5,4 +5,6 @@ runs:
   steps:
     - name: Install Prometheus Node exporter
       shell: bash
-      run: ../../testbed/script/install_prometheus_node_exporter.sh
+      working-directory: testbed/scripts
+      run: ./install_prometheus_node_exporter.sh
+

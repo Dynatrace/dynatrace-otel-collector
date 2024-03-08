@@ -78,9 +78,9 @@ This distribution depends on components provided upstream by the OpenTelemetry c
 If the OpenTelemetry community decides to make a breaking change, it will be pulled into this distribution
 as we upgrade to newer versions of these upstream components.
 For the complete list of changes, please refer to the changelogs provided in the [opentelemetry-collector releases] and [opentelemetry-collector-contrib releases] pages.
-Further information on the stability guarantees provided upstream can be found in the definitions for the [OpenTelemetry collector stability levels]. 
+Further information on the stability guarantees provided upstream can be found in the definitions for the [OpenTelemetry Collector stability levels]. 
 
 [support page]: https://support.dynatrace.com/
 [opentelemetry-collector releases]: https://github.com/open-telemetry/opentelemetry-collector/releases
 [opentelemetry-collector-contrib releases]: https://github.com/open-telemetry/opentelemetry-collector-contrib/releases
-[OpenTelemetry collector stability levels]: https://github.com/open-telemetry/opentelemetry-collector#stability-levels
+[OpenTelemetry Collector stability levels]: https://github.com/open-telemetry/opentelemetry-collector#stability-levels

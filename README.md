@@ -15,7 +15,7 @@ components that have been verified to work well for common Dynatrace use cases.
 
 For deployment instructions, please see [Dynatrace's documentation].
 
-For configuration examples, please see [`config_examples`]
+For configuration examples, please see [`config_examples`].
 
 [Dynatrace's documentation]: https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/deployment
 [`config_examples`]: ./config_examples/README.md

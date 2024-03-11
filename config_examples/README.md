@@ -2,6 +2,10 @@
 
 Here you can find a collection of example Collector configurations.
 
+> [!WARNING]
+> The examples in this directory are for documentation purposes only and are not considered stable. Examples
+> may change at any time and without notice.
+
 ## Samples
 
 - [Jaeger Receiver](jaeger.yaml)

@@ -3,7 +3,7 @@ dist:
   name: dynatrace-otel-collector
   description: Dynatrace OpenTelemetry Collector Distribution
   output_path: ./build
-  version: 0.1.0-pre
+  version: 0.2.0-pre
 
 receivers:
   - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.96.0

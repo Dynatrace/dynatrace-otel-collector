@@ -1,6 +1,7 @@
 # Collector example configurations
 
-Here you can find a collection of example Collector configurations.
+Here you can find a collection of example configurations that can be used with the
+Dynatrace OpenTelemetry Collector Distribution.
 
 > [!WARNING]
 > The examples in this directory are for documentation purposes only and are not considered stable. Examples

@@ -35,7 +35,6 @@ and the Collector's [troubleshooting guide].
 * [filelogreceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver)
 * [fluentforwardreceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/fluentforwardreceiver)
 * [hostmetricsreceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/hostmetricsreceiver)
-* [httpcheckreceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/httpcheckreceiver)
 * [jaegereceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/jaegerreceiver)
 * [otlpreceiver](https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver/otlpreceiver)
 * [prometheusreceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/prometheusreceiver)
@@ -78,4 +77,13 @@ the Dynatrace Support team, as described on the Dynatrace [support page]. For
 issues reported via GitHub, support contracts and SLAs do not apply. Please
 reach out via our official support channels for full coverage.
 
+This distribution depends on components provided upstream by the OpenTelemetry community.
+If the OpenTelemetry community decides to make a breaking change, it will be pulled into this distribution
+as we upgrade to newer versions of these upstream components.
+For the complete list of changes, please refer to the changelogs provided in the [opentelemetry-collector releases] and [opentelemetry-collector-contrib releases] pages.
+Further information on the stability guarantees provided upstream can be found in the definitions for the [OpenTelemetry Collector stability levels]. 
+
 [support page]: https://support.dynatrace.com/
+[opentelemetry-collector releases]: https://github.com/open-telemetry/opentelemetry-collector/releases
+[opentelemetry-collector-contrib releases]: https://github.com/open-telemetry/opentelemetry-collector-contrib/releases
+[OpenTelemetry Collector stability levels]: https://github.com/open-telemetry/opentelemetry-collector#stability-levels

@@ -1,0 +1,28 @@
+name: "Deploy Collector on GH cluster"
+description: "Creates a Kind cluster and deploys Dynatrace Collector"
+inputs:
+  runtime_tag:
+    description: "Tag for the runner image"
+    required: true
+  collector-version:
+    required: true
+    description: "Dynatrace Collector version which should be used"
+    # renovate: datasource=github-releases depName=kubernetes/kubernetes
+    default: "latest"    
+  DT_API_ENDPOINT:
+    required: true
+    description: "Dynatrace API endpoint"
+  DT_API_TOKEN:
+    required: true
+    description: "Dynatrace API token"
+runs:
+  using: "composite"
+  steps:
+    - name: Install Dynatrace Collector with helm
+      env:
+        DT_API_ENDPOINT: "${{ inputs.DT_API_ENDPOINT }}"
+        DT_API_TOKEN: "${{ inputs.DT_API_TOKEN }}"
+      shell: bash
+      working-directory: testbed/scripts
+      run: ./install_dt_collector_helm.sh
+

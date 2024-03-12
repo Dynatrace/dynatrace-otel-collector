@@ -1,0 +1,89 @@
+name: E2E-Test
+on: workflow_dispatch
+    
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  run-e2e-test:
+    name: Run E2E Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "~1.21.3"
+          check-latest: true
+          cache-dependency-path: internal/tools/go.sum
+      
+      - name: Cache tools
+        uses: actions/cache@v4
+        with:
+          path: .tools
+          key: ci-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+
+      - name: Touch tools
+        run: |
+          mkdir -p .tools
+          touch .tools/*
+
+      - name: Build collector artifact
+        shell: bash
+        run: |
+          echo "Building collector artifact"
+          make build
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+      - name: Build and push to local registry
+        uses: docker/build-push-action@v5
+        with:
+          context: ./bin
+          file: Dockerfile
+          push: false
+          load: true
+          tags: localhost:5000/collector:e2e-test
+
+      - name: Install Chainsaw
+        uses: kyverno/action-install-chainsaw@v0.1.6
+
+      - name: Create Kind Cluster
+        uses: ./.github/actions/create-cluster
+        with:
+          kind-version: "v0.18.0"
+          k8s-version: "v1.27.3"
+          runtime_tag: "latest"
+          cluster-name: "test-cluster"
+      
+      - name: Load Image into Kind
+        shell: bash
+        run: |
+          echo "Loading image into Kind"
+          kind load docker-image localhost:5000/collector:e2e-test --name test-cluster
+
+      - name: Setup Prometheus Node Exporter
+        uses: ./.github/actions/deploy-prometheus
+
+      - name: Deploy Collector
+        uses: ./.github/actions/deploy-collector
+        with:
+          collector-version: "latest"
+          DT_API_ENDPOINT: ${{ secrets.DT_API_ENDPOINT }}
+          DT_API_TOKEN: ${{ secrets.DT_API_TOKEN }}
+
+      - name: Run E2E Tests
+        env:
+          DT_API_ENDPOINT: ${{ secrets.DT_API_ENDPOINT }}
+          DT_API_TOKEN: ${{ secrets.DT_API_TOKEN }}
+        run: |
+          echo "Running E2E Tests"
+          chainsaw version
+          chainsaw test --test-dir ./testbed/chainsaw/ --config ./.chainsaw.yaml

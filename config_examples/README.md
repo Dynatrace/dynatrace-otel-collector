@@ -11,6 +11,7 @@ Dynatrace OpenTelemetry Collector Distribution.
 
 - [Jaeger Receiver](jaeger.yaml)
 - [Tail sampling](tail_sampling.yaml)
+- [Splitting `sum`/`count` from Histogram metrics](split_histogram.yaml)
 
 ## Sending data to Dynatrace
 

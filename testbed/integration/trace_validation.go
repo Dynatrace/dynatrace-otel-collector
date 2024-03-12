@@ -16,7 +16,7 @@ type SampleConfigsValidator struct {
 	t              *testing.T
 }
 
-func NewSampleConfigsValidator(t *testing.T, expectedTraces ptrace.Traces) *SampleConfigsValidator {
+func NewTraceSampleConfigsValidator(t *testing.T, expectedTraces ptrace.Traces) *SampleConfigsValidator {
 	return &SampleConfigsValidator{
 		expectedTraces: expectedTraces,
 		t:              t,

@@ -1,0 +1,40 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  transform/histogram:
+    metric_statements:
+      - context: metric
+        statements:
+          # Get count from the histogram. The new metric name will be <histogram_name>_count
+          - extract_count_metric(true) where type == METRIC_DATA_TYPE_HISTOGRAM
+          # Get sum from the histogram. The new metric name will be <histogram_name>_sum
+          - extract_sum_metric(true) where type == METRIC_DATA_TYPE_HISTOGRAM
+      - context: datapoint
+        statements:
+          # convert the <histogram_name>_sum metrics to gauges.
+          - convert_sum_to_gauge() where IsMatch(metric.name, ".*_sum")
+
+  filter/histogram:
+    metrics:
+      metric:
+        # Drop metrics of type histogram. The _count and _sum metrics will still be exported.
+        - type == METRIC_DATA_TYPE_HISTOGRAM
+
+exporters:
+  debug:
+    verbosity: detailed
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+service:
+  pipelines:
+    metrics/otlp:
+      receivers: [otlp]
+      processors: [transform/histogram, filter/histogram]
+      exporters: [otlphttp, debug]

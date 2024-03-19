@@ -1,6 +1,6 @@
 # Dynatrace distribution of the OpenTelemetry Collector
 
-The Dynatrace distribution of the [OpenTelemetry Collector]  allows collecting observability data from a
+The Dynatrace distribution of the [OpenTelemetry Collector] allows collecting observability data from a
 variety of sources for sending to Dynatrace. It includes a set of Collector
 components that have been verified to work well for common Dynatrace use cases.
 

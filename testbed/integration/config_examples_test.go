@@ -256,7 +256,7 @@ func TestConfigHistogramTransform(t *testing.T) {
 	// Split Histogram
 	splitCountMetric := expectedMetrics.AppendEmpty()
 	splitCountMetric.SetName("my.histogram_count")
-	splitCountMetric.SetUnit("custom_unit")
+	splitCountMetric.SetUnit("1")
 	splitCountMetric.SetDescription("My custom histogram")
 	splitCountMetric.SetEmptySum()
 	splitCountMetric.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityDelta)

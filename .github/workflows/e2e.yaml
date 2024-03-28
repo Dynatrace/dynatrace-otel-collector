@@ -53,7 +53,7 @@ jobs:
           tags: localhost:5000/collector:e2e-test
 
       - name: Install Chainsaw
-        uses: kyverno/action-install-chainsaw@v0.1.6
+        uses: kyverno/action-install-chainsaw@v0.1.9
 
       - name: Create Kind Cluster
         uses: ./.github/actions/create-cluster

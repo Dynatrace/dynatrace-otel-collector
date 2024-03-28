@@ -1,6 +1,6 @@
 # Release process
 
-This document describes the steps to release a new version of the OpenTelemetry Collector for Dynatrace.
+This document describes the steps to release a new version of the Dynatrace distribution of the OpenTelemetry Collector.
 
 ## Collector release prerequisites
 

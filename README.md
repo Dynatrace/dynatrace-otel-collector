@@ -71,16 +71,18 @@ and the Collector's [troubleshooting guide].
 
 ## Support
 
-After the distribution is declared Generally Available, it will be supported by
-the Dynatrace Support team, as described on the Dynatrace [support page]. For
-issues reported via GitHub, support contracts and SLAs do not apply. Please
-reach out via our official support channels for full coverage.
+This distribution is supported by the Dynatrace Support team, as described on the Dynatrace [support page].
+For issues reported via GitHub, support contracts and SLAs do not apply.
+Please reach out via our official support channels for full coverage.
+Each minor version is supported for three months.
+Fixes are provided either as a patch release for the most recent minor version, or in a new minor version release.
 
 This distribution depends on components provided upstream by the OpenTelemetry community.
+We plan to release a new version of the distribution with updated upstream components at least on a monthly cadence.
 If the OpenTelemetry community decides to make a breaking change, it will be pulled into this distribution
 as we upgrade to newer versions of these upstream components.
 For the complete list of changes, please refer to the changelogs provided in the [opentelemetry-collector releases] and [opentelemetry-collector-contrib releases] pages.
-Further information on the stability guarantees provided upstream can be found in the definitions for the [OpenTelemetry Collector stability levels]. 
+Further information on the stability guarantees provided upstream can be found in the definitions for the [OpenTelemetry Collector stability levels].
 
 [support page]: https://support.dynatrace.com/
 [opentelemetry-collector releases]: https://github.com/open-telemetry/opentelemetry-collector/releases

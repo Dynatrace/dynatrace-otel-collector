@@ -74,6 +74,7 @@ and the Collector's [troubleshooting guide].
 This distribution is supported by the Dynatrace Support team, as described on the Dynatrace [support page].
 For issues reported via GitHub, support contracts and SLAs do not apply.
 Please reach out via our official support channels for full coverage.
+
 Each minor version is supported for three months.
 Fixes are provided either as a patch release for the most recent minor version, or in a new minor version release.
 

@@ -41,28 +41,28 @@ func TestCollectorStarts(t *testing.T) {
 				require.NoError(t, err)
 
 				for _, c := range components.Receivers {
-					_, ok := testdataComponents.Receivers[string(c.Name)]
-					require.True(t, ok, "config-allcomponents.yaml is missing receiver "+c.Name)
+					_, ok := testdataComponents.Receivers[c.Name.String()]
+					require.True(t, ok, "config-allcomponents.yaml is missing receiver "+c.Name.String())
 				}
 
 				for _, c := range components.Processors {
-					_, ok := testdataComponents.Processors[string(c.Name)]
-					require.True(t, ok, "config-allcomponents.yaml is missing processor "+c.Name)
+					_, ok := testdataComponents.Processors[c.Name.String()]
+					require.True(t, ok, "config-allcomponents.yaml is missing processor "+c.Name.String())
 				}
 
 				for _, c := range components.Exporters {
-					_, ok := testdataComponents.Exporters[string(c.Name)]
-					require.True(t, ok, "config-allcomponents.yaml is missing exporter "+c.Name)
+					_, ok := testdataComponents.Exporters[c.Name.String()]
+					require.True(t, ok, "config-allcomponents.yaml is missing exporter "+c.Name.String())
 				}
 
 				for _, c := range components.Connectors {
-					_, ok := testdataComponents.Connectors[string(c.Name)]
-					require.True(t, ok, "config-allcomponents.yaml is missing connector "+c.Name)
+					_, ok := testdataComponents.Connectors[c.Name.String()]
+					require.True(t, ok, "config-allcomponents.yaml is missing connector "+c.Name.String())
 				}
 
 				for _, c := range components.Extensions {
-					_, ok := testdataComponents.Extensions[string(c.Name)]
-					require.True(t, ok, "config-allcomponents.yaml is missing extension "+c.Name)
+					_, ok := testdataComponents.Extensions[c.Name.String()]
+					require.True(t, ok, "config-allcomponents.yaml is missing extension "+c.Name.String())
 				}
 			},
 		},

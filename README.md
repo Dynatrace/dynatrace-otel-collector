@@ -6,10 +6,6 @@ components that have been verified to work well for common Dynatrace use cases.
 
 [OpenTelemetry Collector]: https://github.com/open-telemetry/opentelemetry-collector
 
-> [!WARNING]
-> The Dynatrace distribution of the OpenTelemetry Collector is currently considered
-> pre-release.
-
 ## Installation
 
 For deployment instructions, please see [Dynatrace's documentation].

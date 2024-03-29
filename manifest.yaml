@@ -42,3 +42,4 @@ connectors:
 
 replaces:
   - go.opentelemetry.io/collector/component => 	go.opentelemetry.io/collector/component v0.97.1-0.20240327230408-4b5d68ed282c
+  - go.opentelemetry.io/collector/otelcol => 	go.opentelemetry.io/collector/otelcol v0.97.1-0.20240327230408-4b5d68ed282c

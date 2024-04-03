@@ -13,7 +13,7 @@ processors:
       statements:
       # Extract sum and count metrics from the service. We can use these metrics
       # to get the average request duration by using a metric query like so:
-      # requests.duration_sum:splitBy("service.name")/requests.duration_count:splitBy("service.name")
+      # requests.duration_sum.count:splitBy("service.name")/requests.duration_count:splitBy("service.name")
       # Note that the resulting values in the above query will be unitless.
       - extract_count_metric(false) where type == METRIC_DATA_TYPE_HISTOGRAM
       - extract_sum_metric(false) where type == METRIC_DATA_TYPE_HISTOGRAM
@@ -24,11 +24,6 @@ processors:
       - type == METRIC_DATA_TYPE_HISTOGRAM
   transform/spanmetrics:
     metric_statements:
-    - context: datapoint
-      statements:
-      # Not required, but simplifies queries in Dynatrace by removing the requirement for a `.count`
-      # suffix on the metric name in the query.
-      - convert_sum_to_gauge() where IsMatch(metric.name, "^requests.*_sum") and metric.type == METRIC_DATA_TYPE_SUM
     - context: metric
       statements:
       # Map the units to something that explicitly counts them in Dynatrace.

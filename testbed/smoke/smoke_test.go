@@ -41,27 +41,27 @@ func TestCollectorStarts(t *testing.T) {
 				require.NoError(t, err)
 
 				for _, c := range components.Receivers {
-					_, ok := testdataComponents.Receivers[string(c.Name)]
+					_, ok := testdataComponents.Receivers[c.Name]
 					require.True(t, ok, "config-allcomponents.yaml is missing receiver "+c.Name)
 				}
 
 				for _, c := range components.Processors {
-					_, ok := testdataComponents.Processors[string(c.Name)]
+					_, ok := testdataComponents.Processors[c.Name]
 					require.True(t, ok, "config-allcomponents.yaml is missing processor "+c.Name)
 				}
 
 				for _, c := range components.Exporters {
-					_, ok := testdataComponents.Exporters[string(c.Name)]
+					_, ok := testdataComponents.Exporters[c.Name]
 					require.True(t, ok, "config-allcomponents.yaml is missing exporter "+c.Name)
 				}
 
 				for _, c := range components.Connectors {
-					_, ok := testdataComponents.Connectors[string(c.Name)]
+					_, ok := testdataComponents.Connectors[c.Name]
 					require.True(t, ok, "config-allcomponents.yaml is missing connector "+c.Name)
 				}
 
 				for _, c := range components.Extensions {
-					_, ok := testdataComponents.Extensions[string(c.Name)]
+					_, ok := testdataComponents.Extensions[c.Name]
 					require.True(t, ok, "config-allcomponents.yaml is missing extension "+c.Name)
 				}
 			},
@@ -120,7 +120,7 @@ func TestCollectorIsBuiltFromManifest(t *testing.T) {
 }
 
 type componentMetadata struct {
-	Name      component.Type
+	Name      string
 	Stability map[string]string
 }
 

@@ -12,6 +12,7 @@ builds:
       - -w
     flags:
       - -trimpath
+      - -tags=timetzdata
     goos:
       - linux
       - windows

@@ -98,8 +98,8 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.10.0
         with:
-          node_image: "v1.27.3"
-          kubectl_version: "v1.27.3"
+          node_image: "kindest/node:v1.27.11"
+          kubectl_version: "v1.27.11"
           cluster_name: kind
 
       - name: Download artifact

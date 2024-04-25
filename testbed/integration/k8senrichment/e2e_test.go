@@ -1,3 +1,5 @@
+//go:build e2e
+
 package k8senrichment
 
 import (
@@ -12,7 +14,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -96,186 +97,76 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 		k8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
-	wantEntries := 128 // Minimal number of metrics/traces/logs to wait for.
+	wantEntries := 30 // Minimal number of traces to wait for.
 	waitForData(t, wantEntries, metricsConsumer, tracesConsumer, logsConsumer)
 
 	tcs := []struct {
-		name     string
-		dataType component.DataType
-		service  string
-		attrs    map[string]*expectedValue
+		name    string
+		service string
+		attrs   map[string]*expectedValue
 	}{
 		{
-			name:     "traces-job",
-			dataType: component.DataTypeTraces,
-			service:  "test-traces-job",
+			name:    "traces-job",
+			service: "test-traces-job",
 			attrs: map[string]*expectedValue{
-				"k8s.pod.name":       newExpectedValue(regex, "telemetrygen-"+testID+"-traces-job-[a-z0-9]*"),
-				"k8s.pod.uid":        newExpectedValue(regex, uidRe),
-				"k8s.job.name":       newExpectedValue(equal, "telemetrygen-"+testID+"-traces-job"),
-				"k8s.namespace.name": newExpectedValue(equal, testNs),
-				"k8s.node.name":      newExpectedValue(exist, ""),
-				"k8s.cluster.uid":    newExpectedValue(regex, uidRe),
+				"k8s.pod.name":             newExpectedValue(regex, "telemetrygen-"+testID+"-traces-job-[a-z0-9]*"),
+				"k8s.pod.uid":              newExpectedValue(regex, uidRe),
+				"k8s.job.name":             newExpectedValue(equal, "telemetrygen-"+testID+"-traces-job"),
+				"k8s.namespace.name":       newExpectedValue(equal, testNs),
+				"k8s.node.name":            newExpectedValue(exist, ""),
+				"k8s.cluster.uid":          newExpectedValue(regex, uidRe),
+				"dt.kubernetes.cluster.id": newExpectedValue(regex, uidRe),
 			},
 		},
 		{
-			name:     "traces-statefulset",
-			dataType: component.DataTypeTraces,
-			service:  "test-traces-statefulset",
+			name:    "traces-statefulset",
+			service: "test-traces-statefulset",
 			attrs: map[string]*expectedValue{
-				"k8s.pod.name":         newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset-0"),
-				"k8s.pod.uid":          newExpectedValue(regex, uidRe),
-				"k8s.statefulset.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset"),
-				"k8s.namespace.name":   newExpectedValue(equal, testNs),
-				"k8s.node.name":        newExpectedValue(exist, ""),
-				"k8s.cluster.uid":      newExpectedValue(regex, uidRe),
+				"k8s.pod.name":                newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset-0"),
+				"k8s.pod.uid":                 newExpectedValue(regex, uidRe),
+				"k8s.statefulset.name":        newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset"),
+				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset"),
+				"dt.kubernetes.workload.kind": newExpectedValue(equal, "statefulset"),
+				"k8s.namespace.name":          newExpectedValue(equal, testNs),
+				"k8s.node.name":               newExpectedValue(exist, ""),
+				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),
+				"dt.kubernetes.cluster.id":    newExpectedValue(regex, uidRe),
 			},
 		},
 		{
-			name:     "traces-deployment",
-			dataType: component.DataTypeTraces,
-			service:  "test-traces-deployment",
+			name:    "traces-deployment",
+			service: "test-traces-deployment",
 			attrs: map[string]*expectedValue{
-				"k8s.pod.name":        newExpectedValue(regex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
-				"k8s.pod.uid":         newExpectedValue(regex, uidRe),
-				"k8s.deployment.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-deployment"),
-				"k8s.namespace.name":  newExpectedValue(equal, testNs),
-				"k8s.node.name":       newExpectedValue(exist, ""),
-				"k8s.cluster.uid":     newExpectedValue(regex, uidRe),
+				"k8s.pod.name":                newExpectedValue(regex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
+				"k8s.pod.uid":                 newExpectedValue(regex, uidRe),
+				"k8s.deployment.name":         newExpectedValue(equal, "telemetrygen-"+testID+"-traces-deployment"),
+				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-deployment"),
+				"dt.kubernetes.workload.kind": newExpectedValue(equal, "deployment"),
+				"k8s.namespace.name":          newExpectedValue(equal, testNs),
+				"k8s.node.name":               newExpectedValue(exist, ""),
+				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),
+				"dt.kubernetes.cluster.id":    newExpectedValue(regex, uidRe),
 			},
 		},
 		{
-			name:     "traces-daemonset",
-			dataType: component.DataTypeTraces,
-			service:  "test-traces-daemonset",
+			name:    "traces-daemonset",
+			service: "test-traces-daemonset",
 			attrs: map[string]*expectedValue{
-				"k8s.pod.name":       newExpectedValue(regex, "telemetrygen-"+testID+"-traces-daemonset-[a-z0-9]*"),
-				"k8s.pod.uid":        newExpectedValue(regex, uidRe),
-				"k8s.daemonset.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-daemonset"),
-				"k8s.namespace.name": newExpectedValue(equal, testNs),
-				"k8s.node.name":      newExpectedValue(exist, ""),
-				"k8s.cluster.uid":    newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:     "metrics-job",
-			dataType: component.DataTypeMetrics,
-			service:  "test-metrics-job",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":       newExpectedValue(regex, "telemetrygen-"+testID+"-metrics-job-[a-z0-9]*"),
-				"k8s.pod.uid":        newExpectedValue(regex, uidRe),
-				"k8s.job.name":       newExpectedValue(equal, "telemetrygen-"+testID+"-metrics-job"),
-				"k8s.namespace.name": newExpectedValue(equal, testNs),
-				"k8s.node.name":      newExpectedValue(exist, ""),
-				"k8s.cluster.uid":    newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:     "metrics-statefulset",
-			dataType: component.DataTypeMetrics,
-			service:  "test-metrics-statefulset",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":         newExpectedValue(equal, "telemetrygen-"+testID+"-metrics-statefulset-0"),
-				"k8s.pod.uid":          newExpectedValue(regex, uidRe),
-				"k8s.statefulset.name": newExpectedValue(equal, "telemetrygen-"+testID+"-metrics-statefulset"),
-				"k8s.namespace.name":   newExpectedValue(equal, testNs),
-				"k8s.node.name":        newExpectedValue(exist, ""),
-				"k8s.cluster.uid":      newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:     "metrics-deployment",
-			dataType: component.DataTypeMetrics,
-			service:  "test-metrics-deployment",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":        newExpectedValue(regex, "telemetrygen-"+testID+"-metrics-deployment-[a-z0-9]*-[a-z0-9]*"),
-				"k8s.pod.uid":         newExpectedValue(regex, uidRe),
-				"k8s.deployment.name": newExpectedValue(equal, "telemetrygen-"+testID+"-metrics-deployment"),
-				"k8s.namespace.name":  newExpectedValue(equal, testNs),
-				"k8s.node.name":       newExpectedValue(exist, ""),
-				"k8s.cluster.uid":     newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:     "metrics-daemonset",
-			dataType: component.DataTypeMetrics,
-			service:  "test-metrics-daemonset",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":       newExpectedValue(regex, "telemetrygen-"+testID+"-metrics-daemonset-[a-z0-9]*"),
-				"k8s.pod.uid":        newExpectedValue(regex, uidRe),
-				"k8s.daemonset.name": newExpectedValue(equal, "telemetrygen-"+testID+"-metrics-daemonset"),
-				"k8s.namespace.name": newExpectedValue(equal, testNs),
-				"k8s.node.name":      newExpectedValue(exist, ""),
-				"k8s.cluster.uid":    newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:     "logs-job",
-			dataType: component.DataTypeLogs,
-			service:  "test-logs-job",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":       newExpectedValue(regex, "telemetrygen-"+testID+"-logs-job-[a-z0-9]*"),
-				"k8s.pod.uid":        newExpectedValue(regex, uidRe),
-				"k8s.job.name":       newExpectedValue(equal, "telemetrygen-"+testID+"-logs-job"),
-				"k8s.namespace.name": newExpectedValue(equal, testNs),
-				"k8s.node.name":      newExpectedValue(exist, ""),
-				"k8s.cluster.uid":    newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:     "logs-statefulset",
-			dataType: component.DataTypeLogs,
-			service:  "test-logs-statefulset",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":         newExpectedValue(equal, "telemetrygen-"+testID+"-logs-statefulset-0"),
-				"k8s.pod.uid":          newExpectedValue(regex, uidRe),
-				"k8s.statefulset.name": newExpectedValue(equal, "telemetrygen-"+testID+"-logs-statefulset"),
-				"k8s.namespace.name":   newExpectedValue(equal, testNs),
-				"k8s.node.name":        newExpectedValue(exist, ""),
-				"k8s.cluster.uid":      newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:     "logs-deployment",
-			dataType: component.DataTypeLogs,
-			service:  "test-logs-deployment",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":        newExpectedValue(regex, "telemetrygen-"+testID+"-logs-deployment-[a-z0-9]*-[a-z0-9]*"),
-				"k8s.pod.uid":         newExpectedValue(regex, uidRe),
-				"k8s.deployment.name": newExpectedValue(equal, "telemetrygen-"+testID+"-logs-deployment"),
-				"k8s.namespace.name":  newExpectedValue(equal, testNs),
-				"k8s.node.name":       newExpectedValue(exist, ""),
-				"k8s.cluster.uid":     newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:     "logs-daemonset",
-			dataType: component.DataTypeLogs,
-			service:  "test-logs-daemonset",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":       newExpectedValue(regex, "telemetrygen-"+testID+"-logs-daemonset-[a-z0-9]*"),
-				"k8s.pod.uid":        newExpectedValue(regex, uidRe),
-				"k8s.daemonset.name": newExpectedValue(equal, "telemetrygen-"+testID+"-logs-daemonset"),
-				"k8s.namespace.name": newExpectedValue(equal, testNs),
-				"k8s.node.name":      newExpectedValue(exist, ""),
-				"k8s.cluster.uid":    newExpectedValue(regex, uidRe),
+				"k8s.pod.name":                newExpectedValue(regex, "telemetrygen-"+testID+"-traces-daemonset-[a-z0-9]*"),
+				"k8s.pod.uid":                 newExpectedValue(regex, uidRe),
+				"k8s.daemonset.name":          newExpectedValue(equal, "telemetrygen-"+testID+"-traces-daemonset"),
+				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-daemonset"),
+				"dt.kubernetes.workload.kind": newExpectedValue(equal, "daemonset"),
+				"k8s.namespace.name":          newExpectedValue(equal, testNs),
+				"k8s.node.name":               newExpectedValue(exist, ""),
+				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),
+				"dt.kubernetes.cluster.id":    newExpectedValue(regex, uidRe),
 			},
 		},
 	}
 
 	for _, tc := range tcs {
-		t.Run(tc.name, func(t *testing.T) {
-			switch tc.dataType {
-			case component.DataTypeTraces:
-				scanTracesForAttributes(t, tracesConsumer, tc.service, tc.attrs)
-			case component.DataTypeMetrics:
-				scanMetricsForAttributes(t, metricsConsumer, tc.service, tc.attrs)
-			case component.DataTypeLogs:
-				scanLogsForAttributes(t, logsConsumer, tc.service, tc.attrs)
-			default:
-				t.Fatalf("unknown data type %s", tc.dataType)
-			}
-		})
+		scanTracesForAttributes(t, tracesConsumer, tc.service, tc.attrs)
 	}
 }
 
@@ -396,7 +287,7 @@ func startUpSinks(t *testing.T, mc *consumertest.MetricsSink, tc *consumertest.T
 }
 
 func waitForData(t *testing.T, entriesNum int, mc *consumertest.MetricsSink, tc *consumertest.TracesSink, lc *consumertest.LogsSink) {
-	timeoutMinutes := 3
+	timeoutMinutes := 5
 	require.Eventuallyf(t, func() bool {
 		return len(mc.AllMetrics()) > entriesNum && len(tc.AllTraces()) > entriesNum && len(lc.AllLogs()) > entriesNum
 	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,

@@ -21,7 +21,7 @@ spec:
           command:
             - /dynatrace-otel-collector
             - --config=/conf/relay.yaml
-          image: "collector:e2etest"
+          image: "dynatrace-otel-collector:e2e-test"
           ports:
             - name: otlp
               containerPort: 4317

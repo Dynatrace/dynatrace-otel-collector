@@ -30,7 +30,6 @@ const (
 	exist
 	testKubeConfig = "/home/grassi/.kube/config"
 	uidRe          = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-	startTimeRe    = "^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}%3A\\\\d{2}%3A\\\\d{2}(?:%2E\\\\d+)?[A-Z]?(?:[+.-](?:08%3A\\\\d{2}|\\\\d{2}[A-Z]))?$"
 )
 
 type expectedValue struct {

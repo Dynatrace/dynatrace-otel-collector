@@ -44,15 +44,8 @@ func newExpectedValue(mode int, value string) *expectedValue {
 	}
 }
 
-// TestE2E_ClusterRBAC tests the k8s attributes processor in a k8s cluster with the collector's service account having
-// cluster-wide permissions to list/watch namespaces, nodes, pods and replicasets. The config in the test does not
-// set filter::namespace.
-// The test requires a prebuilt otelcontribcol image uploaded to a kind k8s cluster defined in
-// `/tmp/kube-config-otelcol-e2e-testing`. Run the following command prior to running the test locally:
-//
-//	kind create cluster --kubeconfig=/tmp/kube-config-otelcol-e2e-testing
-//	make docker-otelcontribcol
-//	KUBECONFIG=/tmp/kube-config-otelcol-e2e-testing kind load docker-image otelcontribcol:latest
+// TestE2E_ClusterRBAC tests the "Enrich from Kubernetes" use case
+// See: https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-k8s-enrich
 func TestE2E_ClusterRBAC(t *testing.T) {
 	testDir := filepath.Join("testdata")
 

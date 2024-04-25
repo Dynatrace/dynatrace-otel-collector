@@ -66,6 +66,8 @@ jobs:
           path: /tmp/dynatrace-otel-collector.tar
 
   k8s-e2e-test-matrix:
+    env:
+      KUBECONFIG: /tmp/kube-config-collector-e2e-testing
     strategy:
       fail-fast: false
       matrix:

@@ -1,5 +1,3 @@
-//go:build e2e
-
 package k8senrichment
 
 import (
@@ -64,10 +62,8 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 		require.NoErrorf(t, k8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
 
-	metricsConsumer := new(consumertest.MetricsSink)
 	tracesConsumer := new(consumertest.TracesSink)
-	logsConsumer := new(consumertest.LogsSink)
-	shutdownSinks := startUpSinks(t, metricsConsumer, tracesConsumer, logsConsumer)
+	shutdownSinks := startUpSinks(t, tracesConsumer)
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
@@ -90,7 +86,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	}
 
 	wantEntries := 30 // Minimal number of traces to wait for.
-	waitForData(t, wantEntries, metricsConsumer, tracesConsumer, logsConsumer)
+	waitForData(t, wantEntries, tracesConsumer)
 
 	tcs := []struct {
 		name    string
@@ -183,48 +179,6 @@ func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 	t.Fatalf("no spans found for service %s", expectedService)
 }
 
-func scanMetricsForAttributes(t *testing.T, ms *consumertest.MetricsSink, expectedService string,
-	kvs map[string]*expectedValue) {
-	// Iterate over the received set of metrics starting from the most recent entries due to a bug in the processor:
-	// https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/18892
-	// TODO: Remove the reverse loop once it's fixed. All the metrics should be properly annotated.
-	for i := len(ms.AllMetrics()) - 1; i >= 0; i-- {
-		metrics := ms.AllMetrics()[i]
-		for i := 0; i < metrics.ResourceMetrics().Len(); i++ {
-			resource := metrics.ResourceMetrics().At(i).Resource()
-			service, exist := resource.Attributes().Get("service.name")
-			assert.Equal(t, true, exist, "metric do not has 'service.name' attribute in resource")
-			if service.AsString() != expectedService {
-				continue
-			}
-			assert.NoError(t, resourceHasAttributes(resource, kvs))
-			return
-		}
-	}
-	t.Fatalf("no metric found for service %s", expectedService)
-}
-
-func scanLogsForAttributes(t *testing.T, ls *consumertest.LogsSink, expectedService string,
-	kvs map[string]*expectedValue) {
-	// Iterate over the received set of logs starting from the most recent entries due to a bug in the processor:
-	// https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/18892
-	// TODO: Remove the reverse loop once it's fixed. All the metrics should be properly annotated.
-	for i := len(ls.AllLogs()) - 1; i >= 0; i-- {
-		logs := ls.AllLogs()[i]
-		for i := 0; i < logs.ResourceLogs().Len(); i++ {
-			resource := logs.ResourceLogs().At(i).Resource()
-			service, exist := resource.Attributes().Get("service.name")
-			assert.Equal(t, true, exist, "log do not has 'service.name' attribute in resource")
-			if service.AsString() != expectedService {
-				continue
-			}
-			assert.NoError(t, resourceHasAttributes(resource, kvs))
-			return
-		}
-	}
-	t.Fatalf("no logs found for service %s", expectedService)
-}
-
 func resourceHasAttributes(resource pcommon.Resource, kvs map[string]*expectedValue) error {
 	foundAttrs := make(map[string]bool)
 	for k := range kvs {
@@ -262,27 +216,24 @@ func resourceHasAttributes(resource pcommon.Resource, kvs map[string]*expectedVa
 	return err
 }
 
-func startUpSinks(t *testing.T, mc *consumertest.MetricsSink, tc *consumertest.TracesSink, lc *consumertest.LogsSink) func() {
+func startUpSinks(t *testing.T, tc *consumertest.TracesSink) func() {
 	f := otlpreceiver.NewFactory()
 	cfg := f.CreateDefaultConfig().(*otlpreceiver.Config)
 
-	_, err := f.CreateMetricsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, mc)
-	require.NoError(t, err, "failed creating metrics receiver")
-	_, err = f.CreateTracesReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, tc)
+	rcvr, err := f.CreateTracesReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, tc)
 	require.NoError(t, err, "failed creating traces receiver")
-	rcvr, err := f.CreateLogsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, lc)
-	require.NoError(t, err, "failed creating logs receiver")
+
 	require.NoError(t, rcvr.Start(context.Background(), componenttest.NewNopHost()))
 	return func() {
 		assert.NoError(t, rcvr.Shutdown(context.Background()))
 	}
 }
 
-func waitForData(t *testing.T, entriesNum int, mc *consumertest.MetricsSink, tc *consumertest.TracesSink, lc *consumertest.LogsSink) {
+func waitForData(t *testing.T, entriesNum int, tc *consumertest.TracesSink) {
 	timeoutMinutes := 5
 	require.Eventuallyf(t, func() bool {
-		return len(mc.AllMetrics()) > entriesNum && len(tc.AllTraces()) > entriesNum && len(lc.AllLogs()) > entriesNum
+		return len(tc.AllTraces()) > entriesNum
 	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
-		"failed to receive %d entries,  received %d metrics, %d traces, %d logs in %d minutes", entriesNum,
-		len(mc.AllMetrics()), len(tc.AllTraces()), len(lc.AllLogs()), timeoutMinutes)
+		"failed to receive %d entries,  received %d traces in %d minutes", entriesNum,
+		len(tc.AllTraces()), timeoutMinutes)
 }

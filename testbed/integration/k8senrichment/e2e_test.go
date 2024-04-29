@@ -170,7 +170,7 @@ func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 		for i := 0; i < traces.ResourceSpans().Len(); i++ {
 			resource := traces.ResourceSpans().At(i).Resource()
 			service, exist := resource.Attributes().Get("service.name")
-			assert.Equal(t, true, exist, "span do not has 'service.name' attribute in resource")
+			assert.Equal(t, true, exist, "Resource does not have the 'service.name' attribute")
 			if service.AsString() != expectedService {
 				continue
 			}

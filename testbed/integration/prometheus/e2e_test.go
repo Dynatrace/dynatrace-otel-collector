@@ -1,4 +1,6 @@
-package k8senrichment
+//go:build e2e
+
+package prometheus
 
 import (
 	"context"
@@ -23,7 +25,7 @@ import (
 )
 
 const (
-	testKubeConfig = "/home/grassi/.kube/config"
+	testKubeConfig = "/tmp/kube-config-collector-e2e-testing"
 )
 
 // TestE2E_PrometheusNodeExporter tests the "Scrape data from Prometheus" use case

@@ -73,6 +73,7 @@ jobs:
       matrix:
         usecase:
           - testbed/integration/k8senrichment
+          - testbed/integration/prometheus
     runs-on: ubuntu-latest
     needs: docker-build
     steps:

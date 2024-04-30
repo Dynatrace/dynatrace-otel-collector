@@ -68,3 +68,7 @@ See https://github.com/open-telemetry/opentelemetry-collector/tree/main/cmd/buil
 
 When adding a component, an example configuration for the component must be added to `testbed/testdata/config-allcomponents.yaml`
 to test that it works with a basic configuration.
+
+## Releasing new artifacts
+
+The [release](docs/releasing.md) and [hotfix](docs/hotfix.md) processes are described in separate documents.

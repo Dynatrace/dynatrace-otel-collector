@@ -28,10 +28,14 @@ func (w *watcher) watchForChanges() {
 		case <-ticker.C:
 			body, err := w.getConfigBytes()
 			if err != nil {
-				fmt.Printf("Error while polling for new configuration: %s", err)
+				fmt.Printf("Error while polling for new configuration: %s\n", err)
 				break
 			}
 			if w.configHash != sha256.Sum256(body) {
+				// If we find that there is new config, notify
+				// the Collector and stop watching. A new watcher
+				// will be created once the provider's Retrieve
+				// method is called again.
 				w.watcherFunc(nil)
 				return
 			}

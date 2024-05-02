@@ -18,6 +18,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -129,7 +130,7 @@ func TestFunctionalityDownloadFileHTTP(t *testing.T) {
 	fp := newConfigurableHTTPProvider(EECIScheme, confmaptest.NewNopProviderSettings())
 	ts := httptest.NewServer(http.HandlerFunc(answerGet))
 	defer ts.Close()
-	_, err := fp.Retrieve(context.Background(), ts.URL, nil)
+	_, err := fp.Retrieve(context.Background(), strings.Replace(ts.URL, "http", "eeci", 1), nil)
 	assert.NoError(t, err)
 	assert.NoError(t, fp.Shutdown(context.Background()))
 }
@@ -222,7 +223,7 @@ func TestFunctionalityDownloadFileHTTPS(t *testing.T) {
 				fp.caCertPath = tt.certPath
 			}
 			fp.insecureSkipVerify = tt.skipHostnameValidation
-			_, err = fp.Retrieve(context.Background(), fmt.Sprintf("https://%s:%s", tt.hostName, tsURL.Port()), nil)
+			_, err = fp.Retrieve(context.Background(), fmt.Sprintf("eec://%s:%s", tt.hostName, tsURL.Port()), nil)
 			if tt.shouldError {
 				assert.Error(t, err)
 			} else {
@@ -234,12 +235,12 @@ func TestFunctionalityDownloadFileHTTPS(t *testing.T) {
 
 func TestUnsupportedScheme(t *testing.T) {
 	fp := New(EECIScheme, confmaptest.NewNopProviderSettings())
-	_, err := fp.Retrieve(context.Background(), "https://...", nil)
+	_, err := fp.Retrieve(context.Background(), "eec://...", nil)
 	assert.Error(t, err)
 	assert.NoError(t, fp.Shutdown(context.Background()))
 
 	fp = New(EECScheme, confmaptest.NewNopProviderSettings())
-	_, err = fp.Retrieve(context.Background(), "http://...", nil)
+	_, err = fp.Retrieve(context.Background(), "eeci://...", nil)
 	assert.Error(t, err)
 	assert.NoError(t, fp.Shutdown(context.Background()))
 }
@@ -250,7 +251,7 @@ func TestEmptyURI(t *testing.T) {
 		w.WriteHeader(http.StatusBadRequest)
 	}))
 	defer ts.Close()
-	_, err := fp.Retrieve(context.Background(), ts.URL, nil)
+	_, err := fp.Retrieve(context.Background(), strings.Replace(ts.URL, "http", "eeci", 1), nil)
 	require.Error(t, err)
 	require.NoError(t, fp.Shutdown(context.Background()))
 }
@@ -259,7 +260,7 @@ func TestRetrieveFromShutdownServer(t *testing.T) {
 	fp := New(EECIScheme, confmaptest.NewNopProviderSettings())
 	ts := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
 	ts.Close()
-	_, err := fp.Retrieve(context.Background(), ts.URL, nil)
+	_, err := fp.Retrieve(context.Background(), strings.Replace(ts.URL, "http", "eeci", 1), nil)
 	assert.Error(t, err)
 	require.NoError(t, fp.Shutdown(context.Background()))
 }
@@ -270,7 +271,7 @@ func TestNonExistent(t *testing.T) {
 		w.WriteHeader(http.StatusNotFound)
 	}))
 	defer ts.Close()
-	_, err := fp.Retrieve(context.Background(), ts.URL, nil)
+	_, err := fp.Retrieve(context.Background(), strings.Replace(ts.URL, "http", "eeci", 1), nil)
 	assert.Error(t, err)
 	require.NoError(t, fp.Shutdown(context.Background()))
 }
@@ -285,14 +286,14 @@ func TestInvalidYAML(t *testing.T) {
 		}
 	}))
 	defer ts.Close()
-	_, err := fp.Retrieve(context.Background(), ts.URL, nil)
+	_, err := fp.Retrieve(context.Background(), strings.Replace(ts.URL, "http", "eeci", 1), nil)
 	assert.Error(t, err)
 	require.NoError(t, fp.Shutdown(context.Background()))
 }
 
 func TestScheme(t *testing.T) {
 	fp := New(EECIScheme, confmaptest.NewNopProviderSettings())
-	assert.Equal(t, "http", fp.Scheme())
+	assert.Equal(t, "eeci", fp.Scheme())
 	require.NoError(t, fp.Shutdown(context.Background()))
 }
 
@@ -338,6 +339,7 @@ func TestNoReloadIfConfigIsSame(t *testing.T) {
 	params := url.Values{}
 	params.Set(RefreshInterval, "10ms")
 	uri.Fragment = params.Encode()
+	uri.Scheme = "eeci"
 
 	_, err = fp.Retrieve(context.Background(), uri.String(), watcherFunc)
 	require.NoError(t, err)
@@ -383,6 +385,7 @@ func TestReloadIfConfigChanges(t *testing.T) {
 	params := url.Values{}
 	params.Set(RefreshInterval, "10ms")
 	uri.Fragment = params.Encode()
+	uri.Scheme = "eeci"
 
 	_, err = fp.Retrieve(context.Background(), uri.String(), watcherFunc)
 	require.NoError(t, err)
@@ -434,6 +437,7 @@ func TestContinuesRetryingOnRefreshError(t *testing.T) {
 	params := url.Values{}
 	params.Set(RefreshInterval, "10ms")
 	uri.Fragment = params.Encode()
+	uri.Scheme = "eeci"
 
 	_, err = fp.Retrieve(context.Background(), uri.String(), watcherFunc)
 	require.NoError(t, err)
@@ -489,6 +493,7 @@ func TestFragmentConfiguration(t *testing.T) {
 	params.Set(AuthFile, file.Name())
 	params.Set(RefreshInterval, refreshInterval)
 	uri.Fragment = params.Encode()
+	uri.Scheme = "eeci"
 
 	wg.Add(1)
 	_, err = fp.Retrieve(context.Background(), uri.String(), watcherFunc)

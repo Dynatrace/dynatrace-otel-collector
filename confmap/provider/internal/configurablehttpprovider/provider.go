@@ -107,6 +107,11 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 	if err != nil {
 		return nil, err
 	}
+	if p.scheme == EECScheme {
+		parsedUrl.Scheme = "https"
+	} else {
+		parsedUrl.Scheme = "http"
+	}
 
 	params, err := url.ParseQuery(parsedUrl.Fragment)
 	if err != nil {

@@ -15,6 +15,6 @@ import (
 
 func TestSupportedScheme(t *testing.T) {
 	fp := NewFactory().Create(confmaptest.NewNopProviderSettings())
-	assert.Equal(t, "http", fp.Scheme())
+	assert.Equal(t, "eec", fp.Scheme())
 	require.NoError(t, fp.Shutdown(context.Background()))
 }

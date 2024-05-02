@@ -37,9 +37,9 @@ build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)
 	for MOD in $(GOMODULES); do \
-		pushd $${MOD}; \
+		cd $${MOD}; \
 		go test ./...; \
-		popd; \
+		cd -; \
 	done
 clean:
 	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)

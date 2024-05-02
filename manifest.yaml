@@ -39,3 +39,17 @@ processors:
 connectors:
   - gomod: go.opentelemetry.io/collector/connector/forwardconnector v0.99.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/spanmetricsconnector v0.99.0
+
+providers:
+  - gomod: go.opentelemetry.io/collector/confmap/provider/envprovider v0.99.0
+  - gomod: go.opentelemetry.io/collector/confmap/provider/fileprovider v0.99.0
+  - gomod: go.opentelemetry.io/collector/confmap/provider/httpprovider v0.99.0
+  - gomod: go.opentelemetry.io/collector/confmap/provider/httpsprovider v0.99.0
+  - gomod: go.opentelemetry.io/collector/confmap/provider/yamlprovider v0.99.0
+  - gomod: github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider v0.4.0
+  - gomod: github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eeciprovider v0.4.0
+
+replaces:
+  - github.com/Dynatrace/dynatrace-otel-collector/confmap/provider => ../confmap/provider/
+  - github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eeciprovider => ../confmap/provider/eeciprovider
+  - github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider => ../confmap/provider/eecprovider

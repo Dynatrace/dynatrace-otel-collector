@@ -1,7 +1,7 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-package internal // import "go.opentelemetry.io/collector/confmap/provider/internal"
+package configurablehttpprovider // import "github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/internal/configurablehttpprovider"
 
 import (
 	"gopkg.in/yaml.v3"

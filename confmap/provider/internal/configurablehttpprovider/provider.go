@@ -1,7 +1,7 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-package configurablehttpprovider // import "github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider/internal/configurablehttpprovider"
+package configurablehttpprovider // import "github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/internal/configurablehttpprovider"
 
 import (
 	"context"
@@ -16,15 +16,16 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider/internal"
 	"go.opentelemetry.io/collector/confmap"
 )
 
 type SchemeType string
 
 const (
-	HTTPScheme  SchemeType = "http"
-	HTTPSScheme SchemeType = "https"
+	// "EEC Insecure" - equivalent to HTTP
+	EECIScheme SchemeType = "eeci"
+	// equivalent to HTTPS
+	EECScheme SchemeType = "eec"
 )
 
 const (
@@ -57,9 +58,9 @@ func New(scheme SchemeType, _ confmap.ProviderSettings) confmap.Provider {
 // Create the client based on the type of scheme that was selected.
 func (p *provider) createClient() (*http.Client, error) {
 	switch p.scheme {
-	case HTTPScheme:
+	case EECIScheme:
 		return &http.Client{}, nil
-	case HTTPSScheme:
+	case EECScheme:
 		pool, err := x509.SystemCertPool()
 
 		if err != nil {
@@ -150,7 +151,7 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 		go watcher.watchForChanges()
 	}
 
-	return internal.NewRetrievedFromYAML(body)
+	return NewRetrievedFromYAML(body)
 }
 
 func (p *provider) Scheme() string {

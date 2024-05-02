@@ -1,12 +1,12 @@
-module github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider
+module github.com/Dynatrace/dynatrace-otel-collector/confmap/provider
 
 go 1.21
 
 require (
-	github.com/Dynatrace/dynatrace-otel-collector/confmap/provider v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/collector/confmap v0.99.0
 	go.uber.org/goleak v1.3.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -20,7 +20,4 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/Dynatrace/dynatrace-otel-collector/confmap/provider => ../

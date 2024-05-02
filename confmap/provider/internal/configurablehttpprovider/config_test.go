@@ -1,4 +1,4 @@
-package configurablehttpprovider // import "github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider/internal/configurablehttpprovider"
+package configurablehttpprovider // import "github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/internal/configurablehttpprovider"
 
 import (
 	"net/url"

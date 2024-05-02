@@ -8,15 +8,15 @@ import (
 	"go.opentelemetry.io/collector/confmap"
 )
 
-// NewFactory returns a factory for a confmap.Provider that reads the configuration from an https server.
+// NewFactory returns a factory for a confmap.Provider that reads the configuration from an http server.
 //
-// This Provider supports "eec" scheme.
+// This Provider supports the "eeci" scheme.
 //
-// One example for an HTTPS URI is eec://localhost:3333/getConfig
+// One example for an HTTP URI is: eeci://localhost:3333/getConfig
 func NewFactory() confmap.ProviderFactory {
 	return confmap.NewProviderFactory(new)
 }
 
 func new(set confmap.ProviderSettings) confmap.Provider {
-	return configurablehttpprovider.New(configurablehttpprovider.EECScheme, set)
+	return configurablehttpprovider.New(configurablehttpprovider.EECIScheme, set)
 }

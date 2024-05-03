@@ -147,7 +147,7 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 	// the `refresh-interval` parameter was deliberately set to 0,
 	// we assume that polling for config updates has been disabled.
 	if watcherFunc != nil && cfg.refreshInterval.Nanoseconds() != 0 {
-		watcher := watcher{
+		watcher := &watcher{
 			providerCtx: p.ctx,
 			reqCtx:      ctx,
 			getConfigBytes: func() ([]byte, error) {

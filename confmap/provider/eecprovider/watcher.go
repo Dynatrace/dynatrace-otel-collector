@@ -39,7 +39,7 @@ func (w *watcher) watchForChanges() {
 				// the Collector and stop watching. A new watcher
 				// will be created once the provider's Retrieve
 				// method is called again.
-				w.watcherFunc(nil)
+				w.watcherFunc(&confmap.ChangeEvent{})
 				return
 			}
 		case <-w.providerCtx.Done():

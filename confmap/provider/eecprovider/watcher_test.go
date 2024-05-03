@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/confmap"
 )
@@ -83,6 +84,7 @@ func TestCallsWatcherFunc(t *testing.T) {
 		getConfigBytes:  getConfigBytes,
 		refreshInterval: time.Millisecond,
 		watcherFunc: func(ce *confmap.ChangeEvent) {
+			assert.NotNil(t, ce)
 			wg.Done()
 		},
 		configHash: sha256.Sum256(nil),

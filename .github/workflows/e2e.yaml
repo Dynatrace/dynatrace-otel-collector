@@ -166,6 +166,8 @@ jobs:
           name: dynatrace-otel-collector-bin
           path: bin
 
+      - run: chmod +x bin/*
+
       - name: Run e2e tests
         run: |
           cd confmap/provider/eecprovider

@@ -48,6 +48,8 @@ dockers:
     image_templates:
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:{{ .Version }}-amd64
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-amd64
+      - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-amd64
+      - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-amd64
     build_flag_templates:
       - --pull
       - --platform=linux/amd64
@@ -62,6 +64,8 @@ dockers:
     image_templates:
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:{{ .Version }}-arm64
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-arm64
+      - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-arm64
+      - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-arm64
     build_flag_templates:
       - --pull
       - --platform=linux/arm64
@@ -80,6 +84,14 @@ docker_manifests:
     image_templates:
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-amd64
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-arm64
+  - name_template: public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}
+    image_templates:
+      - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-amd64
+      - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-arm64
+  - name_template: public.ecr.aws/dynatrace/dynatrace-otel-collector:latest
+    image_templates:
+      - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-amd64
+      - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-arm64
 checksum:
   name_template: "checksums.txt"
 snapshot:
@@ -92,7 +104,6 @@ changelog:
       - "^test:"
 
 release:
-  prerelease: "true"
   draft: true
 # The lines beneath this are called `modelines`. See `:help modeline`
 # Feel free to remove those if you don't want/use them.

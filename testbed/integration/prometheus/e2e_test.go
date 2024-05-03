@@ -66,11 +66,15 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	wantEntries := 2 // Minimal number of metric requests to wait for.
 	waitForData(t, wantEntries, metricsConsumer)
 
-	expectedMetrics := []string{
+	expectedColMetrics := []string{
 		"otelcol_process_memory_rss", "scrape_duration_seconds", "scrape_samples_post_metric_relabeling",
 	}
+	scanForServiceMetrics(t, metricsConsumer, "opentelemetry-collector", expectedColMetrics)
 
-	scanForServiceMetrics(t, metricsConsumer, "opentelemetry-collector", expectedMetrics)
+	expectedPromMetrics := []string{
+		"node_procs_running", "node_memory_MemAvailable_bytes",
+	}
+	scanForServiceMetrics(t, metricsConsumer, "node-exporter", expectedPromMetrics)
 }
 
 func installPrometheusNodeExporter() error {

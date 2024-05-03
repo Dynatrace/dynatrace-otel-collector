@@ -1,7 +1,11 @@
 // Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
 // Copyright Dynatrace LLC
 // SPDX-License-Identifier: Apache-2.0
+
+// This file was copied from the configurablehttpprovider package and modified
+// to support configuration options through query parameter-encoded URL fragments.
+// Additionally, support for two schemes (HTTP/HTTPS) was dropped in favor of
+// configuring TLS through an option on the provider.
 
 package eecprovider // import "github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider"
 

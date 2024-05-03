@@ -1,7 +1,9 @@
 // Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
 // Copyright Dynatrace LLC
 // SPDX-License-Identifier: Apache-2.0
+
+// Tests were added to this file to test the features added to the provider.
+// Existing tests were adapted to handle changes to the provider.
 
 package eecprovider
 

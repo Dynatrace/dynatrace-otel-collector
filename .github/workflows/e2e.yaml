@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dynatrace-otel-collector-bin
-          path: /bin/dynatrace-otel-collector
+          path: bin/dynatrace-otel-collector
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

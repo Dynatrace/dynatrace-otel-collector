@@ -35,27 +35,25 @@ func TestConfigParsing(t *testing.T) {
 		{
 			name: "Parse all mutually-compatible fields",
 			params: map[string][]string{
-				AuthHeader:      {"Bearer-Token"},
 				AuthFile:        {file.Name()},
 				RefreshInterval: {"1h"},
+				Timeout:         {"50m"},
 				Insecure:        {"true"},
 			},
 			expectedConfig: &config{
-				authHeader:      "Bearer-Token",
 				authToken:       token,
 				refreshInterval: time.Hour,
+				timeout:         50 * time.Minute,
 				insecure:        true,
 			},
 		},
 		{
 			name: "Parse token from env var",
 			params: map[string][]string{
-				AuthHeader:      {"Bearer-Token"},
 				AuthEnv:         {"CONFMAP_AUTH"},
 				RefreshInterval: {"1h"},
 			},
 			expectedConfig: &config{
-				authHeader:      "Bearer-Token",
 				authToken:       envToken,
 				refreshInterval: time.Hour,
 			},
@@ -66,28 +64,21 @@ func TestConfigParsing(t *testing.T) {
 				RefreshInterval: {"0h"},
 			},
 			expectedConfig: &config{
-				authHeader:      "Api-Token",
 				refreshInterval: 0,
 			},
 		},
 		{
-			name: "Allow unsetting auth-header",
-			params: map[string][]string{
-				AuthHeader: {""},
-			},
+			name:   "Allow not setting an auth token",
+			params: map[string][]string{},
 			expectedConfig: &config{
-				authHeader:      "",
-				refreshInterval: time.Second * 10,
+				refreshInterval: 10 * time.Second,
 			},
 		},
 		{
-			name: "Allow not setting an auth token",
-			params: map[string][]string{
-				AuthHeader: {"Bearer-Token"},
-			},
+			name:   "Allow not setting a timeout",
+			params: map[string][]string{},
 			expectedConfig: &config{
-				authHeader:      "Bearer-Token",
-				refreshInterval: time.Second * 10,
+				refreshInterval: 8 * time.Second,
 			},
 		},
 		{

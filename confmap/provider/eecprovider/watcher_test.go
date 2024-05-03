@@ -20,14 +20,13 @@ import (
 func TestWatchForChanges(t *testing.T) {
 	wg := &sync.WaitGroup{}
 	count := &atomic.Uint32{}
-	getConfigBytes := func() ([]byte, error) {
+	getConfigBytes := func(context.Context) ([]byte, error) {
 		count.Add(1)
 		return nil, nil
 	}
-	ctx, cancel := context.WithCancel(context.Background())
+	shutdown := make(chan struct{})
 	w := watcher{
-		providerCtx:     ctx,
-		reqCtx:          context.Background(),
+		shutdown:        shutdown,
 		getConfigBytes:  getConfigBytes,
 		refreshInterval: time.Millisecond,
 		watcherFunc: func(ce *confmap.ChangeEvent) {
@@ -38,25 +37,23 @@ func TestWatchForChanges(t *testing.T) {
 
 	wg.Add(1)
 	go func() {
-		w.watchForChanges()
+		w.watchForChanges(context.Background())
 		wg.Done()
 	}()
 	require.Eventually(t, func() bool {
 		return count.Load() > 5
 	}, time.Second*3, time.Millisecond*20)
-	cancel()
+	close(shutdown)
 	wg.Wait()
 }
 
 func TestStopsOnRequestDone(t *testing.T) {
 	wg := &sync.WaitGroup{}
-	getConfigBytes := func() ([]byte, error) {
+	getConfigBytes := func(context.Context) ([]byte, error) {
 		return nil, nil
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	w := watcher{
-		providerCtx:     context.Background(),
-		reqCtx:          ctx,
 		getConfigBytes:  getConfigBytes,
 		refreshInterval: time.Hour,
 		watcherFunc:     func(ce *confmap.ChangeEvent) {},
@@ -65,7 +62,7 @@ func TestStopsOnRequestDone(t *testing.T) {
 
 	wg.Add(1)
 	go func() {
-		w.watchForChanges()
+		w.watchForChanges(ctx)
 		wg.Done()
 	}()
 	cancel()
@@ -74,13 +71,12 @@ func TestStopsOnRequestDone(t *testing.T) {
 
 func TestCallsWatcherFunc(t *testing.T) {
 	wg := &sync.WaitGroup{}
-	getConfigBytes := func() ([]byte, error) {
+	getConfigBytes := func(context.Context) ([]byte, error) {
 		return []byte("hello"), nil
 	}
-	ctx, cancel := context.WithCancel(context.Background())
+	shutdown := make(chan struct{})
 	w := watcher{
-		providerCtx:     ctx,
-		reqCtx:          context.Background(),
+		shutdown:        shutdown,
 		getConfigBytes:  getConfigBytes,
 		refreshInterval: time.Millisecond,
 		watcherFunc: func(ce *confmap.ChangeEvent) {
@@ -92,27 +88,26 @@ func TestCallsWatcherFunc(t *testing.T) {
 
 	wg.Add(2)
 	go func() {
-		w.watchForChanges()
+		w.watchForChanges(context.Background())
 		wg.Done()
 	}()
 	wg.Wait()
-	cancel()
+	close(shutdown)
 }
 
 func TestHandlesGetBodyError(t *testing.T) {
 	wg := &sync.WaitGroup{}
 	count := &atomic.Uint32{}
-	getConfigBytes := func() ([]byte, error) {
+	getConfigBytes := func(context.Context) ([]byte, error) {
 		count.Add(1)
 		if count.Load()%2 == 1 {
 			return nil, errors.New("odd-numbered failure")
 		}
 		return nil, nil
 	}
-	ctx, cancel := context.WithCancel(context.Background())
+	shutdown := make(chan struct{})
 	w := watcher{
-		providerCtx:     ctx,
-		reqCtx:          context.Background(),
+		shutdown:        shutdown,
 		getConfigBytes:  getConfigBytes,
 		refreshInterval: time.Millisecond * 5,
 		watcherFunc: func(ce *confmap.ChangeEvent) {
@@ -123,12 +118,12 @@ func TestHandlesGetBodyError(t *testing.T) {
 
 	wg.Add(1)
 	go func() {
-		w.watchForChanges()
+		w.watchForChanges(context.Background())
 		wg.Done()
 	}()
 	require.Eventually(t, func() bool {
 		return count.Load() > 5
 	}, time.Second*3, time.Millisecond*20)
-	cancel()
+	close(shutdown)
 	wg.Wait()
 }

@@ -448,7 +448,6 @@ func TestContinuesRetryingOnRefreshError(t *testing.T) {
 
 func TestFragmentConfiguration(t *testing.T) {
 	wg := &sync.WaitGroup{}
-	authHeader := "Bearer-Token"
 	refreshInterval := "10h"
 
 	token := "mytoken"
@@ -473,7 +472,7 @@ func TestFragmentConfiguration(t *testing.T) {
 			fmt.Println("Write failed: ", err)
 		}
 
-		require.Equal(t, token, req.Header.Get(authHeader))
+		require.Equal(t, token, req.Header.Get(ApiTokenHeader))
 
 		wg.Done()
 	}
@@ -488,7 +487,6 @@ func TestFragmentConfiguration(t *testing.T) {
 	require.NoError(t, err)
 	params, err := url.ParseQuery(uri.Fragment)
 	require.NoError(t, err)
-	params.Set(AuthHeader, authHeader)
 	params.Set(AuthFile, file.Name())
 	params.Set(RefreshInterval, refreshInterval)
 	uri.Fragment = params.Encode()

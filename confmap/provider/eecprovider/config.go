@@ -11,15 +11,20 @@ import (
 	"time"
 )
 
+const (
+	RefreshInterval = "refresh-interval"
+	Timeout         = "timeout"
+	AuthFile        = "auth-file"
+	AuthEnv         = "auth-env"
+	Insecure        = "insecure"
+)
+
 type config struct {
 	// A time duration that defines how frequently the provider should check the given URL for updates.
 	refreshInterval time.Duration
 
-	// A header that will be used to authenticate the provider with the EEC.
-	// We will always use Api-Token (and this can be assumed as a default if auth-file is passed),
-	// but upstream will want to support configurable headers and we should consider
-	// offering this option should upstream determine the option is required.
-	authHeader string
+	// The maximum time allowed for a single request to the server.
+	timeout time.Duration
 
 	// Token passed as the value for the header in authHeader.
 	authToken string
@@ -30,8 +35,8 @@ type config struct {
 
 func parseConfig(params url.Values) (config, error) {
 	cfg := config{
-		refreshInterval: time.Second * 10,
-		authHeader:      "Api-Token",
+		refreshInterval: 10 * time.Second,
+		timeout:         8 * time.Second,
 	}
 	var err error
 
@@ -42,8 +47,11 @@ func parseConfig(params url.Values) (config, error) {
 		}
 	}
 
-	if params.Has(AuthHeader) {
-		cfg.authHeader = params.Get(AuthHeader)
+	if params.Has(Timeout) {
+		cfg.timeout, err = time.ParseDuration(params.Get(Timeout))
+		if err != nil {
+			return cfg, err
+		}
 	}
 
 	if params.Has(AuthFile) && params.Has(AuthEnv) {

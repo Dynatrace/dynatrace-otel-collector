@@ -6,6 +6,7 @@ package eecprovider // import "github.com/Dynatrace/dynatrace-otel-collector/con
 import (
 	"context"
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"time"
 
@@ -13,23 +14,29 @@ import (
 )
 
 type watcher struct {
-	providerCtx context.Context
-	reqCtx      context.Context
+	shutdown chan struct{}
 
-	getConfigBytes func() ([]byte, error)
+	getConfigBytes func(context.Context) ([]byte, error)
 
 	refreshInterval time.Duration
 	watcherFunc     confmap.WatcherFunc
 	configHash      [32]byte
 }
 
-func (w *watcher) watchForChanges() {
+func (w *watcher) watchForChanges(ctx context.Context) {
 	ticker := time.NewTicker(w.refreshInterval)
+
+	// Setting these ensures the previous request is canceled once we make a new one.
+	var reqCtx context.Context
+	// Set cancel to an empty function so we don't have to do a nil check every tick.
+	var cancel context.CancelFunc = func() {}
 
 	for {
 		select {
 		case <-ticker.C:
-			body, err := w.getConfigBytes()
+			cancel()
+			reqCtx, cancel = context.WithTimeoutCause(ctx, 3*time.Second, errors.New("request to EEC timed out"))
+			body, err := w.getConfigBytes(reqCtx)
 			if err != nil {
 				fmt.Printf("Error while polling for new configuration: %s\n", err)
 				break
@@ -42,9 +49,9 @@ func (w *watcher) watchForChanges() {
 				w.watcherFunc(&confmap.ChangeEvent{})
 				return
 			}
-		case <-w.providerCtx.Done():
+		case <-w.shutdown:
 			return
-		case <-w.reqCtx.Done():
+		case <-ctx.Done():
 			return
 		}
 	}

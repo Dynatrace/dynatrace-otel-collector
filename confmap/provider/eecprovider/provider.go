@@ -14,6 +14,7 @@ import (
 	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -21,6 +22,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"go.opentelemetry.io/collector/confmap"
 )
@@ -31,19 +33,15 @@ const (
 	EECScheme SchemeType = "eec"
 )
 
-const (
-	RefreshInterval = "refresh-interval"
-	AuthHeader      = "auth-header"
-	AuthFile        = "auth-file"
-	AuthEnv         = "auth-env"
-	Insecure        = "insecure"
-)
+const ApiTokenHeader = "Api-Token"
 
 type provider struct {
 	caCertPath         string // Used for tests
 	insecureSkipVerify bool   // Used for tests
-	ctx                context.Context
-	cancel             context.CancelFunc
+
+	// The provider will close this channel to signal to all watchers that
+	// the provider is shutting down and they should stop.
+	shutdown chan struct{}
 }
 
 var _ confmap.Provider = (*provider)(nil)
@@ -58,8 +56,8 @@ func NewFactory() confmap.ProviderFactory {
 }
 
 func newProvider(_ confmap.ProviderSettings) confmap.Provider {
-	ctx, cancel := context.WithCancel(context.Background())
-	return &provider{ctx: ctx, cancel: cancel}
+	shutdown := make(chan struct{})
+	return &provider{shutdown: shutdown}
 }
 
 // Create the client based on the type of scheme that was selected.
@@ -130,12 +128,22 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 		parsedUrl.Scheme = "https"
 	}
 
-	req, err := http.NewRequest(http.MethodGet, parsedUrl.String(), nil)
+	newContextBoundRequest := func(ctx context.Context) (*http.Request, error) {
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsedUrl.String(), nil)
+		if err != nil {
+			return nil, err
+		}
+		if cfg.authToken != "" {
+			req.Header.Add(ApiTokenHeader, cfg.authToken)
+		}
+		return req, nil
+	}
+
+	reqCtx, cancel := context.WithTimeoutCause(ctx, 3*time.Second, errors.New("request to EEC timed out"))
+	defer cancel()
+	req, err := newContextBoundRequest(reqCtx)
 	if err != nil {
 		return nil, err
-	}
-	if cfg.authHeader != "" && cfg.authToken != "" {
-		req.Header.Add(cfg.authHeader, cfg.authToken)
 	}
 
 	body, err := p.getConfigBytes(client, req)
@@ -148,9 +156,12 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 	// we assume that polling for config updates has been disabled.
 	if watcherFunc != nil && cfg.refreshInterval.Nanoseconds() != 0 {
 		watcher := &watcher{
-			providerCtx: p.ctx,
-			reqCtx:      ctx,
-			getConfigBytes: func() ([]byte, error) {
+			shutdown: p.shutdown,
+			getConfigBytes: func(ctx context.Context) ([]byte, error) {
+				req, err := newContextBoundRequest(ctx)
+				if err != nil {
+					return nil, err
+				}
 				return p.getConfigBytes(client, req)
 			},
 			refreshInterval: cfg.refreshInterval,
@@ -158,7 +169,7 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 			configHash:      sha256.Sum256(body),
 		}
 
-		go watcher.watchForChanges()
+		go watcher.watchForChanges(ctx)
 	}
 
 	return NewRetrievedFromYAML(body)
@@ -169,9 +180,7 @@ func (p *provider) Scheme() string {
 }
 
 func (p *provider) Shutdown(context.Context) error {
-	if p.cancel != nil {
-		p.cancel()
-	}
+	close(p.shutdown)
 
 	return nil
 }

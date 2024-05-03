@@ -1,7 +1,7 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-package configurablehttpprovider // import "github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/internal/configurablehttpprovider"
+package eecprovider // import "github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider"
 
 import (
 	"context"

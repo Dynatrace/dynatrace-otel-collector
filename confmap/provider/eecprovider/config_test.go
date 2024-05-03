@@ -56,6 +56,7 @@ func TestConfigParsing(t *testing.T) {
 			expectedConfig: &config{
 				authToken:       envToken,
 				refreshInterval: time.Hour,
+				timeout:         8 * time.Second,
 			},
 		},
 		{
@@ -65,6 +66,7 @@ func TestConfigParsing(t *testing.T) {
 			},
 			expectedConfig: &config{
 				refreshInterval: 0,
+				timeout:         8 * time.Second,
 			},
 		},
 		{
@@ -72,13 +74,15 @@ func TestConfigParsing(t *testing.T) {
 			params: map[string][]string{},
 			expectedConfig: &config{
 				refreshInterval: 10 * time.Second,
+				timeout:         8 * time.Second,
 			},
 		},
 		{
 			name:   "Allow not setting a timeout",
 			params: map[string][]string{},
 			expectedConfig: &config{
-				refreshInterval: 8 * time.Second,
+				refreshInterval: 10 * time.Second,
+				timeout:         8 * time.Second,
 			},
 		},
 		{

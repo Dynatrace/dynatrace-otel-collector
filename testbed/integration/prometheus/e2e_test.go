@@ -86,6 +86,8 @@ func installPrometheusNodeExporter() error {
 		return fmt.Errorf("Failed to install Prometheus node exporter Helm chart %s", err)
 	}
 
+	// This is useful because it will print the output of
+	// the Helm commands (from install.sh), showing that the Prometheus Node Exporter is running.
 	fmt.Print(string(cmd))
 
 	return nil

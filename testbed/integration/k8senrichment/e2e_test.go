@@ -1,5 +1,3 @@
-//go:build e2e
-
 package k8senrichment
 
 import (
@@ -162,10 +160,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 
 func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expectedService string,
 	kvs map[string]*expectedValue) {
-	// Iterate over the received set of traces starting from the most recent entries due to a bug in the processor:
-	// https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/18892
-	// TODO: Remove the reverse loop once it's fixed. All the metrics should be properly annotated.
-	for i := len(ts.AllTraces()) - 1; i >= 0; i-- {
+	for i := 0; i < len(ts.AllTraces()); i++ {
 		traces := ts.AllTraces()[i]
 		for i := 0; i < traces.ResourceSpans().Len(); i++ {
 			resource := traces.ResourceSpans().At(i).Resource()

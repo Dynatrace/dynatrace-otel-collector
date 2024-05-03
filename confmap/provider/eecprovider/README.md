@@ -4,9 +4,9 @@ This is an OpenTelemetry Collector `confmap.Provider` module that allows the
 Collector to be configured with the Dynatrace Extensions Execution Controller.
 
 > [!WARNING]
-> This is not intended for customer use, but is only intended for use by
-> Dynatrace when managing its own Collector deployments. As such, issues with
-> this component will fall outside our support policy.
+> This is not intended for direct customer use, but is only intended for use by
+> Collector installations installed and managed by Dynatrace. Configuring this
+> component directly is not supported.
 
 ## Configuration
 

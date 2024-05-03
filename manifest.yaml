@@ -51,5 +51,4 @@ providers:
 
 replaces:
   - github.com/Dynatrace/dynatrace-otel-collector/confmap/provider => ../confmap/provider/
-  - github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eeciprovider => ../confmap/provider/eeciprovider
   - github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider => ../confmap/provider/eecprovider

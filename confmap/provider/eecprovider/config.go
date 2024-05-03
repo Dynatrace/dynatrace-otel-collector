@@ -20,6 +20,9 @@ type config struct {
 
 	// Token passed as the value for the header in authHeader.
 	authToken string
+
+	// Whether to use HTTP instead of HTTPS
+	insecure bool
 }
 
 func parseConfig(params url.Values) (config, error) {
@@ -61,6 +64,15 @@ func parseConfig(params url.Values) (config, error) {
 		}
 
 		cfg.authToken = env
+	}
+
+	if params.Has(Insecure) {
+		insecureParam := params.Get(Insecure)
+		if insecureParam == "true" {
+			cfg.insecure = true
+		} else if insecureParam != "false" {
+			return cfg, fmt.Errorf("valid values for %q are {true, false}; got %q", Insecure, insecureParam)
+		}
 	}
 
 	return cfg, nil

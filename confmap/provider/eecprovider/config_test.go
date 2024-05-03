@@ -35,11 +35,13 @@ func TestConfigParsing(t *testing.T) {
 				AuthHeader:      {"Bearer-Token"},
 				AuthFile:        {file.Name()},
 				RefreshInterval: {"1h"},
+				Insecure:        {"true"},
 			},
 			expectedConfig: &config{
 				authHeader:      "Bearer-Token",
 				authToken:       token,
 				refreshInterval: time.Hour,
+				insecure:        true,
 			},
 		},
 		{
@@ -111,6 +113,13 @@ func TestConfigParsing(t *testing.T) {
 			name: "Error when the auth token env var isn't set",
 			params: map[string][]string{
 				AuthEnv: {"ENV_VAR_NOT_SET"},
+			},
+			shouldError: true,
+		},
+		{
+			name: "Error when an invalid value is given to insecure",
+			params: map[string][]string{
+				Insecure: {"notvalid"},
 			},
 			shouldError: true,
 		},

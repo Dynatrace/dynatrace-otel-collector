@@ -13,7 +13,7 @@ Collector to be configured with the Dynatrace Extensions Execution Controller.
 This confmap Provider can be configured by pasing query parameter-formatted values
 inside the fragment of the URL given to the config flag. For example:
 
-```shell
+```text
 dynatrace-otel-collector --config=eec://my.eec.host:31098#refresh-interval=5s&auth-file=/var/private/token.key
 ```
 

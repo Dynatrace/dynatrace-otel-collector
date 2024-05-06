@@ -22,6 +22,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"go.opentelemetry.io/collector/confmap"
@@ -42,6 +43,14 @@ type provider struct {
 	// The provider will close this channel to signal to all watchers that
 	// the provider is shutting down and they should stop.
 	shutdown chan struct{}
+
+	// Should not be necessary, but protects the watcherCancelMap from
+	// data races caused by concurrent access.
+	watcherMapMux *sync.Mutex
+
+	// Keeps track of ongoing watcher functions and cancels existing runs
+	// if the same URL is requested again.
+	watcherCancelMap map[string]func()
 }
 
 var _ confmap.Provider = (*provider)(nil)
@@ -57,7 +66,7 @@ func NewFactory() confmap.ProviderFactory {
 
 func newProvider(_ confmap.ProviderSettings) confmap.Provider {
 	shutdown := make(chan struct{})
-	return &provider{shutdown: shutdown}
+	return &provider{shutdown: shutdown, watcherMapMux: &sync.Mutex{}, watcherCancelMap: map[string]func(){}}
 }
 
 // Create the client based on the type of scheme that was selected.
@@ -155,6 +164,21 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 	// the `refresh-interval` parameter was deliberately set to 0,
 	// we assume that polling for config updates has been disabled.
 	if watcherFunc != nil && cfg.refreshInterval.Nanoseconds() != 0 {
+		// If someone has requested the same URL twice, we want to ensure
+		// we are only watching it once. Currently upstream resolves the
+		// configuration twice (once for the config, once for the confmap),
+		// so we need to at a minimum protect against this case.
+		watcherCtx, cancel := context.WithCancel(ctx)
+		p.watcherMapMux.Lock()
+		url := req.URL.String()
+		if _, ok := p.watcherCancelMap[url]; ok {
+			p.watcherCancelMap[url]()
+		}
+		p.watcherCancelMap[url] = func() {
+			cancel()
+		}
+		p.watcherMapMux.Unlock()
+
 		watcher := &watcher{
 			shutdown: p.shutdown,
 			getConfigBytes: func(ctx context.Context) ([]byte, error) {
@@ -169,7 +193,7 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 			configHash:      sha256.Sum256(body),
 		}
 
-		go watcher.watchForChanges(ctx)
+		go watcher.watchForChanges(watcherCtx)
 	}
 
 	return NewRetrievedFromYAML(body)

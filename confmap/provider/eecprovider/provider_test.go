@@ -388,8 +388,13 @@ func TestReloadIfConfigChanges(t *testing.T) {
 	params.Set(RefreshInterval, "10ms")
 	uri.Fragment = params.Encode()
 
+	// Call Retrieve twice to verify that watcherFunc isn't registered twice
+	// then later called twice when the config changes.
 	_, err = ep.Retrieve(context.Background(), uri.String(), watcherFunc)
 	require.NoError(t, err)
+	_, err = ep.Retrieve(context.Background(), uri.String(), watcherFunc)
+	require.NoError(t, err)
+
 	require.Eventually(t, func() bool {
 		return count.Load() > 2
 	}, time.Second*3, time.Millisecond*50)

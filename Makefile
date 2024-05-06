@@ -13,6 +13,8 @@ ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not
 # Append root module to all modules
 GOMODULES = $(ALL_MODULES) $(PWD)
 
+SOURCES := $(shell find confmap -type f | sort )
+
 
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
@@ -60,7 +62,7 @@ $(TOOLS_BIN_DIR):
 $(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod | $(TOOLS_BIN_DIR)
 	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
-$(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN)
+$(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN) $(SOURCES)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
 $(MAIN): $(BUILDER) manifest.yaml

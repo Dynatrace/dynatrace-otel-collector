@@ -373,6 +373,9 @@ func TestReloadIfConfigChanges(t *testing.T) {
 	}
 	called := &atomic.Bool{}
 	watcherFunc := func(_ *confmap.ChangeEvent) {
+		if called.Load() {
+			require.FailNow(t, "Reloaded more than once")
+		}
 		called.Store(true)
 	}
 	ep := newEECProvider(confmaptest.NewNopProviderSettings())

@@ -8,6 +8,14 @@ BIN_DIR = bin
 # SRC_ROOT is the top of the source tree.
 SRC_ROOT := $(shell git rev-parse --show-toplevel)
 
+# ALL_MODULES includes ./* dirs (excludes . dir)
+ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
+# Append root module to all modules
+GOMODULES = $(ALL_MODULES) $(PWD)
+
+SOURCES := $(shell find confmap -type f | sort )
+
+
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
 
@@ -30,7 +38,11 @@ build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --snapshot --clean
 generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)
-	go test ./...
+	for MOD in $(GOMODULES); do \
+		cd $${MOD}; \
+		go test ./...; \
+		cd -; \
+	done
 clean:
 	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
 clean-tools:
@@ -50,7 +62,7 @@ $(TOOLS_BIN_DIR):
 $(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod | $(TOOLS_BIN_DIR)
 	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
-$(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN)
+$(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN) $(SOURCES)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
 $(MAIN): $(BUILDER) manifest.yaml

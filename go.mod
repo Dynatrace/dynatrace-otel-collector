@@ -2,7 +2,7 @@ module github.com/Dynatrace/dynatrace-otel-collector
 
 go 1.21.0
 
-toolchain go1.22.2
+toolchain go1.22.3
 
 require (
 	github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest v0.0.0

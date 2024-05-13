@@ -40,6 +40,12 @@ jobs:
           echo "Building collector artifact"
           make build
 
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dynatrace-otel-collector-bin
+          path: bin/dynatrace-otel-collector
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -59,10 +65,10 @@ jobs:
         run: |
           docker save dynatrace-otel-collector:e2e-test > /tmp/dynatrace-otel-collector.tar
 
-      - name: Upload artifact
+      - name: Upload container image artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dynatrace-otel-collector
+          name: dynatrace-otel-collector-image
           path: /tmp/dynatrace-otel-collector.tar
 
   k8s-e2e-test-matrix:
@@ -108,7 +114,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: dynatrace-otel-collector
+          name: dynatrace-otel-collector-image
           path: /tmp
 
       - name: Load Docker image
@@ -127,4 +133,42 @@ jobs:
       - name: Run e2e tests
         run: |
           cd ${{ matrix.usecase }}
+          go test -v --tags=e2e
+
+  eec-confmap-provider:
+    runs-on: ubuntu-latest
+    needs: docker-build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "~1.21.3"
+          check-latest: true
+          cache-dependency-path: internal/tools/go.sum
+
+      - name: Cache tools
+        uses: actions/cache@v4
+        with:
+          path: .tools
+          key: ci-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+
+      - name: Touch tools
+        run: |
+          mkdir -p .tools
+          touch .tools/*
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dynatrace-otel-collector-bin
+          path: bin
+
+      - run: chmod +x bin/*
+
+      - name: Run e2e tests
+        run: |
+          cd confmap/provider/eecprovider
           go test -v --tags=e2e

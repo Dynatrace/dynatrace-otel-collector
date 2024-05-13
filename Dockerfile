@@ -10,4 +10,4 @@ COPY --chmod=755 dynatrace-otel-collector /dynatrace-otel-collector
 COPY --chmod=644 config.yaml /etc/otelcol/config.yaml
 
 ENTRYPOINT ["/dynatrace-otel-collector"]
-CMD ["--config=/etc/otelcol/config.yaml"]
+CMD ["--config", "/etc/otelcol/config.yaml"]

@@ -1,4 +1,4 @@
-module github.com/Dynatrace/dynatrace-otel-collector
+module github.com/Dynatrace/dynatrace-otel-collector/internal/testbed
 
 go 1.21.0
 

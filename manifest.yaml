@@ -46,7 +46,7 @@ providers:
   - gomod: go.opentelemetry.io/collector/confmap/provider/httpprovider v0.100.0
   - gomod: go.opentelemetry.io/collector/confmap/provider/httpsprovider v0.100.0
   - gomod: go.opentelemetry.io/collector/confmap/provider/yamlprovider v0.100.0
-  - gomod: github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider v0.0.0
+  - gomod: github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider v0.0.0
 
 replaces:
-  - github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider => ../confmap/provider/eecprovider
+  - github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider => ../internal/confmap/provider/eecprovider

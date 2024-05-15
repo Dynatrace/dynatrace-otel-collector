@@ -17,7 +17,7 @@ For configuration examples, please see [`config_examples`].
 
 ### Container images
 
-Container images for the Dynatrace distribution of the [OpenTelemetry Collector] are available in:
+Container images for the Dynatrace distribution of the OpenTelemetry Collector are available in:
 
 - [GitHub Container Registry (GHCR)](https://github.com/Dynatrace/dynatrace-otel-collector/pkgs/container/dynatrace-otel-collector%2Fdynatrace-otel-collector)
 - [Amazon Elastic Container Registry (Amazon ECR)](https://gallery.ecr.aws/dynatrace/dynatrace-otel-collector)

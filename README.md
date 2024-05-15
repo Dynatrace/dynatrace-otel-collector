@@ -23,26 +23,6 @@ and the Collector's [troubleshooting guide].
 [OpenTelemetry documentation]: https://opentelemetry.io/docs/collector/troubleshooting/
 [troubleshooting guide]: https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/troubleshooting.md
 
-## OpenTelemetry Sampling Considerations
-
-### Mixed-Mode Sampling
-
-[OpenTelemetry tail-based sampling](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/tailsamplingprocessor) and [Dynatrace OneAgent Adaptive Traffic Management](https://docs.dynatrace.com/docs/observe-and-explore/purepath-distributed-traces/adaptive-traffic-management-saas) use different approaches to sampling.
-If a distributed trace, which may span multiple applications and services, only partially utilizes either method, it is likely to result in inconsistent results and incomplete distributed traces.
-Each distributed trace should be sampled by only one of either method to ensure each sampled trace is captured in its entirety.
-
-### Trace-Derived Service Metrics
-
-Dynatrace trace-derived metrics are calculated from trace data after it is ingested to Dynatrace.
-If OpenTelemetry traces are sampled, the trace-derived metrics are calculated only from the sampled subset of trace data.
-This means that some trace-derived metrics may be biased or incorrect.
-For example, a probabilistic sampler which saves 5% of traffic will result in a throughput metric that shows 5% of the actual throughput.
-If you use OpenTelemetry tail-based sampling to also capture 100% of slow or error traces, your service metrics will not only show incorrect throughput, but will also incorrectly bias error rates and response times.
-
-To mitigate this, if you wish to sample OpenTelemetry traces, you should calculate service metrics before sampling and use those metrics rather than the trace-derived metrics calculated by Dynatrace.
-If you are using the collector for sampling, trace-derived metrics should be calculated in the collector before applying sampling, or by the SDK.
-An example for deriving those metrics using the _Span Metrics Connector_ in the collector can be found at [config_examples/spanmetrics.yaml](config_examples/spanmetrics.yaml).
-
 ## Components
 
 ### Receivers
@@ -84,6 +64,26 @@ An example for deriving those metrics using the _Span Metrics Connector_ in the 
 
 * [forwardconnector](https://github.com/open-telemetry/opentelemetry-collector/tree/main/connector/forwardconnector)
 * [spanmetricsconnector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/spanmetricsconnector)
+
+## OpenTelemetry Sampling Considerations
+
+### Mixed-Mode Sampling
+
+[OpenTelemetry tail-based sampling](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/tailsamplingprocessor) and [Dynatrace OneAgent Adaptive Traffic Management](https://docs.dynatrace.com/docs/observe-and-explore/purepath-distributed-traces/adaptive-traffic-management-saas) use different approaches to sampling.
+If a distributed trace, which may span multiple applications and services, only partially utilizes either method, it is likely to result in inconsistent results and incomplete distributed traces.
+Each distributed trace should be sampled by only one of either method to ensure each sampled trace is captured in its entirety.
+
+### Trace-Derived Service Metrics
+
+Dynatrace trace-derived metrics are calculated from trace data after it is ingested to Dynatrace.
+If OpenTelemetry traces are sampled, the trace-derived metrics are calculated only from the sampled subset of trace data.
+This means that some trace-derived metrics may be biased or incorrect.
+For example, a probabilistic sampler which saves 5% of traffic will result in a throughput metric that shows 5% of the actual throughput.
+If you use OpenTelemetry tail-based sampling to also capture 100% of slow or error traces, your service metrics will not only show incorrect throughput, but will also incorrectly bias error rates and response times.
+
+To mitigate this, if you wish to sample OpenTelemetry traces, you should calculate service metrics before sampling and use those metrics rather than the trace-derived metrics calculated by Dynatrace.
+If you are using the collector for sampling, trace-derived metrics should be calculated in the collector before applying sampling, or by the SDK.
+An example for deriving those metrics using the _Span Metrics Connector_ in the collector can be found at [config_examples/spanmetrics.yaml](config_examples/spanmetrics.yaml).
 
 ## Support
 

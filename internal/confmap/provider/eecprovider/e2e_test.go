@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const CollectorBinary = "../../../bin/dynatrace-otel-collector"
+const CollectorBinary = "../../../../bin/dynatrace-otel-collector"
 
 func TestGetsConfig(t *testing.T) {
 	f, err := os.ReadFile("./testdata/otel-config.yaml")

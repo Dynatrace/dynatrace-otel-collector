@@ -11,9 +11,9 @@ SRC_ROOT := $(shell git rev-parse --show-toplevel)
 # ALL_MODULES includes ./* dirs (excludes . dir)
 ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
 # Append root module to all modules
-GOMODULES = $(ALL_MODULES) $(PWD)
+GOMODULES = $(ALL_MODULES)
 
-SOURCES := $(shell find confmap -type f | sort )
+SOURCES := $(shell find internal/confmap -type f | sort )
 
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go

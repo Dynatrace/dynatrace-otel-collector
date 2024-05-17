@@ -9,7 +9,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pcommon"
 )
 
-const CollectorTestsExecPath string = "../../bin/dynatrace-otel-collector"
+const CollectorTestsExecPath string = "../../../bin/dynatrace-otel-collector"
 
 func replaceOtlpGrpcReceiverPort(cfg string, receiverPort int) string {
 	return strings.Replace(cfg, "4317", strconv.Itoa(receiverPort), 1)

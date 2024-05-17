@@ -1,4 +1,4 @@
-module github.com/Dynatrace/dynatrace-otel-collector
+module github.com/Dynatrace/dynatrace-otel-collector/internal/testbed
 
 go 1.21.0
 
@@ -210,4 +210,4 @@ require (
 
 replace cloud.google.com/go => cloud.google.com/go v0.112.2
 
-replace github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest v0.0.0 => ./internal/k8stest
+replace github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest v0.0.0 => ../k8stest

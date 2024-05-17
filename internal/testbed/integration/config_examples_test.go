@@ -2,6 +2,7 @@ package integration
 
 import (
 	"os"
+	"path"
 	"strings"
 	"testing"
 	"time"
@@ -13,16 +14,20 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	semconv "go.opentelemetry.io/collector/semconv/v1.18.0"
+
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/testutil"
 )
+
+const ConfigExamplesDir = "../../../config_examples"
 
 func TestConfigTailSampling(t *testing.T) {
 	// arrange
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
-	cfg, err := os.ReadFile("../../config_examples/tail_sampling.yaml")
+	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "tail_sampling.yaml"))
 	require.NoError(t, err)
 
-	receiverPort := testbed.GetAvailablePort(t)
-	exporterPort := testbed.GetAvailablePort(t)
+	receiverPort := testutil.GetAvailablePort(t)
+	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
 	parsedConfig = replaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
@@ -115,11 +120,11 @@ func TestConfigTailSampling(t *testing.T) {
 func TestConfigJaegerGrpc(t *testing.T) {
 	// arrange
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
-	cfg, err := os.ReadFile("../../config_examples/jaeger.yaml")
+	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "jaeger.yaml"))
 	require.NoError(t, err)
 
-	grpcReceiverPort := testbed.GetAvailablePort(t)
-	exporterPort := testbed.GetAvailablePort(t)
+	grpcReceiverPort := testutil.GetAvailablePort(t)
+	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
 	parsedConfig = replaceJaegerGrpcReceiverPort(parsedConfig, grpcReceiverPort)
@@ -208,11 +213,11 @@ func TestConfigJaegerGrpc(t *testing.T) {
 func TestConfigHistogramTransform(t *testing.T) {
 	// arrange
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
-	cfg, err := os.ReadFile("../../config_examples/split_histogram.yaml")
+	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "split_histogram.yaml"))
 	require.NoError(t, err)
 
-	receiverPort := testbed.GetAvailablePort(t)
-	exporterPort := testbed.GetAvailablePort(t)
+	receiverPort := testutil.GetAvailablePort(t)
+	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
 	parsedConfig = replaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
@@ -318,11 +323,11 @@ func TestConfigHistogramTransform(t *testing.T) {
 func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	// arrange
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
-	cfg, err := os.ReadFile("../../config_examples/spanmetrics.yaml")
+	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "spanmetrics.yaml"))
 	require.NoError(t, err)
 
-	receiverPort := testbed.GetAvailablePort(t)
-	exporterPort := testbed.GetAvailablePort(t)
+	receiverPort := testutil.GetAvailablePort(t)
+	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
 	parsedConfig = replaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)

@@ -1,4 +1,4 @@
-module github.com/Dynatrace/dynatrace-otel-collector/confmap/provider/eecprovider
+module github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider
 
 go 1.21
 

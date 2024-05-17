@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var execPath = "../../bin/dynatrace-otel-collector"
+var execPath = "../../../bin/dynatrace-otel-collector"
 
 func TestCollectorStarts(t *testing.T) {
 	tests := []struct {
@@ -106,7 +106,7 @@ func TestCollectorStarts(t *testing.T) {
 
 func TestCollectorIsBuiltFromManifest(t *testing.T) {
 	components := getComponents(t)
-	b, err := os.ReadFile("../../manifest.yaml")
+	b, err := os.ReadFile("../../../manifest.yaml")
 	require.NoError(t, err)
 	manifestComponents := manifest{}
 	err = yaml.Unmarshal(b, &manifestComponents)

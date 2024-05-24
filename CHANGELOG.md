@@ -3,3 +3,31 @@
 # Changelog
 
 <!-- next version -->
+
+## v0.6.0
+
+This release includes version 0.101.0 of the upstream Collector components.
+
+The individual changelogs can be found here:
+
+v0.101.0:
+https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.101.0
+https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.101.0
+
+<details>
+
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 🛑 Breaking changes 🛑
+
+- `filelog, journald, tcp, udp, syslog, windowseventlog receivers`: The internal logger has been changed from zap.SugaredLogger to zap.Logger. ([#32177](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/32177))
+This should not have any meaningful impact on most users but the logging format for some logs may have changed.
+
+### 💡 Enhancements 💡
+
+- `filelogreceiver`: Add container operator parser ([#31959](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/31959))
+- `resourcedetectionprocessor`: Support GCP Bare Metal Solution in resource detection processor. ([#32985](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/32985))
+- `processor/transform`: Allow common where clause ([#27830](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/27830))
+
+</details>

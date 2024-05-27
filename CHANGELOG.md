@@ -8,11 +8,11 @@
 
 This release includes version 0.101.0 of the upstream Collector components.
 
-The individual changelogs can be found here:
+The individual upstream Collector changelogs can be found here:
 
 v0.101.0:
-https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.101.0
-https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.101.0
+- https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.101.0
+- https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.101.0
 
 <details>
 
@@ -31,3 +31,8 @@ This should not have any meaningful impact on most users but the logging format 
 - `processor/transform`: Allow common where clause ([#27830](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/27830))
 
 </details>
+
+### 💡 Enhancements 💡
+
+- Add section to list which container registries are available to pull images from ([#188](https://github.com/Dynatrace/dynatrace-otel-collector/pull/188))
+- Use chloggen to generate changelog entries ([#191](https://github.com/Dynatrace/dynatrace-otel-collector/pull/191))

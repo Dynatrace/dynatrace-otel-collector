@@ -1,0 +1,41 @@
+receivers:
+  syslog/f5:
+    tcp:
+      listen_address: "0.0.0.0:54526"
+    protocol: rfc5424
+    operators:
+      - type: add
+        field: attributes.log.source
+        value: syslog
+      - type: add
+        field: attributes.dt.ip_addresses
+        value: "1xx.xx.xx.xx1"
+      - type: add
+        field: attributes.instance.name
+        value: "ip-1xx-xx-x-xx9.ec2.internal"
+      - type: add
+        field: attributes.device.type
+        value: "f5bigip"
+  syslog/host:
+    tcp:
+      listen_address: "0.0.0.0:54527"
+    protocol: rfc5424
+    operators:
+      - type: add
+        field: attributes.log.source
+        value: syslog
+      - type: add
+        field: attributes.device.type
+        value: "ubuntu-syslog"
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+service:
+  pipelines:
+    logs:
+      receivers: [syslog/f5, syslog/host]
+      exporters: [otlphttp]

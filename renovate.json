@@ -3,11 +3,11 @@
   "extends": [
     "config:base"
   ],
+  "labels": ["dependencies"],
   "packageRules": [
     {
       "matchPackagePatterns": ["^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)"],
       "groupName": "OpenTelemetry Collector",
-      "labels": ["dependencies", "Skip Changelog"]
     }
   ],
   "regexManagers": [

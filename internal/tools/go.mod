@@ -2,7 +2,7 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/tools
 
 go 1.22
 
-toolchain go1.22.3
+toolchain go1.22.4
 
 require (
 	github.com/goreleaser/goreleaser v1.26.2

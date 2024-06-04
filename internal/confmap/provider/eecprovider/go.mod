@@ -1,10 +1,12 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider
 
-go 1.21
+go 1.21.0
+
+toolchain go1.22.3
 
 require (
 	github.com/stretchr/testify v1.9.0
-	go.opentelemetry.io/collector/confmap v0.101.0
+	go.opentelemetry.io/collector/confmap v0.102.0
 	go.uber.org/goleak v1.3.0
 	gopkg.in/yaml.v3 v3.0.1
 )

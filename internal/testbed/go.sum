@@ -2357,6 +2357,8 @@ go.opentelemetry.io/collector/receiver/otlpreceiver v0.102.1 h1:65/8lkVmOu6gwBw9
 go.opentelemetry.io/collector/receiver/otlpreceiver v0.102.1/go.mod h1:0hmxfFSSqKJjRGvgYjp/XvptbAgLhLguwNgJqMp7zd0=
 go.opentelemetry.io/collector/semconv v0.102.0 h1:VEOdog9IbSfaGR7yg4AVmT54MwHAgH9lzITH6C33uyc=
 go.opentelemetry.io/collector/semconv v0.102.0/go.mod h1:yMVUCNoQPZVq/IPfrHrnntZTWsLf5YGZ7qwKulIl5hw=
+go.opentelemetry.io/collector/semconv v0.102.1 h1:zLhz2Gu//j7HHESFTGTrfKIaoS4r+lZFQDnGCOThggo=
+go.opentelemetry.io/collector/semconv v0.102.1/go.mod h1:yMVUCNoQPZVq/IPfrHrnntZTWsLf5YGZ7qwKulIl5hw=
 go.opentelemetry.io/collector/service v0.102.0 h1:B5nfyQZF7eB/y+yucl9G/7VsusbXixYXWingXn7VszM=
 go.opentelemetry.io/collector/service v0.102.0/go.mod h1:c+0n0DfQeCjgrdplNHYwYbG/5aupTZVYU/50nMQraoc=
 go.opentelemetry.io/contrib/config v0.7.0 h1:b1rK5tGTuhhPirJiMxOcyQfZs76j2VapY6ODn3b2Dbs=

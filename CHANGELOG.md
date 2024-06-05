@@ -4,6 +4,38 @@
 
 <!-- next version -->
 
+## v0.7.0
+
+This release includes version 0.102.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+0.102.0:
+- https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.102.0
+- https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.102.0
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 🛑 Breaking changes 🛑
+
+- `envprovider`: Restricts Environment Variable names.  Environment variable names must now be ASCII only and start with a letter or an underscore, and can only contain underscores, letters, or numbers. ([#9531](https://github.com/open-telemetry/opentelemetry-collector/issues/9531))
+- `confighttp`: Apply MaxRequestBodySize to the result of a decompressed body ([#10289](https://github.com/open-telemetry/opentelemetry-collector/pull/10289))
+  When using compressed payloads, the Collector would verify only the size of the compressed payload. 
+  This change applies the same restriction to the decompressed content. As a security measure, a limit of 20 MiB was added, which makes this a breaking change. 
+  For most clients, this shouldn't be a problem, but if you often have payloads that decompress to more than 20 MiB, you might want to either configure your
+  client to send smaller batches (recommended), or increase the limit using the MaxRequestBodySize option.
+- `k8sattributesprocessor`: Move `k8sattr.rfc3339` feature gate to stable. ([#33304](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33304))
+
+### 🧰 Bug fixes 🧰
+
+- `batchprocessor`: ensure attributes are set on cardinality metadata metric ([#9674](https://github.com/open-telemetry/opentelemetry-collector/issues/9674))
+- `batchprocessor`: Fixing processor_batch_metadata_cardinality which was broken in v0.101.0 ([#10231](https://github.com/open-telemetry/opentelemetry-collector/issues/10231))
+- `batchprocessor`: respect telemetry level for all metrics ([#10234](https://github.com/open-telemetry/opentelemetry-collector/pull/10234))
+
+</details>
+
 ## v0.6.0
 
 This release includes version 0.101.0 of the upstream Collector components.

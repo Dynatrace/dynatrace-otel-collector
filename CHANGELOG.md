@@ -6,17 +6,25 @@
 
 ## v0.7.0
 
-This release includes version 0.102.0 of the upstream Collector components.
+This release includes version 0.102.1 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
+0.102.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.102.1>
+- (no changes/patch release for opentelemetry-collector-contrib)
+
 0.102.0:
-- https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.102.0
-- https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.102.0
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.102.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.102.0>
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 </br>
+
+### This release addresses CVE-2024-36129 ([GHSA-c74f-6mfw-mm4v](https://github.com/open-telemetry/opentelemetry-collector/security/advisories/GHSA-c74f-6mfw-mm4v)) fully
 
 ### 🛑 Breaking changes 🛑
 
@@ -33,6 +41,8 @@ The individual upstream Collector changelogs can be found here:
 - `batchprocessor`: ensure attributes are set on cardinality metadata metric ([#9674](https://github.com/open-telemetry/opentelemetry-collector/issues/9674))
 - `batchprocessor`: Fixing processor_batch_metadata_cardinality which was broken in v0.101.0 ([#10231](https://github.com/open-telemetry/opentelemetry-collector/issues/10231))
 - `batchprocessor`: respect telemetry level for all metrics ([#10234](https://github.com/open-telemetry/opentelemetry-collector/pull/10234))
+- `configrpc`: Use own compressors for zstd (#10323)
+   Before this change, the zstd compressor we used didn't respect the max message size. This addresses CVE-2024-36129 (GHSA-c74f-6mfw-mm4v) on `configgrpc`.
 
 </details>
 
@@ -43,8 +53,9 @@ This release includes version 0.101.0 of the upstream Collector components.
 The individual upstream Collector changelogs can be found here:
 
 v0.101.0:
-- https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.101.0
-- https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.101.0
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.101.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.101.0>
 
 <details>
 

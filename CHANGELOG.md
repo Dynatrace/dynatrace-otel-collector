@@ -10,9 +10,13 @@ This release includes version 0.102.0 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
+0.102.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.102.1>
+
 0.102.0:
-- https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.102.0
-- https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.102.0
+
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.102.0>
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
@@ -43,8 +47,9 @@ This release includes version 0.101.0 of the upstream Collector components.
 The individual upstream Collector changelogs can be found here:
 
 v0.101.0:
-- https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.101.0
-- https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.101.0
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.101.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.101.0>
 
 <details>
 

@@ -13,9 +13,11 @@ The individual upstream Collector changelogs can be found here:
 0.102.1:
 
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.102.1>
+- (no changes/patch release for opentelemetry-collector-contrib)
 
 0.102.0:
 
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.102.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.102.0>
 
 <details>

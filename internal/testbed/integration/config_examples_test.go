@@ -11,6 +11,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	semconv "go.opentelemetry.io/collector/semconv/v1.18.0"
@@ -417,6 +418,176 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	tc.WaitForN(func() bool {
 		// Verify we received all 3 spans, plus a data point per span for each of the 3 metrics produced by the span metrics connector.
 		return tc.MockBackend.DataItemsReceived() == uint64(expectedSpansData.SpanCount()+expectedSpansData.SpanCount()*3)
+	}, 5*time.Second, "all data items received")
+
+	// assert
+	tc.ValidateData()
+}
+
+func TestSyslog_WithF5Receiver(t *testing.T) {
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "syslog.yaml"))
+	require.NoError(t, err)
+
+	syslogReceiverPort := testutil.GetAvailablePort(t)
+	exporterPort := testutil.GetAvailablePort(t)
+
+	parsedConfig := string(cfg)
+	parsedConfig = replaceSyslogF5ReceiverPort(parsedConfig, syslogReceiverPort)
+	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+
+	configCleanup, err := col.PrepareConfig(parsedConfig)
+	require.NoError(t, err)
+	t.Cleanup(configCleanup)
+
+	actualLogsData := plog.NewLogs()
+	actualLogs := actualLogsData.ResourceLogs().AppendEmpty().ScopeLogs().AppendEmpty().LogRecords()
+
+	expectedLogsData := plog.NewLogs()
+	expectedLogs := expectedLogsData.ResourceLogs().AppendEmpty().ScopeLogs().AppendEmpty().LogRecords()
+
+	timestamp := time.Now()
+
+	actualSimpleLog := actualLogs.AppendEmpty()
+	actualSimpleLog.Body().SetStr("simple_1")
+	actualSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(timestamp))
+	actualSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
+	actualSimpleLog.SetTraceID(uInt64ToTraceID(0, uint64(1)))
+	actualSimpleLog.SetSpanID(uInt64ToSpanID(uint64(2)))
+	actualSimpleLog.Attributes().PutStr("foo", "bar")
+
+	expectedSimpleLog := expectedLogs.AppendEmpty()
+	// the following attributes are attached by the receiver (see config), no other attributes are automatically populated
+	expectedSimpleLogAttrLog := expectedSimpleLog.Attributes().PutEmptyMap("log")
+	expectedSimpleLogAttrLog.PutStr("source", "syslog")
+	expectedSimpleLogAttrDt := expectedSimpleLog.Attributes().PutEmptyMap("dt")
+	expectedSimpleLogAttrDt.PutStr("ip_addresses", "1xx.xx.xx.xx1")
+	expectedSimpleLogAttrInstance := expectedSimpleLog.Attributes().PutEmptyMap("instance")
+	expectedSimpleLogAttrInstance.PutStr("name", "ip-1xx-xx-x-xx9.ec2.internal")
+	expectedSimpleLogAttrDevice := expectedSimpleLog.Attributes().PutEmptyMap("device")
+	expectedSimpleLogAttrDevice.PutStr("type", "f5bigip")
+	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
+	expectedSimpleLog.SetTraceID(uInt64ToTraceID(0, uint64(0)))
+	expectedSimpleLog.SetSpanID(uInt64ToSpanID(uint64(0)))
+	expectedSimpleLog.Body().SetStr("<166> " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\" ] simple_1")
+	// ObservedTimestamp will be the time the receiver "observes" the log, so we test that the timestamp is after what's defined here.
+	expectedSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
+	// the timestamp from the actual log will be discarded (it defaults to the beginning of Unix time)
+	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(time.Unix(0, 0)))
+
+	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
+	sender := datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
+	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
+	validator := NewSyslogSampleConfigValidator(t, expectedLogsData)
+
+	tc := testbed.NewTestCase(
+		t,
+		dataProvider,
+		sender,
+		receiver,
+		col,
+		validator,
+		&testbed.CorrectnessResults{},
+	)
+	t.Cleanup(tc.Stop)
+
+	tc.EnableRecording()
+	tc.StartBackend()
+	tc.StartAgent()
+
+	// act
+	tc.StartLoad(testbed.LoadOptions{
+		DataItemsPerSecond: 3,
+		ItemsPerBatch:      3,
+	})
+	tc.Sleep(2 * time.Second)
+	tc.StopLoad()
+
+	tc.WaitForN(func() bool {
+		return tc.MockBackend.DataItemsReceived() == uint64(expectedLogsData.LogRecordCount())
+	}, 5*time.Second, "all data items received")
+
+	// assert
+	tc.ValidateData()
+}
+
+func TestSyslog_WithHostReceiver(t *testing.T) {
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "syslog.yaml"))
+	require.NoError(t, err)
+
+	syslogReceiverPort := testutil.GetAvailablePort(t)
+	exporterPort := testutil.GetAvailablePort(t)
+
+	parsedConfig := string(cfg)
+	parsedConfig = replaceSyslogHostReceiverPort(parsedConfig, syslogReceiverPort)
+	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+
+	configCleanup, err := col.PrepareConfig(parsedConfig)
+	require.NoError(t, err)
+	t.Cleanup(configCleanup)
+
+	actualLogsData := plog.NewLogs()
+	actualLogs := actualLogsData.ResourceLogs().AppendEmpty().ScopeLogs().AppendEmpty().LogRecords()
+
+	expectedLogsData := plog.NewLogs()
+	expectedLogs := expectedLogsData.ResourceLogs().AppendEmpty().ScopeLogs().AppendEmpty().LogRecords()
+
+	timestamp := time.Now()
+
+	actualSimpleLog := actualLogs.AppendEmpty()
+	actualSimpleLog.Body().SetStr("simple_1")
+	actualSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(timestamp))
+	actualSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
+	actualSimpleLog.SetTraceID(uInt64ToTraceID(0, uint64(1)))
+	actualSimpleLog.SetSpanID(uInt64ToSpanID(uint64(2)))
+	actualSimpleLog.Attributes().PutStr("foo", "bar")
+
+	expectedSimpleLog := expectedLogs.AppendEmpty()
+	// the following attributes are attached by the receiver (see config), no other attributes are automatically populated
+	expectedSimpleLogAttrLog := expectedSimpleLog.Attributes().PutEmptyMap("log")
+	expectedSimpleLogAttrLog.PutStr("source", "syslog")
+	expectedSimpleLogAttrDevice := expectedSimpleLog.Attributes().PutEmptyMap("device")
+	expectedSimpleLogAttrDevice.PutStr("type", "ubuntu-syslog")
+	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
+	expectedSimpleLog.SetTraceID(uInt64ToTraceID(0, uint64(0)))
+	expectedSimpleLog.SetSpanID(uInt64ToSpanID(uint64(0)))
+	expectedSimpleLog.Body().SetStr("<166> " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\" ] simple_1")
+	// ObservedTimestamp will be the time the receiver "observes" the log, so we test that the timestamp is after what's defined here.
+	expectedSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
+	// the timestamp from the actual log will be discarded (it defaults to the beginning of Unix time)
+	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(time.Unix(0, 0)))
+
+	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
+	sender := datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
+	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
+	validator := NewSyslogSampleConfigValidator(t, expectedLogsData)
+
+	tc := testbed.NewTestCase(
+		t,
+		dataProvider,
+		sender,
+		receiver,
+		col,
+		validator,
+		&testbed.CorrectnessResults{},
+	)
+	t.Cleanup(tc.Stop)
+
+	tc.EnableRecording()
+	tc.StartBackend()
+	tc.StartAgent()
+
+	// act
+	tc.StartLoad(testbed.LoadOptions{
+		DataItemsPerSecond: 3,
+		ItemsPerBatch:      3,
+	})
+	tc.Sleep(2 * time.Second)
+	tc.StopLoad()
+
+	tc.WaitForN(func() bool {
+		return tc.MockBackend.DataItemsReceived() == uint64(expectedLogsData.LogRecordCount())
 	}, 5*time.Second, "all data items received")
 
 	// assert

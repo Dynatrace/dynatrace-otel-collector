@@ -14,11 +14,18 @@ var _ testbed.DataProvider = &sampleConfigsDataProvider{}
 type sampleConfigsDataProvider struct {
 	traces             ptrace.Traces
 	metrics            pmetric.Metrics
+	logs               plog.Logs
 	dataItemsGenerated *atomic.Uint64
 }
 
-func (*sampleConfigsDataProvider) GenerateLogs() (plog.Logs, bool) {
-	return plog.NewLogs(), true
+func (dp *sampleConfigsDataProvider) GenerateLogs() (plog.Logs, bool) {
+	// We want to send a fixed number of logs always
+	if int(dp.dataItemsGenerated.Load()) == dp.logs.LogRecordCount() {
+		return plog.NewLogs(), false
+	}
+
+	dp.dataItemsGenerated.Add(uint64(dp.logs.LogRecordCount()))
+	return dp.logs, false
 }
 
 func (dp *sampleConfigsDataProvider) GenerateMetrics() (pmetric.Metrics, bool) {
@@ -54,5 +61,11 @@ func NewSampleConfigsTraceDataProvider(traces ptrace.Traces) testbed.DataProvide
 func NewSampleConfigsMetricsDataProvider(metrics pmetric.Metrics) testbed.DataProvider {
 	return &sampleConfigsDataProvider{
 		metrics: metrics,
+	}
+}
+
+func NewSampleConfigsLogsDataProvider(logs plog.Logs) testbed.DataProvider {
+	return &sampleConfigsDataProvider{
+		logs: logs,
 	}
 }

@@ -19,6 +19,14 @@ func replaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
 	return strings.Replace(cfg, "14250", strconv.Itoa(receiverPort), 1)
 }
 
+func replaceSyslogHostReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "54527", strconv.Itoa(receiverPort), 1)
+}
+
+func replaceSyslogF5ReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "54526", strconv.Itoa(receiverPort), 1)
+}
+
 func replaceDynatraceExporterEndpoint(cfg string, exporterPort int) string {
 	r := strings.NewReplacer(
 		"${env:DT_ENDPOINT}", fmt.Sprintf("http://0.0.0.0:%v", exporterPort),

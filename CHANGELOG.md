@@ -4,6 +4,45 @@
 
 <!-- next version -->
 
+## v0.8.0
+
+This release includes version 0.103.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.103.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.103.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.103.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 🛑 Breaking changes 🛑
+
+- `exporter/debug`: Disable sampling by default ([#9921](https://github.com/open-telemetry/opentelemetry-collector/issues/9921)).
+  To restore the behavior that was previously the default, set `sampling_thereafter` to `500`.
+
+### 🚩 Deprecations 🚩 ###
+
+- `healthcheckextension`: Remove incorrect logic behind `check_collector_pipeline` config ([#33469](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33469)).
+  This logic incorrectly set the pipeline to OK after waiting for enough callbacks from the
+  opencensus library to be called. As this was broken, I'm removing it to remove the dependency
+  on opencensus as well. Improvements will be available via healthcheckv2 extension.
+
+
+### 🧰 Bug fixes 🧰
+
+- `filelogreceiver`: Container parser should add k8s metadata as resource attributes and not as log record attributes ([#33341](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33341))
+- `prometheusreceiver`: Fall back to scrape config job/instance labels for aggregated metrics without instance/job labels ([#32555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32555))
+
+</details>
+
+### 💡 Enhancements 💡
+
+- `examples`: Added an example for using the syslog receiver, as well as integration tests for the added example. (#136)
+
 ## v0.7.0
 
 This release includes version 0.102.1 of the upstream Collector components.

@@ -11,10 +11,9 @@ SRC_ROOT := $(shell git rev-parse --show-toplevel)
 # ALL_MODULES includes ./* dirs (excludes . dir)
 ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
 # Append root module to all modules
-GOMODULES = $(ALL_MODULES) $(PWD)
+GOMODULES = $(ALL_MODULES)
 
-SOURCES := $(shell find confmap -type f | sort )
-
+SOURCES := $(shell find internal/confmap -type f | sort )
 
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
@@ -31,6 +30,9 @@ TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
 
 GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
 BUILDER    := $(TOOLS_BIN_DIR)/builder
+CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
+
+CHLOGGEN_CONFIG := .chloggen/config.yaml
 
 .PHONY: build generate test clean clean-all components install-tools snapshot release
 build: $(BIN)
@@ -70,3 +72,20 @@ $(MAIN): $(BUILDER) manifest.yaml
 
 $(CP_FILES_DEST): $(MAIN)
 	cp $(notdir $@) $@
+
+FILENAME?=$(shell git branch --show-current)
+.PHONY: chlog-new
+chlog-new: $(CHLOGGEN)
+	$(CHLOGGEN) new --config $(CHLOGGEN_CONFIG) --filename $(FILENAME)
+
+.PHONY: chlog-validate
+chlog-validate: $(CHLOGGEN)
+	$(CHLOGGEN) validate --config $(CHLOGGEN_CONFIG)
+
+.PHONY: chlog-preview
+chlog-preview: $(CHLOGGEN)
+	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --dry
+
+.PHONY: chlog-update
+chlog-update: $(CHLOGGEN)
+	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --version $(VERSION)

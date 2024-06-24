@@ -15,12 +15,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const CollectorBinary = "../../../../bin/dynatrace-otel-collector"
+
 func TestGetsConfig(t *testing.T) {
 	f, err := os.ReadFile("./testdata/otel-config.yaml")
 	require.NoError(t, err)
 	fs := &fileserver{config: f}
 	ts := httptest.NewServer(http.HandlerFunc(fs.HandleRequest))
-	cmd := exec.Command("../../../bin/dynatrace-otel-collector", fmt.Sprintf("--config=%s", configureProvider(t, ts.URL)))
+	cmd := exec.Command(CollectorBinary, fmt.Sprintf("--config=%s", configureProvider(t, ts.URL)))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Start()
@@ -51,7 +53,7 @@ func TestReloadsConfig(t *testing.T) {
 	require.NoError(t, err)
 	fs := &fileserver{config: f}
 	ts := httptest.NewServer(http.HandlerFunc(fs.HandleRequest))
-	cmd := exec.Command("../../../bin/dynatrace-otel-collector", fmt.Sprintf("--config=%s", configureProvider(t, ts.URL)))
+	cmd := exec.Command(CollectorBinary, fmt.Sprintf("--config=%s", configureProvider(t, ts.URL)))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Start()
@@ -96,7 +98,7 @@ func TestReloadsConfig(t *testing.T) {
 func TestFailsOnBadConfig(t *testing.T) {
 	fs := &fileserver{}
 	ts := httptest.NewServer(http.HandlerFunc(fs.HandleRequest))
-	cmd := exec.Command("../../../bin/dynatrace-otel-collector", fmt.Sprintf("--config=%s", configureProvider(t, ts.URL)))
+	cmd := exec.Command(CollectorBinary, fmt.Sprintf("--config=%s", configureProvider(t, ts.URL)))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Start()

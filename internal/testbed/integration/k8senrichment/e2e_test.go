@@ -28,8 +28,9 @@ const (
 	equal = iota
 	regex
 	exist
-	testKubeConfig = "/tmp/kube-config-collector-e2e-testing"
-	uidRe          = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+	testKubeConfig   = "/tmp/kube-config-collector-e2e-testing"
+	kubeConfigEnvVar = "KUBECONFIG"
+	uidRe            = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
 )
 
 type expectedValue struct {
@@ -49,7 +50,13 @@ func newExpectedValue(mode int, value string) *expectedValue {
 func TestE2E_ClusterRBAC(t *testing.T) {
 	testDir := filepath.Join("testdata")
 
-	k8sClient, err := k8stest.NewK8sClient(testKubeConfig)
+	kubeConfigPath := testKubeConfig
+
+	if kubeConfigFromEnv := os.Getenv(kubeConfigEnvVar); kubeConfigFromEnv != "" {
+		kubeConfigPath = kubeConfigFromEnv
+	}
+
+	k8sClient, err := k8stest.NewK8sClient(kubeConfigPath)
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test
@@ -69,7 +76,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"))
+	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), os.Getenv("CONTAINER_REGISTRY"))
 	createTeleOpts := &k8stest.TelemetrygenCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
 		TestID:       testID,

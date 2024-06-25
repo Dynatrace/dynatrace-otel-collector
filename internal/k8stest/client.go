@@ -6,6 +6,7 @@ package k8stest // import "github.com/open-telemetry/opentelemetry-collector-con
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"k8s.io/client-go/discovery"
 	memory "k8s.io/client-go/discovery/cached"
@@ -14,13 +15,24 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+const (
+	testKubeConfig   = "/tmp/kube-config-collector-e2e-testing"
+	kubeConfigEnvVar = "KUBECONFIG"
+)
+
 type K8sClient struct {
 	DynamicClient   *dynamic.DynamicClient
 	DiscoveryClient *discovery.DiscoveryClient
 	Mapper          *restmapper.DeferredDiscoveryRESTMapper
 }
 
-func NewK8sClient(kubeconfigPath string) (*K8sClient, error) {
+func NewK8sClient() (*K8sClient, error) {
+
+	kubeconfigPath := testKubeConfig
+
+	if kubeConfigFromEnv := os.Getenv(kubeConfigEnvVar); kubeConfigFromEnv != "" {
+		kubeconfigPath = kubeConfigFromEnv
+	}
 
 	if kubeconfigPath == "" {
 		return nil, errors.New("Please provide file path to load kubeconfig")

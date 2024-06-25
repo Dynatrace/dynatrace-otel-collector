@@ -8,6 +8,9 @@
 
 This release includes version 0.103.0 of the upstream Collector components.
 
+*NOTE:* This release is in line with the upstream distribution of the Collector version 0.103.1, which is based on the same
+0.103.0 upstream Collector components.
+
 The individual upstream Collector changelogs can be found here:
 
 v0.103.0:

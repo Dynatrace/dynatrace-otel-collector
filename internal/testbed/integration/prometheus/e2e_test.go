@@ -33,7 +33,7 @@ const (
 func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	testDir := filepath.Join("testdata")
 
-	k8sClient, err := k8stest.NewK8sClient(testKubeConfig)
+	k8sClient, err := k8stest.NewK8sClient()
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test

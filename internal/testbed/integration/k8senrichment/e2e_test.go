@@ -28,9 +28,7 @@ const (
 	equal = iota
 	regex
 	exist
-	testKubeConfig   = "/tmp/kube-config-collector-e2e-testing"
-	kubeConfigEnvVar = "KUBECONFIG"
-	uidRe            = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+	uidRe = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
 )
 
 type expectedValue struct {
@@ -50,13 +48,7 @@ func newExpectedValue(mode int, value string) *expectedValue {
 func TestE2E_ClusterRBAC(t *testing.T) {
 	testDir := filepath.Join("testdata")
 
-	kubeConfigPath := testKubeConfig
-
-	if kubeConfigFromEnv := os.Getenv(kubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeConfigPath = kubeConfigFromEnv
-	}
-
-	k8sClient, err := k8stest.NewK8sClient(kubeConfigPath)
+	k8sClient, err := k8stest.NewK8sClient()
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test

@@ -33,7 +33,7 @@ const (
 func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	testDir := filepath.Join("testdata")
 
-	k8sClient, err := k8stest.NewK8sClient(testKubeConfig)
+	k8sClient, err := k8stest.NewK8sClient()
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test
@@ -56,7 +56,7 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"))
+	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), os.Getenv("CONTAINER_REGISTRY"))
 	defer func() {
 		for _, obj := range collectorObjs {
 			require.NoErrorf(t, k8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())

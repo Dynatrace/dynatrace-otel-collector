@@ -101,22 +101,31 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 		name           string
 		service        string
 		attrs          map[string]expectedValue
-		scopeSpanAttrs map[string]expectedValue
+		scopeSpanAttrs []map[string]expectedValue
 	}{
 		{
 			name:    "frontend-traces",
 			service: "frontend",
-			scopeSpanAttrs: map[string]expectedValue{
-				"http.method": newExpectedValue(equal, "GET"),
-				"http.path":   newExpectedValue(equal, "/"),
+			scopeSpanAttrs: []map[string]expectedValue{
+				{
+					"http.method": newExpectedValue(equal, "GET"),
+					"http.path":   newExpectedValue(equal, "/"),
+				},
+				{
+					"http.method":  newExpectedValue(equal, "GET"),
+					"http.path":    newExpectedValue(equal, "/api"),
+					"peer.service": newExpectedValue(equal, "backend"),
+				},
 			},
 		},
 		{
 			name:    "backend-traces",
 			service: "backend",
-			scopeSpanAttrs: map[string]expectedValue{
-				"http.method": newExpectedValue(equal, "GET"),
-				"http.path":   newExpectedValue(equal, "/api"),
+			scopeSpanAttrs: []map[string]expectedValue{
+				{
+					"http.method": newExpectedValue(equal, "GET"),
+					"http.path":   newExpectedValue(equal, "/api"),
+				},
 			},
 		},
 	}
@@ -126,7 +135,7 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	}
 }
 
-func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expectedService string, kvs map[string]expectedValue, scopeSpanAttrs map[string]expectedValue) {
+func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expectedService string, kvs map[string]expectedValue, scopeSpanAttrs []map[string]expectedValue) {
 	for i := 0; i < len(ts.AllTraces()); i++ {
 		traces := ts.AllTraces()[i]
 		for i := 0; i < traces.ResourceSpans().Len(); i++ {
@@ -141,7 +150,19 @@ func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 			assert.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().At(0).Spans().Len())
 
 			scopeSpan := traces.ResourceSpans().At(i).ScopeSpans().At(0)
-			assert.NoError(t, attributesContainValues(scopeSpan.Spans().At(0).Attributes(), scopeSpanAttrs))
+
+			// look for matching spans containing the desired attributes
+			for _, spanAttrs := range scopeSpanAttrs {
+				var err error
+				for j := 0; j < scopeSpan.Spans().Len(); j++ {
+					err = attributesContainValues(scopeSpan.Spans().At(j).Attributes(), spanAttrs)
+					if err == nil {
+						break
+					}
+				}
+				assert.NoError(t, err)
+			}
+
 			return
 		}
 	}

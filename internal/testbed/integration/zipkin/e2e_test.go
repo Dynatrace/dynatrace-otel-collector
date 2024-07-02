@@ -179,7 +179,7 @@ func attributesContainValues(attrs pcommon.Map, kvs map[string]*expectedValue) e
 	var err error
 	for k, v := range foundAttrs {
 		if !v {
-			err = multierr.Append(err, fmt.Errorf("%v attribute not found. got attributes: %v", k, attrs))
+			err = multierr.Append(err, fmt.Errorf("%v attribute not found. got attributes: %#v", k, attrs.AsRaw()))
 		}
 	}
 	return err

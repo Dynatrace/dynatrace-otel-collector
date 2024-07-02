@@ -1,0 +1,14 @@
+receivers:
+  zipkin:
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+service:
+  pipelines:
+    traces:
+      receivers: [zipkin]
+      exporters: [otlphttp]

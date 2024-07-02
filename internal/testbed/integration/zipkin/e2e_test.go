@@ -98,34 +98,35 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	waitForData(t, wantEntries, tracesConsumer)
 
 	tcs := []struct {
-		name    string
-		service string
-		attrs   map[string]*expectedValue
+		name           string
+		service        string
+		attrs          map[string]*expectedValue
+		scopeSpanAttrs map[string]*expectedValue
 	}{
 		{
-			name:    "traces-deployment",
-			service: "test-traces-deployment",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":                newExpectedValue(regex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
-				"k8s.pod.uid":                 newExpectedValue(regex, uidRe),
-				"k8s.deployment.name":         newExpectedValue(equal, "telemetrygen-"+testID+"-traces-deployment"),
-				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-deployment"),
-				"dt.kubernetes.workload.kind": newExpectedValue(equal, "deployment"),
-				"k8s.namespace.name":          newExpectedValue(equal, testNs),
-				"k8s.node.name":               newExpectedValue(exist, ""),
-				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),
-				"dt.kubernetes.cluster.id":    newExpectedValue(regex, uidRe),
+			name:    "frontend-traces",
+			service: "frontend",
+			scopeSpanAttrs: map[string]*expectedValue{
+				"http.method": newExpectedValue(equal, "GET"),
+				"http.path":   newExpectedValue(equal, "/"),
+			},
+		},
+		{
+			name:    "backend-traces",
+			service: "backend",
+			scopeSpanAttrs: map[string]*expectedValue{
+				"http.method": newExpectedValue(equal, "GET"),
+				"http.path":   newExpectedValue(equal, "/api"),
 			},
 		},
 	}
 
 	for _, tc := range tcs {
-		scanTracesForAttributes(t, tracesConsumer, tc.service, tc.attrs)
+		scanTracesForAttributes(t, tracesConsumer, tc.service, tc.attrs, tc.scopeSpanAttrs)
 	}
 }
 
-func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expectedService string,
-	kvs map[string]*expectedValue) {
+func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expectedService string, kvs map[string]*expectedValue, scopeSpanAttrs map[string]*expectedValue) {
 	for i := 0; i < len(ts.AllTraces()); i++ {
 		traces := ts.AllTraces()[i]
 		for i := 0; i < traces.ResourceSpans().Len(); i++ {
@@ -135,20 +136,25 @@ func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 			if service.AsString() != expectedService {
 				continue
 			}
-			assert.NoError(t, resourceHasAttributes(resource, kvs))
+			assert.NoError(t, attributesContainValues(resource.Attributes(), kvs))
+
+			assert.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().Len())
+			assert.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().At(0).Spans().Len())
+			scopeSpan := traces.ResourceSpans().At(i).ScopeSpans().At(0)
+			assert.NoError(t, attributesContainValues(scopeSpan.Spans().At(0).Attributes(), scopeSpanAttrs))
 			return
 		}
 	}
 	t.Fatalf("no spans found for service %s", expectedService)
 }
 
-func resourceHasAttributes(resource pcommon.Resource, kvs map[string]*expectedValue) error {
+func attributesContainValues(attrs pcommon.Map, kvs map[string]*expectedValue) error {
 	foundAttrs := make(map[string]bool)
 	for k := range kvs {
 		foundAttrs[k] = false
 	}
 
-	resource.Attributes().Range(
+	attrs.Range(
 		func(k string, v pcommon.Value) bool {
 			if val, ok := kvs[k]; ok {
 				switch val.mode {

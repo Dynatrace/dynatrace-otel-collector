@@ -38,8 +38,8 @@ type expectedValue struct {
 	value string
 }
 
-func newExpectedValue(mode int, value string) *expectedValue {
-	return &expectedValue{
+func newExpectedValue(mode int, value string) expectedValue {
+	return expectedValue{
 		mode:  mode,
 		value: value,
 	}
@@ -100,13 +100,13 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	tcs := []struct {
 		name           string
 		service        string
-		attrs          map[string]*expectedValue
-		scopeSpanAttrs map[string]*expectedValue
+		attrs          map[string]expectedValue
+		scopeSpanAttrs map[string]expectedValue
 	}{
 		{
 			name:    "frontend-traces",
 			service: "frontend",
-			scopeSpanAttrs: map[string]*expectedValue{
+			scopeSpanAttrs: map[string]expectedValue{
 				"http.method": newExpectedValue(equal, "GET"),
 				"http.path":   newExpectedValue(equal, "/"),
 			},
@@ -114,7 +114,7 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 		{
 			name:    "backend-traces",
 			service: "backend",
-			scopeSpanAttrs: map[string]*expectedValue{
+			scopeSpanAttrs: map[string]expectedValue{
 				"http.method": newExpectedValue(equal, "GET"),
 				"http.path":   newExpectedValue(equal, "/api"),
 			},
@@ -126,7 +126,7 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	}
 }
 
-func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expectedService string, kvs map[string]*expectedValue, scopeSpanAttrs map[string]*expectedValue) {
+func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expectedService string, kvs map[string]expectedValue, scopeSpanAttrs map[string]expectedValue) {
 	for i := 0; i < len(ts.AllTraces()); i++ {
 		traces := ts.AllTraces()[i]
 		for i := 0; i < traces.ResourceSpans().Len(); i++ {
@@ -148,7 +148,7 @@ func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 	t.Fatalf("no spans found for service %s", expectedService)
 }
 
-func attributesContainValues(attrs pcommon.Map, kvs map[string]*expectedValue) error {
+func attributesContainValues(attrs pcommon.Map, kvs map[string]expectedValue) error {
 	foundAttrs := make(map[string]bool)
 	for k := range kvs {
 		foundAttrs[k] = false

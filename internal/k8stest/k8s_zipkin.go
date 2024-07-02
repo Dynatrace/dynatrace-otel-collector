@@ -14,19 +14,19 @@ import (
 	"time"
 )
 
-type ZipkinObjInfo struct {
+type ZipkinAppObjInfo struct {
 	Namespace         string
 	PodLabelSelectors map[string]any
 }
 
-type ZipkinCreateOpts struct {
+type ZipkinAppCreateOpts struct {
 	TestID       string
 	ManifestsDir string
 	OtlpEndpoint string
 }
 
-func CreateZipkinObjects(t *testing.T, client *K8sClient, createOpts *ZipkinCreateOpts) ([]*unstructured.Unstructured, []*ZipkinObjInfo) {
-	telemetrygenObjInfos := make([]*ZipkinObjInfo, 0)
+func CreateZipkinAppObjects(t *testing.T, client *K8sClient, createOpts *ZipkinAppCreateOpts) ([]*unstructured.Unstructured, []*ZipkinAppObjInfo) {
+	telemetrygenObjInfos := make([]*ZipkinAppObjInfo, 0)
 	manifestFiles, err := os.ReadDir(createOpts.ManifestsDir)
 	require.NoErrorf(t, err, "failed to read telemetrygen manifests directory %s", createOpts.ManifestsDir)
 	createdObjs := make([]*unstructured.Unstructured, 0, len(manifestFiles))
@@ -41,7 +41,7 @@ func CreateZipkinObjects(t *testing.T, client *K8sClient, createOpts *ZipkinCrea
 		obj, err := CreateObject(client, manifest.Bytes())
 		require.NoErrorf(t, err, "failed to create zipkin object from manifest %s", manifestFile.Name())
 		selector := obj.Object["spec"].(map[string]any)["selector"]
-		telemetrygenObjInfos = append(telemetrygenObjInfos, &ZipkinObjInfo{
+		telemetrygenObjInfos = append(telemetrygenObjInfos, &ZipkinAppObjInfo{
 			Namespace:         obj.GetNamespace(),
 			PodLabelSelectors: selector.(map[string]any)["matchLabels"].(map[string]any),
 		})
@@ -50,7 +50,7 @@ func CreateZipkinObjects(t *testing.T, client *K8sClient, createOpts *ZipkinCrea
 	return createdObjs, telemetrygenObjInfos
 }
 
-func WaitForZipkinToStart(t *testing.T, client *K8sClient, podNamespace string, podLabels map[string]any) {
+func WaitForZipkinAppToStart(t *testing.T, client *K8sClient, podNamespace string, podLabels map[string]any) {
 	podGVR := schema.GroupVersionResource{Version: "v1", Resource: "pods"}
 	listOptions := metav1.ListOptions{LabelSelector: SelectorFromMap(podLabels).String()}
 	podTimeoutMinutes := 3

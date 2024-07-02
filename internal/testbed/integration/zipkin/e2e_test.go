@@ -77,14 +77,13 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 
 	testID := uuid.NewString()[:8]
 	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"))
-	createZipkinOpts := &k8stest.ZipkinCreateOpts{
-		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
+	createZipkinOpts := &k8stest.ZipkinAppCreateOpts{
+		ManifestsDir: filepath.Join(testDir, "zipkin"),
 		TestID:       testID,
 		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
 	}
 
-	// TODO change to zipkin objects
-	zipkinObjs, zipkinObjInfos := k8stest.CreateZipkinObjects(t, k8sClient, createZipkinOpts)
+	zipkinObjs, zipkinObjInfos := k8stest.CreateZipkinAppObjects(t, k8sClient, createZipkinOpts)
 	defer func() {
 		for _, obj := range append(collectorObjs, zipkinObjs...) {
 			require.NoErrorf(t, k8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
@@ -92,7 +91,7 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	}()
 
 	for _, info := range zipkinObjInfos {
-		k8stest.WaitForZipkinToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors)
+		k8stest.WaitForZipkinAppToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors)
 	}
 
 	wantEntries := 30 // Minimal number of traces to wait for.
@@ -104,34 +103,6 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 		attrs   map[string]*expectedValue
 	}{
 		{
-			name:    "traces-job",
-			service: "test-traces-job",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":             newExpectedValue(regex, "telemetrygen-"+testID+"-traces-job-[a-z0-9]*"),
-				"k8s.pod.uid":              newExpectedValue(regex, uidRe),
-				"k8s.job.name":             newExpectedValue(equal, "telemetrygen-"+testID+"-traces-job"),
-				"k8s.namespace.name":       newExpectedValue(equal, testNs),
-				"k8s.node.name":            newExpectedValue(exist, ""),
-				"k8s.cluster.uid":          newExpectedValue(regex, uidRe),
-				"dt.kubernetes.cluster.id": newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:    "traces-statefulset",
-			service: "test-traces-statefulset",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":                newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset-0"),
-				"k8s.pod.uid":                 newExpectedValue(regex, uidRe),
-				"k8s.statefulset.name":        newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset"),
-				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset"),
-				"dt.kubernetes.workload.kind": newExpectedValue(equal, "statefulset"),
-				"k8s.namespace.name":          newExpectedValue(equal, testNs),
-				"k8s.node.name":               newExpectedValue(exist, ""),
-				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),
-				"dt.kubernetes.cluster.id":    newExpectedValue(regex, uidRe),
-			},
-		},
-		{
 			name:    "traces-deployment",
 			service: "test-traces-deployment",
 			attrs: map[string]*expectedValue{
@@ -140,21 +111,6 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 				"k8s.deployment.name":         newExpectedValue(equal, "telemetrygen-"+testID+"-traces-deployment"),
 				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-deployment"),
 				"dt.kubernetes.workload.kind": newExpectedValue(equal, "deployment"),
-				"k8s.namespace.name":          newExpectedValue(equal, testNs),
-				"k8s.node.name":               newExpectedValue(exist, ""),
-				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),
-				"dt.kubernetes.cluster.id":    newExpectedValue(regex, uidRe),
-			},
-		},
-		{
-			name:    "traces-daemonset",
-			service: "test-traces-daemonset",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":                newExpectedValue(regex, "telemetrygen-"+testID+"-traces-daemonset-[a-z0-9]*"),
-				"k8s.pod.uid":                 newExpectedValue(regex, uidRe),
-				"k8s.daemonset.name":          newExpectedValue(equal, "telemetrygen-"+testID+"-traces-daemonset"),
-				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-daemonset"),
-				"dt.kubernetes.workload.kind": newExpectedValue(equal, "daemonset"),
 				"k8s.namespace.name":          newExpectedValue(equal, testNs),
 				"k8s.node.name":               newExpectedValue(exist, ""),
 				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),

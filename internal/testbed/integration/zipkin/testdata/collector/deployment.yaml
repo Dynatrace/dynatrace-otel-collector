@@ -21,14 +21,14 @@ spec:
           command:
             - /dynatrace-otel-collector
             - --config=/conf/relay.yaml
-          image: "dynatrace-otel-collector:e2e-test"
+          image: "localhost/dynatrace-otel-collector:e2e-test"
           ports:
             - name: otlp
               containerPort: 4317
               protocol: TCP
             - name: zipkin
-              port: 9411
-              targetPort: 9411
+              containerPort: 9411
+              protocol: TCP
           env:
             - name: MY_POD_IP
               valueFrom:

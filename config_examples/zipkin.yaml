@@ -1,5 +1,6 @@
 receivers:
   zipkin:
+    endpoint: localhost:9411
 
 exporters:
   otlphttp:

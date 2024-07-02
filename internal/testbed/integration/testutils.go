@@ -19,6 +19,10 @@ func replaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
 	return strings.Replace(cfg, "14250", strconv.Itoa(receiverPort), 1)
 }
 
+func replaceZipkinReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "9411", strconv.Itoa(receiverPort), 1)
+}
+
 func replaceSyslogHostReceiverPort(cfg string, receiverPort int) string {
 	return strings.Replace(cfg, "54527", strconv.Itoa(receiverPort), 1)
 }

@@ -14,6 +14,7 @@ Dynatrace distribution of the OpenTelemetry Collector.
 - [Splitting `sum`/`count` from Histogram metrics](split_histogram.yaml)
 - [Deriving request metrics from pre-sampled traces](spanmetrics.yaml)
 - [Syslog Receiver](syslog.yaml)
+- [Zipkin Receiver](zipkin.yaml)
 
 ## Sending data to Dynatrace
 

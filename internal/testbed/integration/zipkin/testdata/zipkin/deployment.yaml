@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin-brave-example-frontend
+  namespace: e2ezipkin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin-brave-example-frontend
+  template:
+    metadata:
+      annotations:
+        workload: deployment
+      labels:
+        app: zipkin-brave-example-frontend
+    spec:
+      containers:
+        - image: ghcr.io/openzipkin/brave-example:armeria
+          imagePullPolicy: IfNotPresent
+          command: ["start-frontend"]
+          name: brave-example-frontend
+          env:
+            - name: BACKEND_ENDPOINT
+              value: http://localhost:9000/api
+            - name: 'ZIPKIN_BASEURL'
+              value: 'http://otelcol-{{ .TestID }}:9411/'
+        - image: ghcr.io/openzipkin/brave-example:armeria
+          imagePullPolicy: IfNotPresent
+          command: [ "start-backend" ]
+          name: brave-example-backend
+          env:
+          - name: 'ZIPKIN_BASEURL'
+            value: 'http://otelcol-{{ .TestID }}:9411/'
+        - name: create-load
+          image: curlimages/curl
+          command:
+            - "sh"
+            - "-c"
+            - "while true; do curl http://localhost:8081; sleep 1; done"

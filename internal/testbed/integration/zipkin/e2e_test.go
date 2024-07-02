@@ -137,9 +137,9 @@ func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 				continue
 			}
 			assert.NoError(t, attributesContainValues(resource.Attributes(), kvs))
-
 			assert.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().Len())
 			assert.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().At(0).Spans().Len())
+
 			scopeSpan := traces.ResourceSpans().At(i).ScopeSpans().At(0)
 			assert.NoError(t, attributesContainValues(scopeSpan.Spans().At(0).Attributes(), scopeSpanAttrs))
 			return
@@ -179,7 +179,7 @@ func attributesContainValues(attrs pcommon.Map, kvs map[string]*expectedValue) e
 	var err error
 	for k, v := range foundAttrs {
 		if !v {
-			err = multierr.Append(err, fmt.Errorf("%v attribute not found. got attributes: %#v", k, attrs.AsRaw()))
+			err = multierr.Append(err, fmt.Errorf("%v attribute not found. expected attributes: %#v. actual attributes: %#v", k, kvs, attrs.AsRaw()))
 		}
 	}
 	return err

@@ -6,7 +6,8 @@ metadata:
 data:
   relay: |
     extensions:
-      health_check: {}
+      health_check:
+        endpoint: 0.0.0.0:13133
     receivers:
       otlp:
         protocols:

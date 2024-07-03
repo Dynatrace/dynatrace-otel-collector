@@ -219,6 +219,9 @@ func startUpSinks(t *testing.T, tc *consumertest.TracesSink) func() {
 	f := otlpreceiver.NewFactory()
 	cfg := f.CreateDefaultConfig().(*otlpreceiver.Config)
 
+	cfg.GRPC.NetAddr.Endpoint = "0.0.0.0:4317"
+	cfg.HTTP.Endpoint = "0.0.0.0:4318"
+
 	rcvr, err := f.CreateTracesReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, tc)
 	require.NoError(t, err, "failed creating traces receiver")
 

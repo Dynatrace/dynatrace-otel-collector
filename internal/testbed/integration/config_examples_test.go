@@ -1,8 +1,11 @@
 package integration
 
 import (
+	"fmt"
+	"net"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -409,6 +412,103 @@ func TestConfigHistogramTransform(t *testing.T) {
 	tc.WaitForN(func() bool {
 		return tc.MockBackend.DataItemsReceived() == uint64(expectedMetricData.MetricCount())
 	}, 5*time.Second, "all data items received")
+
+	// assert
+	tc.ValidateData()
+}
+
+func TestConfigStatsdTransform(t *testing.T) {
+	t.Skip("THIS TEST IS INCOMPLETE AND BROKEN")
+
+	// Create collector with statsd configuration
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "statsd.yaml"))
+	require.NoError(t, err)
+
+	receiverPort := testutil.GetAvailablePort(t)
+	exporterPort := testutil.GetAvailablePort(t)
+
+	parsedConfig := string(cfg)
+	parsedConfig = replaceStatsdReceiverPort(parsedConfig, receiverPort)
+	// Change aggregation interval to 6 seconds to ensure test completes in a reasonable time
+	parsedConfig = replaceStatsdAggregationInterval(parsedConfig, "6s")
+	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+
+	configCleanup, err := col.PrepareConfig(parsedConfig)
+	require.NoError(t, err)
+	t.Cleanup(configCleanup)
+
+	// Create an OTLP metric which will be validated against the received data
+	expectedMetricData := pmetric.NewMetrics()
+	expectedMetrics := expectedMetricData.ResourceMetrics().AppendEmpty().ScopeMetrics().AppendEmpty().Metrics()
+
+	startTime := time.Now()
+	// Metric start time will be set to the end of the previous collection cycle for DELTA metrics
+	startTimeStamp := pcommon.NewTimestampFromTime(startTime)
+	// Add a default PeriodicExportingMetricReader interval (30s)
+	timeStamp := pcommon.NewTimestampFromTime(startTime.Add(time.Second * 30))
+
+	// Begin with a simple gauge as it is the easiest to understand and validate
+	gauge := expectedMetrics.AppendEmpty()
+	gauge.SetName("my.gauge")
+	gauge.SetUnit("1")
+	gauge.SetDescription("My custom gauge")
+	gauge.SetEmptyGauge()
+	gaugeDataPoint := gauge.Gauge().DataPoints().AppendEmpty()
+	gaugeDataPoint.Attributes().PutStr("key", "value")
+	gaugeDataPoint.SetStartTimestamp(startTimeStamp)
+	gaugeDataPoint.SetTimestamp(timeStamp)
+	gaugeDataPoint.SetIntValue(73)
+
+	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
+	validator := NewMetricSampleConfigsValidator(t, expectedMetricData)
+
+	// Prepare directory for results.
+	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
+	require.NoErrorf(t, err, "Cannot resolve %s", t.Name())
+	require.NoErrorf(t, os.MkdirAll(resultDir, os.ModePerm), "Cannot create directory %s", resultDir)
+
+	// Start collector
+	logFileName, err := filepath.Abs(path.Join(resultDir, "agent.log"))
+	require.NoError(t, err, "Cannot resolve %s", logFileName)
+	startParams := testbed.StartParams{
+		Name:        "Agent",
+		LogFilePath: logFileName,
+		CmdArgs:     make([]string, 0),
+	}
+	if err := col.Start(startParams); err != nil {
+		t.Error(err)
+		return
+	}
+
+	// Start watching resource consumption.
+	go func() {
+		if err := col.WatchResourceConsumption(); err != nil {
+			t.Error(err)
+		}
+	}()
+
+	t.Cleanup(tc.Stop)
+
+	// start load with no datapoints to get test infrastructure started
+	tc.StartLoad(testbed.LoadOptions{
+		DataItemsPerSecond: 0,
+		ItemsPerBatch:      0,
+	})
+	tc.StopLoad()
+
+	// this is where we send our statsd data
+	conn, err := net.Dial("udp", fmt.Sprintf("%s:%d", testbed.DefaultHost, receiverPort))
+	require.NoError(t, err)
+
+	fmt.Fprintf(conn, "my.gauge:333|g")
+	err = conn.Close()
+	require.NoError(t, err)
+
+	// wait 10 seconds to ensure aggregation interval is met
+	tc.WaitForN(func() bool {
+		return tc.MockBackend.DataItemsReceived() == uint64(expectedMetricData.MetricCount())
+	}, 10*time.Second, "all data items received")
 
 	// assert
 	tc.ValidateData()

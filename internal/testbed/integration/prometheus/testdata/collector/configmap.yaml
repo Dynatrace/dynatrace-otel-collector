@@ -7,7 +7,7 @@ data:
   relay: |
     extensions:
       health_check:
-        endpoint: localhost:13133
+        endpoint: ${env:MY_POD_IP}:13133
     receivers:
       prometheus:
         config:

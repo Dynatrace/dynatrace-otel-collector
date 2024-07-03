@@ -1,7 +1,7 @@
 receivers:
   syslog/f5:
     tcp:
-      listen_address: "0.0.0.0:54526"
+      listen_address: "localhost:54526"
     protocol: rfc5424
     operators:
       - type: add
@@ -18,7 +18,7 @@ receivers:
         value: "f5bigip"
   syslog/host:
     tcp:
-      listen_address: "0.0.0.0:54527"
+      listen_address: "localhost:54527"
     protocol: rfc5424
     operators:
       - type: add

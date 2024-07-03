@@ -1,5 +1,6 @@
 receivers:
   statsd:
+    aggregation_interval: 60s
     endpoint: 0.0.0.0:8125
     timer_histogram_mapping:
       - statsd_type: "histogram"

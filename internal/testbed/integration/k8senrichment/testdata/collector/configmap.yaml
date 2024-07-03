@@ -6,7 +6,8 @@ metadata:
 data:
   relay: |
     extensions:
-      health_check: {}
+      health_check:
+        endpoint: ${env:MY_POD_IP}:13133
     receivers:
       otlp:
         protocols:
@@ -53,6 +54,8 @@ data:
               - set(attributes["dt.kubernetes.workload.name"], attributes["k8s.daemonset.name"]) where IsString(attributes["k8s.daemonset.name"])
               - set(attributes["dt.kubernetes.cluster.id"], attributes["k8s.cluster.uid"]) where IsString(attributes["k8s.cluster.uid"])
     exporters:
+      debug:
+        verbosity: normal
       otlp:
         endpoint: {{ .HostEndpoint }}:4317
         tls:
@@ -69,6 +72,7 @@ data:
           - transform
           exporters:
           - otlp
+          - debug
         metrics:
           receivers:
           - otlp
@@ -77,6 +81,7 @@ data:
           - transform
           exporters:
           - otlp
+          - debug
         traces:
           receivers:
           - otlp
@@ -85,3 +90,4 @@ data:
           - transform
           exporters:
           - otlp
+          - debug

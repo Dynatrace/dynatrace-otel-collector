@@ -21,7 +21,6 @@ spec:
           command:
             - /dynatrace-otel-collector
             - --config=/conf/relay.yaml
-            - --feature-gates=-component.UseLocalHostAsDefaultHost
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
           ports:
             - name: otlp

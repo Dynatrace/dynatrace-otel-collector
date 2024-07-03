@@ -130,6 +130,7 @@ func assertExpectedMetrics(expectedMetrics []string, sm pmetric.MetricSlice) err
 func startUpSinks(t *testing.T, mc *consumertest.MetricsSink) func() {
 	f := otlpreceiver.NewFactory()
 	cfg := f.CreateDefaultConfig().(*otlpreceiver.Config)
+	cfg.GRPC.NetAddr.Endpoint = "0.0.0.0:4317"
 
 	rcvr, err := f.CreateMetricsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, mc)
 	require.NoError(t, err, "failed creating metrics receiver")

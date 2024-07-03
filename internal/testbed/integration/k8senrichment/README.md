@@ -29,11 +29,8 @@ kind create cluster
 ```
 ### Build the collector binary
 
-This is done using the 
-```shell
-make build
-```
-command. This will build the collector distro, and place the built binary 
+This is done using the `make build` command.
+This will build the collector distro, and place the built binary 
 into the `bin` directory of your local copy of the repository.
 
 **NOTE:** When using an M1 mac, the `make build` command will build the `arm64` binary, which
@@ -72,7 +69,7 @@ cd ..
 After the above steps are completed, the E2E tests can be run.
 
 Note that the tests will, by default, use the following `kubeconfig` path: `/tmp/kube-config-collector-e2e-testing`.
-This path can be modified by setting the `KUBECONFIG` environment variable (in case you have a local kind cluster with the 
+This path can be modified by setting the `KUBECONFIG` environment variable (in case you have a local kind cluster with the
 kube config located in `~/.kube.config`).
 Also, if you are using `podman`, the collector image will be prefixed with `localhost/` within the local
 `kind` registry. In this case, you will need to set the `CONTAINER_REGISTRY` to `localhost/`.

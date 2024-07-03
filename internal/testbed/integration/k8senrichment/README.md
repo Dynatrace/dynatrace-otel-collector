@@ -79,7 +79,7 @@ Below are the commands to execute the `k8senrichment` e2e test:
 ** Using podman:**
 ```shell
 cd internal/testbed/integration/k8senrichment
-KUBECONFIG="/Users/my-user/.kube/config" CONTAINER_REGISTRY="localhost/" go test -v --tags=e2e
+KUBECONFIG="~/.kube/config" CONTAINER_REGISTRY="localhost/" go test -v --tags=e2e
 ```
 
 ** Using docker:**

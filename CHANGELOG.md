@@ -15,16 +15,17 @@ v0.104.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.104.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.104.0>
 
+This release includes 2 very important breaking changes.
+
+1. The `otlpreceiver` will now use `localhost` by default instead of `0.0.0.0`. This may break the receiver when the sender is not running on the same host, particularly in containerized environments like Kubernetes. If you depend on `0.0.0.0` disable the `component.UseLocalHostAsDefaultHost` feature gate or explicitly set the endpoint to `0.0.0.0`.
+   For more details, check out the [OTel blog post](opentelemetry.io/blog/2024/hardening-the-collector-one).
+2. Expansion of BASH-style environment variables, such as `$FOO` will no longer be supported by default. If you depend on this syntax, disable the `confmap.unifyEnvVarExpansion` feature gate, but know that the feature will be removed in the future in favor of `${env:FOO}`.
+
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 </br>
 
 ### 🛑 Breaking changes 🛑
-
-This release includes 2 very important breaking changes.
-
-1. The `otlpreceiver` will now use `localhost` by default instead of `0.0.0.0`. This may break the receiver when the sender is not running on the same host, particularly in containerized environments like Kubernetes. If you depend on `0.0.0.0` disable the `component.UseLocalHostAsDefaultHost` feature gate or explicitly set the endpoint to `0.0.0.0`.
-2. Expansion of BASH-style environment variables, such as `$FOO` will no longer be supported by default. If you depend on this syntax, disable the `confmap.unifyEnvVarExpansion` feature gate, but know that the feature will be removed in the future in favor of `${env:FOO}`.
 
 - `pkg/ottl`: Changed ScopeContext, InstrumentationResourceContext, TransformContext interfaces to make SchemaURL accessible in resources and scopes on all signals ([#30229](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30229))
 - `filter`: Remove deprecated `filter.CombinedFilter` ([#10348](https://github.com/open-telemetry/opentelemetry-collector/issues/10348))

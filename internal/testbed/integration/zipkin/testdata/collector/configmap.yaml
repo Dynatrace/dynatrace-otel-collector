@@ -10,6 +10,7 @@ data:
         endpoint: 0.0.0.0:13133
     receivers:
       zipkin:
+        endpoint: 0.0.0.0:9411
 
     exporters:
       otlp:

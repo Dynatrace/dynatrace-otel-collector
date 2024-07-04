@@ -43,6 +43,31 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+nfpms:
+  - package_name: dtotelcol
+    contents:
+      - src: otelcol.service
+        dst: /lib/systemd/system/otelcol.service
+      - src: otelcol.conf
+        dst: /etc/otelcol/otelcol.conf
+        type: config|noreplace
+      - src: config.yaml
+        dst: /etc/otelcol/config.yaml
+        type: config|noreplace
+    scripts:
+      preinstall: preinstall.sh
+      postinstall: postinstall.sh
+      preremove: preremove.sh
+    id: dtotelcol
+    builds:
+      - dtotelcol
+    formats:
+      - apk
+      - deb
+      - rpm
+    maintainer: TBD
+    description: Dynatrace distribution of the OpenTelemetry Collector
+    license: Apache 2.0
 dockers:
   - goos: linux
     goarch: amd64

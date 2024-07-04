@@ -30,8 +30,6 @@ This release includes 2 very important breaking changes.
 - `filter`: Remove deprecated `filter.CombinedFilter` ([#10348](https://github.com/open-telemetry/opentelemetry-collector/issues/10348))
 - `otelcol`: By default, `otelcol.NewCommand` and `otelcol.NewCommandMustSetProvider` will set the `DefaultScheme` to `env`. [#10435](https://github.com/open-telemetry/opentelemetry-collector/issues/10435))
 - `otelcol`: The otelcol.NewCommand now requires at least one provider be set. ([#10436](https://github.com/open-telemetry/opentelemetry-collector/issues/10436))
-- `otlpreceiver`: Switch to `localhost` as the default for all endpoints. ([#8510](https://github.com/open-telemetry/opentelemetry-collector/issues/8510))
-  Disable the `component.UseLocalHostAsDefaultHost` feature gate to temporarily get the previous default.
 
 ### 🚩 Deprecations 🚩
 

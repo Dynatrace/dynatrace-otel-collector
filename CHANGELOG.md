@@ -26,32 +26,32 @@ This release includes 2 very important breaking changes.
 1. The `otlpreceiver` will now use `localhost` by default instead of `0.0.0.0`. This may break the receiver in containerized environments like Kubernetes. If you depend on `0.0.0.0` disable the `component.UseLocalHostAsDefaultHost` feature gate or explicitly set the endpoint to `0.0.0.0`.
 2. Expansion of BASH-style environment variables, such as `$FOO` will no longer be supported by default. If you depend on this syntax, disable the `confmap.unifyEnvVarExpansion` feature gate, but know that the feature will be removed in the future in favor of `${env:FOO}`.
 
-- `pkg/ottl`: Changed ScopeContext, InstrumentationResourceContext, TransformContext interfaces to make SchemaURL accessible in resources and scopes on all signals [#30229](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30229)
-- `filter`: Remove deprecated `filter.CombinedFilter` [#10348](https://github.com/open-telemetry/opentelemetry-collector/issues/10348)
-- `otelcol`: By default, `otelcol.NewCommand` and `otelcol.NewCommandMustSetProvider` will set the `DefaultScheme` to `env`. [#10435](https://github.com/open-telemetry/opentelemetry-collector/issues/10435)
-- `otelcol`: The otelcol.NewCommand now requires at least one provider be set. [#10436](https://github.com/open-telemetry/opentelemetry-collector/issues/10436)
-- `otlpreceiver`: Switch to `localhost` as the default for all endpoints. [#8510](https://github.com/open-telemetry/opentelemetry-collector/issues/8510)
+- `pkg/ottl`: Changed ScopeContext, InstrumentationResourceContext, TransformContext interfaces to make SchemaURL accessible in resources and scopes on all signals ([#30229](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30229))
+- `filter`: Remove deprecated `filter.CombinedFilter` ([#10348](https://github.com/open-telemetry/opentelemetry-collector/issues/10348))
+- `otelcol`: By default, `otelcol.NewCommand` and `otelcol.NewCommandMustSetProvider` will set the `DefaultScheme` to `env`. [#10435](https://github.com/open-telemetry/opentelemetry-collector/issues/10435))
+- `otelcol`: The otelcol.NewCommand now requires at least one provider be set. ([#10436](https://github.com/open-telemetry/opentelemetry-collector/issues/10436))
+- `otlpreceiver`: Switch to `localhost` as the default for all endpoints. ([#8510](https://github.com/open-telemetry/opentelemetry-collector/issues/8510))
   Disable the `component.UseLocalHostAsDefaultHost` feature gate to temporarily get the previous default.
 
 ### 🚩 Deprecations 🚩
 
-- `otelcol`: The `otelcol.NewCommandMustSetProvider` is deprecated. Use `otelcol.NewCommand` instead. [#10436](https://github.com/open-telemetry/opentelemetry-collector/issues/10436)
+- `otelcol`: The `otelcol.NewCommandMustSetProvider` is deprecated. Use `otelcol.NewCommand` instead. ([#10436](https://github.com/open-telemetry/opentelemetry-collector/issues/10436))
 
 ### 💡 Enhancements 💡
 
-- `k8sattributesprocessor`: Add support for exposing `k8s.pod.ip` as a resource attribute [#32960](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32960)
-- `debugexporter`: In `normal` verbosity, display one line of text for each telemetry record (log, data point, span) [#7806](https://github.com/open-telemetry/opentelemetry-collector/issues/7806)
-- `debugexporter`: Add option `use_internal_logger` [#10226](https://github.com/open-telemetry/opentelemetry-collector/issues/10226)
-- `debugexporter`: Print Span.TraceState() when present. [#10421](https://github.com/open-telemetry/opentelemetry-collector/issues/10421)
+- `k8sattributesprocessor`: Add support for exposing `k8s.pod.ip` as a resource attribute ([#32960](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32960))
+- `debugexporter`: In `normal` verbosity, display one line of text for each telemetry record (log, data point, span) ([#7806](https://github.com/open-telemetry/opentelemetry-collector/issues/7806))
+- `debugexporter`: Add option `use_internal_logger` ([#10226](https://github.com/open-telemetry/opentelemetry-collector/issues/10226))
+- `debugexporter`: Print Span.TraceState() when present. ([#10421](https://github.com/open-telemetry/opentelemetry-collector/issues/10421))
 
 ### 🧰 Bug fixes 🧰
 
-- `resourcedetectionprocessor`: Fetch CPU info only if related attributes are enabled [#33774](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33774)
-- `tailsamplingprocessor`: Fix precedence of inverted match in and policy [#33671](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33671)
+- `resourcedetectionprocessor`: Fetch CPU info only if related attributes are enabled ([#33774](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33774))
+- `tailsamplingprocessor`: Fix precedence of inverted match in and policy ([#33671](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33671))
   Previously if the decision from a policy evaluation was `NotSampled` or `InvertNotSampled` it would return a `NotSampled` decision regardless, effectively downgrading the result.
   This was breaking the documented behaviour that inverted decisions should take precedence over all others.
-- `otlpexporter`: Update validation to support both dns:// and dns:/// [#10449](https://github.com/open-telemetry/opentelemetry-collector/issues/10449)
-- `service`: Fixed a bug that caused otel-collector to fail to start with ipv6 metrics endpoint service telemetry. [#10011](https://github.com/open-telemetry/opentelemetry-collector/issues/10011)
+- `otlpexporter`: Update validation to support both dns:// and dns:/// ([#10449](https://github.com/open-telemetry/opentelemetry-collector/issues/10449))
+- `service`: Fixed a bug that caused otel-collector to fail to start with ipv6 metrics endpoint service telemetry. ([#10011](https://github.com/open-telemetry/opentelemetry-collector/issues/10011))
   
 </details>
 

@@ -7,6 +7,13 @@ Dynatrace distribution of the OpenTelemetry Collector.
 > The examples in this directory are for documentation purposes only and are not considered stable. Examples
 > may change at any time and without notice.
 
+> [!CAUTION]
+> While it is generally preferable to bind endpoints to localhost when all clients are local, our example 
+> configurations use the “unspecified” address 0.0.0.0 as a convenience. 
+> The Collector currently defaults to 0.0.0.0, but the default will be changed to localhost in the near future.
+> For details concerning either of these choices as endpoint configuration value, see Safeguards
+> against denial of service attacks.
+
 ## Samples
 
 - [Jaeger Receiver](jaeger.yaml)

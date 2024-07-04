@@ -8,11 +8,10 @@ Dynatrace distribution of the OpenTelemetry Collector.
 > may change at any time and without notice.
 
 > [!CAUTION]
-> While it is generally preferable to bind endpoints to localhost when all clients are local, our example 
-> configurations use the “unspecified” address 0.0.0.0 as a convenience. 
-> The Collector currently defaults to 0.0.0.0, but the default will be changed to localhost in the near future.
-> For details concerning either of these choices as endpoint configuration value, see Safeguards
-> against denial of service attacks.
+> It is generally preferable to bind endpoints to localhost when all clients are local.
+> As of this release, that is also the default, but for convenience, our example 
+> configurations use the “unspecified” address 0.0.0.0.
+> For details concerning either of these choices as endpoint configuration value, see [Safeguards against denial of service attacks.](https://github.com/open-telemetry/opentelemetry-collector/blob/v0.104.0/docs/security-best-practices.md#safeguards-against-denial-of-service-attacks)
 
 ## Samples
 

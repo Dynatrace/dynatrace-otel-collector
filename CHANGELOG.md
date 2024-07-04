@@ -15,11 +15,12 @@ v0.104.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.104.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.104.0>
 
-This release includes 2 very important breaking changes.
-
-1. The `otlpreceiver`, `jaegerreceiver` and `healthcheckextension` will now use `localhost` by default instead of `0.0.0.0`. This may break the receivers when the sender is not running on the same host, particularly in containerized environments like Kubernetes. If you depend on `0.0.0.0` disable the `component.UseLocalHostAsDefaultHost` feature gate or explicitly set the endpoint to `0.0.0.0`.
-   For more details, check out the [OTel blog post](https://opentelemetry.io/blog/2024/hardening-the-collector-one).
-2. Expansion of BASH-style environment variables, such as `$FOO` will no longer be supported by default. If you depend on this syntax, disable the `confmap.unifyEnvVarExpansion` feature gate, but know that the feature will be removed in the future in favor of `${env:FOO}`.
+> [!WARNING]
+> This release includes two important breaking changes:
+> 
+> 1. The `otlpreceiver`, `jaegerreceiver` and `healthcheckextension` will now use `localhost` by default instead of `0.0.0.0`. This may break the receivers when the sender is not running on the same host, particularly in containerized environments like Kubernetes. If you depend on `0.0.0.0` disable the `component.UseLocalHostAsDefaultHost` feature gate or explicitly set the endpoint to `0.0.0.0`.
+>    For more details, check out the [OTel blog post](https://opentelemetry.io/blog/2024/hardening-the-collector-one).
+> 2. Expansion of BASH-style environment variables, such as `$FOO` will no longer be supported by default. If you depend on this syntax, disable the `confmap.unifyEnvVarExpansion` feature gate, but know that the feature will be removed in the future in favor of `${env:FOO}`.
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>

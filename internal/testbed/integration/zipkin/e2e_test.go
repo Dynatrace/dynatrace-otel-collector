@@ -50,13 +50,7 @@ func newExpectedValue(mode int, value string) expectedValue {
 func TestE2E_ZipkinReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
 
-	kubeconfigPath := testKubeConfig
-
-	if kubeConfigFromEnv := os.Getenv(kubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
-	}
-
-	k8sClient, err := k8stest.NewK8sClient(kubeconfigPath)
+	k8sClient, err := k8stest.NewK8sClient()
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test

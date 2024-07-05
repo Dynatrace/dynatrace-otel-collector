@@ -4,6 +4,99 @@
 
 <!-- next version -->
 
+## v0.9.0
+
+This release includes version 0.104.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.104.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.104.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.104.0>
+
+> [!WARNING]
+> This release includes two important breaking changes:
+> 
+> 1. The `otlpreceiver`, `jaegerreceiver` and `healthcheckextension` will now use `localhost` by default instead of `0.0.0.0`. This may break the receivers when the sender is not running on the same host, particularly in containerized environments like Kubernetes. If you depend on `0.0.0.0` disable the `component.UseLocalHostAsDefaultHost` feature gate or explicitly set the endpoint to `0.0.0.0`.
+>    For more details, check out the [OTel blog post](https://opentelemetry.io/blog/2024/hardening-the-collector-one).
+> 2. Expansion of BASH-style environment variables, such as `$FOO` will no longer be supported by default. If you depend on this syntax, disable the `confmap.unifyEnvVarExpansion` feature gate, but know that the feature will be removed in the future in favor of `${env:FOO}`.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/ottl`: Changed ScopeContext, InstrumentationResourceContext, TransformContext interfaces to make SchemaURL accessible in resources and scopes on all signals ([#30229](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30229))
+- `filter`: Remove deprecated `filter.CombinedFilter` ([#10348](https://github.com/open-telemetry/opentelemetry-collector/issues/10348))
+- `otelcol`: By default, `otelcol.NewCommand` and `otelcol.NewCommandMustSetProvider` will set the `DefaultScheme` to `env`. [#10435](https://github.com/open-telemetry/opentelemetry-collector/issues/10435))
+- `otelcol`: The otelcol.NewCommand now requires at least one provider be set. ([#10436](https://github.com/open-telemetry/opentelemetry-collector/issues/10436))
+
+### 🚩 Deprecations 🚩
+
+- `otelcol`: The `otelcol.NewCommandMustSetProvider` is deprecated. Use `otelcol.NewCommand` instead. ([#10436](https://github.com/open-telemetry/opentelemetry-collector/issues/10436))
+
+### 💡 Enhancements 💡
+
+- `k8sattributesprocessor`: Add support for exposing `k8s.pod.ip` as a resource attribute ([#32960](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32960))
+- `debugexporter`: In `normal` verbosity, display one line of text for each telemetry record (log, data point, span) ([#7806](https://github.com/open-telemetry/opentelemetry-collector/issues/7806))
+- `debugexporter`: Add option `use_internal_logger` ([#10226](https://github.com/open-telemetry/opentelemetry-collector/issues/10226))
+- `debugexporter`: Print Span.TraceState() when present. ([#10421](https://github.com/open-telemetry/opentelemetry-collector/issues/10421))
+
+### 🧰 Bug fixes 🧰
+
+- `resourcedetectionprocessor`: Fetch CPU info only if related attributes are enabled ([#33774](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33774))
+- `tailsamplingprocessor`: Fix precedence of inverted match in and policy ([#33671](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33671))
+  Previously if the decision from a policy evaluation was `NotSampled` or `InvertNotSampled` it would return a `NotSampled` decision regardless, effectively downgrading the result.
+  This was breaking the documented behaviour that inverted decisions should take precedence over all others.
+- `otlpexporter`: Update validation to support both dns:// and dns:/// ([#10449](https://github.com/open-telemetry/opentelemetry-collector/issues/10449))
+- `service`: Fixed a bug that caused otel-collector to fail to start with ipv6 metrics endpoint service telemetry. ([#10011](https://github.com/open-telemetry/opentelemetry-collector/issues/10011))
+  
+</details>
+
+## v0.8.0
+
+This release includes version 0.103.0 of the upstream Collector components.
+
+*NOTE:* This release is in line with the upstream distributions of the Collector version 0.103.1, which is based on the same
+0.103.0 upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.103.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.103.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.103.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 🛑 Breaking changes 🛑
+
+- `exporter/debug`: Disable sampling by default ([#9921](https://github.com/open-telemetry/opentelemetry-collector/issues/9921)).
+  To restore the behavior that was previously the default, set `sampling_thereafter` to `500`.
+
+### 🚩 Deprecations 🚩 ###
+
+- `healthcheckextension`: Remove incorrect logic behind `check_collector_pipeline` config ([#33469](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33469)).
+  This logic incorrectly set the pipeline to OK after waiting for enough callbacks from the
+  opencensus library to be called. As this was broken, I'm removing it to remove the dependency
+  on opencensus as well. Improvements will be available via healthcheckv2 extension.
+
+
+### 🧰 Bug fixes 🧰
+
+- `filelogreceiver`: Container parser should add k8s metadata as resource attributes and not as log record attributes ([#33341](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33341))
+- `prometheusreceiver`: Fall back to scrape config job/instance labels for aggregated metrics without instance/job labels ([#32555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32555))
+
+</details>
+
+### 💡 Enhancements 💡
+
+- `examples`: Added an example for using the syslog receiver, as well as integration tests for the added example. (#136)
+
 ## v0.7.0
 
 This release includes version 0.102.1 of the upstream Collector components.

@@ -182,6 +182,8 @@ github.com/caarlos0/go-version v0.1.1 h1:1bikKHkGGVIIxqCmufhSSs3hpBScgHGacrvsi8F
 github.com/caarlos0/go-version v0.1.1/go.mod h1:Ze5Qx4TsBBi5FyrSKVg1Ibc44KGV/llAaKGp86oTwZ0=
 github.com/caarlos0/log v0.4.4 h1:LnvgBz/ofsJ00AupP/cEfksJSZglb1L69g4Obk/sdAc=
 github.com/caarlos0/log v0.4.4/go.mod h1:+AmCI9Liv5LKXmzFmFI1htuHdTTj/0R3KuoP9DMY7Mo=
+github.com/caarlos0/log v0.4.5 h1:vsTcRHLCWRKXKNgWBluzAi8LkxSX27B6tsZt3c3DkNg=
+github.com/caarlos0/log v0.4.5/go.mod h1:EYn3qKZ9nYn/pCjRI+2V7hZtXeioKEbfdHR8cm8utI0=
 github.com/caarlos0/testfs v0.4.4 h1:3PHvzHi5Lt+g332CiShwS8ogTgS3HjrmzZxCm6JCDr8=
 github.com/caarlos0/testfs v0.4.4/go.mod h1:bRN55zgG4XCUVVHZCeU+/Tz1Q6AxEJOEJTliBy+1DMk=
 github.com/carlmjohnson/versioninfo v0.22.5 h1:O00sjOLUAFxYQjlN/bzYTuZiS0y6fWDQjMRvwtKgwwc=
@@ -201,6 +203,10 @@ github.com/charmbracelet/keygen v0.5.0 h1:XY0fsoYiCSM9axkrU+2ziE6u6YjJulo/b9Dghn
 github.com/charmbracelet/keygen v0.5.0/go.mod h1:DfvCgLHxZ9rJxdK0DGw3C/LkV4SgdGbnliHcObV3L+8=
 github.com/charmbracelet/lipgloss v0.10.0 h1:KWeXFSexGcfahHX+54URiZGkBFazf70JNMtwg/AFW3s=
 github.com/charmbracelet/lipgloss v0.10.0/go.mod h1:Wig9DSfvANsxqkRsqj6x87irdy123SR4dOXlKa91ciE=
+github.com/charmbracelet/lipgloss v0.11.0 h1:UoAcbQ6Qml8hDwSWs0Y1cB5TEQuZkDPH/ZqwWWYTG4g=
+github.com/charmbracelet/lipgloss v0.11.0/go.mod h1:1UdRTH9gYgpcdNN5oBtjbu/IzNKtzVtb7sqN1t9LNn8=
+github.com/charmbracelet/x/ansi v0.1.1 h1:CGAduulr6egay/YVbGc8Hsu8deMg1xZ/bkaXTPi1JDk=
+github.com/charmbracelet/x/ansi v0.1.1/go.mod h1:dk73KoMTT5AX5BsX0KrqhsTqAnhZZoCBjs7dGWp4Ktw=
 github.com/charmbracelet/x/exp/ordered v0.0.0-20231010190216-1cb11efc897d h1:+o+e/8hf7cG0SbAzEAm/usJ8qoZPgFXhudLjop+TM0g=
 github.com/charmbracelet/x/exp/ordered v0.0.0-20231010190216-1cb11efc897d/go.mod h1:aoG4bThKYIOnyB55r202eHqo6TkN7ZXV+cu4Do3eoBQ=
 github.com/chrismellard/docker-credential-acr-env v0.0.0-20230304212654-82a0ddb27589 h1:krfRl01rzPzxSxyLyrChD+U+MzsBXbm0OwYYB67uF+4=
@@ -414,6 +420,7 @@ github.com/goreleaser/fileglob v1.3.0 h1:/X6J7U8lbDpQtBvGcwwPS6OpzkNVlVEsFUVRx9+
 github.com/goreleaser/fileglob v1.3.0/go.mod h1:Jx6BoXv3mbYkEzwm9THo7xbr5egkAraxkGorbJb4RxU=
 github.com/goreleaser/goreleaser v1.26.2 h1:1iY1HaXtRiMTrwy6KE1sNjkRjsjMi+9l0k6WUX8GpWw=
 github.com/goreleaser/goreleaser v1.26.2/go.mod h1:mHi6zr6fuuOh5eHdWWgyo/N8BWED5WEVtb/4GETc9jQ=
+github.com/goreleaser/goreleaser/v2 v2.0.1/go.mod h1:SGz1F91ryOlG6pnf5F2BiyiFcK1uA3j0mzwbI3Bp3yo=
 github.com/goreleaser/nfpm/v2 v2.37.1 h1:RUmeEt8OlEVeSzKRrO5Vl5qVWCtUwx4j9uivGuRo5fw=
 github.com/goreleaser/nfpm/v2 v2.37.1/go.mod h1:q8+sZXFqn106/eGw+9V+I8+izFxZ/sJjrhwmEUxXhUg=
 github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
@@ -867,6 +874,8 @@ golang.org/x/net v0.26.0/go.mod h1:5YKkiSynbBIh3p6iOc/vibscux0x38BZDkn8sCUPxHE=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.20.0 h1:4mQdhULixXKP1rwYBW0vAijoXnkTG0BLCDRzfe1idMo=
 golang.org/x/oauth2 v0.20.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
+golang.org/x/oauth2 v0.21.0 h1:tsimM75w1tF/uws5rbeHzIWxEqElMehnc+iW793zsZs=
+golang.org/x/oauth2 v0.21.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181108010431-42b317875d0f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
@@ -949,6 +958,8 @@ golang.org/x/tools v0.13.0/go.mod h1:HvlwmtVNQAhOuCjW7xxvovg8wbNq7LwfXh/k7wXUl58
 golang.org/x/tools v0.17.0/go.mod h1:xsh6VxdV005rRVaS6SSAf9oiAqljS7UZUacMZ8Bnsps=
 golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d h1:vU5i/LfpvrRCpgM/VPfJLg5KjxD3E+hfT1SH+d9zLwg=
 golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d/go.mod h1:aiJjzUbINMkxbQROHiO6hDPo2LHcIPhhQsa9DLh0yGk=
+golang.org/x/tools v0.22.0 h1:gqSGLZqv+AI9lIQzniJ0nZDRG5GBPsSi+DRNHWNz6yA=
+golang.org/x/tools v0.22.0/go.mod h1:aCwcsjqvq7Yqt6TNyX7QMU2enbQ/Gt0bo6krSeEri+c=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=

@@ -68,7 +68,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), os.Getenv("CONTAINER_REGISTRY"))
+	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"))
 	createTeleOpts := &k8stest.TelemetrygenCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
 		TestID:       testID,

@@ -20,7 +20,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, manifestsDir string, containerRegistry string) []*unstructured.Unstructured {
+func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, manifestsDir string) []*unstructured.Unstructured {
 	if manifestsDir == "" {
 		manifestsDir = filepath.Join(".", "testdata", "e2e", "collector")
 	}
@@ -37,7 +37,7 @@ func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, mani
 			"Name":              "otelcol-" + testID,
 			"HostEndpoint":      host,
 			"TestID":            testID,
-			"ContainerRegistry": containerRegistry,
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 		}))
 		obj, err := CreateObject(client, manifest.Bytes())
 		require.NoErrorf(t, err, "failed to create collector object from manifest %s", manifestFile.Name())

@@ -414,7 +414,7 @@ func TestConfigHistogramTransform(t *testing.T) {
 	tc.ValidateData()
 }
 
-func TestConfigStatsdTransform(t *testing.T) {
+func TestConfigStatsdReceiver(t *testing.T) {
 	// Create collector with statsd configuration
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
 	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "statsd.yaml"))
@@ -438,6 +438,9 @@ func TestConfigStatsdTransform(t *testing.T) {
 	expectedMetrics := expectedMetricData.ResourceMetrics().AppendEmpty().ScopeMetrics().AppendEmpty().Metrics()
 	startTime := time.Now()
 
+	actualMetricData := pmetric.NewMetrics()
+	actualMetrics := actualMetricData.ResourceMetrics().AppendEmpty().ScopeMetrics().AppendEmpty().Metrics()
+
 	// Begin with a simple gauge as it is the easiest to understand and validate
 	gauge := expectedMetrics.AppendEmpty()
 	gauge.SetName("my.gauge")
@@ -450,10 +453,12 @@ func TestConfigStatsdTransform(t *testing.T) {
 	gaugeDataPoint.SetTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond * 501)))
 	gaugeDataPoint.SetIntValue(42)
 
+	expectedMetrics.CopyTo(actualMetrics)
+
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
 	validator := NewMetricSampleConfigsValidator(t, expectedMetricData)
-	dataProvider := NewSampleConfigsMetricsDataProvider(expectedMetricData)
-	sender := NewStatsdDataSender(testbed.DefaultHost, statsdReceiverPort, []string{"my.gauge:42|g|#key:value"})
+	dataProvider := NewSampleConfigsMetricsDataProvider(actualMetricData)
+	sender := NewStatsdDataSender(testbed.DefaultHost, statsdReceiverPort)
 
 	tc := testbed.NewTestCase(
 		t,

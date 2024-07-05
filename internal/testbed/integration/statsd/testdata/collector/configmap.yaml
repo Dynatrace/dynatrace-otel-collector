@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-config
+  namespace: e2estatsd
+data:
+  relay: |
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+    receivers:
+      statsd:
+        endpoint: 0.0.0.0:8127
+    exporters:
+      otlp:
+        endpoint: {{ .HostEndpoint }}:4317
+        tls:
+          insecure: true
+    service:
+      extensions:
+      - health_check
+      pipelines:
+        traces:
+          receivers:
+          - statsd
+          exporters:
+          - otlp

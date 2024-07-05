@@ -34,9 +34,10 @@ func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, mani
 		tmpl := template.Must(template.New(manifestFile.Name()).ParseFiles(filepath.Join(manifestsDir, manifestFile.Name())))
 		manifest := &bytes.Buffer{}
 		require.NoError(t, tmpl.Execute(manifest, map[string]string{
-			"Name":         "otelcol-" + testID,
-			"HostEndpoint": host,
-			"TestID":       testID,
+			"Name":              "otelcol-" + testID,
+			"HostEndpoint":      host,
+			"TestID":            testID,
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 		}))
 		obj, err := CreateObject(client, manifest.Bytes())
 		require.NoErrorf(t, err, "failed to create collector object from manifest %s", manifestFile.Name())

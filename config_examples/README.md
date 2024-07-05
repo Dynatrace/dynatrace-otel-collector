@@ -7,6 +7,12 @@ Dynatrace distribution of the OpenTelemetry Collector.
 > The examples in this directory are for documentation purposes only and are not considered stable. Examples
 > may change at any time and without notice.
 
+> [!CAUTION]
+> It is generally preferable to bind endpoints to localhost when all clients are local.
+> As of [v0.9.0](https://github.com/Dynatrace/dynatrace-otel-collector/releases/tag/v0.9.0), that is also the default, but for convenience, our example 
+> configurations use the “unspecified” address `0.0.0.0`.
+> For details concerning either of these choices as endpoint configuration value, see [Safeguards against denial of service attacks](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/security-best-practices.md#safeguards-against-denial-of-service-attacks).
+
 ## Samples
 
 - [Jaeger Receiver](jaeger.yaml)

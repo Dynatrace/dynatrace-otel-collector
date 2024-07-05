@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.22.4
 
 require (
-	github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest v0.0.0
+	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0
 	github.com/google/uuid v1.6.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.104.0
 	github.com/stretchr/testify v1.9.0
@@ -222,4 +222,4 @@ require (
 
 replace cloud.google.com/go => cloud.google.com/go v0.115.0
 
-replace github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest v0.0.0 => ../k8stest
+replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon

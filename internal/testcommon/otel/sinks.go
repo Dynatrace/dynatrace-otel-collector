@@ -112,11 +112,16 @@ func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 		for i := 0; i < traces.ResourceSpans().Len(); i++ {
 			resource := traces.ResourceSpans().At(i).Resource()
 			service, exist := resource.Attributes().Get(ServiceNameAttribute)
-			assert.Equal(t, true, exist, "Resource does not have the 'service.name' attribute")
+			assert.True(t, exist, "Resource does not have the 'service.name' attribute")
 			if service.AsString() != expectedService {
 				continue
 			}
-			assert.NoError(t, attributesContainValues(resource.Attributes(), kvs))
+			assert.NoError(t, assertExpectedAttributes(resource.Attributes(), kvs))
+
+			if len(scopeSpanAttrs) == 0 {
+				return
+			}
+
 			assert.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().Len())
 			assert.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().At(0).Spans().Len())
 
@@ -126,7 +131,7 @@ func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 			for _, spanAttrs := range scopeSpanAttrs {
 				var err error
 				for j := 0; j < scopeSpan.Spans().Len(); j++ {
-					err = attributesContainValues(scopeSpan.Spans().At(j).Attributes(), spanAttrs)
+					err = assertExpectedAttributes(scopeSpan.Spans().At(j).Attributes(), spanAttrs)
 					if err == nil {
 						break
 					}
@@ -140,7 +145,7 @@ func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 	t.Fatalf("no spans found for service %s", expectedService)
 }
 
-func attributesContainValues(attrs pcommon.Map, kvs map[string]ExpectedValue) error {
+func assertExpectedAttributes(attrs pcommon.Map, kvs map[string]ExpectedValue) error {
 	foundAttrs := make(map[string]bool)
 	for k := range kvs {
 		foundAttrs[k] = false
@@ -178,8 +183,7 @@ func attributesContainValues(attrs pcommon.Map, kvs map[string]ExpectedValue) er
 
 // ScanForServiceMetrics asserts that the metrics sink provided in the arguments
 // contains the given metrics for a service
-func ScanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink, expectedService string,
-	expectedMetrics []string) {
+func ScanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink, expectedService string, expectedMetrics []string) {
 
 	for _, r := range ms.AllMetrics() {
 		for i := 0; i < r.ResourceMetrics().Len(); i++ {

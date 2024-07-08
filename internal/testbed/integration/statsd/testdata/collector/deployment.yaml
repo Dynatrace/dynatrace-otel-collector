@@ -21,14 +21,14 @@ spec:
           command:
             - /dynatrace-otel-collector
             - --config=/conf/relay.yaml
-          image: "dynatrace-otel-collector:e2e-test"
+          image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
           ports:
             - name: otlp
               containerPort: 4317
               protocol: TCP
             - name: statsd
-              containerPort: 8127
-              protocol: TCP
+              containerPort: 8125
+              protocol: UDP
           env:
             - name: MY_POD_IP
               valueFrom:

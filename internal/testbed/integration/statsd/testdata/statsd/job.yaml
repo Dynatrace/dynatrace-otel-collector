@@ -10,6 +10,6 @@ spec:
       - name: netcat
         image: alpine
         command: ["/bin/sh", "-c"]
-        args: ["echo 'test.metric:42|c|#myKey:myVal' | nc -w 1 -u -4 localhost 8125"]
+        args: ["echo 'test.metric:42|g|#myKey:myVal' | nc -w 1 -u -v -p 8125 otelcolsvc.e2estatsd.svc.cluster.local"]
       restartPolicy: Never
   backoffLimit: 4

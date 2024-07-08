@@ -10,8 +10,10 @@ data:
         endpoint: 0.0.0.0:13133
     receivers:
       statsd:
-        endpoint: 0.0.0.0:8127
+        endpoint: 0.0.0.0:8125
     exporters:
+      debug:
+        verbosity: detailed
       otlp:
         endpoint: {{ .HostEndpoint }}:4317
         tls:
@@ -20,8 +22,9 @@ data:
       extensions:
       - health_check
       pipelines:
-        traces:
+        metrics:
           receivers:
           - statsd
           exporters:
           - otlp
+          - debug

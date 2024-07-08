@@ -2,7 +2,7 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest
 
 go 1.22.0
 
-toolchain go1.22.4
+toolchain go1.22.5
 
 require (
 	github.com/docker/docker v26.1.4+incompatible

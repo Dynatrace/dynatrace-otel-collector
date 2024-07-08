@@ -16,7 +16,7 @@
 
 if command -v systemctl >/dev/null 2>&1; then
     systemctl enable dtotelcol.service
-    if [ -f /etc/otelcol/config.yaml ]; then
+    if [ -f /etc/dtotelcol/config.yaml ]; then
         systemctl start dtotelcol.service
     fi
 fi

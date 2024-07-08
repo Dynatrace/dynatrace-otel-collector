@@ -15,6 +15,6 @@
 # limitations under the License.
 
 if command -v systemctl >/dev/null 2>&1; then
-    systemctl stop otelcol.service
-    systemctl disable otelcol.service
+    systemctl stop dtotelcol.service
+    systemctl disable dtotelcol.service
 fi

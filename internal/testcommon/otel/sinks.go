@@ -180,6 +180,7 @@ func assertExpectedAttributes(attrs pcommon.Map, kvs map[string]ExpectedValue) e
 		}
 	}
 	if err != nil {
+		// if something is missing, add a summary with an overview of the expected and actual attributes for easier troubleshooting
 		expectedJson, _ := json.MarshalIndent(kvs, "", "  ")
 		actualJson, _ := json.MarshalIndent(attrs.AsRaw(), "", "  ")
 		err = multierr.Append(err, fmt.Errorf("one or more attributes were not found.\nExpected attributes:\n %s \nActual attributes: \n%s", expectedJson, actualJson))

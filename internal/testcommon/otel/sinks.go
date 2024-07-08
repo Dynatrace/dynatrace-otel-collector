@@ -175,8 +175,11 @@ func assertExpectedAttributes(attrs pcommon.Map, kvs map[string]ExpectedValue) e
 	var err error
 	for k, v := range foundAttrs {
 		if !v {
-			err = multierr.Append(err, fmt.Errorf("%v attribute not found. expected attributes: %#v. actual attributes: %#v", k, kvs, attrs.AsRaw()))
+			err = multierr.Append(err, fmt.Errorf("attribute '%v' not found", k))
 		}
+	}
+	if err != nil {
+		err = multierr.Append(err, fmt.Errorf("one or more attributes were not found.\nExpected attributes:\n %#v \nActual attributes: \n%#v", kvs, attrs.AsRaw()))
 	}
 	return err
 }

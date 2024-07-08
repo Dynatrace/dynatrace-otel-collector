@@ -7,19 +7,12 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8s"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/otel"
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
-	"go.opentelemetry.io/collector/pdata/pmetric"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"slices"
 	"testing"
-)
-
-const (
-	testKubeConfig = "/tmp/kube-config-collector-e2e-testing"
 )
 
 // TestE2E_PrometheusNodeExporter tests the "Scrape data from Prometheus" use case
@@ -43,7 +36,8 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	}()
 
 	// Install Prometheus Node exporter
-	installPrometheusNodeExporter()
+	err = installPrometheusNodeExporter()
+	require.NoErrorf(t, err, "failed to install Prometheus node exporter")
 
 	metricsConsumer := new(consumertest.MetricsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{Metrics: metricsConsumer})
@@ -63,12 +57,12 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	expectedColMetrics := []string{
 		"otelcol_process_memory_rss", "scrape_duration_seconds", "scrape_samples_post_metric_relabeling",
 	}
-	scanForServiceMetrics(t, metricsConsumer, "opentelemetry-collector", expectedColMetrics)
+	oteltest.ScanForServiceMetrics(t, metricsConsumer, "opentelemetry-collector", expectedColMetrics)
 
 	expectedPromMetrics := []string{
 		"node_procs_running", "node_memory_MemAvailable_bytes",
 	}
-	scanForServiceMetrics(t, metricsConsumer, "node-exporter", expectedPromMetrics)
+	oteltest.ScanForServiceMetrics(t, metricsConsumer, "node-exporter", expectedPromMetrics)
 }
 
 func installPrometheusNodeExporter() error {
@@ -84,39 +78,5 @@ func installPrometheusNodeExporter() error {
 	// the Helm commands (from install.sh), showing that the Prometheus Node Exporter is running.
 	fmt.Print(string(cmd))
 
-	return nil
-}
-
-func scanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink, expectedService string,
-	expectedMetrics []string) {
-
-	for _, r := range ms.AllMetrics() {
-		for i := 0; i < r.ResourceMetrics().Len(); i++ {
-			resource := r.ResourceMetrics().At(i).Resource()
-			service, exist := resource.Attributes().Get("service.name")
-			assert.Equal(t, true, exist, "resource does not have the 'service.name' attribute")
-			if service.AsString() != expectedService {
-				continue
-			}
-
-			sm := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
-			assert.NoError(t, assertExpectedMetrics(expectedMetrics, sm))
-			return
-		}
-	}
-	t.Fatalf("no metric found for service %s", expectedService)
-}
-
-func assertExpectedMetrics(expectedMetrics []string, sm pmetric.MetricSlice) error {
-	var actualMetrics []string
-	for i := 0; i < sm.Len(); i++ {
-		actualMetrics = append(actualMetrics, sm.At(i).Name())
-	}
-
-	for _, m := range expectedMetrics {
-		if !slices.Contains(actualMetrics, m) {
-			return fmt.Errorf("Metric: %s not found", m)
-		}
-	}
 	return nil
 }

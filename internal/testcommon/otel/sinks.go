@@ -8,10 +8,12 @@ import (
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver/otlpreceiver"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"go.uber.org/multierr"
 	"regexp"
+	"slices"
 	"testing"
 	"time"
 )
@@ -23,6 +25,8 @@ const (
 	AttributeMatchTypeRegex
 	AttributeMatchTypeExist
 	UidRe = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+
+	ServiceNameAttribute = "service.name"
 )
 
 type ExpectedValue struct {
@@ -107,7 +111,7 @@ func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 		traces := ts.AllTraces()[i]
 		for i := 0; i < traces.ResourceSpans().Len(); i++ {
 			resource := traces.ResourceSpans().At(i).Resource()
-			service, exist := resource.Attributes().Get("service.name")
+			service, exist := resource.Attributes().Get(ServiceNameAttribute)
 			assert.Equal(t, true, exist, "Resource does not have the 'service.name' attribute")
 			if service.AsString() != expectedService {
 				continue
@@ -170,4 +174,40 @@ func attributesContainValues(attrs pcommon.Map, kvs map[string]ExpectedValue) er
 		}
 	}
 	return err
+}
+
+// ScanForServiceMetrics asserts that the metrics sink provided in the arguments
+// contains the given metrics for a service
+func ScanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink, expectedService string,
+	expectedMetrics []string) {
+
+	for _, r := range ms.AllMetrics() {
+		for i := 0; i < r.ResourceMetrics().Len(); i++ {
+			resource := r.ResourceMetrics().At(i).Resource()
+			service, exist := resource.Attributes().Get(ServiceNameAttribute)
+			assert.Equal(t, true, exist, "resource does not have the 'service.name' attribute")
+			if service.AsString() != expectedService {
+				continue
+			}
+
+			sm := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
+			assert.NoError(t, assertExpectedMetrics(expectedMetrics, sm))
+			return
+		}
+	}
+	t.Fatalf("no metric found for service %s", expectedService)
+}
+
+func assertExpectedMetrics(expectedMetrics []string, sm pmetric.MetricSlice) error {
+	var actualMetrics []string
+	for i := 0; i < sm.Len(); i++ {
+		actualMetrics = append(actualMetrics, sm.At(i).Name())
+	}
+
+	for _, m := range expectedMetrics {
+		if !slices.Contains(actualMetrics, m) {
+			return fmt.Errorf("metric: %s not found", m)
+		}
+	}
+	return nil
 }

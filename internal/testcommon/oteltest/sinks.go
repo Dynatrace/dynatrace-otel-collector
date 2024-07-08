@@ -1,4 +1,4 @@
-package otel
+package oteltest
 
 import (
 	"context"
@@ -191,7 +191,6 @@ func assertExpectedAttributes(attrs pcommon.Map, kvs map[string]ExpectedValue) e
 // ScanForServiceMetrics asserts that the metrics sink provided in the arguments
 // contains the given metrics for a service
 func ScanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink, expectedService string, expectedMetrics []string) {
-
 	for _, r := range ms.AllMetrics() {
 		for i := 0; i < r.ResourceMetrics().Len(); i++ {
 			resource := r.ResourceMetrics().At(i).Resource()

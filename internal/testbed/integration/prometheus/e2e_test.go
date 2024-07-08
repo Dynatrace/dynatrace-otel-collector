@@ -4,8 +4,8 @@ package prometheus
 
 import (
 	"fmt"
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8s"
-	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/otel"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
+	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
@@ -20,19 +20,19 @@ import (
 func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	testDir := filepath.Join("testdata")
 
-	k8sClient, err := k8s.NewK8sClient()
+	k8sClient, err := k8stest.NewK8sClient()
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test
 	nsFile := filepath.Join(testDir, "namespace.yaml")
 	buf, err := os.ReadFile(nsFile)
 	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := k8s.CreateObject(k8sClient, buf)
+	nsObj, err := k8stest.CreateObject(k8sClient, buf)
 	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
 
 	testNs := nsObj.GetName()
 	defer func() {
-		require.NoErrorf(t, k8s.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
+		require.NoErrorf(t, k8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
 
 	// Install Prometheus Node exporter
@@ -44,10 +44,10 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := k8s.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"))
+	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"))
 	defer func() {
 		for _, obj := range collectorObjs {
-			require.NoErrorf(t, k8s.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+			require.NoErrorf(t, k8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
 

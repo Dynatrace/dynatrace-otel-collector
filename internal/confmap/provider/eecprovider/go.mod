@@ -2,7 +2,7 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/e
 
 go 1.21.0
 
-toolchain go1.22.4
+toolchain go1.22.5
 
 require (
 	github.com/stretchr/testify v1.9.0

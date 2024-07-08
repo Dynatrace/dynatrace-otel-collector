@@ -19,7 +19,13 @@ data:
         tls:
           insecure: true
     service:
+      telemetry:
+        metrics:
+          address: 0.0.0.0:8888
+        logs:
+          level: debug
       extensions:
+    
       - health_check
       pipelines:
         metrics:

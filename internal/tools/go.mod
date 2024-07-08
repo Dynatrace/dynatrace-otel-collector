@@ -5,7 +5,6 @@ go 1.22
 toolchain go1.22.4
 
 require (
-	github.com/goreleaser/goreleaser v1.26.2
 	github.com/goreleaser/goreleaser/v2 v2.0.1
 	go.opentelemetry.io/build-tools/chloggen v0.13.0
 	go.opentelemetry.io/collector/cmd/builder v0.104.0

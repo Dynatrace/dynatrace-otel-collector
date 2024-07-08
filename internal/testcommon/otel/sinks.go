@@ -2,6 +2,7 @@ package otel
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -179,7 +180,9 @@ func assertExpectedAttributes(attrs pcommon.Map, kvs map[string]ExpectedValue) e
 		}
 	}
 	if err != nil {
-		err = multierr.Append(err, fmt.Errorf("one or more attributes were not found.\nExpected attributes:\n %#v \nActual attributes: \n%#v", kvs, attrs.AsRaw()))
+		expectedJson, _ := json.MarshalIndent(kvs, "", "  ")
+		actualJson, _ := json.MarshalIndent(attrs.AsRaw(), "", "  ")
+		err = multierr.Append(err, fmt.Errorf("one or more attributes were not found.\nExpected attributes:\n %s \nActual attributes: \n%s", expectedJson, actualJson))
 	}
 	return err
 }

@@ -211,6 +211,99 @@ func TestConfigJaegerGrpc(t *testing.T) {
 	tc.ValidateData()
 }
 
+func TestConfigZipkin(t *testing.T) {
+	// arrange
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "zipkin.yaml"))
+	require.NoError(t, err)
+
+	zipkinReceiverPort := testutil.GetAvailablePort(t)
+	exporterPort := testutil.GetAvailablePort(t)
+
+	parsedConfig := string(cfg)
+	parsedConfig = replaceZipkinReceiverPort(parsedConfig, zipkinReceiverPort)
+	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+
+	configCleanup, err := col.PrepareConfig(parsedConfig)
+	require.NoError(t, err)
+	t.Cleanup(configCleanup)
+
+	actualSpansData := ptrace.NewTraces()
+	actualSpans := actualSpansData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
+
+	expectedSpansData := ptrace.NewTraces()
+	expectedSpans := expectedSpansData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
+	startTime := time.Now()
+
+	// Error ers
+	ers := actualSpans.AppendEmpty()
+	ers.SetTraceID(uInt64ToTraceID(0, uint64(1)))
+	ers.SetSpanID(uInt64ToSpanID(uint64(1)))
+	ers.SetName("Error span")
+	ers.SetKind(ptrace.SpanKindServer)
+	ers.Status().SetCode(ptrace.StatusCodeError)
+	ers.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime))
+	ers.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond * 501)))
+
+	// Ok span
+	oks := actualSpans.AppendEmpty()
+	oks.SetTraceID(uInt64ToTraceID(0, uint64(2)))
+	oks.SetSpanID(uInt64ToSpanID(uint64(2)))
+	oks.SetName("OK span")
+	oks.SetKind(ptrace.SpanKindServer)
+	oks.Status().SetCode(ptrace.StatusCodeOk)
+	oks.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
+	oks.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond * 3)))
+
+	// Long-running span
+	lrs := actualSpans.AppendEmpty()
+	lrs.SetTraceID(uInt64ToTraceID(0, uint64(3)))
+	lrs.SetSpanID(uInt64ToSpanID(uint64(3)))
+	lrs.SetName("Long-running span")
+	lrs.SetKind(ptrace.SpanKindServer)
+	lrs.Status().SetCode(ptrace.StatusCodeOk)
+	lrs.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
+	lrs.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Second * 1)))
+
+	// Expected Spans should have all spans
+	actualSpans.CopyTo(expectedSpans)
+
+	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
+	sender := datasenders.NewZipkinDataSender(testbed.DefaultHost, zipkinReceiverPort)
+	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
+	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+
+	tc := testbed.NewTestCase(
+		t,
+		dataProvider,
+		sender,
+		receiver,
+		col,
+		validator,
+		&testbed.CorrectnessResults{},
+	)
+	t.Cleanup(tc.Stop)
+
+	tc.EnableRecording()
+	tc.StartBackend()
+	tc.StartAgent()
+
+	// act
+	tc.StartLoad(testbed.LoadOptions{
+		DataItemsPerSecond: 3,
+		ItemsPerBatch:      3,
+	})
+	tc.Sleep(2 * time.Second)
+	tc.StopLoad()
+
+	tc.WaitForN(func() bool {
+		return tc.MockBackend.DataItemsReceived() == uint64(expectedSpansData.SpanCount())
+	}, 5*time.Second, "all data items received")
+
+	// assert
+	tc.ValidateData()
+}
+
 func TestConfigHistogramTransform(t *testing.T) {
 	// arrange
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))

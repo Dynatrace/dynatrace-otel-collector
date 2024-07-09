@@ -80,6 +80,7 @@ jobs:
         usecase:
           - k8senrichment
           - prometheus
+          - zipkin
     runs-on: ubuntu-latest
     needs: docker-build
     steps:

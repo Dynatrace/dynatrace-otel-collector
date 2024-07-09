@@ -15,14 +15,6 @@ func replaceOtlpGrpcReceiverPort(cfg string, receiverPort int) string {
 	return strings.Replace(cfg, "4317", strconv.Itoa(receiverPort), 1)
 }
 
-func replaceStatsdReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "8125", strconv.Itoa(receiverPort), 1)
-}
-
-func replaceStatsdAggregationInterval(cfg string, interval string) string {
-	return strings.Replace(cfg, "15s", interval, 1)
-}
-
 func replaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
 	return strings.Replace(cfg, "14250", strconv.Itoa(receiverPort), 1)
 }

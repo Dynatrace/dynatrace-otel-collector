@@ -20,7 +20,7 @@ func replaceStatsdReceiverPort(cfg string, receiverPort int) string {
 }
 
 func replaceStatsdAggregationInterval(cfg string, interval string) string {
-	return strings.Replace(cfg, "5s", interval, 1)
+	return strings.Replace(cfg, "15s", interval, 1)
 }
 
 func replaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {

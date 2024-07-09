@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"slices"
 	"testing"
 	"time"
 
@@ -74,10 +73,7 @@ func TestE2E_StatsdReceiver(t *testing.T) {
 	wantEntries := 1
 	waitForData(t, wantEntries, metricsConsumer)
 
-	expectedColMetrics := []string{
-		"test.metric",
-	}
-	scanForServiceMetrics(t, metricsConsumer, expectedColMetrics)
+	scanForServiceMetrics(t, metricsConsumer)
 }
 
 func startUpSinks(t *testing.T, mc *consumertest.MetricsSink) func() {
@@ -99,36 +95,42 @@ func startUpSinks(t *testing.T, mc *consumertest.MetricsSink) func() {
 func waitForData(t *testing.T, entriesNum int, mc *consumertest.MetricsSink) {
 	timeoutMinutes := 1
 	require.Eventuallyf(t, func() bool {
-		return len(mc.AllMetrics()) > entriesNum
+		return len(mc.AllMetrics()) >= entriesNum
 	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
 		"failed to receive %d entries,  received %d metrics in %d minutes", entriesNum,
 		len(mc.AllMetrics()), timeoutMinutes)
 }
 
-func scanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink,
-	expectedMetrics []string) {
-
+func scanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink) {
 	for _, r := range ms.AllMetrics() {
 		for i := 0; i < r.ResourceMetrics().Len(); i++ {
-			t.Log("name: " + r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics().At(0).Name())
 			sm := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
-			assert.NoError(t, assertExpectedMetrics(expectedMetrics, sm))
+			assert.NoError(t, assertExpectedMetrics(sm))
 			return
 		}
 	}
 	t.Fatalf("no metric found")
 }
 
-func assertExpectedMetrics(expectedMetrics []string, sm pmetric.MetricSlice) error {
-	var actualMetrics []string
+func assertExpectedMetrics(sm pmetric.MetricSlice) error {
+	expectedName := "test.metric"
+	expectedVal := 42.0
+	expectedAttrKey := "myKey"
+	expectedAttrVal := "myVal"
 	for i := 0; i < sm.Len(); i++ {
-		actualMetrics = append(actualMetrics, sm.At(i).Name())
-	}
-
-	for _, m := range expectedMetrics {
-		if !slices.Contains(actualMetrics, m) {
-			return fmt.Errorf("Metric: %s not found", m)
+		if sm.At(i).Name() == expectedName {
+			if sm.At(i).Gauge().DataPoints().At(0).DoubleValue() != expectedVal {
+				return fmt.Errorf("Expected metric value %f, received %f", expectedVal, sm.At(i).Gauge().DataPoints().At(0).DoubleValue())
+			}
+			val, ok := sm.At(i).Gauge().DataPoints().At(0).Attributes().Get(expectedAttrKey)
+			if !ok {
+				return fmt.Errorf("Expected metric attribute not found")
+			}
+			if val.Str() != expectedAttrVal {
+				return fmt.Errorf("Expected metric attribute value %s not found, got %s", expectedAttrVal, val.Str())
+			}
+			return nil
 		}
 	}
-	return nil
+	return fmt.Errorf("Expected metric not found")
 }

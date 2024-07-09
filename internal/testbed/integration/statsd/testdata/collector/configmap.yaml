@@ -10,6 +10,7 @@ data:
         endpoint: 0.0.0.0:13133
     receivers:
       statsd:
+        aggregation_interval: 15s
         endpoint: 0.0.0.0:8125
     exporters:
       debug:
@@ -25,7 +26,6 @@ data:
         logs:
           level: debug
       extensions:
-    
       - health_check
       pipelines:
         metrics:

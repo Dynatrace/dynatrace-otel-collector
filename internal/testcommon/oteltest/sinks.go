@@ -3,6 +3,7 @@ package oteltest
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -12,7 +13,6 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver/otlpreceiver"
 	"go.opentelemetry.io/collector/receiver/receivertest"
-	"go.uber.org/multierr"
 	"regexp"
 	"slices"
 	"testing"
@@ -176,14 +176,14 @@ func assertExpectedAttributes(attrs pcommon.Map, kvs map[string]ExpectedValue) e
 	var err error
 	for k, v := range foundAttrs {
 		if !v {
-			err = multierr.Append(err, fmt.Errorf("attribute '%v' not found", k))
+			err = errors.Join(err, fmt.Errorf("attribute '%v' not found", k))
 		}
 	}
 	if err != nil {
 		// if something is missing, add a summary with an overview of the expected and actual attributes for easier troubleshooting
 		expectedJson, _ := json.MarshalIndent(kvs, "", "  ")
 		actualJson, _ := json.MarshalIndent(attrs.AsRaw(), "", "  ")
-		err = multierr.Append(err, fmt.Errorf("one or more attributes were not found.\nExpected attributes:\n %s \nActual attributes: \n%s", expectedJson, actualJson))
+		err = errors.Join(err, fmt.Errorf("one or more attributes were not found.\nExpected attributes:\n %s \nActual attributes: \n%s", expectedJson, actualJson))
 	}
 	return err
 }

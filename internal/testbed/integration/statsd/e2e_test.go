@@ -119,10 +119,11 @@ func assertExpectedMetrics(sm pmetric.MetricSlice) error {
 	expectedAttrVal := "myVal"
 	for i := 0; i < sm.Len(); i++ {
 		if sm.At(i).Name() == expectedName {
-			if sm.At(i).Gauge().DataPoints().At(0).DoubleValue() != expectedVal {
-				return fmt.Errorf("Expected metric value %f, received %f", expectedVal, sm.At(i).Gauge().DataPoints().At(0).DoubleValue())
+			datapoint := sm.At(i).Gauge().DataPoints().At(0)
+			if datapoint.DoubleValue() != expectedVal {
+				return fmt.Errorf("Expected metric value %f, received %f", expectedVal, datapoint.DoubleValue())
 			}
-			val, ok := sm.At(i).Gauge().DataPoints().At(0).Attributes().Get(expectedAttrKey)
+			val, ok := datapoint.Attributes().Get(expectedAttrKey)
 			if !ok {
 				return fmt.Errorf("Expected metric attribute not found")
 			}

@@ -71,8 +71,8 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 			service: "frontend",
 			scopeSpanAttrs: []map[string]oteltest.ExpectedValue{
 				{
-					"http.metho": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "GET"),
-					"http.path":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "/"),
+					"http.method": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "GET"),
+					"http.path":   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "/"),
 				},
 				{
 					"http.method":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "GET"),

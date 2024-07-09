@@ -124,7 +124,6 @@ require (
 	github.com/prometheus/common v0.54.0 // indirect
 	github.com/prometheus/procfs v0.15.0 // indirect
 	github.com/rs/cors v1.11.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.24.5 // indirect
 	github.com/shirou/gopsutil/v4 v4.24.5 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/signalfx/com_signalfx_metrics_protobuf v0.0.3 // indirect
@@ -151,12 +150,7 @@ require (
 	go.opentelemetry.io/collector/config/configtls v0.104.0 // indirect
 	go.opentelemetry.io/collector/config/internal v0.104.0 // indirect
 	go.opentelemetry.io/collector/confmap v0.104.0 // indirect
-	go.opentelemetry.io/collector/confmap/converter/expandconverter v0.103.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/envprovider v0.103.0 // indirect
 	go.opentelemetry.io/collector/confmap/provider/fileprovider v0.104.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/httpprovider v0.103.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/httpsprovider v0.103.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/yamlprovider v0.103.0 // indirect
 	go.opentelemetry.io/collector/connector v0.104.0 // indirect
 	go.opentelemetry.io/collector/exporter v0.104.0 // indirect
 	go.opentelemetry.io/collector/exporter/debugexporter v0.104.0 // indirect
@@ -205,7 +199,7 @@ require (
 	gonum.org/v1/gonum v0.15.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240604185151-ef581f913117 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240604185151-ef581f913117 // indirect
-	google.golang.org/grpc v1.64.0 // indirect
+	google.golang.org/grpc v1.64.1 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

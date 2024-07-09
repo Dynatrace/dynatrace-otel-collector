@@ -2,8 +2,10 @@ package statsd
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 	"time"
 
@@ -12,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver/otlpreceiver"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 
@@ -39,13 +42,13 @@ func TestE2E_StatsdReceiver(t *testing.T) {
 	nsFile := filepath.Join(testDir, "namespace.yaml")
 	buf, err := os.ReadFile(nsFile)
 	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	_, err = k8stest.CreateObject(k8sClient, buf)
+	nsObj, err := k8stest.CreateObject(k8sClient, buf)
 	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
 
-	// testNs := nsObj.GetName()
-	// defer func() {
-	// 	require.NoErrorf(t, k8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	// }()
+	testNs := nsObj.GetName()
+	defer func() {
+		require.NoErrorf(t, k8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
+	}()
 
 	metricsConsumer := new(consumertest.MetricsSink)
 	shutdownSinks := startUpSinks(t, metricsConsumer)
@@ -53,22 +56,28 @@ func TestE2E_StatsdReceiver(t *testing.T) {
 
 	// create collector
 	testID := uuid.NewString()[:8]
-	_ = k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"))
+	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"))
 
 	// create job
 	jobFile := filepath.Join(testDir, "statsd", "job.yaml")
 	buf, err = os.ReadFile(jobFile)
 	require.NoErrorf(t, err, "failed to read job object file %s", jobFile)
-	_, err = k8stest.CreateObject(k8sClient, buf)
+	jobObj, err := k8stest.CreateObject(k8sClient, buf)
 	require.NoErrorf(t, err, "failed to create k8s job from file %s", nsFile)
 
-	time.Sleep(30 * time.Second)
+	defer func() {
+		for _, obj := range append(collectorObjs, jobObj) {
+			require.NoErrorf(t, k8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
 
-	// defer func() {
-	// 	for _, obj := range append(collectorObjs, jobObj) {
-	// 		require.NoErrorf(t, k8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-	// 	}
-	// }()
+	wantEntries := 1
+	waitForData(t, wantEntries, metricsConsumer)
+
+	expectedColMetrics := []string{
+		"test.metric",
+	}
+	scanForServiceMetrics(t, metricsConsumer, expectedColMetrics)
 }
 
 func startUpSinks(t *testing.T, mc *consumertest.MetricsSink) func() {
@@ -78,7 +87,7 @@ func startUpSinks(t *testing.T, mc *consumertest.MetricsSink) func() {
 	cfg.GRPC.NetAddr.Endpoint = "0.0.0.0:4317"
 	cfg.HTTP.Endpoint = "0.0.0.0:4318"
 
-	rcvr, err := f.CreateMetricsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, mc)
+	rcvr, err := f.CreateMetricsReceiver(context.Background(), receivertest.NewNopSettings(), cfg, mc)
 	require.NoError(t, err, "failed creating metrics receiver")
 
 	require.NoError(t, rcvr.Start(context.Background(), componenttest.NewNopHost()))
@@ -88,10 +97,38 @@ func startUpSinks(t *testing.T, mc *consumertest.MetricsSink) func() {
 }
 
 func waitForData(t *testing.T, entriesNum int, mc *consumertest.MetricsSink) {
-	timeoutMinutes := 5
+	timeoutMinutes := 1
 	require.Eventuallyf(t, func() bool {
 		return len(mc.AllMetrics()) > entriesNum
 	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
 		"failed to receive %d entries,  received %d metrics in %d minutes", entriesNum,
 		len(mc.AllMetrics()), timeoutMinutes)
+}
+
+func scanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink,
+	expectedMetrics []string) {
+
+	for _, r := range ms.AllMetrics() {
+		for i := 0; i < r.ResourceMetrics().Len(); i++ {
+			t.Log("name: " + r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics().At(0).Name())
+			sm := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
+			assert.NoError(t, assertExpectedMetrics(expectedMetrics, sm))
+			return
+		}
+	}
+	t.Fatalf("no metric found")
+}
+
+func assertExpectedMetrics(expectedMetrics []string, sm pmetric.MetricSlice) error {
+	var actualMetrics []string
+	for i := 0; i < sm.Len(); i++ {
+		actualMetrics = append(actualMetrics, sm.At(i).Name())
+	}
+
+	for _, m := range expectedMetrics {
+		if !slices.Contains(actualMetrics, m) {
+			return fmt.Errorf("Metric: %s not found", m)
+		}
+	}
+	return nil
 }

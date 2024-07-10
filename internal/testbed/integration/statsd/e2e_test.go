@@ -83,31 +83,33 @@ func scanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink) {
 }
 
 func assertExpectedMetrics(sm pmetric.MetricSlice) error {
-	expectedName := "test.metric"
-	expectedVal := 42.0
-	expectedAttrKey := "myKey"
-	expectedAttrVal := "myVal"
-	expectedTimerName := "test.metric"
+	expectedGaugeName := "test.metric"
+	expectedGaugeVal := 42.0
+	expectedGaugeAttrKey := "myKey"
+	expectedgaugeAttrVal := "myVal"
+	expectedTimerName := "timerMetric"
 	expectedTimerCount := uint64(10)
 	expectedTimerSum := 3200.0
 	expectedTimerMin := 320.0
 	expectedTimerMax := 320.0
-	expectedTimerAttrKey := "myKey"
-	expectedTimerAttrVal := "myVal"
+	expectedTimerAttrKey := "timerKey"
+	expectedTimerAttrVal := "timerVal"
+	if sm.Len() != 2 {
+		return fmt.Errorf("Received unexpected number of metrics: %d", sm.Len())
+	}
 	for i := 0; i < sm.Len(); i++ {
-		if sm.At(i).Name() == expectedName {
+		if sm.At(i).Name() == expectedGaugeName {
 			datapoint := sm.At(i).Gauge().DataPoints().At(0)
-			if datapoint.DoubleValue() != expectedVal {
-				return fmt.Errorf("Expected metric value %f, received %f", expectedVal, datapoint.DoubleValue())
+			if datapoint.DoubleValue() != expectedGaugeVal {
+				return fmt.Errorf("Expected metric value %f, received %f", expectedGaugeVal, datapoint.DoubleValue())
 			}
-			val, ok := datapoint.Attributes().Get(expectedAttrKey)
+			val, ok := datapoint.Attributes().Get(expectedGaugeAttrKey)
 			if !ok {
 				return fmt.Errorf("Expected metric attribute not found")
 			}
-			if val.Str() != expectedAttrVal {
-				return fmt.Errorf("Expected metric attribute value %s not found, got %s", expectedAttrVal, val.Str())
+			if val.Str() != expectedgaugeAttrVal {
+				return fmt.Errorf("Expected metric attribute value %s not found, got %s", expectedgaugeAttrVal, val.Str())
 			}
-			return nil
 		} else if sm.At(i).Name() == expectedTimerName {
 			datapoint := sm.At(i).ExponentialHistogram().DataPoints().At(0)
 			if datapoint.Count() != expectedTimerCount {
@@ -129,8 +131,9 @@ func assertExpectedMetrics(sm pmetric.MetricSlice) error {
 			if val.Str() != expectedTimerAttrVal {
 				return fmt.Errorf("Expected timer metric attribute value %s not found, got %s", expectedTimerAttrVal, val.Str())
 			}
-			return nil
+		} else {
+			return fmt.Errorf("Expected metrics not found")
 		}
 	}
-	return fmt.Errorf("Expected metric not found")
+	return nil
 }

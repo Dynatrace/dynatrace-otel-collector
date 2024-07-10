@@ -16,15 +16,6 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 )
 
-const (
-	equal = iota
-	regex
-	exist
-	testKubeConfig   = "/tmp/kube-config-collector-e2e-testing"
-	kubeConfigEnvVar = "KUBECONFIG"
-	uidRe            = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-)
-
 // TestE2E_StatsdReceiver tests the "Ingest data from Statsd" use case
 // See: https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/use-cases/statsd
 func TestE2E_StatsdReceiver(t *testing.T) {

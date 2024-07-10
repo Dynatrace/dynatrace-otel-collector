@@ -78,7 +78,6 @@ func scanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink) {
 			assert.NoError(t, assertExpectedMetrics(sm))
 		}
 	}
-	return
 }
 
 func assertExpectedMetrics(sm pmetric.MetricSlice) error {
@@ -128,7 +127,7 @@ func assertExpectedMetrics(sm pmetric.MetricSlice) error {
 				return fmt.Errorf("Expected timer metric attribute value %s not found, got %s", expectedTimerAttrVal, val.Str())
 			}
 		} else {
-			return fmt.Errorf("Expected metrics not found")
+			return fmt.Errorf("Unexpected metric received: %s", sm.At(i).Name())
 		}
 	}
 	return nil

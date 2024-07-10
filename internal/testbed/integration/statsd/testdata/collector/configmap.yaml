@@ -45,18 +45,11 @@ data:
             # Drop metrics of type histogram. The _count and _sum metrics will still be exported.
             - type == METRIC_DATA_TYPE_HISTOGRAM
     exporters:
-      debug:
-        verbosity: detailed
       otlp:
         endpoint: {{ .HostEndpoint }}:4317
         tls:
           insecure: true
     service:
-      telemetry:
-        metrics:
-          address: 0.0.0.0:8888
-        logs:
-          level: debug
       extensions:
       - health_check
       pipelines:
@@ -68,4 +61,3 @@ data:
           - filter
           exporters:
           - otlp
-          - debug

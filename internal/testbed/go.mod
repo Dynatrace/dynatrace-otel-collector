@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.22.5
 
 require (
-	github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest v0.0.0
+	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0
 	github.com/google/uuid v1.6.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.104.0
 	github.com/stretchr/testify v1.9.0
@@ -13,10 +13,7 @@ require (
 	go.opentelemetry.io/collector/consumer v0.104.0
 	go.opentelemetry.io/collector/featuregate v1.11.0
 	go.opentelemetry.io/collector/pdata v1.11.0
-	go.opentelemetry.io/collector/receiver v0.104.0
-	go.opentelemetry.io/collector/receiver/otlpreceiver v0.104.0
 	go.opentelemetry.io/collector/semconv v0.104.0
-	go.uber.org/multierr v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -124,7 +121,6 @@ require (
 	github.com/prometheus/common v0.54.0 // indirect
 	github.com/prometheus/procfs v0.15.0 // indirect
 	github.com/rs/cors v1.11.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.24.5 // indirect
 	github.com/shirou/gopsutil/v4 v4.24.5 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/signalfx/com_signalfx_metrics_protobuf v0.0.3 // indirect
@@ -151,12 +147,7 @@ require (
 	go.opentelemetry.io/collector/config/configtls v0.104.0 // indirect
 	go.opentelemetry.io/collector/config/internal v0.104.0 // indirect
 	go.opentelemetry.io/collector/confmap v0.104.0 // indirect
-	go.opentelemetry.io/collector/confmap/converter/expandconverter v0.103.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/envprovider v0.103.0 // indirect
 	go.opentelemetry.io/collector/confmap/provider/fileprovider v0.104.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/httpprovider v0.103.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/httpsprovider v0.103.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/yamlprovider v0.103.0 // indirect
 	go.opentelemetry.io/collector/connector v0.104.0 // indirect
 	go.opentelemetry.io/collector/exporter v0.104.0 // indirect
 	go.opentelemetry.io/collector/exporter/debugexporter v0.104.0 // indirect
@@ -170,6 +161,8 @@ require (
 	go.opentelemetry.io/collector/processor v0.104.0 // indirect
 	go.opentelemetry.io/collector/processor/batchprocessor v0.104.0 // indirect
 	go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.104.0 // indirect
+	go.opentelemetry.io/collector/receiver v0.104.0 // indirect
+	go.opentelemetry.io/collector/receiver/otlpreceiver v0.104.0 // indirect
 	go.opentelemetry.io/collector/service v0.104.0 // indirect
 	go.opentelemetry.io/contrib/config v0.7.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.52.0 // indirect
@@ -191,6 +184,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.27.0 // indirect
 	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.2.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
 	golang.org/x/mod v0.17.0 // indirect
@@ -222,4 +216,4 @@ require (
 
 replace cloud.google.com/go => cloud.google.com/go v0.115.0
 
-replace github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest v0.0.0 => ../k8stest
+replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon

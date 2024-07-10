@@ -3,29 +3,16 @@
 package prometheus
 
 import (
-	"context"
 	"fmt"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
+	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/consumer/consumertest"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"slices"
 	"testing"
-	"time"
-
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/component/componenttest"
-	"go.opentelemetry.io/collector/consumer/consumertest"
-	"go.opentelemetry.io/collector/pdata/pmetric"
-	"go.opentelemetry.io/collector/receiver/otlpreceiver"
-	"go.opentelemetry.io/collector/receiver/receivertest"
-
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest"
-)
-
-const (
-	testKubeConfig = "/tmp/kube-config-collector-e2e-testing"
 )
 
 // TestE2E_PrometheusNodeExporter tests the "Scrape data from Prometheus" use case
@@ -49,10 +36,11 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	}()
 
 	// Install Prometheus Node exporter
-	installPrometheusNodeExporter()
+	err = installPrometheusNodeExporter()
+	require.NoErrorf(t, err, "failed to install Prometheus node exporter")
 
 	metricsConsumer := new(consumertest.MetricsSink)
-	shutdownSinks := startUpSinks(t, metricsConsumer)
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{Metrics: metricsConsumer})
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
@@ -64,17 +52,17 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	}()
 
 	wantEntries := 2 // Minimal number of metric requests to wait for.
-	waitForData(t, wantEntries, metricsConsumer)
+	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
 
 	expectedColMetrics := []string{
 		"otelcol_process_memory_rss", "scrape_duration_seconds", "scrape_samples_post_metric_relabeling",
 	}
-	scanForServiceMetrics(t, metricsConsumer, "opentelemetry-collector", expectedColMetrics)
+	oteltest.ScanForServiceMetrics(t, metricsConsumer, "opentelemetry-collector", expectedColMetrics)
 
 	expectedPromMetrics := []string{
 		"node_procs_running", "node_memory_MemAvailable_bytes",
 	}
-	scanForServiceMetrics(t, metricsConsumer, "node-exporter", expectedPromMetrics)
+	oteltest.ScanForServiceMetrics(t, metricsConsumer, "node-exporter", expectedPromMetrics)
 }
 
 func installPrometheusNodeExporter() error {
@@ -91,63 +79,4 @@ func installPrometheusNodeExporter() error {
 	fmt.Print(string(cmd))
 
 	return nil
-}
-
-func scanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink, expectedService string,
-	expectedMetrics []string) {
-
-	for _, r := range ms.AllMetrics() {
-		for i := 0; i < r.ResourceMetrics().Len(); i++ {
-			resource := r.ResourceMetrics().At(i).Resource()
-			service, exist := resource.Attributes().Get("service.name")
-			assert.Equal(t, true, exist, "resource does not have the 'service.name' attribute")
-			if service.AsString() != expectedService {
-				continue
-			}
-
-			sm := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
-			assert.NoError(t, assertExpectedMetrics(expectedMetrics, sm))
-			return
-		}
-	}
-	t.Fatalf("no metric found for service %s", expectedService)
-}
-
-func assertExpectedMetrics(expectedMetrics []string, sm pmetric.MetricSlice) error {
-	var actualMetrics []string
-	for i := 0; i < sm.Len(); i++ {
-		actualMetrics = append(actualMetrics, sm.At(i).Name())
-	}
-
-	for _, m := range expectedMetrics {
-		if !slices.Contains(actualMetrics, m) {
-			return fmt.Errorf("Metric: %s not found", m)
-		}
-	}
-	return nil
-}
-
-func startUpSinks(t *testing.T, mc *consumertest.MetricsSink) func() {
-	f := otlpreceiver.NewFactory()
-	cfg := f.CreateDefaultConfig().(*otlpreceiver.Config)
-
-	cfg.GRPC.NetAddr.Endpoint = "0.0.0.0:4317"
-	cfg.HTTP.Endpoint = "0.0.0.0:4318"
-
-	rcvr, err := f.CreateMetricsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, mc)
-	require.NoError(t, err, "failed creating metrics receiver")
-
-	require.NoError(t, rcvr.Start(context.Background(), componenttest.NewNopHost()))
-	return func() {
-		assert.NoError(t, rcvr.Shutdown(context.Background()))
-	}
-}
-
-func waitForData(t *testing.T, entriesNum int, mc *consumertest.MetricsSink) {
-	timeoutMinutes := 5
-	require.Eventuallyf(t, func() bool {
-		return len(mc.AllMetrics()) > entriesNum
-	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
-		"failed to receive %d entries,  received %d metrics in %d minutes", entriesNum,
-		len(mc.AllMetrics()), timeoutMinutes)
 }

@@ -3,25 +3,15 @@
 package k8senrichment
 
 import (
-	"context"
 	"fmt"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
+	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/consumer/consumertest"
 	"os"
 	"path/filepath"
-	"regexp"
 	"testing"
-	"time"
-
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/component/componenttest"
-	"go.opentelemetry.io/collector/consumer/consumertest"
-	"go.opentelemetry.io/collector/pdata/pcommon"
-	"go.opentelemetry.io/collector/receiver/otlpreceiver"
-	"go.opentelemetry.io/collector/receiver/receivertest"
-	"go.uber.org/multierr"
-
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/k8stest"
 )
 
 const (
@@ -34,13 +24,6 @@ const (
 type expectedValue struct {
 	mode  int
 	value string
-}
-
-func newExpectedValue(mode int, value string) *expectedValue {
-	return &expectedValue{
-		mode:  mode,
-		value: value,
-	}
 }
 
 // TestE2E_ClusterRBAC tests the "Enrich from Kubernetes" use case
@@ -64,7 +47,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	}()
 
 	tracesConsumer := new(consumertest.TracesSink)
-	shutdownSinks := startUpSinks(t, tracesConsumer)
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{Traces: tracesConsumer})
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
@@ -87,154 +70,74 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	}
 
 	wantEntries := 30 // Minimal number of traces to wait for.
-	waitForData(t, wantEntries, tracesConsumer)
+	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
 
 	tcs := []struct {
 		name    string
 		service string
-		attrs   map[string]*expectedValue
+		attrs   map[string]oteltest.ExpectedValue
 	}{
 		{
 			name:    "traces-job",
 			service: "test-traces-job",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":             newExpectedValue(regex, "telemetrygen-"+testID+"-traces-job-[a-z0-9]*"),
-				"k8s.pod.uid":              newExpectedValue(regex, uidRe),
-				"k8s.job.name":             newExpectedValue(equal, "telemetrygen-"+testID+"-traces-job"),
-				"k8s.namespace.name":       newExpectedValue(equal, testNs),
-				"k8s.node.name":            newExpectedValue(exist, ""),
-				"k8s.cluster.uid":          newExpectedValue(regex, uidRe),
-				"dt.kubernetes.cluster.id": newExpectedValue(regex, uidRe),
+			attrs: map[string]oteltest.ExpectedValue{
+				"k8s.pod.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-job-[a-z0-9]*"),
+				"k8s.pod.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.job.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-job"),
+				"k8s.namespace.name":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.node.name":            oteltest.NewExpectedValue(exist, ""),
+				"k8s.cluster.uid":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.kubernetes.cluster.id": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
 			},
 		},
 		{
 			name:    "traces-statefulset",
 			service: "test-traces-statefulset",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":                newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset-0"),
-				"k8s.pod.uid":                 newExpectedValue(regex, uidRe),
-				"k8s.statefulset.name":        newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset"),
-				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-statefulset"),
-				"dt.kubernetes.workload.kind": newExpectedValue(equal, "statefulset"),
-				"k8s.namespace.name":          newExpectedValue(equal, testNs),
-				"k8s.node.name":               newExpectedValue(exist, ""),
-				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),
-				"dt.kubernetes.cluster.id":    newExpectedValue(regex, uidRe),
+			attrs: map[string]oteltest.ExpectedValue{
+				"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset-0"),
+				"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.statefulset.name":        oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset"),
+				"dt.kubernetes.workload.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset"),
+				"dt.kubernetes.workload.kind": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "statefulset"),
+				"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+				"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.kubernetes.cluster.id":    oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
 			},
 		},
 		{
 			name:    "traces-deployment",
 			service: "test-traces-deployment",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":                newExpectedValue(regex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
-				"k8s.pod.uid":                 newExpectedValue(regex, uidRe),
-				"k8s.deployment.name":         newExpectedValue(equal, "telemetrygen-"+testID+"-traces-deployment"),
-				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-deployment"),
-				"dt.kubernetes.workload.kind": newExpectedValue(equal, "deployment"),
-				"k8s.namespace.name":          newExpectedValue(equal, testNs),
-				"k8s.node.name":               newExpectedValue(exist, ""),
-				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),
-				"dt.kubernetes.cluster.id":    newExpectedValue(regex, uidRe),
+			attrs: map[string]oteltest.ExpectedValue{
+				"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
+				"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.deployment.name":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-deployment"),
+				"dt.kubernetes.workload.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-deployment"),
+				"dt.kubernetes.workload.kind": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "deployment"),
+				"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+				"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.kubernetes.cluster.id":    oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
 			},
 		},
 		{
 			name:    "traces-daemonset",
 			service: "test-traces-daemonset",
-			attrs: map[string]*expectedValue{
-				"k8s.pod.name":                newExpectedValue(regex, "telemetrygen-"+testID+"-traces-daemonset-[a-z0-9]*"),
-				"k8s.pod.uid":                 newExpectedValue(regex, uidRe),
-				"k8s.daemonset.name":          newExpectedValue(equal, "telemetrygen-"+testID+"-traces-daemonset"),
-				"dt.kubernetes.workload.name": newExpectedValue(equal, "telemetrygen-"+testID+"-traces-daemonset"),
-				"dt.kubernetes.workload.kind": newExpectedValue(equal, "daemonset"),
-				"k8s.namespace.name":          newExpectedValue(equal, testNs),
-				"k8s.node.name":               newExpectedValue(exist, ""),
-				"k8s.cluster.uid":             newExpectedValue(regex, uidRe),
-				"dt.kubernetes.cluster.id":    newExpectedValue(regex, uidRe),
+			attrs: map[string]oteltest.ExpectedValue{
+				"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-daemonset-[a-z0-9]*"),
+				"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.daemonset.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-daemonset"),
+				"dt.kubernetes.workload.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-daemonset"),
+				"dt.kubernetes.workload.kind": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "daemonset"),
+				"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+				"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.kubernetes.cluster.id":    oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
 			},
 		},
 	}
 
 	for _, tc := range tcs {
-		scanTracesForAttributes(t, tracesConsumer, tc.service, tc.attrs)
+		oteltest.ScanTracesForAttributes(t, tracesConsumer, tc.service, tc.attrs, nil)
 	}
-}
-
-func scanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expectedService string,
-	kvs map[string]*expectedValue) {
-	for i := 0; i < len(ts.AllTraces()); i++ {
-		traces := ts.AllTraces()[i]
-		for i := 0; i < traces.ResourceSpans().Len(); i++ {
-			resource := traces.ResourceSpans().At(i).Resource()
-			service, exist := resource.Attributes().Get("service.name")
-			assert.Equal(t, true, exist, "Resource does not have the 'service.name' attribute")
-			if service.AsString() != expectedService {
-				continue
-			}
-			assert.NoError(t, resourceHasAttributes(resource, kvs))
-			return
-		}
-	}
-	t.Fatalf("no spans found for service %s", expectedService)
-}
-
-func resourceHasAttributes(resource pcommon.Resource, kvs map[string]*expectedValue) error {
-	foundAttrs := make(map[string]bool)
-	for k := range kvs {
-		foundAttrs[k] = false
-	}
-
-	resource.Attributes().Range(
-		func(k string, v pcommon.Value) bool {
-			if val, ok := kvs[k]; ok {
-				switch val.mode {
-				case equal:
-					if val.value == v.AsString() {
-						foundAttrs[k] = true
-					}
-				case regex:
-					matched, _ := regexp.MatchString(val.value, v.AsString())
-					if matched {
-						foundAttrs[k] = true
-					}
-				case exist:
-					foundAttrs[k] = true
-				}
-
-			}
-			return true
-		},
-	)
-
-	var err error
-	for k, v := range foundAttrs {
-		if !v {
-			err = multierr.Append(err, fmt.Errorf("%v attribute not found", k))
-		}
-	}
-	return err
-}
-
-func startUpSinks(t *testing.T, tc *consumertest.TracesSink) func() {
-	f := otlpreceiver.NewFactory()
-	cfg := f.CreateDefaultConfig().(*otlpreceiver.Config)
-
-	cfg.GRPC.NetAddr.Endpoint = "0.0.0.0:4317"
-	cfg.HTTP.Endpoint = "0.0.0.0:4318"
-
-	rcvr, err := f.CreateTracesReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, tc)
-	require.NoError(t, err, "failed creating traces receiver")
-
-	require.NoError(t, rcvr.Start(context.Background(), componenttest.NewNopHost()))
-	return func() {
-		assert.NoError(t, rcvr.Shutdown(context.Background()))
-	}
-}
-
-func waitForData(t *testing.T, entriesNum int, tc *consumertest.TracesSink) {
-	timeoutMinutes := 5
-	require.Eventuallyf(t, func() bool {
-		return len(tc.AllTraces()) > entriesNum
-	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
-		"failed to receive %d entries,  received %d traces in %d minutes", entriesNum,
-		len(tc.AllTraces()), timeoutMinutes)
 }

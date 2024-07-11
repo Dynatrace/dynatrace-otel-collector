@@ -44,23 +44,25 @@ archives:
       - goos: windows
         format: zip
 nfpms:
-  - package_name: dtotelcol
+  - id: dtotelcol
+    package_name: dtotelcol
     contents:
       - src: internal/release/dtotelcol.service
         dst: /lib/systemd/system/dtotelcol.service
       - src: internal/release/dtotelcol.conf
         dst: /etc/dtotelcol/dtotelcol.conf
+      - src: internal/release/config.yaml
+        dst: /etc/dtotelcol/config.yaml
     umask: 0o002
     scripts:
       preinstall: internal/release/preinstall.sh
       postinstall: internal/release/postinstall.sh
       preremove: internal/release/preremove.sh
-    id: dtotelcol
     formats:
       - apk
       - deb
       - rpm
-    maintainer: TBD
+    maintainer: "Dynatrace LLC <opensource@dynatrace.com"
     description: Dynatrace distribution of the OpenTelemetry Collector
     license: Apache 2.0
 dockers:

@@ -68,7 +68,7 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 	}
 	if sinks.Traces != nil {
 		tracesRcvr, err := f.CreateTracesReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, sinks.Traces)
-		require.NoError(t, err, "failed creating metrics receiver")
+		require.NoError(t, err, "failed creating traces receiver")
 		require.NoError(t, tracesRcvr.Start(context.Background(), componenttest.NewNopHost()))
 		shutDownFuncs = append(shutDownFuncs, func() {
 			assert.NoError(t, tracesRcvr.Shutdown(context.Background()))
@@ -76,7 +76,7 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 	}
 	if sinks.Logs != nil {
 		logsRcvr, err := f.CreateLogsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, sinks.Logs)
-		require.NoError(t, err, "failed creating metrics receiver")
+		require.NoError(t, err, "failed creating logs receiver")
 		require.NoError(t, logsRcvr.Start(context.Background(), componenttest.NewNopHost()))
 		shutDownFuncs = append(shutDownFuncs, func() {
 			assert.NoError(t, logsRcvr.Shutdown(context.Background()))

@@ -45,7 +45,6 @@ archives:
         format: zip
 nfpms:
   - id: dtotelcol
-    package_name: dtotelcol
     file_name_template: >-
       {{ .PackageName }}_
       {{- title .Os }}_
@@ -58,8 +57,8 @@ nfpms:
         dst: /lib/systemd/system/dtotelcol.service
       - src: internal/release/dtotelcol.conf
         dst: /etc/dtotelcol/dtotelcol.conf
-      - src: internal/release/config.yaml
-        dst: /etc/dtotelcol/config.yaml
+#      - src: internal/release/config.yaml
+#        dst: /etc/dtotelcol/config.yaml
     umask: 0o002
     scripts:
       preinstall: internal/release/preinstall.sh

@@ -81,6 +81,7 @@ jobs:
           - k8senrichment
           - prometheus
           - zipkin
+          - statsd
     runs-on: ubuntu-latest
     needs: docker-build
     steps:

@@ -5,6 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
+	"slices"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component/componenttest"
@@ -13,10 +18,6 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver/otlpreceiver"
 	"go.opentelemetry.io/collector/receiver/receivertest"
-	"regexp"
-	"slices"
-	"testing"
-	"time"
 )
 
 type ExpectedValueMode int
@@ -67,7 +68,7 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 	}
 	if sinks.Traces != nil {
 		tracesRcvr, err := f.CreateTracesReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, sinks.Traces)
-		require.NoError(t, err, "failed creating metrics receiver")
+		require.NoError(t, err, "failed creating traces receiver")
 		require.NoError(t, tracesRcvr.Start(context.Background(), componenttest.NewNopHost()))
 		shutDownFuncs = append(shutDownFuncs, func() {
 			assert.NoError(t, tracesRcvr.Shutdown(context.Background()))
@@ -75,7 +76,7 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 	}
 	if sinks.Logs != nil {
 		logsRcvr, err := f.CreateLogsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, sinks.Logs)
-		require.NoError(t, err, "failed creating metrics receiver")
+		require.NoError(t, err, "failed creating logs receiver")
 		require.NoError(t, logsRcvr.Start(context.Background(), componenttest.NewNopHost()))
 		shutDownFuncs = append(shutDownFuncs, func() {
 			assert.NoError(t, logsRcvr.Shutdown(context.Background()))
@@ -92,7 +93,7 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 func WaitForMetrics(t *testing.T, entriesNum int, mc *consumertest.MetricsSink) {
 	timeoutMinutes := 5
 	require.Eventuallyf(t, func() bool {
-		return len(mc.AllMetrics()) > entriesNum
+		return len(mc.AllMetrics()) >= entriesNum
 	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
 		"failed to receive %d entries,  received %d metrics in %d minutes", entriesNum,
 		len(mc.AllMetrics()), timeoutMinutes)

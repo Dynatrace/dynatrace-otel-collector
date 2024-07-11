@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: statsd-generator-job
+  namespace: e2estatsd
+spec:
+  template:
+    spec:
+      containers:
+      - name: netcat
+        image: alpine
+        command: ["/bin/sh", "-c"]
+        args: [
+          "echo 'test.metric:42|g|#myKey:myVal' | nc -u -w 1 -v otelcolsvc.e2estatsd.svc.cluster.local 8125 && \
+           sleep 1 && \
+           echo 'timerMetric:320|ms|@0.1|#timerKey:timerVal' | nc -u -w 1 -v otelcolsvc.e2estatsd.svc.cluster.local 8125"
+        ]
+      restartPolicy: Never
+  backoffLimit: 4

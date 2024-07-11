@@ -1,0 +1,50 @@
+receivers:
+  statsd:
+    aggregation_interval: 60s
+    endpoint: 0.0.0.0:8125
+    timer_histogram_mapping:
+      - statsd_type: "histogram"
+        observer_type: "histogram"
+        histogram:
+          # max size for the auto-scaling exponential histgram OTLP metric
+          max_size: 100
+      - statsd_type: "timing"
+        observer_type: "histogram"
+        histogram:
+          max_size: 100
+      - statsd_type: "distribution"
+        observer_type: "histogram"
+        histogram:
+          max_size: 100
+
+processors:
+  transform:
+    metric_statements:
+      - context: metric
+        statements:
+          # Get count from the histogram. The new metric name will be <histogram_name>_count
+          - extract_count_metric(true) where type == METRIC_DATA_TYPE_HISTOGRAM
+          # Get sum from the histogram. The new metric name will be <histogram_name>_sum
+          - extract_sum_metric(true) where type == METRIC_DATA_TYPE_HISTOGRAM
+      - context: datapoint
+        statements:
+          # convert the <histogram_name>_sum metrics to gauges.
+          - convert_sum_to_gauge() where IsMatch(metric.name, ".*_sum")
+  filter:
+    metrics:
+      metric:
+        # Drop metrics of type histogram. The _count and _sum metrics will still be exported.
+        - type == METRIC_DATA_TYPE_HISTOGRAM
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  pipelines:
+    metrics:
+      receivers: [statsd]
+      processors: [transform,filter]
+      exporters: [otlphttp]

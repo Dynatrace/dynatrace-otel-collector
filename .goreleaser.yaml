@@ -44,8 +44,7 @@ archives:
       - goos: windows
         format: zip
 nfpms:
-  - id: dtotelcol
-    file_name_template: >-
+  - file_name_template: >-
       {{ .PackageName }}_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
@@ -66,7 +65,7 @@ nfpms:
       - apk
       - deb
       - rpm
-    maintainer: "Dynatrace LLC <opensource@dynatrace.com"
+    maintainer: "Dynatrace LLC <opensource@dynatrace.com>"
     description: Dynatrace distribution of the OpenTelemetry Collector
     license: Apache 2.0
 dockers:

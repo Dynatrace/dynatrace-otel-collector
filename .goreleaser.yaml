@@ -57,8 +57,6 @@ nfpms:
         dst: /lib/systemd/system/dtotelcol.service
       - src: internal/release/dtotelcol.conf
         dst: /etc/dtotelcol/dtotelcol.conf
-#      - src: internal/release/config.yaml
-#        dst: /etc/dtotelcol/config.yaml
     umask: 0o002
     scripts:
       preinstall: internal/release/preinstall.sh

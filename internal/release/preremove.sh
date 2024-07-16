@@ -15,6 +15,6 @@
 # limitations under the License.
 
 if command -v systemctl >/dev/null 2>&1; then
-    systemctl stop dtotelcol.service
-    systemctl disable dtotelcol.service
+    systemctl stop dynatrace-otel-collector.service
+    systemctl disable dynatrace-otel-collector.service
 fi

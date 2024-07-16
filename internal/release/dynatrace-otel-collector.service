@@ -3,7 +3,7 @@ Description=Dynatrace OpenTelemetry Collector
 After=network.target
 
 [Service]
-EnvironmentFile=/etc/dtotelcol/dtotelcol.conf
+EnvironmentFile=/etc/dynatrace-otel-collector/dynatrace-otel-collector.conf
 ExecStart=/usr/bin/dynatrace-otel-collector $OTELCOL_OPTIONS
 KillMode=mixed
 Restart=on-failure

@@ -15,8 +15,8 @@
 # limitations under the License.
 
 if command -v systemctl >/dev/null 2>&1; then
-    systemctl enable dtotelcol.service
-    if [ -f /etc/dtotelcol/config.yaml ]; then
-        systemctl start dtotelcol.service
+    systemctl enable dynatrace-otel-collector.service
+    if [ -f /etc/dynatrace-otel-collector/config.yaml ]; then
+        systemctl start dynatrace-otel-collector.service
     fi
 fi

@@ -52,10 +52,10 @@ nfpms:
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
     contents:
-      - src: internal/release/dtotelcol.service
-        dst: /lib/systemd/system/dtotelcol.service
-      - src: internal/release/dtotelcol.conf
-        dst: /etc/dtotelcol/dtotelcol.conf
+      - src: internal/release/dynatrace-otel-collector.service
+        dst: /lib/systemd/system/dynatrace-otel-collector.service
+      - src: internal/release/dynatrace-otel-collector.conf
+        dst: /etc/dynatrace-otel-collector/dynatrace-otel-collector.conf
     umask: 0o002
     scripts:
       preinstall: internal/release/preinstall.sh

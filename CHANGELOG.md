@@ -55,7 +55,7 @@ v0.105.0:
 
 ### 🚀 New components 🚀
 
-- `statsdreceiver`: Add statsd receiver to manifest (#272)
+- `statsdreceiver`: Add statsd receiver to manifest (#229)
 - `zipkinreceiver`: Added the zipkin receiver to the Dynatrace collector distro. (#225)
 
 ## v0.9.0

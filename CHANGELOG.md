@@ -15,6 +15,11 @@ v0.105.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.105.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.105.0>
 
+### 🚀 New components 🚀
+
+- `statsdreceiver`: Add statsd receiver to manifest (#229)
+- `zipkinreceiver`: Added the zipkin receiver to the Dynatrace collector distro (#225)
+
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 </br>
@@ -52,11 +57,6 @@ v0.105.0:
 - `statsdreceiver`: Allow configuring summary percentiles ([#33701](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33701))
 
 </details>
-
-### 🚀 New components 🚀
-
-- `statsdreceiver`: Add statsd receiver to manifest (#229)
-- `zipkinreceiver`: Added the zipkin receiver to the Dynatrace collector distro (#225)
 
 ## v0.9.0
 

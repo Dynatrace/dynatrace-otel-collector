@@ -66,6 +66,7 @@ nfpms:
       - deb
       - rpm
     maintainer: "Dynatrace LLC <opensource@dynatrace.com>"
+    vendor: "Dynatrace LLC"
     description: Dynatrace distribution of the OpenTelemetry Collector
     license: Apache 2.0
 dockers:

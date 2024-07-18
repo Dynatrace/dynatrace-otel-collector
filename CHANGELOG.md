@@ -4,6 +4,60 @@
 
 <!-- next version -->
 
+## v0.10.0
+
+This release includes version 0.105.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.105.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.105.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.105.0>
+
+### 🚀 New components 🚀
+
+- `statsdreceiver`: Add statsd receiver to manifest (#229)
+- `zipkinreceiver`: Added the zipkin receiver to the Dynatrace collector distro (#225)
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 🛑 Breaking changes 🛑
+
+- `service`: add `service.disableOpenCensusBridge` feature gate which is enabled by default to remove the dependency on OpenCensus ([#10414](https://github.com/open-telemetry/opentelemetry-collector/issues/10414))
+- `confmap`: Promote `confmap.strictlyTypedInput` feature gate to beta. ([#10552](https://github.com/open-telemetry/opentelemetry-collector/issues/10552))
+  
+  This feature gate changes the following:
+
+  - Configurations relying on the implicit type casting behaviors listed on [#9532](https://github.com/open-telemetry/opentelemetry-collector/issues/9532) will start to fail.
+  - Configurations using URI expansion (i.e. `field: ${env:ENV}`) for string-typed fields will use the value passed in `ENV` verbatim without intermediate type casting.
+
+- `stanza`: errors from Operator.Process are returned instead of silently ignored. ([#33783](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33783))
+  This public function is affected: https://pkg.go.dev/github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.104.0/operator/helper#WriterOperator.Write
+
+### 🧰 Bug fixes 🧰
+
+- `confmap`: Fixes issue where confmap could not escape `$$` when `confmap.unifyEnvVarExpansion` is enabled. ([#10560](https://github.com/open-telemetry/opentelemetry-collector/pull/10560))
+- `otlpreceiver`: Fixes a bug where the otlp receiver's http response was not properly translating grpc error codes to http status codes. ([#10574](https://github.com/open-telemetry/opentelemetry-collector/pull/10574))
+- `service/telemetry`: Add ability to set service.name for spans emitted by the Collector ([#10489](https://github.com/open-telemetry/opentelemetry-collector/issues/10489))
+- `internal/localhostgate`: Correctly log info message when `component.UseLocalHostAsDefaultHost` is enabled ([#8510](https://github.com/open-telemetry/opentelemetry-collector/issues/8510))
+- `exporterhelper`: Fix incorrect deduplication of otelcol_exporter_queue_size and otelcol_exporter_queue_capacity metrics if multiple exporters are used. ([#10444](https://github.com/open-telemetry/opentelemetry-collector/issues/10444))
+- `prometheusreceiver`: Fix hash computation to include non exported fields like regex in scrape configuration for TargetAllocator ([#29313](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/29313))
+- `syslogreceiver`: Allow to define `max_octets` for octet counting RFC5424 syslog parser ([#33182](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33182))
+
+### 💡 Enhancements 💡
+
+- `pkg/ottl`: Added Hex() converter function ([#31929](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/31929))
+- `pkg/ottl`: Add IsRootSpan() converter function. ([#32918](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32918))
+    Converter `IsRootSpan()` returns `true` if the span in the corresponding context is root, that means its `parent_span_id` equals to hexadecimal representation of zero. In all other scenarios function returns `false`.
+- `pkg/ottl`: Emit traces for statement sequence executions to troubleshoot OTTL statements/conditions ([#33433](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33433))
+- `receiver/filelog`: Add filelog.container.removeOriginalTimeField feature-flag for removing original time field ([#33946](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33946))
+- `statsdreceiver`: Allow configuring summary percentiles ([#33701](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33701))
+
+</details>
+
 ## v0.9.0
 
 This release includes version 0.104.0 of the upstream Collector components.

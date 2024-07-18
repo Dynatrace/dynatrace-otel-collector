@@ -34,17 +34,7 @@ CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
 
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
-SVC_DEMO_IMAGE := svc-demo\:latest
-LOADGEN_IMAGE := otel-loadgen\:latest
-
-.PHONY: build generate test clean clean-all components install-tools snapshot release build-demo run-demo
-build-demo:
-	$(GORELEASER) release --snapshot --clean --skip=docker,sbom
-	podman build ./ -f Dockerfile-demo -t $(SVC_DEMO_IMAGE)
-	podman build ./loadgenerator -t $(LOADGEN_IMAGE)
-run-demo:
-	podman run -dit --network host $(LOADGEN_IMAGE)
-	podman run -it --network host $(SVC_DEMO_IMAGE)
+.PHONY: build generate test clean clean-all components install-tools snapshot release
 build: $(BIN)
 build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --snapshot --clean

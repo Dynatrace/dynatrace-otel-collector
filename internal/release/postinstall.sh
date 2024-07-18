@@ -19,5 +19,7 @@ if command -v systemctl >/dev/null 2>&1; then
     systemctl enable dynatrace-otel-collector.service
     if [ -f /etc/dynatrace-otel-collector/config.yaml ]; then
         systemctl start dynatrace-otel-collector.service
+    else
+      echo "Collector installed, but no config.yaml was found, skipping startup..."
     fi
 fi

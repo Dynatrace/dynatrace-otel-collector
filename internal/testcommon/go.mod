@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.22.4
 
 require (
-	github.com/docker/docker v26.1.4+incompatible
+	github.com/docker/docker v27.1.0+incompatible
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/collector/component v0.105.0
 	go.opentelemetry.io/collector/consumer v0.105.0

@@ -20,6 +20,8 @@ To use the `service.instance.id` based dashboards, you only need to [allow-list 
 
 The dashboards rely on metrics from the collectors' [internal telelemetry](https://opentelemetry.io/docs/collector/internal-telemetry/). See the [list of internal metrics](https://opentelemetry.io/docs/collector/internal-telemetry/#lists-of-internal-metrics) for an overview of which metrics are available.
 
+In the example configuration for the selfmonitoring collector below, all selfmonitoring metrics are prefixed with `sfm.otelcol`. The dashboards expect this prefix, and will not show metrics that do not have that prefix.
+
 ## Prerequisites
 The dashboards rely on the selfmonitoring capabilities of the OTel collector as well as certain attributes on the exported metrics data.
 Required attributes are: 
@@ -30,6 +32,9 @@ Required attributes are:
 ### Adding `service.instance.id` to the allow list
 `service.name` and `k8s.pod.name` are on the Dynatrace OTLP metrics ingest allow list by default, `service.instance.id` is not. In order to add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` to the list.
 This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace. 
+
+### Dynatrace ingest
+In order to send data to Dynatrace via OTLP, you will need to supply a Dynatrace endpoint and an ingest token with the `metrics.ingest` scope set. See the [Dynatrace docs](https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/getting-started/otlp-export) for more information.
 
 ## Architecture
 Every OpenTelemetry collector has selfmonitoring capabilities, but they need to be activated.

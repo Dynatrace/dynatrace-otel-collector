@@ -11,6 +11,12 @@ For Kubernetes, two dashboards exist:
 - [collector_selfmon_kubernetes_all.json](collector_selfmon_kubernetes_all.json): Shows aggregated data for all collectors sending data.
 - [collector_selfmon_kubernetes_single.json](collector_selfmon_kubernetes_single.json): Allows to drill down into a single collector based on the collectors service name and pod name.
 
+If you are running your collectors outside of Kubernetes, or you can't add `k8s.pod.name` to your pods for any reason, you can use these dashboards:
+- [collector_selfmon_instance-id_all.json](collector_selfmon_instance-id_all.json): Shows aggregated data for all collectors sending data.
+- [collector_selfmon_instance-id_single.json](collector_selfmon_instance-id_single.json): Allows to drill down into a single collector based on the collectors service instance ID. 
+
+To use the `service.instance.id` based dashboards, you only need to [allow-list `service.instance.id`](#adding-serviceinstanceid-to-the-allow-list).
+
 The dashboards rely on metrics from the collectors' [internal telelemetry](https://opentelemetry.io/docs/collector/internal-telemetry/). See the [list of internal metrics](https://opentelemetry.io/docs/collector/internal-telemetry/#lists-of-internal-metrics) for an overview of which metrics are available.
 
 ## Prerequisites

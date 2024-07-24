@@ -1,6 +1,7 @@
 # OTel collector dashboards
 
-> NOTE: The dashboards shared in this repository are in an alpha state and can change significantly
+> [!WARNING]
+> The dashboards shared in this repository are in an alpha state and can change significantly
 > They are provided as-is, with no support guarantees. 
 > Newer versions of these dashboards could look significantly different to earlier versions and add or remove certain metrics.
 
@@ -10,15 +11,17 @@ For Kubernetes, two dashboards exist:
 - [collector_selfmon_kubernetes_all.json](collector_selfmon_kubernetes_all.json): Shows aggregated data for all collectors sending data.
 - [collector_selfmon_kubernetes_single.json](collector_selfmon_kubernetes_single.json): Allows to drill down into a single collector based on the collectors service name and pod name.
 
+The dashboards rely on metrics from the collectors' [internal telelemetry](https://opentelemetry.io/docs/collector/internal-telemetry/). See the [list of internal metrics](https://opentelemetry.io/docs/collector/internal-telemetry/#lists-of-internal-metrics) for an overview of which metrics are available.
+
 ## Prerequisites
-The dashboards rely on the selfmonitoring metric capabilities of the OTel collector as well as certain attributes on the exported metrics data.
+The dashboards rely on the selfmonitoring capabilities of the OTel collector as well as certain attributes on the exported metrics data.
 Required attributes are: 
 - `service.name` (automatically added by the Collector)
-- `service.instance.id` (automatically added by the collector, needs to be added to the Dynatrace attribute allow list, see [Adding `service.name` to the allow list](#adding-servicename-to-the-allow-list))
-- `k8s.pod.name` (needs to be added to the telemetry data, see Kubernetes prerequisites)
+- `service.instance.id` (automatically added by the collector, needs to be added to the Dynatrace attribute allow list, see "[Adding `service.instance.id` to the allow list](#adding-serviceinstanceid-to-the-allow-list)")
+- `k8s.pod.name` (needs to be added to the telemetry data, see the [Kubernetes section](#kubernetes) below)
 
-### Adding `service.name` to the allow list
-`service.name` and `k8s.pod.name` are on the Dynatrace OTLP allow list by default, `service.instance.id` is not. In order to add it follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add the `service.instance.id` to the list.
+### Adding `service.instance.id` to the allow list
+`service.name` and `k8s.pod.name` are on the Dynatrace OTLP allow list by default, `service.instance.id` is not. In order to add it follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` to the list.
 
 ## Architecture
 Every OpenTelemetry collector has selfmonitoring capabilities, but they need to be activated.
@@ -119,7 +122,7 @@ service:
 
 In Kubernetes, there are multiple ways of getting the `k8s.pod.name` onto the selfmonitoring data:
 1. Using the [Kubernetes Attributes Processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md): This processor will check where the incoming telemetry is coming from, retrieve data about the telemetry producer from the Kubernetes API, and add it to the telemetry. 
-   1. The Kubernetes attributes processor needs access to the Kubernetes API. Therefore, a service account is required. [Instructions are available on the GitHub page](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#cluster-scoped-rbac).
+   1. The Kubernetes attributes processor needs access to the Kubernetes API. Therefore, a service account is required. [Instructions are available on the `k8sattributesprocessor` GitHub page](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#cluster-scoped-rbac).
    2. The Kubernetes attributes processor [will not work](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#as-a-sidecar) for the telemetry data about the selfmonitoring collector itself, i.e. the data being sent to the selfmonitoring collector by the selfmonitoring collector. If you desire selfmonitoring data about the selfmonitoring collector, please follow the section below about injecting environment variables.
 2. Using the Kubernetes [downward API](https://kubernetes.io/docs/concepts/workloads/pods/downward-api/) to inject information into the pod, and attach that information to the exported telemetry data.
    1. Use the downward API to inject information as environment variables, e.g. in the collector deployment: 
@@ -130,7 +133,6 @@ In Kubernetes, there are multiple ways of getting the `k8s.pod.name` onto the se
       name: selfmon-collector
     spec:
       # other properties omitted for brevity
-      # , see full example deployment yaml for more info. TODO - do we want to publish the full deployment yaml?
       template:
         spec:
           containers:
@@ -158,5 +160,4 @@ In Kubernetes, there are multiple ways of getting the `k8s.pod.name` onto the se
           k8s.node.name: "${env:K8S_NODE_NAME}"
         # ... other selfmon settings, pipelines, etc. 
    ```
-   If you don't want to use the k8sattributeprocessor, you will have to add the env vars and read them back for every collector. If you use the processor, it will only be required for the selfmon collector itself. If omitted, the selfmon collector will show up as `null` in the dashboard (as the data is missing).
-
+   If you don't want to use the k8sattributeprocessor, you will have to add the env vars and read them back for every collector. If you use the processor, setting and reading will only be required for the selfmon collector itself. If omitted, the selfmon collector will show up as `null` in the dashboard (as the data is missing).

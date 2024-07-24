@@ -1,4 +1,4 @@
-# OTel collector dashboards
+# OpenTelemetry collector self-monitoring dashboards
 
 > [!WARNING]
 > The dashboards shared in this repository are in an alpha state and can change significantly
@@ -7,7 +7,8 @@
 
 This folder contains dashboards that can be used to monitor the health of deployed OpenTelemetry collectors. The dashboards are in json format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/observe-and-explore/dashboards-and-notebooks/dashboards-new/get-started/dashboards-manage#dashboards-upload).
 
-For Kubernetes, two dashboards exist: 
+For collectors deployed in Kubernetes, two dashboards exist:
+
 - [collector_selfmon_kubernetes_all.json](collector_selfmon_kubernetes_all.json): Shows aggregated data for all collectors sending data.
 - [collector_selfmon_kubernetes_single.json](collector_selfmon_kubernetes_single.json): Allows to drill down into a single collector based on the collectors service name and pod name.
 
@@ -27,11 +28,12 @@ Required attributes are:
 - `k8s.pod.name` (needs to be added to the telemetry data, see the [Kubernetes section](#kubernetes) below)
 
 ### Adding `service.instance.id` to the allow list
-`service.name` and `k8s.pod.name` are on the Dynatrace OTLP allow list by default, `service.instance.id` is not. In order to add it follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` to the list.
+`service.name` and `k8s.pod.name` are on the Dynatrace OTLP metrics ingest allow list by default, `service.instance.id` is not. In order to add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` to the list.
+This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace. 
 
 ## Architecture
 Every OpenTelemetry collector has selfmonitoring capabilities, but they need to be activated.
-Self-monitoring data can be exported from the collector via the OTLP protocol.
+Selfmonitoring data can be exported from the collector via the OTLP protocol.
 The suggested way of exporting selfmonitoring data is to run one collector dedicated for collecting and exporting the selfmonitoring data for the other running collectors, and forwarding that data to Dynatrace.
 Below, you can see a configuration example for a selfmonitoring collector.
 
@@ -59,6 +61,7 @@ processors:
 
 exporters:
   # Inject DT_ENDPOINT and DT_API_TOKEN as environment variables. This should be the environment where the selfmonitoring data will go.
+  # See <https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport> for instructions on which endpoint and token scope to use.
   otlphttp/selfmon:
     endpoint: "${DT_ENDPOINT}/api/v2/otlp"
     headers:

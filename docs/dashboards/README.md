@@ -40,6 +40,48 @@ In order to send data to Dynatrace via OTLP, you will need to supply a Dynatrace
 Every OpenTelemetry collector has selfmonitoring capabilities, but they need to be activated.
 Selfmonitoring data can be exported from the collector via the OTLP protocol.
 The suggested way of exporting selfmonitoring data is to run one collector dedicated for collecting and exporting the selfmonitoring data for the other running collectors, and forwarding that data to Dynatrace.
+See the diagram below for an example architecture.
+The `sidecar-collector` and `gateway-collectors` are used to send application telemetry to Dynatrace (e.g. traces, metrics, logs that the application produces).
+Both of these collectors send only their selfmonitoring data (or internal telemetry) to the `selfmon-collector`.
+The `selfmon-collector` is responsible for collecting, transforming and forwarding the internal telemetry for all collectors (including the `selfmon-collector` itself).
+Only monitoring data about the collector passes through it; no monitoring data from non-collector applicaitons is sent via the `selfmon-collector`.
+
+```mermaid
+flowchart LR
+    subgraph legend[Legend]
+        direction LR
+        leg1[ ]:::hide-- collector selfmonitoring data -->leg2[ ]:::hide
+        leg3[ ]:::hide-. application telemetry data .-> leg4[ ]:::hide
+        classDef hide height:0px
+    end
+
+    selfmon-collector:::collector
+
+    selfmon-collector-->Dynatrace
+    selfmon-collector-->selfmon-collector
+
+    sidecar-collector:::collector-->selfmon-collector
+
+    subgraph sg-sidecar[Application with a sidecar collector]
+    application -.-> sidecar-collector
+    end
+
+    gateway-collector:::collector-->selfmon-collector
+
+    sidecar-collector-.->Dynatrace
+    gateway-collector-.->Dynatrace
+
+    otherApps[Applications without sidecar collector]-.->gateway-collector
+    
+    style application fill:#adc9ff,stroke:#1966FF
+    classDef collector fill:#9afee0,stroke:#02D394
+    style sg-sidecar fill:#C2C2C2,stroke:#707070
+    style otherApps fill:#C2C2C2,stroke:#707070
+    style Dynatrace fill:#dcc2ff,stroke:#7F1AFF
+    style legend fill:#f2f2f2,stroke:#C2C2C2
+```
+
+
 Below, you can see a configuration example for a selfmonitoring collector.
 
 ```yaml

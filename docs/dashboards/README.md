@@ -7,6 +7,8 @@
 
 This folder contains dashboards that can be used to monitor the health of deployed OpenTelemetry collectors. The dashboards are in json format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/observe-and-explore/dashboards-and-notebooks/dashboards-new/get-started/dashboards-manage#dashboards-upload).
 
+![A screenshot of the dashboard providing an overview of running collectors. Some are running (green), some have recently stopped sending data (yellow), and some have not sent data in a longer time (red)](img/dashboard_overview_1.png)
+
 For collectors deployed in Kubernetes, two dashboards exist:
 
 - [collector_selfmon_kubernetes_all.json](collector_selfmon_kubernetes_all.json): Shows aggregated data for all collectors sending data.
@@ -15,6 +17,8 @@ For collectors deployed in Kubernetes, two dashboards exist:
 If you are running your collectors outside of Kubernetes, or you can't add `k8s.pod.name` to your pods for any reason, you can use these dashboards:
 - [collector_selfmon_instance-id_all.json](collector_selfmon_instance-id_all.json): Shows aggregated data for all collectors sending data.
 - [collector_selfmon_instance-id_single.json](collector_selfmon_instance-id_single.json): Allows to drill down into a single collector based on the collectors service instance ID. 
+
+![A screenshot of the dashboard showing statistics for a single collector when drilling down](img/dashboard_one-collector_1.png)
 
 To use the `service.instance.id` based dashboards, you only need to [allow-list `service.instance.id`](#adding-serviceinstanceid-to-the-allow-list).
 
@@ -80,7 +84,6 @@ flowchart LR
     style Dynatrace fill:#dcc2ff,stroke:#7F1AFF
     style legend fill:#f2f2f2,stroke:#C2C2C2
 ```
-
 
 Below, you can see a configuration example for a selfmonitoring collector.
 
@@ -173,7 +176,22 @@ service:
   # ... extensions, pipelines, etc.
 ```
 
+### Advantages of having a dedicated selfmonitoring collector
+
+The examples above suggest using a separate collector to collect the internal collector telemetry (selfmonitoring data). This is not strictly necessary, but comes with a few advantages. It is possible to send selfmonitoring data from each individual collector to Dynatrace directly, if desired.
+
+The advantages of having a separate collector are:
+- Adding a prefix to the metrics is simple
+- The data collection for internal telemetry is centralized
+  - Required transformations can be done in one central place, instead of doing them in each collector separately
+  - Export credentials need to be supplied only to one collector
+  - Each individual collector configuration is simpler
+- Using the `k8sattributesprocessor` simplifies tagging selfmonitoring data form Kubernetes significantly.
+
 ## Dashboards
+
+![A screenshot of a dashboard showing total numbers for incoming and outgoing telemetry for OpenTelemetry collectors](img/dashboard_overview_2.png)
+
 ### Kubernetes
 
 In Kubernetes, there are multiple ways of getting the `k8s.pod.name` onto the selfmonitoring data:

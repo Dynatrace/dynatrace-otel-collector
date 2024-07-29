@@ -32,10 +32,10 @@ type SchemeType string
 
 const (
 	EECScheme SchemeType = "eec"
-)
 
-const AuthHeaderKey = "Authorization"
-const ApiTokenPrefix = "Api-Token "
+	AuthHeaderKey = "Authorization"
+	ApiTokenPrefixFormat = "Api-Token %s"
+)
 
 type provider struct {
 	caCertPath         string // Used for tests
@@ -144,7 +144,7 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 			return nil, err
 		}
 		if cfg.authToken != "" {
-			req.Header.Add(AuthHeaderKey, ApiTokenPrefix + cfg.authToken)
+			req.Header.Add(AuthHeaderKey, fmt.Sprintf(ApiTokenPrefixFormat, cfg.authToken))
 		}
 		return req, nil
 	}

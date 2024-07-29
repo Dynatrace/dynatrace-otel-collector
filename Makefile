@@ -9,7 +9,7 @@ BIN_DIR = bin
 SRC_ROOT := $(shell git rev-parse --show-toplevel)
 
 # ALL_MODULES includes ./* dirs (excludes . dir)
-ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
+ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -not -path "./internal/k8stest/*" -exec dirname {} \; | sort | grep -E '^./' )
 # Append root module to all modules
 GOMODULES = $(ALL_MODULES)
 
@@ -40,11 +40,13 @@ build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --snapshot --clean
 generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)
+	@result=0; \
 	for MOD in $(GOMODULES); do \
 		cd $${MOD}; \
-		go test ./...; \
+		go test -v ./... || result=1; \
 		cd -; \
-	done
+	done; \
+	exit $$result;
 clean:
 	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
 clean-tools:

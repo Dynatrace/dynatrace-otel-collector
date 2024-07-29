@@ -1,4 +1,8 @@
 receivers:
+  statsd:
+    endpoint: "localhost:8125"
+  zipkin:
+    endpoint: "localhost:9411"
   filelog:
     include: [/dev/null]
   fluentforward:

@@ -480,7 +480,7 @@ func TestFragmentConfiguration(t *testing.T) {
 			fmt.Println("Write failed: ", err)
 		}
 
-		require.Equal(t, token, req.Header.Get(ApiTokenHeader))
+		require.Equal(t, "Api-Token " + token, req.Header.Get("Authorization"))
 
 		wg.Done()
 	}

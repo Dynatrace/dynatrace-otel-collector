@@ -16,4 +16,4 @@ issues: [241]
 # These lines will be padded with 2 spaces and then inserted directly into the document.
 # Use pipe (|) for multiline entries.
 subtext: |
-  The collector distribution is now available as linux packages (.rpm, .deb and .apk).
+  The collector distribution is now available as linux packages (.rpm and .deb).

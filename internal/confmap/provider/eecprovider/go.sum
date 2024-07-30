@@ -42,6 +42,8 @@ go.opentelemetry.io/collector/confmap v0.105.0 h1:3NP2BbUju42rjeQvRbmpCJGJGvbiV3
 go.opentelemetry.io/collector/confmap v0.105.0/go.mod h1:Oj1xUBRvAuL8OWWMj9sSYf1uQpB+AErpj+FKGUQLBI0=
 go.opentelemetry.io/collector/confmap v0.106.0 h1:oZ/QfGjtOTz6sEbNkp8CxSwDFRHXej8u6MywvhTzjqI=
 go.opentelemetry.io/collector/confmap v0.106.0/go.mod h1:X+nvuiQs3zdeXKkrEX1Ta3R49eLZ2/NYZLs3KUp1pik=
+go.opentelemetry.io/collector/confmap v0.106.1 h1:R7HQIPDRPOEwauBeJUlkT8Elc5f0KQr/s/kQfZi05t0=
+go.opentelemetry.io/collector/confmap v0.106.1/go.mod h1:iWdWgvxRYSHdAt5ySgPJq/i6fQMKGNnP5Pt7jOfTXno=
 go.opentelemetry.io/collector/featuregate v1.10.0 h1:krSqokHTp7JthgmtewysqHuOAkcuuZl7G2n91s7HygE=
 go.opentelemetry.io/collector/featuregate v1.10.0/go.mod h1:PsOINaGgTiFc+Tzu2K/X2jP+Ngmlp7YKGV1XrnBkH7U=
 go.opentelemetry.io/collector/featuregate v1.11.0 h1:Z7puIymKoQRm3oNM/NH8reWc2zRPz2PNaJvuokh0lQY=
@@ -52,6 +54,8 @@ go.opentelemetry.io/collector/internal/globalgates v0.105.0 h1:U/CwnTUXtrblD1sZ6
 go.opentelemetry.io/collector/internal/globalgates v0.105.0/go.mod h1:Z5US6O2xkZAtxVSSBnHAPFZwPhFoxlyKLUvS67Vx4gc=
 go.opentelemetry.io/collector/internal/globalgates v0.106.0 h1:Rg6ZM2DROO4nx93nEFoNInisUGLHBq4IAU0oK1/T7jw=
 go.opentelemetry.io/collector/internal/globalgates v0.106.0/go.mod h1:Z5US6O2xkZAtxVSSBnHAPFZwPhFoxlyKLUvS67Vx4gc=
+go.opentelemetry.io/collector/internal/globalgates v0.106.1 h1:0NQHTcykmYNDsNKObJ2XocGCv3WUAQZppfP3o6hZUIA=
+go.opentelemetry.io/collector/internal/globalgates v0.106.1/go.mod h1:Z5US6O2xkZAtxVSSBnHAPFZwPhFoxlyKLUvS67Vx4gc=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/goleak v1.3.0/go.mod h1:CoHD4mav9JJNrW/WLlf7HGZPjdw8EucARQHekz1X6bE=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=

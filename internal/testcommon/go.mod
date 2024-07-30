@@ -2,7 +2,7 @@ module testcommon
 
 go 1.22.0
 
-toolchain go1.22.4
+toolchain go1.22.5
 
 require (
 	github.com/docker/docker v27.1.0+incompatible

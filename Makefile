@@ -32,7 +32,7 @@ GORELEASER := $(TOOLS_BIN_DIR)/v2
 BUILDER    := $(TOOLS_BIN_DIR)/builder
 CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
 
-PACKAGE_PATH ?= dist/dynatrace-otel-collector_*_Linux_x86_64.deb
+PACKAGE_PATH ?= ""
 
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 

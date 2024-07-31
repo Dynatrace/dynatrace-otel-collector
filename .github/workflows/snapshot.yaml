@@ -65,6 +65,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: linux-packages
+      - run: ls -la
       - name: Parse metadata file
         id: parse-metadata
         run: |

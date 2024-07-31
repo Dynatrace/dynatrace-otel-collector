@@ -16,11 +16,11 @@ builds:
       - -tags=timetzdata
     goos:
       - linux
-#      - windows
-#      - darwin
+      - windows
+      - darwin
     goarch:
       - amd64
-#      - arm64
+      - arm64
     ignore:
       - goos: windows
         goarch: arm64

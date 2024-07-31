@@ -18,4 +18,4 @@ To build the Collector Linux packages, a few steps are required:
 - Check the filename of the Linux package you want to test in the `dist` folder and fill out the placeholders below
   accordingly
 - To start the package tests,
-  run: `make package-test PACKAGE_NAME=./dist/dynatrace-otel-collector_<version>_Linux_<arch>.<deb|rpm>`
+  run: `make package-test PACKAGE_PATH=./dist/dynatrace-otel-collector_<version>_Linux_<arch>.<deb|rpm>`

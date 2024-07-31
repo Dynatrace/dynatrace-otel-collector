@@ -64,7 +64,7 @@ jobs:
         with:
           name: linux-packages
           path: linux-packages
-      - run: ls -la
+      - run: ls -la linux-packages
       - name: Parse metadata file
         id: parse-metadata
         run: |

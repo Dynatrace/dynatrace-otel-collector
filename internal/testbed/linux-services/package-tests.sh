@@ -53,7 +53,7 @@ echo "Checking $SERVICE_NAME service status ..."
 $container_exec systemctl --no-pager status "$SERVICE_NAME"
 
 echo "Checking $PROCESS_NAME process ..."
-$container_exec pgrep -a -u otel "$PROCESS_NAME"
+$container_exec pgrep -f -a -u otel "$PROCESS_NAME"
 
 # test uninstall
 echo
@@ -74,7 +74,7 @@ fi
 echo "$SERVICE_NAME service successfully removed after uninstall"
 
 echo "Checking $PROCESS_NAME process after uninstall ..."
-if $container_exec pgrep "$PROCESS_NAME"; then
+if $container_exec pgrep -f "$PROCESS_NAME"; then
     echo "$PROCESS_NAME process still running after uninstall"
     exit 1
 fi

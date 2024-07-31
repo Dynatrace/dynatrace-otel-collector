@@ -44,6 +44,7 @@ podman build -t "$image_name" -f "$SCRIPT_DIR/Dockerfile.test.$pkg_type" "$SCRIP
 podman rm -fv "$container_name" >/dev/null 2>&1 || true
 
 podman run --name "$container_name" -d "$image_name"
+podman_cp "$container_name" internal/testbed/linux-services/config.test.yaml /etc/dynatrace-otel-collector/config.yaml
 install_pkg "$container_name" "$PKG_PATH"
 
 # ensure service has started and still running after 5 seconds

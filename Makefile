@@ -37,7 +37,7 @@ CHLOGGEN_CONFIG := .chloggen/config.yaml
 .PHONY: build generate test package-test clean clean-all components install-tools snapshot release
 build: $(BIN)
 build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
-	$(GORELEASER) build --snapshot --clean --skip sbom,sign,archive,docker
+	$(GORELEASER) build --snapshot --clean
 generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)
 	@result=0; \
@@ -58,7 +58,7 @@ components: $(BIN)
 	$(BIN) components
 install-tools: $(TOOLS_BIN_NAMES)
 snapshot: .goreleaser.yaml $(GORELEASER)
-	$(GORELEASER) release --snapshot --clean
+	$(GORELEASER) release --snapshot --clean --skip sbom,sign,archive,docker
 release: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --clean
 

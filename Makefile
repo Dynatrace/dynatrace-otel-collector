@@ -32,6 +32,8 @@ GORELEASER := $(TOOLS_BIN_DIR)/v2
 BUILDER    := $(TOOLS_BIN_DIR)/builder
 CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
 
+PACKAGE_PATH ?= dist/dynatrace-otel-collector_*_Linux_x86_64.deb
+
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
 .PHONY: build generate test package-test clean clean-all components install-tools snapshot release
@@ -48,7 +50,7 @@ test: $(BIN)
 	done; \
 	exit $$result;
 package-test:
-	./internal/testbed/linux-services/package-tests.sh dist/dynatrace-otel-collector_0.10.1-next_Linux_arm64.deb
+	./internal/testbed/linux-services/package-tests.sh $(PACKAGE_PATH)
 clean:
 	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
 clean-tools:

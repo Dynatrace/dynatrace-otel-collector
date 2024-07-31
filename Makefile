@@ -34,7 +34,7 @@ CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
 
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
-.PHONY: build generate test clean clean-all components install-tools snapshot release
+.PHONY: build generate test package-test clean clean-all components install-tools snapshot release
 build: $(BIN)
 build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --snapshot --clean
@@ -47,6 +47,8 @@ test: $(BIN)
 		cd -; \
 	done; \
 	exit $$result;
+package-test:
+	./internal/testbed/linux-services/package-tests.sh dist/dynatrace-otel-collector_0.10.1-next_Linux_arm64.deb
 clean:
 	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
 clean-tools:

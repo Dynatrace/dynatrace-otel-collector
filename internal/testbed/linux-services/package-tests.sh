@@ -9,7 +9,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_DIR="$( cd "$SCRIPT_DIR/../../../../" && pwd )"
 export REPO_DIR
 PKG_PATH="${1:-}"
-DISTRO="${2:-}"
+DISTRO="dynatrace-otel-collector"
 
 SERVICE_NAME=$DISTRO
 PROCESS_NAME=$DISTRO
@@ -43,7 +43,6 @@ trap 'podman rm -fv $container_name >/dev/null 2>&1 || true' EXIT
 podman build -t "$image_name" -f "$SCRIPT_DIR/Dockerfile.test.$pkg_type" "$SCRIPT_DIR"
 podman rm -fv "$container_name" >/dev/null 2>&1 || true
 
-echo
 podman run --name "$container_name" -d "$image_name"
 install_pkg "$container_name" "$PKG_PATH"
 

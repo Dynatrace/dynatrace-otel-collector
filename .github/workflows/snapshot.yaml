@@ -65,7 +65,6 @@ jobs:
         with:
           name: linux-packages
           path: linux-packages
-      - run: ls -la linux-packages
       - name: Parse metadata file
         id: parse-metadata
         run: |
@@ -73,7 +72,6 @@ jobs:
           echo "metadata=$metadata" >> "$GITHUB_OUTPUT"
       - name: Extract version number
         id: extract-version
-        run: |
-          echo "version=${{ fromJson(steps.parse-metadata.outputs.metadata).version }}" >> "$GITHUB_OUTPUT"
+        run: echo "version=${{ fromJson(steps.parse-metadata.outputs.metadata).version }}" >> "$GITHUB_OUTPUT"
       - name: Test
         run: make package-test PACKAGE_PATH=linux-packages/dynatrace-otel-collector_${{ steps.extract-version.outputs.version }}_Linux_${{ matrix.arch }}.${{ matrix.os }}

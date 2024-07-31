@@ -76,9 +76,6 @@ $(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN) $(SOURCES)
 $(MAIN): $(BUILDER) manifest.yaml
 	$(BUILDER) --config manifest.yaml --skip-compilation
 
-prepare-ci: $(BUILDER) manifest.yaml
-	$(BUILDER) --config manifest.yaml --skip-compilation --skip-get-modules
-
 $(CP_FILES_DEST): $(MAIN)
 	cp $(notdir $@) $@
 

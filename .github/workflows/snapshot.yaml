@@ -42,12 +42,12 @@ jobs:
         with:
           name: linux-packages
           path: |
-#            enable ARM when github hosted ARM runners are available
-#            dist/dynatrace-otel-collector_*_Linux_arm64.deb
-#            dist/dynatrace-otel-collector_*_Linux_arm64.rpm
             dist/dynatrace-otel-collector_*_Linux_x86_64.deb
             dist/dynatrace-otel-collector_*_Linux_x86_64.rpm
             dist/metadata.json
+#           enable ARM when github hosted ARM runners are available
+#           dist/dynatrace-otel-collector_*_Linux_arm64.deb
+#           dist/dynatrace-otel-collector_*_Linux_arm64.rpm
 
   linux-package-tests:
     name: Test Linux Packages

@@ -46,11 +46,16 @@ jobs:
             dist/dynatrace-otel-collector_*_Linux_arm64.rpm
             dist/dynatrace-otel-collector_*_Linux_x86_64.deb
             dist/dynatrace-otel-collector_*_Linux_x86_64.rpm
+            dist/metadata.json
 
   linux-package-tests:
     name: Test Linux Packages
     runs-on: ubuntu-22.04
     needs: build
+    strategy:
+      matrix:
+        os: ["deb", "rpm"]
+        arch: ["x86_64", "arm64"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,5 +63,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: linux-packages
+      - name: Parse metadata file
+        id: parse-metadata
+        run: |
+          metadata=`cat ./linux-packages/metadata.json`
+          echo "metadata=$metadata" >> "$GITHUB_OUTPUT"
+      - name: Extract version number
+        id: extract-version
+        run: |
+          echo "version=${{ fromJson(steps.parse-metadata.outputs.metadata).version }}" >> "$GITHUB_OUTPUT"
       - name: Test
-        run: make package-test
+        run: make package-test PACKAGE_PATH=linux-packages/dynatrace-otel-collector_${{ steps.extract-version.outputs.version }}_Linux_${{ matrix.arch }}.${{ matrix.os }}

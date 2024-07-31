@@ -13,7 +13,9 @@ Tools:
 
 To build the Collector Linux packages, a few steps are required:
 
-- Run `make snapshot` to build the necessary release assets with all architectures and packaging types into the `dist` folder
+- Run `make snapshot` to build the necessary release assets with all architectures and packaging types into the `dist`
+  folder
+- Check the filename of the Linux package you want to test in the `dist` folder and fill out the placeholders below
+  accordingly
 - To start the package tests,
-  run: `./internal/testbed/linux-services/package-tests.sh ./dist/dynatrace-otel-collector_*_Linux_x86-64.<deb|rpm>`
-
+  run: `make package-test PACKAGE_NAME=./dist/dynatrace-otel-collector_<version>_Linux_<arch>.<deb|rpm>`

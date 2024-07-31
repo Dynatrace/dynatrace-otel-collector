@@ -24,11 +24,16 @@ v0.106.0:
 <summary>Highlights from the upstream Collector changelog</summary>
 </br>
 
+### 🚩 Deprecations 🚩
+
+- `k8sattributesprocessor`: Deprecate `extract.annotations.regex` and `extract.labels.regex` config fields in favor of the `ExtractPatterns` function in the transform processor. The `FieldExtractConfig.Regex` parameter will be removed in version v0.111.0. (open-telemetry/opentelemetry-collector-contrib#25128)
+  Deprecating of FieldExtractConfig.Regex parameter means that it is recommended to use the `ExtractPatterns` function from the transform processor instead. To convert your current configuration please check the `ExtractPatterns` function [documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/pkg/ottl/ottlfuncs#extractpatterns). You should use the `pattern` parameter of `ExtractPatterns` instead of using the `FieldExtractConfig.Regex` parameter.
+
+### 💡 Enhancements 💡
+
 - `confighttp`: Add option to include query params in auth context (open-telemetry/opentelemetry-collector#4806)
 - `configgrpc`: gRPC auth errors now return gRPC status code UNAUTHENTICATED (16) (open-telemetry/opentelemetry-collector#7646)
 - `httpprovider`, `httpsprovider`: Validate URIs in HTTP and HTTPS providers before fetching. (open-telemetry/opentelemetry-collector#10468)
-- `k8sattributesprocessor`: Deprecate `extract.annotations.regex` and `extract.labels.regex` config fields in favor of the `ExtractPatterns` function in the transform processor. The `FieldExtractConfig.Regex` parameter will be removed in version v0.111.0. (open-telemetry/opentelemetry-collector-contrib#25128)
-  Deprecating of FieldExtractConfig.Regex parameter means that it is recommended to use the `ExtractPatterns` function from the transform processor instead. To convert your current configuration please check the `ExtractPatterns` function [documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/pkg/ottl/ottlfuncs#extractpatterns). You should use the `pattern` parameter of `ExtractPatterns` instead of using the `FieldExtractConfig.Regex` parameter.
 - `processor/transform`: Add `scale_metric` function that scales all data points in a metric. (open-telemetry/opentelemetry-collector-contrib#16214)
 - `transformprocessor`: Support aggregating metrics based on their attributes. (open-telemetry/opentelemetry-collector-contrib#16224)
 - `pkg/ottl`: Adds an `Format` function to OTTL that calls `fmt.Sprintf` (open-telemetry/opentelemetry-collector-contrib#33405)

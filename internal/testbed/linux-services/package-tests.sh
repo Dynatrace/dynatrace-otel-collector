@@ -53,11 +53,7 @@ echo "Checking $SERVICE_NAME service status ..."
 $container_exec systemctl --no-pager status "$SERVICE_NAME"
 
 echo "Checking $PROCESS_NAME process ..."
-if [ "$DISTRO" = "otelcol" ]; then
-  $container_exec pgrep -a -u otel "$PROCESS_NAME"
-else
-  $container_exec pgrep -a -u otelcol-contrib "$PROCESS_NAME"
-fi
+$container_exec pgrep -a -u otel "$PROCESS_NAME"
 
 # test uninstall
 echo

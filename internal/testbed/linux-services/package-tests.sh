@@ -57,7 +57,6 @@ echo "Checking $PROCESS_NAME process ..."
 $container_exec pgrep -f -a -u otel "$PROCESS_NAME"
 
 # test uninstall
-echo
 uninstall_pkg "$container_name" "$pkg_type" "$DISTRO"
 
 echo "Checking $SERVICE_NAME service status after uninstall ..."

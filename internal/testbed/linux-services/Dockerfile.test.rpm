@@ -1,0 +1,8 @@
+# A rockylinux image with systemd enabled
+FROM rockylinux:9.3
+
+ENV container docker
+
+RUN dnf install -y initscripts
+
+CMD ["/usr/sbin/init"]

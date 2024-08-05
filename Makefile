@@ -32,9 +32,11 @@ GORELEASER := $(TOOLS_BIN_DIR)/v2
 BUILDER    := $(TOOLS_BIN_DIR)/builder
 CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
 
+PACKAGE_PATH ?= ""
+
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
-.PHONY: build generate test clean clean-all components install-tools snapshot release
+.PHONY: build generate test package-test clean clean-all components install-tools snapshot release
 build: $(BIN)
 build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --snapshot --clean
@@ -47,6 +49,8 @@ test: $(BIN)
 		cd -; \
 	done; \
 	exit $$result;
+package-test:
+	./internal/testbed/linux-services/package-tests.sh $(PACKAGE_PATH)
 clean:
 	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
 clean-tools:

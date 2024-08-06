@@ -79,6 +79,10 @@ $(MAIN): $(BUILDER) manifest.yaml
 $(CP_FILES_DEST): $(MAIN)
 	cp $(notdir $@) $@
 
+.PHONY: gotidy
+gotidy:
+	find . -iname go.mod -exec bash -c "cd \$$(dirname {}) && go mod tidy" \;
+
 FILENAME?=$(shell git branch --show-current)
 .PHONY: chlog-new
 chlog-new: $(CHLOGGEN)

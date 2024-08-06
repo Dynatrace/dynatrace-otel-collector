@@ -2,8 +2,6 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/testbed
 
 go 1.22.5
 
-toolchain go1.22.5
-
 require (
 	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0
 	github.com/google/uuid v1.6.0

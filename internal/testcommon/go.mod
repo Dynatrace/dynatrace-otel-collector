@@ -2,8 +2,6 @@ module testcommon
 
 go 1.22.5
 
-toolchain go1.22.5
-
 require (
 	github.com/docker/docker v27.1.1+incompatible
 	github.com/stretchr/testify v1.9.0

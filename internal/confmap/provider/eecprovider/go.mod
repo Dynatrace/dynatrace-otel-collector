@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider
 
-go 1.21.0
+go 1.22.5
 
 toolchain go1.22.5
 

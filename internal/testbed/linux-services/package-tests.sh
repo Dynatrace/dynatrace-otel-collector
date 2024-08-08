@@ -32,9 +32,9 @@ fi
 # translate distro x86 arch to normal name
 translated_arch=""
 if [[ "$ARCH" == "x86_64" ]]; then
-  $translated_arch="amd64"
+  translated_arch="amd64"
 else
-  $translated_arch="$ARCH"
+  translated_arch="$ARCH"
 fi
 
 pkg_base="$( basename "$PKG_PATH" )"

@@ -49,10 +49,10 @@ container_exec="podman exec $container_name"
 
 trap 'podman rm -fv $container_name >/dev/null 2>&1 || true' EXIT
 
-podman build -t "$image_name" --arch "$ARCH" -f "$SCRIPT_DIR/Dockerfile.test.$pkg_type" "$SCRIPT_DIR"
+podman build -t "$image_name" --arch "$translated_arch" -f "$SCRIPT_DIR/Dockerfile.test.$pkg_type" "$SCRIPT_DIR"
 podman rm -fv "$container_name" >/dev/null 2>&1 || true
 
-podman run --name "$container_name" --arch "$ARCH" -d "$image_name"
+podman run --name "$container_name" --arch "$translated_arch" -d "$image_name"
 podman_cp "$container_name" internal/testbed/linux-services/config.test.yaml /etc/dynatrace-otel-collector/config.yaml
 install_pkg "$container_name" "$PKG_PATH"
 

@@ -6,7 +6,15 @@ This document describes the steps to release a new version of the Dynatrace dist
 
 Before starting a release, make a PR against to verify and update the following:
 
-1. Ensure `manifest.yaml` contains all desired Collector components at the
+1. Make sure that there were no updates to the linux packages
+   - check the goreleaser files upstream for changes under the `nfpms` key
+   - check the upstream installation lifecycle scripts as well as the service config files for changes:
+     - `postinstall.sh`
+     - `preinstall.sh`
+     - `preremove.sh`
+     - `otelcol.conf`
+     - `otelcol.service`
+2. Ensure `manifest.yaml` contains all desired Collector components at the
    desired version. It is recommended that the component versions depend on the
    same minor version of the Collector. For components in the upstream Collector
    repos, most of the time this means they will be the same version as the

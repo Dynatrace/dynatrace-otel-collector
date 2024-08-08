@@ -33,6 +33,7 @@ BUILDER    := $(TOOLS_BIN_DIR)/builder
 CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
 
 PACKAGE_PATH ?= ""
+ARCH ?= ""
 
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
@@ -50,7 +51,7 @@ test: $(BIN)
 	done; \
 	exit $$result;
 package-test:
-	./internal/testbed/linux-services/package-tests.sh $(PACKAGE_PATH)
+	./internal/testbed/linux-services/package-tests.sh $(PACKAGE_PATH) $(ARCH)
 clean:
 	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
 clean-tools:

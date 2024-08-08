@@ -29,6 +29,13 @@ if [[ ! -f "$PKG_PATH" ]]; then
     exit 1
 fi
 
+# translate distro x86 arch to normal name
+translated_arch=""
+if [[ "$ARCH" == "x86_64" ]]; then
+  $translated_arch="amd64"
+else
+  $translated_arch="$ARCH"
+fi
 
 pkg_base="$( basename "$PKG_PATH" )"
 pkg_type="${pkg_base##*.}"

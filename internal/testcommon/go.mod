@@ -1,6 +1,6 @@
 module testcommon
 
-go 1.22.5
+go 1.22.6
 
 require (
 	github.com/docker/docker v27.1.1+incompatible

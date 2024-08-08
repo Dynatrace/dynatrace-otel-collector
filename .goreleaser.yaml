@@ -16,8 +16,8 @@ builds:
       - -tags=timetzdata
     goos:
       - linux
-#      - windows
-#      - darwin
+      - windows
+      - darwin
     goarch:
       - amd64
       - arm64
@@ -67,10 +67,6 @@ nfpms:
       - apk
       - deb
       - rpm
-    overrides:
-      rpm:
-        dependencies:
-          - /bin/sh
     maintainer: "Dynatrace LLC <opensource@dynatrace.com>"
     vendor: "Dynatrace LLC"
     description: Dynatrace distribution of the OpenTelemetry Collector

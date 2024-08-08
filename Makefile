@@ -61,7 +61,7 @@ components: $(BIN)
 	$(BIN) components
 install-tools: $(TOOLS_BIN_NAMES)
 snapshot: .goreleaser.yaml $(GORELEASER)
-	$(GORELEASER) release --snapshot --clean --skip archive,docker
+	$(GORELEASER) release --snapshot --clean
 release: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --clean
 

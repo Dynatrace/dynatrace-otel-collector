@@ -10,6 +10,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_DIR="$( cd "$SCRIPT_DIR/../../../../" && pwd )"
 export REPO_DIR
 PKG_PATH="${1:-}"
+ARCH="${2:-}"
 DISTRO="dynatrace-otel-collector"
 
 SERVICE_NAME=$DISTRO
@@ -18,8 +19,8 @@ PROCESS_NAME=$DISTRO
 # shellcheck source=scripts/package-tests/common.sh
 source "$SCRIPT_DIR"/common.sh
 
-if [[ -z "$PKG_PATH" ]]; then
-    echo "usage: ${BASH_SOURCE[0]} DEB_OR_RPM_PATH" >&2
+if [[ -z "$PKG_PATH" || -z "$ARCH" ]]; then
+    echo "usage: ${BASH_SOURCE[0]} DEB_OR_RPM_PATH ARCHITECTURE" >&2
     exit 1
 fi
 
@@ -28,6 +29,13 @@ if [[ ! -f "$PKG_PATH" ]]; then
     exit 1
 fi
 
+# translate distro x86 arch to normal name
+translated_arch=""
+if [[ "$ARCH" == "x86_64" ]]; then
+  translated_arch="amd64"
+else
+  translated_arch="$ARCH"
+fi
 
 pkg_base="$( basename "$PKG_PATH" )"
 pkg_type="${pkg_base##*.}"
@@ -41,10 +49,10 @@ container_exec="podman exec $container_name"
 
 trap 'podman rm -fv $container_name >/dev/null 2>&1 || true' EXIT
 
-podman build -t "$image_name" -f "$SCRIPT_DIR/Dockerfile.test.$pkg_type" "$SCRIPT_DIR"
+podman build -t "$image_name" --arch "$translated_arch" -f "$SCRIPT_DIR/Dockerfile.test.$pkg_type" "$SCRIPT_DIR"
 podman rm -fv "$container_name" >/dev/null 2>&1 || true
 
-podman run --name "$container_name" -d "$image_name"
+podman run --name "$container_name" --arch "$translated_arch" -d "$image_name"
 podman_cp "$container_name" internal/testbed/linux-services/config.test.yaml /etc/dynatrace-otel-collector/config.yaml
 install_pkg "$container_name" "$PKG_PATH"
 

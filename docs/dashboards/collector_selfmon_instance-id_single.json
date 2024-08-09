@@ -1,0 +1,3207 @@
+{
+    "version": 15,
+    "variables": [
+        {
+            "key": "ServiceName",
+            "type": "query",
+            "visible": true,
+            "input": "timeseries avg(sfm.otelcol.process_cpu_seconds), by: { service.name }\n| fieldsKeep service.name",
+            "multiple": false
+        },
+        {
+            "key": "ServiceInstanceId",
+            "type": "query",
+            "visible": true,
+            "input": "timeseries avg(sfm.otelcol.process_cpu_seconds), by: { service.instance.id }, filter: { service.name == $ServiceName }\n| fieldsKeep service.instance.id",
+            "multiple": false
+        }
+    ],
+    "tiles": {
+        "1": {
+            "type": "data",
+            "title": "Total physical memory (resident set size)",
+            "query": "timeseries avg(sfm.otelcol.process_memory_rss), filter: { service.name == $ServiceName AND service.instance.id == $ServiceInstanceId }\n| limit 20",
+            "queryConfig": {
+                "limit": 20,
+                "filters": {
+                    "service.name": [
+                        {
+                            "criteria": "equals",
+                            "expression": "$ServiceName"
+                        }
+                    ],
+                    "service.instance.id": [
+                        {
+                            "criteria": "equals",
+                            "expression": "$ServiceInstanceId"
+                        }
+                    ]
+                },
+                "version": "8.0.3",
+                "datatype": "metrics",
+                "metric": {
+                    "key": "sfm.otelcol.process_memory_rss",
+                    "aggregation": "avg"
+                },
+                "by": []
+            },
+            "subType": "dql-builder-metrics",
+            "visualization": "areaChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg(sfm.otelcol.process_memory_rss)"
+                        ],
+                        "leftAxisDimensions": []
+                    },
+                    "leftYAxisSettings": {
+                        "max": "auto"
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "avg(sfm.otelcol.process_memory_rss)",
+                        "unitCategory": "data",
+                        "baseUnit": "byte",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1719570518103
+                    }
+                ]
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "8": {
+            "type": "data",
+            "title": "Cumulative bytes allocated for heap objects",
+            "query": "timeseries avg(sfm.otelcol.process_runtime_total_alloc_bytes), filter: { service.name == $ServiceName AND service.instance.id == $ServiceInstanceId }\n| limit 20",
+            "queryConfig": {
+                "limit": 20,
+                "filters": {
+                    "service.name": [
+                        {
+                            "criteria": "equals",
+                            "expression": "$ServiceName"
+                        }
+                    ],
+                    "service.instance.id": [
+                        {
+                            "criteria": "equals",
+                            "expression": "$ServiceInstanceId"
+                        }
+                    ]
+                },
+                "version": "8.0.3",
+                "datatype": "metrics",
+                "metric": {
+                    "key": "sfm.otelcol.process_runtime_total_alloc_bytes",
+                    "aggregation": "avg"
+                },
+                "by": []
+            },
+            "subType": "dql-builder-metrics",
+            "visualization": "areaChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg(sfm.otelcol.process_runtime_total_alloc_bytes)"
+                        ],
+                        "leftAxisDimensions": []
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "avg(sfm.otelcol.process_runtime_total_alloc_bytes)",
+                        "unitCategory": "data",
+                        "baseUnit": "byte",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1719570588488
+                    }
+                ]
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "9": {
+            "type": "data",
+            "title": "Bytes of allocated heap objects",
+            "query": "timeseries avg(sfm.otelcol.process_runtime_heap_alloc_bytes), filter: { service.name == $ServiceName AND service.instance.id == $ServiceInstanceId }\n| limit 20",
+            "queryConfig": {
+                "limit": 20,
+                "filters": {
+                    "service.name": [
+                        {
+                            "criteria": "equals",
+                            "expression": "$ServiceName"
+                        }
+                    ],
+                    "service.instance.id": [
+                        {
+                            "criteria": "equals",
+                            "expression": "$ServiceInstanceId"
+                        }
+                    ]
+                },
+                "version": "8.0.3",
+                "datatype": "metrics",
+                "metric": {
+                    "key": "sfm.otelcol.process_runtime_heap_alloc_bytes",
+                    "aggregation": "avg"
+                },
+                "by": []
+            },
+            "subType": "dql-builder-metrics",
+            "visualization": "areaChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg(sfm.otelcol.process_runtime_heap_alloc_bytes)"
+                        ],
+                        "leftAxisDimensions": []
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "avg(sfm.otelcol.process_runtime_heap_alloc_bytes)",
+                        "unitCategory": "data",
+                        "baseUnit": "byte",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1719570588488
+                    }
+                ]
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "10": {
+            "type": "data",
+            "title": "Total bytes of memory obtained from the OS",
+            "query": "timeseries avg(sfm.otelcol.process_runtime_total_sys_memory_bytes), filter: { service.name == $ServiceName AND service.instance.id == $ServiceInstanceId }\n| limit 20",
+            "queryConfig": {
+                "limit": 20,
+                "filters": {
+                    "service.name": [
+                        {
+                            "criteria": "equals",
+                            "expression": "$ServiceName"
+                        }
+                    ],
+                    "service.instance.id": [
+                        {
+                            "criteria": "equals",
+                            "expression": "$ServiceInstanceId"
+                        }
+                    ]
+                },
+                "version": "8.0.3",
+                "datatype": "metrics",
+                "metric": {
+                    "key": "sfm.otelcol.process_runtime_total_sys_memory_bytes",
+                    "aggregation": "avg"
+                },
+                "by": []
+            },
+            "subType": "dql-builder-metrics",
+            "visualization": "areaChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg(sfm.otelcol.process_runtime_total_sys_memory_bytes)"
+                        ],
+                        "leftAxisDimensions": []
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "avg(sfm.otelcol.process_runtime_heap_alloc_bytes)",
+                        "unitCategory": "data",
+                        "baseUnit": "byte",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1719570588488
+                    }
+                ]
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "11": {
+            "type": "markdown",
+            "title": "",
+            "content": "## Memory metrics"
+        },
+        "24": {
+            "type": "data",
+            "title": "exporter current queue size",
+            "query": "timeseries {max(sfm.otelcol.exporter_queue_size)}, \nby: { exporter },\nfilter: {\n  service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n  }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max(sfm.otelcol.exporter_queue_size)"
+                        ],
+                        "leftAxisDimensions": [
+                            "exporter"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "max": "auto"
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "exporter",
+                        "valueAxisLabel": "interval",
+                        "categoryAxis": "exporter",
+                        "valueAxis": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "exporter"
+                    },
+                    "displayedFields": [
+                        "exporter"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "28": {
+            "type": "markdown",
+            "title": "",
+            "content": "## HTTP Client metrics\nThese are metrics about the requests that the Collector sends."
+        },
+        "32": {
+            "type": "markdown",
+            "title": "",
+            "content": "## HTTP Server metrics\nThese are metrics about the requests that the Collector receives. "
+        },
+        "36": {
+            "type": "data",
+            "title": "Average response size",
+            "query": "timeseries {avg=avg(sfm.otelcol.http.server.response.size)},\n  by: { http.status_code, http.method }, \n  filter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "http.status_code",
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxis": "interval",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg"
+                        ],
+                        "leftAxisDimensions": [
+                            "http.status_code",
+                            "http.method"
+                        ]
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "net_peer_name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "37": {
+            "type": "data",
+            "title": "Average request size",
+            "query": "timeseries {avg=avg(sfm.otelcol.http.server.request.size)},\n  by: { http.status_code, http.method }, \n  filter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "http.status_code",
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxis": "interval",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg"
+                        ],
+                        "leftAxisDimensions": [
+                            "http.status_code",
+                            "http.method"
+                        ]
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "net_peer_name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "39": {
+            "type": "data",
+            "title": "Average request duration",
+            "query": "timeseries {sum=sum(sfm.otelcol.http.server.duration_sum), count=sum(sfm.otelcol.http.server.duration_count) },\n  by: { http.status_code, http.method }, \n  filter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd avg=sum[]/count[]\n| fieldsRemove sum, count",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "http.status_code",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxisLabel": "interval"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg"
+                        ],
+                        "leftAxisDimensions": [
+                            "http.status_code",
+                            "http.method"
+                        ]
+                    },
+                    "hiddenLegendFields": []
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "42": {
+            "type": "markdown",
+            "title": "",
+            "content": "## Incoming / outgoing telemetry\nCounts for incoming and outgoing Spans/Metric data points/Logs. They are split by the component that processes the data."
+        },
+        "44": {
+            "type": "data",
+            "title": "incoming spans - by receiver",
+            "query": "timeseries {\n  accepted = sum(sfm.otelcol.receiver_accepted_spans), \n  refused=sum(sfm.otelcol.receiver_refused_spans) \n  }, \n  by: { receiver, transport },  \n  filter: {\n    service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n  }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "accepted",
+                            "refused"
+                        ],
+                        "leftAxisDimensions": [
+                            "receiver",
+                            "transport"
+                        ]
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "receiver",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "receiver",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "receiver"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "receiver"
+                    },
+                    "displayedFields": [
+                        "receiver"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "45": {
+            "type": "data",
+            "title": "outgoing spans - by exporter",
+            "query": "timeseries {success = sum(sfm.otelcol.exporter_sent_spans), failed=sum(sfm.otelcol.exporter_send_failed_spans) }, \nby: { exporter },\nfilter: {\n  service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n  }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "success",
+                            "failed"
+                        ],
+                        "leftAxisDimensions": [
+                            "exporter"
+                        ]
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "exporter",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "exporter",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "exporter"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "exporter"
+                    },
+                    "displayedFields": [
+                        "exporter"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "46": {
+            "type": "data",
+            "title": "incoming metric data points - by receiver",
+            "query": "timeseries {accepted = sum(sfm.otelcol.receiver_accepted_metric_points), refused=sum(sfm.otelcol.receiver_refused_metric_points) }, \n  by: { receiver, transport },  \n  filter: {\n    service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n  }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "accepted",
+                            "refused"
+                        ],
+                        "leftAxisDimensions": [
+                            "receiver",
+                            "transport"
+                        ]
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "receiver",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "receiver",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "receiver"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "receiver"
+                    },
+                    "displayedFields": [
+                        "receiver"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "47": {
+            "type": "data",
+            "title": "outgoing metric data points - by exporter",
+            "query": "timeseries {success = sum(sfm.otelcol.exporter_sent_metric_points), failed=sum(sfm.otelcol.exporter_send_failed_metric_points) },\nby: { exporter },\nfilter: {\n  service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n}",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "success",
+                            "failed"
+                        ],
+                        "leftAxisDimensions": [
+                            "exporter"
+                        ]
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "exporter",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "exporter",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "exporter"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "exporter"
+                    },
+                    "displayedFields": [
+                        "exporter"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "48": {
+            "type": "data",
+            "title": "incoming log records - by receiver",
+            "query": "timeseries {accepted = sum(sfm.otelcol.receiver_accepted_log_records), refused=sum(sfm.otelcol.receiver_refused_log_records) }, \n  by: { receiver, transport },  \n  filter: {\n    service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n  }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "accepted",
+                            "refused"
+                        ],
+                        "leftAxisDimensions": [
+                            "receiver",
+                            "transport"
+                        ]
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "receiver",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "receiver",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "receiver"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "receiver"
+                    },
+                    "displayedFields": [
+                        "receiver"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "49": {
+            "type": "data",
+            "title": "outgoing log records - by exporter",
+            "query": "timeseries {success = sum(sfm.otelcol.exporter_sent_log_records), failed=sum(sfm.otelcol.exporter_send_failed_log_records) }, \nby: { exporter },\nfilter: {\n  service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n}",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "success",
+                            "failed"
+                        ],
+                        "leftAxisDimensions": [
+                            "exporter"
+                        ]
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "exporter",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "exporter",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "exporter"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "exporter"
+                    },
+                    "displayedFields": [
+                        "exporter"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "50": {
+            "type": "data",
+            "title": "filtered spans - by filter",
+            "query": "timeseries { sum( sfm.otelcol.processor_filter_spans.filtered) }, \n  by: { filter },  \n  filter: {\n    service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n  }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "filter",
+                        "valueAxisLabel": "interval",
+                        "categoryAxis": "filter",
+                        "valueAxis": "interval"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum(sfm.otelcol.processor_filter_spans.filtered)"
+                        ],
+                        "leftAxisDimensions": [
+                            "filter"
+                        ]
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "receiver"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "filter"
+                    },
+                    "displayedFields": [
+                        "filter"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "51": {
+            "type": "data",
+            "title": "filtered metric data points - by filter",
+            "query": "timeseries { sum(sfm.otelcol.processor_filter_datapoints.filtered) }, \n  by: { filter },\n  filter: {\n    service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n    }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "filter",
+                        "valueAxisLabel": "interval",
+                        "categoryAxis": "filter",
+                        "valueAxis": "interval"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum(sfm.otelcol.processor_filter_datapoints.filtered)"
+                        ],
+                        "leftAxisDimensions": [
+                            "filter"
+                        ]
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "receiver"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "filter"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": []
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "52": {
+            "type": "data",
+            "title": "filtered logs - by filter",
+            "query": "timeseries { sum(sfm.otelcol.processor_filter_logs.filtered) }, \n  by: { filter },  \n  filter: {\n    service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n    }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum(sfm.otelcol.processor_filter_logs.filtered)"
+                        ],
+                        "leftAxisDimensions": [
+                            "filter"
+                        ]
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "filter",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "filter",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "receiver"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "filter"
+                    },
+                    "displayedFields": [
+                        "filter"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "53": {
+            "type": "markdown",
+            "title": "",
+            "content": "### RPC metrics\nThese are similar to the metrics about HTTP requests above, but for RPC-based connections."
+        },
+        "54": {
+            "type": "data",
+            "title": "batch size in bytes",
+            "query": "timeseries {sum=sum(sfm.otelcol.processor_batch_batch_send_size_bytes_sum), count=sum(sfm.otelcol.processor_batch_batch_send_size_bytes_count)}, \nfilter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd avg=sum[]/count[]",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum",
+                            "count",
+                            "avg"
+                        ],
+                        "leftAxisDimensions": []
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "service.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": []
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "visualization": "lineChart"
+        },
+        "55": {
+            "type": "data",
+            "title": "batch size (in \"units\", presumably one of spans, metric data points, logs)",
+            "query": "timeseries {sum=sum(sfm.otelcol.processor_batch_batch_send_size_sum), count=sum(sfm.otelcol.processor_batch_batch_send_size_count)}, \nfilter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd avg=sum[]/count[]",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum",
+                            "count",
+                            "avg"
+                        ],
+                        "leftAxisDimensions": []
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "service.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": []
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "visualization": "lineChart"
+        },
+        "56": {
+            "type": "markdown",
+            "title": "",
+            "content": "### Batch metrics\nThese are metrics reported by the [batchprocessor](https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/batchprocessor/README.md), if used. They can be used to understand batching behavior."
+        },
+        "59": {
+            "type": "data",
+            "title": "sending of batch triggered by",
+            "query": "timeseries {timeout=sum(sfm.otelcol.processor_batch_timeout_trigger_send), size=sum(sfm.otelcol.processor_batch_batch_size_trigger_send)}, \nfilter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "timeout",
+                            "size"
+                        ],
+                        "leftAxisDimensions": []
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "service.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": []
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "60": {
+            "type": "data",
+            "title": "RPC request size",
+            "query": "timeseries {count=sum(sfm.otelcol.rpc.client.request.size_count), sum=sum(sfm.otelcol.rpc.client.request.size_sum)},\nfilter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd avg=sum[]/count[]\n",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "count",
+                            "sum",
+                            "avg"
+                        ],
+                        "leftAxisDimensions": []
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "61": {
+            "type": "data",
+            "title": "RPC response size",
+            "query": "timeseries {count=sum(sfm.otelcol.rpc.client.response.size_count), sum=sum(sfm.otelcol.rpc.client.response.size_sum)},\nfilter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd avg=sum[]/count[]",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "count",
+                            "sum",
+                            "avg"
+                        ],
+                        "leftAxisDimensions": []
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "63": {
+            "type": "data",
+            "title": "RPC requests per RPC",
+            "query": "timeseries {sum=sum(sfm.otelcol.rpc.client.requests_per_rpc_sum), count=sum(sfm.otelcol.rpc.client.requests_per_rpc_count)}, \nfilter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd avg=sum[]/count[]\n",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum",
+                            "count",
+                            "avg"
+                        ],
+                        "leftAxisDimensions": []
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "64": {
+            "type": "data",
+            "title": "RPC responses per RPC",
+            "query": "timeseries {sum=sum(sfm.otelcol.rpc.client.responses_per_rpc_sum), count=sum(sfm.otelcol.rpc.client.responses_per_rpc_count)},\nfilter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd avg=sum[]/count[]\n",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum",
+                            "count",
+                            "avg"
+                        ],
+                        "leftAxisDimensions": []
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "65": {
+            "type": "data",
+            "title": "RPC client duration",
+            "query": "timeseries {sum=sum(sfm.otelcol.rpc.client.duration_sum), count=sum(sfm.otelcol.rpc.client.duration_count)},\nfilter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd avg=sum[]/count[]\n",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum",
+                            "count",
+                            "avg"
+                        ],
+                        "leftAxisDimensions": []
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "71": {
+            "type": "data",
+            "title": "exporter queue capacity",
+            "query": "timeseries {max(sfm.otelcol.exporter_queue_capacity)}, \nby: { exporter },\nfilter: {\n  service.name == $ServiceName and service.instance.id == $ServiceInstanceId\n  }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max(sfm.otelcol.exporter_queue_capacity)"
+                        ],
+                        "leftAxisDimensions": [
+                            "exporter"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "max": "auto"
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "exporter",
+                        "valueAxisLabel": "interval",
+                        "categoryAxis": "exporter",
+                        "valueAxis": "interval"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "exporter"
+                    },
+                    "displayedFields": [
+                        "exporter"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "73": {
+            "type": "data",
+            "title": "Latest data from collector received at",
+            "query": "timeseries {count=count(sfm.otelcol.process_uptime), intervalStart=start()}, \n  by: { service.name, service.instance.id }, \n  from:-24h, \n  to:now(), \n  interval:1m, \n  filter:{ service.name==$ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd countIsNull=isNull(count[])                                              // find which buckets have values. null means no value has been recorded into that bucket.\n| fieldsAdd lastNonNullIdx = arrayLastIndexOf(countIsNull, false)                    // find the index of the last bucket that is not null, meaning the last bucket that has a value\n| fieldsAdd timesAndIndex=record(index=iIndex(), startTime=intervalStart[])       // create a record that contains the interval start times and and index\n| expand timesAndIndex                                                            // expand the records to be able to filter\n| filter timesAndIndex[index]==lastNonNullIdx                                     // keep only the interval start time for the last bucket that has a value\n| fieldsAdd startTimestamp=timesAndIndex[startTime]\n| fieldsAdd latestDataArrivedAt=formatTimestamp(startTimestamp, format:\"YYYY/MM/dd HH:mm\"), latestDataArrivedBefore=now()-startTimestamp\n| fieldsKeep latestDataArrivedAt, latestDataArrivedBefore\n",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "latestDataArrivedAt",
+                        "valueAxisLabel": "latestDataArrivedBefore",
+                        "categoryAxis": "latestDataArrivedAt",
+                        "valueAxis": "latestDataArrivedBefore"
+                    },
+                    "hiddenLegendFields": [
+                        "service"
+                    ]
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "intervalStartTime",
+                    "autoscale": true,
+                    "sparklineSettings": {
+                        "isVisible": false
+                    },
+                    "alignment": "center",
+                    "trend": {
+                        "isVisible": false
+                    },
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "comfortable",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {
+                        "[\"intervalStartTime\"]": 403.48333740234375,
+                        "[\"latestDataArrivedAt\"]": 230.9166717529297
+                    }
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "latestDataArrivedBefore"
+                    },
+                    "displayedFields": [
+                        "latestDataArrivedAt"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "latestDataArrivedBefore",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "74": {
+            "type": "markdown",
+            "title": "",
+            "content": "## How to use this dashboard\n\n1. Select a Service Name. You can use the two graphs above or [the aggregated overview dashboard](https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/docs/collector_selfmon_kubernetes_all.json) to find a collector that you are interested in.\n2. Select a Collector pod name. You can only ever select one collector instance at a time. If you change the ServiceName, you will have to pick a new collector instance that has that service name. The pod names for a particular Service name will be loaded when you click the ServiceInstanceId selector. You can use the two graphs above to find a collector that you are interested in, or use the K8s pod name if you know it from some other source."
+        },
+        "75": {
+            "type": "data",
+            "title": "Total physical memory (resident set size)",
+            "query": "timeseries sum(sfm.otelcol.process_memory_rss), by: { service.name, service.instance.id }\n| limit 20",
+            "queryConfig": {
+                "limit": 20,
+                "filters": {},
+                "version": "8.0.3",
+                "datatype": "metrics",
+                "metric": {
+                    "key": "sfm.otelcol.process_memory_rss",
+                    "aggregation": "sum"
+                },
+                "by": [
+                    "service.name",
+                    "service.instance.id"
+                ]
+            },
+            "subType": "dql-builder-metrics",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum(sfm.otelcol.process_memory_rss)"
+                        ],
+                        "leftAxisDimensions": [
+                            "service.name",
+                            "service.instance.id"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "max": "auto"
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval",
+                        "categoryAxis": "service.name",
+                        "valueAxis": "interval"
+                    },
+                    "legend": {
+                        "position": "bottom",
+                        "hidden": false
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "service.name"
+                    },
+                    "displayedFields": [
+                        "service.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "avg(sfm.otelcol.process_memory_rss)",
+                        "unitCategory": "data",
+                        "baseUnit": "byte",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1719570518103
+                    }
+                ]
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "76": {
+            "type": "data",
+            "title": "Total CPU user and system time in seconds",
+            "query": "timeseries sum(sfm.otelcol.process_cpu_seconds), by: { service.name, service.instance.id }\n| limit 20",
+            "queryConfig": {
+                "version": "9.0.0",
+                "subQueries": [
+                    {
+                        "id": "A",
+                        "isEnabled": true,
+                        "limit": 20,
+                        "filters": {},
+                        "datatype": "metrics",
+                        "metric": {
+                            "key": "sfm.otelcol.process_cpu_seconds",
+                            "aggregation": "sum"
+                        },
+                        "by": [
+                            "service.name",
+                            "service.instance.id"
+                        ]
+                    }
+                ]
+            },
+            "subType": "dql-builder-metrics",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "sum(sfm.otelcol.process_cpu_seconds)"
+                        ],
+                        "leftAxisDimensions": [
+                            "service.name",
+                            "service.instance.id"
+                        ]
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "service.name",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    },
+                    "legend": {
+                        "position": "bottom",
+                        "hidden": false
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "service.name"
+                    },
+                    "displayedFields": [
+                        "service.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "avg(sfm.otelcol.process_cpu_seconds)",
+                        "unitCategory": "time",
+                        "baseUnit": "second",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1719570588488
+                    }
+                ]
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "77": {
+            "type": "markdown",
+            "title": "",
+            "content": "### Queue size metrics"
+        },
+        "78": {
+            "type": "markdown",
+            "title": "",
+            "content": "# OpenTelemetry collector status - single collector"
+        },
+        "79": {
+            "type": "data",
+            "title": "Request count",
+            "query": "timeseries {count=sum(sfm.otelcol.http.server.duration_count)},\n  by: { http.status_code, http.method }, \n  filter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "http.status_code",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxisLabel": "interval"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "count"
+                        ],
+                        "leftAxisDimensions": [
+                            "http.status_code",
+                            "http.method"
+                        ]
+                    },
+                    "hiddenLegendFields": []
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "80": {
+            "type": "data",
+            "title": "Average request size",
+            "query": "timeseries {avg=avg(sfm.otelcol.http.client.request.size)},\n  by: { http.status_code, http.method }, \n  filter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "http.status_code",
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxis": "interval",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg"
+                        ],
+                        "leftAxisDimensions": [
+                            "http.status_code",
+                            "http.method"
+                        ]
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "net_peer_name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": []
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "81": {
+            "type": "data",
+            "title": "Average response size",
+            "query": "timeseries {avg=avg(sfm.otelcol.http.client.response.size)},\n  by: { http.status_code, http.method }, \n  filter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "http.status_code",
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxis": "interval",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg"
+                        ],
+                        "leftAxisDimensions": [
+                            "http.status_code",
+                            "http.method"
+                        ]
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "net_peer_name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": []
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "82": {
+            "type": "data",
+            "title": "Average request duration",
+            "query": "timeseries {sum=sum(sfm.otelcol.http.client.duration_sum), count=sum(sfm.otelcol.http.client.duration_count) },\n  by: { http.status_code, http.method }, \n  filter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }\n| fieldsAdd avg=sum[]/count[]\n| fieldsRemove sum, count",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "http.status_code",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxisLabel": "interval"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "avg"
+                        ],
+                        "leftAxisDimensions": [
+                            "http.status_code",
+                            "http.method"
+                        ]
+                    },
+                    "hiddenLegendFields": []
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": []
+                },
+                "unitsOverrides": []
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "83": {
+            "type": "data",
+            "title": "Request count",
+            "query": "timeseries {count=sum(sfm.otelcol.http.client.duration_count)},\n  by: { http.status_code, http.method }, \n  filter: { service.name == $ServiceName and service.instance.id == $ServiceInstanceId }",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "http.status_code",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxisLabel": "interval"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "count"
+                        ],
+                        "leftAxisDimensions": [
+                            "http.status_code",
+                            "http.method"
+                        ]
+                    },
+                    "hiddenLegendFields": []
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": []
+                },
+                "unitsOverrides": []
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        }
+    },
+    "layouts": {
+        "1": {
+            "x": 0,
+            "y": 43,
+            "w": 12,
+            "h": 6
+        },
+        "8": {
+            "x": 12,
+            "y": 43,
+            "w": 12,
+            "h": 6
+        },
+        "9": {
+            "x": 0,
+            "y": 49,
+            "w": 12,
+            "h": 6
+        },
+        "10": {
+            "x": 12,
+            "y": 49,
+            "w": 12,
+            "h": 6
+        },
+        "11": {
+            "x": 0,
+            "y": 41,
+            "w": 24,
+            "h": 2
+        },
+        "24": {
+            "x": 0,
+            "y": 35,
+            "w": 12,
+            "h": 6
+        },
+        "28": {
+            "x": 0,
+            "y": 55,
+            "w": 24,
+            "h": 2
+        },
+        "32": {
+            "x": 0,
+            "y": 63,
+            "w": 24,
+            "h": 2
+        },
+        "36": {
+            "x": 6,
+            "y": 65,
+            "w": 6,
+            "h": 6
+        },
+        "37": {
+            "x": 0,
+            "y": 65,
+            "w": 6,
+            "h": 6
+        },
+        "39": {
+            "x": 12,
+            "y": 65,
+            "w": 6,
+            "h": 6
+        },
+        "42": {
+            "x": 0,
+            "y": 14,
+            "w": 24,
+            "h": 2
+        },
+        "44": {
+            "x": 0,
+            "y": 16,
+            "w": 8,
+            "h": 6
+        },
+        "45": {
+            "x": 16,
+            "y": 16,
+            "w": 8,
+            "h": 6
+        },
+        "46": {
+            "x": 0,
+            "y": 22,
+            "w": 8,
+            "h": 6
+        },
+        "47": {
+            "x": 16,
+            "y": 22,
+            "w": 8,
+            "h": 6
+        },
+        "48": {
+            "x": 0,
+            "y": 28,
+            "w": 8,
+            "h": 6
+        },
+        "49": {
+            "x": 16,
+            "y": 28,
+            "w": 8,
+            "h": 6
+        },
+        "50": {
+            "x": 8,
+            "y": 16,
+            "w": 8,
+            "h": 6
+        },
+        "51": {
+            "x": 8,
+            "y": 22,
+            "w": 8,
+            "h": 6
+        },
+        "52": {
+            "x": 8,
+            "y": 28,
+            "w": 8,
+            "h": 6
+        },
+        "53": {
+            "x": 0,
+            "y": 71,
+            "w": 24,
+            "h": 2
+        },
+        "54": {
+            "x": 0,
+            "y": 87,
+            "w": 8,
+            "h": 6
+        },
+        "55": {
+            "x": 16,
+            "y": 79,
+            "w": 8,
+            "h": 6
+        },
+        "56": {
+            "x": 0,
+            "y": 85,
+            "w": 24,
+            "h": 2
+        },
+        "59": {
+            "x": 8,
+            "y": 79,
+            "w": 8,
+            "h": 6
+        },
+        "60": {
+            "x": 0,
+            "y": 73,
+            "w": 8,
+            "h": 6
+        },
+        "61": {
+            "x": 8,
+            "y": 73,
+            "w": 8,
+            "h": 6
+        },
+        "63": {
+            "x": 16,
+            "y": 73,
+            "w": 8,
+            "h": 6
+        },
+        "64": {
+            "x": 8,
+            "y": 87,
+            "w": 8,
+            "h": 6
+        },
+        "65": {
+            "x": 0,
+            "y": 79,
+            "w": 8,
+            "h": 6
+        },
+        "71": {
+            "x": 12,
+            "y": 35,
+            "w": 12,
+            "h": 6
+        },
+        "73": {
+            "x": 0,
+            "y": 11,
+            "w": 24,
+            "h": 3
+        },
+        "74": {
+            "x": 0,
+            "y": 8,
+            "w": 24,
+            "h": 3
+        },
+        "75": {
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 6
+        },
+        "76": {
+            "x": 12,
+            "y": 2,
+            "w": 12,
+            "h": 6
+        },
+        "77": {
+            "x": 0,
+            "y": 34,
+            "w": 18,
+            "h": 1
+        },
+        "78": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 2
+        },
+        "79": {
+            "x": 18,
+            "y": 65,
+            "w": 6,
+            "h": 6
+        },
+        "80": {
+            "x": 0,
+            "y": 57,
+            "w": 6,
+            "h": 6
+        },
+        "81": {
+            "x": 6,
+            "y": 57,
+            "w": 6,
+            "h": 6
+        },
+        "82": {
+            "x": 12,
+            "y": 57,
+            "w": 6,
+            "h": 6
+        },
+        "83": {
+            "x": 18,
+            "y": 57,
+            "w": 6,
+            "h": 6
+        }
+    },
+    "importedWithCode": false
+}

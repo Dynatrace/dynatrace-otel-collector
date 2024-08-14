@@ -4,6 +4,63 @@
 
 <!-- next version -->
 
+## v0.12.0
+
+This release includes version 0.107.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.107.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.107.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.107.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 🛑 Breaking changes 🛑
+
+- `confmap`: Set the `confmap.unifyEnvVarExpansion` feature gate to Stable. Expansion of `$FOO` env vars is no longer supported.  Use `${FOO}` or `${env:FOO}` instead. (open-telemetry/opentelemetry-collector#10508)
+- `filelogreceiver`: Check for unsupported fractional seconds directive when converting strptime time layout to native format (open-telemetry/opentelemetry-collector-contrib#34390)
+- `fluentforwardreceiver`: Update the scope name for telemetry produced by the fluentforwardreceiver from `otelcol/fluentforwardreceiver` to `github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fluentforwardreceiver` (open-telemetry/opentelemetry-collector-contrib#34534)
+- `hostmetricsreceiver`: Update the scope name for telemetry produced by the hostmetrics receiver's scrapers from `otelcol/hostmetricsreceiver/*` to `github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/*` (open-telemetry/opentelemetry-collector-contrib#34526)
+- `prometheusreceiver`: Update the scope name for telemetry produced by the prometheusreceiver from `otelcol/prometheusreceiver` to `github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver (open-telemetry/opentelemetry-collector-contrib#34589)
+- `statsdreceiver`: Update the scope name for telemetry produced by the statsdreceiver from `otelcol/statsdreceiver` to `github.com/open-telemetry/opentelemetry-collector-contrib/receiver/statsdreceiver` (open-telemetry/opentelemetry-collector-contrib#34547)
+- `k8sattributesprocessor`: Update the scope name for telemetry produced by the k8sattributesprocessor from `otelcol/k8sattributes` to `github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor` (open-telemetry/opentelemetry-collector-contrib#34550)
+- `filterprocessor`: Update the scope name for telemetry produced by the filterprocessor from `otelcol/filter` to `github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor` (open-telemetry/opentelemetry-collector-contrib#34550)
+- `probabilisticsamplerprocessor`: Update the scope name for telemetry produced by the probabilisticsamplerprocessor from `otelcol/probabilisticsampler` to `github.com/open-telemetry/opentelemetry-collector-contrib/processor/probabilisticsamplerprocessor` (open-telemetry/opentelemetry-collector-contrib#34550)
+- `tailsamplingprocessor`: Update the scope name for telemetry produced by the tailsamplingprocessor from `otelcol/tailsampling` to `github.com/open-telemetry/opentelemetry-collector-contrib/processor/tailsamplingprocessor` (open-telemetry/opentelemetry-collector-contrib#34550)
+
+### 💡 Enhancements 💡
+
+- `confmap`: Allow using any YAML structure as a string when loading configuration. (open-telemetry/opentelemetry-collector#10800)
+  Previous to this change, slices could not be used as strings in configuration.
+- `semconv`: Add v1.26.0 semantic conventions package (open-telemetry/opentelemetry-collector#10249, open-telemetry/opentelemetry-collector#10829)
+- `semconv`: Add semantic conventions version v1.27.0 (open-telemetry/opentelemetry-collector#10837)
+- `hostmetricsreceiver`: add reporting interval to entity event (open-telemetry/opentelemetry-collector-contrib#34240)
+- `processor/k8sattributes`: Add support for `container.image.repo_digests` metadata (open-telemetry/opentelemetry-collector-contrib#34029)
+
+### 🧰 Bug fixes 🧰
+
+- `configtelemetry`: Add 10s read header timeout on the configtelemetry Prometheus HTTP server. (open-telemetry/opentelemetry-collector#5699)
+- `service`: Allow users to disable the tracer provider via the feature gate `service.noopTracerProvider` (open-telemetry/opentelemetry-collector#10858)
+  The service is returning an instance of a SDK tracer provider regardless of whether there were any processors configured causing resources to be consumed unnecessarily.
+- `processorhelper`: Fix processor metrics not being reported initially with 0 values. (open-telemetry/opentelemetry-collector#10855)
+- `service`: Implement the `temporality_preference` setting for internal telemetry exported via OTLP (open-telemetry/opentelemetry-collector#10745)
+- `configauth`: Fix unmarshaling of authentication in HTTP servers. (open-telemetry/opentelemetry-collector#10750)
+- `confmap`: If loading an invalid YAML string through a provider, use it verbatim instead of erroring out. (open-telemetry/opentelemetry-collector#10759)
+  This makes the ${env:ENV} syntax closer to how ${ENV} worked before unifying syntaxes.
+  
+- `component`: Allow component names of up to 1024 characters in length. (open-telemetry/opentelemetry-collector#10816)
+- `confmap`: Remove original string representation if invalid. (open-telemetry/opentelemetry-collector#10787)
+
+</details>
+
+### 🧰 Bug fixes 🧰
+
+- `release`: Add missing dependency to /bin/sh to the RPM linux package (#264)
+
 ## v0.11.0
 
 This release includes version 0.106.1 of the upstream Collector components.

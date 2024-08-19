@@ -71,4 +71,5 @@ Of course, you can also add the configuration directly to your existing collecto
 ## More screenshots
 
 ![A screenshot of a dashboard showing total numbers for incoming and outgoing telemetry for OpenTelemetry collectors](img/dashboard_overview_2.png)
+
 ![A screenshot of a dashboard showing memory and CPU usage metrics for OpenTelemetry collectors](img/dashboard_overview_3.png)

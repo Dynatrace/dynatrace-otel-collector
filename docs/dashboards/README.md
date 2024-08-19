@@ -9,32 +9,28 @@ This folder contains dashboards that can be used to monitor the health of deploy
 
 ![A screenshot of the dashboard providing an overview of running collectors. Some are running (green), some have recently stopped sending data (yellow), and some have not sent data in a longer time (red)](img/dashboard_overview_1.png)
 
-For collectors deployed in Kubernetes, two dashboards exist:
+The dashboards rely on the presence of the `service.instance.id` resource attribute.
+This attribute is added automatically by the collector to all exported telemetry.
+However, it is not ingested into Dynatrace by default.
+To find out how to add it, please see [Adding `service.instance.id` to the allow list](#adding-serviceinstanceid-to-the-allow-list)
 
-- [collector_selfmon_kubernetes_all.json](collector_selfmon_kubernetes_all.json): Shows aggregated data for all collectors sending data.
-- [collector_selfmon_kubernetes_single.json](collector_selfmon_kubernetes_single.json): Allows to drill down into a single collector based on the collector's service name and pod name.
-
-If you are running your collectors outside of Kubernetes, or you can't add `k8s.pod.name` to your pods for any reason, you can use these dashboards:
-- [collector_selfmon_instance-id_all.json](collector_selfmon_instance-id_all.json): Shows aggregated data for all collectors sending data.
-- [collector_selfmon_instance-id_single.json](collector_selfmon_instance-id_single.json): Allows to drill down into a single collector based on the collector's service instance ID. 
-
-![A screenshot of the dashboard showing statistics for a single collector when drilling down](img/dashboard_one-collector_1.png)
-
-To use the `service.instance.id` based dashboards, you only need to [allow-list `service.instance.id`](#adding-serviceinstanceid-to-the-allow-list).
-
-The dashboards rely on metrics from the collectors' [internal telemetry](https://opentelemetry.io/docs/collector/internal-telemetry/). See the [list of internal metrics](https://opentelemetry.io/docs/collector/internal-telemetry/#lists-of-internal-metrics) for an overview of which metrics are available.
-
-In the example configuration for the selfmonitoring collector below, all selfmonitoring metrics are prefixed with `sfm.otelcol`. The dashboards expect this prefix and won't show metrics that do not have that prefix.
+The dashboards use metrics from the collectors' [internal telemetry](https://opentelemetry.io/docs/collector/internal-telemetry/).
+See the [list of internal metrics](https://opentelemetry.io/docs/collector/internal-telemetry/#lists-of-internal-metrics) for an overview of which metrics are available.
 
 ## Prerequisites
 The dashboards rely on the selfmonitoring capabilities of the OTel collector as well as certain attributes on the exported metrics data.
 Required attributes are: 
-- `service.name` (automatically added by the Collector)
-- `service.instance.id` (automatically added by the collector, needs to be added to the Dynatrace attribute allow list; see "[Adding `service.instance.id` to the allow list](#adding-serviceinstanceid-to-the-allow-list)")
-- `k8s.pod.name` (needs to be added to the telemetry data; see the [Kubernetes section](#kubernetes) below)
+- `service.name` (automatically added by the collector, and added to data ingested by Dynatrace)
+- `service.instance.id` (automatically added by the collector, needs to be [added to the Dynatrace attribute allow list](#adding-serviceinstanceid-to-the-allow-list))
+
+Dynatrace accepts metrics data with Delta temporality via OTLP/HTTP.
+Collector and Collector Contrib versions 0.107.0 and above as well as Dynatrace collector versions 0.12.0 and above support exporting metrics data in that format.
+Earlier versions ignore the `temporality_preference` flag and would therefore require additional processing (cumulative to delta conversion) before ingestion.
+It is possible to to this conversion in a collector, but would make the setup more complicated, so it is initially omitted in this document.
 
 ### Adding `service.instance.id` to the allow list
-`service.name` and `k8s.pod.name` are on the Dynatrace OTLP metrics ingest allow list by default, `service.instance.id` is not. In order to add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` to the list.
+While `service.name` is on the Dynatrace OTLP metrics ingest allow list by default, `service.instance.id` is not.
+In order to add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` to the list.
 This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace. 
 
 ### Dynatrace ingest
@@ -43,195 +39,36 @@ In order to send data to Dynatrace via OTLP, you will need to supply a Dynatrace
 ## Architecture
 Every OpenTelemetry collector has selfmonitoring capabilities, but they need to be activated.
 Selfmonitoring data can be exported from the collector via the OTLP protocol.
-The suggested way of exporting selfmonitoring data is to run one collector dedicated to collecting and exporting the selfmonitoring data for the other running collectors, and forwarding that data to Dynatrace.
-See the diagram below for an example architecture.
-The `sidecar-collector` and `gateway-collectors` are used to send application telemetry to Dynatrace (e.g. traces, metrics, logs that the application produces).
-Both of these collectors send only their selfmonitoring data (or internal telemetry) to the `selfmon-collector`.
-The `selfmon-collector` is responsible for collecting, transforming and forwarding the internal telemetry for all collectors (including the `selfmon-collector` itself).
-Only monitoring data about the collector passes through it; no monitoring data from non-collector applicaitons is sent via the `selfmon-collector`.
-
-```mermaid
-flowchart LR
-    subgraph legend[Legend]
-        direction LR
-        leg1[ ]:::hide-- collector selfmonitoring data -->leg2[ ]:::hide
-        leg3[ ]:::hide-. application telemetry data .-> leg4[ ]:::hide
-        classDef hide height:0px
-    end
-
-    selfmon-collector:::collector
-
-    selfmon-collector-->Dynatrace
-    selfmon-collector-->selfmon-collector
-
-    sidecar-collector:::collector-->selfmon-collector
-
-    subgraph sg-sidecar[Application with a sidecar collector]
-    application -.-> sidecar-collector
-    end
-
-    gateway-collector:::collector-->selfmon-collector
-
-    sidecar-collector-.->Dynatrace
-    gateway-collector-.->Dynatrace
-
-    otherApps[Applications without sidecar collector]-.->gateway-collector
-    
-    style application fill:#adc9ff,stroke:#1966FF
-    classDef collector fill:#9afee0,stroke:#02D394
-    style sg-sidecar fill:#C2C2C2,stroke:#707070
-    style otherApps fill:#C2C2C2,stroke:#707070
-    style Dynatrace fill:#dcc2ff,stroke:#7F1AFF
-    style legend fill:#f2f2f2,stroke:#C2C2C2
-```
-
-Below, you can see a configuration example for a selfmonitoring collector.
+To send selfmonitoring data to Dynatrace, use the following configuration:
+The configuration assumes the environment variables `DT_ENDPOINT` and `DT_API_TOKEN` to be set.
 
 ```yaml
-# receive selfmonitoring data via gRPC from OTel collector instances.
-receivers:
-  otlp/selfmon:
-    protocols:
-      grpc: 
-        endpoint: 0.0.0.0:4317
-
-processors:
-  # transform cumulative values to deltas. 
-  cumulativetodelta/selfmon: {}
-  # (kubernetes only) retrieves kubernetes attributes for other collectors sending to this collector. See Kubernetes prerequisites below.
-  k8sattributes/selfmon: {}
-
-  # prepend 'sfm.otelcol' to all selfmon metrics - the charts in the {dashboard_name}.json file expects this prefix.
-  transform/selfmon:
-    error_mode: ignore
-    metric_statements:
-      - context: metric
-        statements:
-          - set(name, Concat(["sfm.otelcol", name], "."))
-
-exporters:
-  # Inject DT_ENDPOINT and DT_API_TOKEN as environment variables. This should be the environment where the selfmonitoring data will go.
-  # See <https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport> for instructions on which endpoint and token scope to use.
-  otlphttp/selfmon:
-    endpoint: "${DT_ENDPOINT}/api/v2/otlp"
-    headers:
-      Authorization: "Api-Token ${DT_API_TOKEN}"
-
-  # (optional) logs how many elements were exported to the Dynatrace backend.
-  debug:
-    verbosity: basic
-
 service:
-  # turn on the selfmonitoring for the selfmonitoring collector itself.
-  telemetry:
-    # (kubernetes only) the k8sattributesprocessor does not add attributes for the selfmonitoring collector itself. This is a known limitation of the processor.
-    # These environment variables need to be injected, see the Kubernetes prerequisite section below.
-    resource:
-      k8s.namespace.name: "${env:K8S_POD_NAMESPACE}"
-      k8s.pod.name: "${env:K8S_POD_NAME}"
-      k8s.node.name: "${env:K8S_NODE_NAME}"
-
-    metrics:
-      level: detailed
-      # export data via OTLP OTLP/grpc
-      readers:
-        - periodic:
-            interval: 20000
-            exporter:
-              otlp:
-                # the endpoint of the selfmonitoring collector. In this case, it is assumed that there is a service called `selfmon-collector` that exposes port 4317.
-                endpoint: selfmon-collector:4317
-                protocol: grpc/protobuf
-                temporality_preference: delta
-
-  extensions: []
-  pipelines:
-    metrics/selfmon:
-      # receive OTLP/grpc from OTel collectors
-      receivers: [otlp/selfmon]
-      # process selfmonitoring data for the dashboard
-      processors: [cumulativetodelta/selfmon, transform/selfmon, k8sattributes/selfmon]
-      # export OTLP/http to Dynatrace
-      exporters: [otlphttp/selfmon, debug]
-```
-
-For all other collectors, the following snippet in the `service` section of the OTel collector config should be enough to start exporting data to the selfmonitoring collector:
-```yaml
-# receiver, exporter, processor definitions, etc
-# ...
-service:
+  # turn on selfmon
   telemetry:
     metrics:
       level: detailed
       readers:
         - periodic:
-            interval: 20000
+            interval: 60000
             exporter:
               otlp:
-                # location of the selfmonitoring collector
-                endpoint: selfmon-collector:4317
-                protocol: grpc/protobuf
+                protocol: http/protobuf
                 temporality_preference: delta
-
-  # ... extensions, pipelines, etc.
+                endpoint: "${env:DT_ENDPOINT}/api/v2/otlp/v1/metrics"
+                headers:
+                  Authorization: "Api-Token ${env:DT_API_TOKEN}"
 ```
 
-### Advantages of having a dedicated selfmonitoring collector
+Note that the OTel collector can automatically merge configuration files for you, so by assuming the above configuration is in a file called `selfmon-config.yaml`, it is possible to run the collector like this:
 
-The examples above suggest using a separate collector to collect the internal collector telemetry (selfmonitoring data). This is not strictly necessary but comes with a few advantages. It is possible to send selfmonitoring data from each individual collector to Dynatrace directly, if desired.
+```sh
+./dynatrace-otel-collector --config=your-already-existing-config.yaml --config=selfmon-config.yaml
+```
 
-The advantages of having a separate collector are:
-- Adding a prefix to the metrics is simple
-- The data collection for internal telemetry is centralized
-  - Required transformations can be done in one central place instead of doing them in each collector separately
-  - Export credentials need to be supplied only to one collector
-  - Each individual collector configuration is simpler
-- Using the `k8sattributesprocessor` simplifies tagging selfmonitoring data from Kubernetes significantly.
+Of course, you can also add the configuration directly to your existing collector configuration.
 
-## Dashboards
+## More screenshots
 
 ![A screenshot of a dashboard showing total numbers for incoming and outgoing telemetry for OpenTelemetry collectors](img/dashboard_overview_2.png)
-
-### Kubernetes
-
-In Kubernetes, there are multiple ways of getting the `k8s.pod.name` onto the selfmonitoring data:
-1. Using the [Kubernetes Attributes Processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md): This processor will check where the incoming telemetry is coming from, retrieve data about the telemetry producer from the Kubernetes API, and add it to the telemetry. 
-   1. The Kubernetes attributes processor needs access to the Kubernetes API. Therefore, a service account is required. [Instructions are available on the `k8sattributesprocessor` GitHub page](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#cluster-scoped-rbac).
-   2. The Kubernetes attributes processor [will not work](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#as-a-sidecar) for the telemetry data about the selfmonitoring collector itself, i.e. the data sent to the selfmonitoring collector by the selfmonitoring collector. If you desire selfmonitoring data about the selfmonitoring collector, please follow the section below about injecting environment variables.
-2. Using the Kubernetes [downward API](https://kubernetes.io/docs/concepts/workloads/pods/downward-api/) to inject information into the pod, and attach that information to the exported telemetry data.
-   1. Use the downward API to inject information as environment variables, e.g. in the collector deployment: 
-   ```yaml
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: selfmon-collector
-    spec:
-      # other properties omitted for brevity
-      template:
-        spec:
-          containers:
-            - env:
-                - name: K8S_NODE_NAME
-                  valueFrom:
-                    fieldRef:
-                      fieldPath: spec.nodeName
-                - name: K8S_POD_NAME
-                  valueFrom:
-                    fieldRef:
-                      fieldPath: metadata.name
-                - name: K8S_POD_NAMESPACE
-                  valueFrom:
-                    fieldRef:
-                      fieldPath: metadata.namespace
-   ```
-   2. Read the environment variables and add them to the telemetry resource attributes by specifying them in the collector config file: 
-   ```yaml
-    service:
-      telemetry:
-        resource:
-          k8s.namespace.name: "${env:K8S_POD_NAMESPACE}"
-          k8s.pod.name: "${env:K8S_POD_NAME}"
-          k8s.node.name: "${env:K8S_NODE_NAME}"
-        # ... other selfmon settings, pipelines, etc. 
-   ```
-   If you don't want to use the k8sattributeprocessor, you will have to add the env vars and read them back for every collector. If you use the processor, setting and reading will only be required for the selfmon collector itself. If omitted, the selfmon collector will show up as `null` in the dashboard (as the data is missing).
+![A screenshot of a dashboard showing memory and CPU usage metrics for OpenTelemetry collectors](img/dashboard_overview_3.png)

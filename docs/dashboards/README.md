@@ -61,9 +61,6 @@ service:
                 endpoint: "${env:DT_ENDPOINT}/api/v2/otlp/v1/metrics"
                 headers:
                   Authorization: "Api-Token ${env:DT_API_TOKEN}"
-      # disable prometheus endpoint by setting the address to an empty string.
-      # Since metrics are exported via OTLP, the Prometheus endpoint is no longer needed.
-      address: ""
 ```
 
 Note that the OTel collector can automatically merge configuration files for you, so by assuming the above configuration is stored in a file called `selfmon-config.yaml`, it is possible to start the collector like this:

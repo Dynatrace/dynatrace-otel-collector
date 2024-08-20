@@ -36,9 +36,10 @@ This will ensure that this resource attribute is stored as a dimension on the me
 ## Sending internal telemetry to Dynatrace
 Every OpenTelemetry collector has self-monitoring capabilities, but they need to be activated.
 Self-monitoring data can be exported from the collector via the OTLP protocol.
-The configuration below assumes the environment variables `DT_ENDPOINT` and `DT_API_TOKEN` to be set.
+The configuration below assumes the environment variables `DT_URL` and `DT_API_TOKEN` to be set.
 In order to send data to Dynatrace via OTLP, you will need to supply a Dynatrace endpoint and an ingest token with the `metrics.ingest` scope set.
 See the [Dynatrace docs](https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/getting-started/otlp-export) for more information.
+The `DT_URL` environment variable should only contain the base url (e.g. `https://{your-environment-id}.live.dynatrace.com`, without a path at the end).
 
 To send self-monitoring data to Dynatrace, use the following configuration:
 
@@ -58,7 +59,7 @@ service:
               otlp:
                 protocol: http/protobuf
                 temporality_preference: delta
-                endpoint: "${env:DT_ENDPOINT}/api/v2/otlp/v1/metrics"
+                endpoint: "${env:DT_URL}/api/v2/otlp/v1/metrics"
                 headers:
                   Authorization: "Api-Token ${env:DT_API_TOKEN}"
 ```

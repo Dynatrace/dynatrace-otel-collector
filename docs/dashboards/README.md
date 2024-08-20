@@ -1,11 +1,11 @@
-# OpenTelemetry collector selfmonitoring dashboards
+# OpenTelemetry collector self-monitoring dashboards
 
 > [!WARNING]
 > The dashboards shared in this repository are in an alpha state and can change significantly.
 > They are provided as-is, with no support guarantees. 
 > Newer versions of these dashboards could look significantly different from earlier versions and add or remove certain metrics.
 
-This folder contains dashboards that can be used to monitor the health of deployed OpenTelemetry collectors. The dashboards are in json format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/observe-and-explore/dashboards-and-notebooks/dashboards-new/get-started/dashboards-manage#dashboards-upload).
+This folder contains dashboards that can be used to monitor the health of deployed OpenTelemetry collectors. The dashboards are in JSON format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/observe-and-explore/dashboards-and-notebooks/dashboards-new/get-started/dashboards-manage#dashboards-upload).
 
 ![A screenshot of the dashboard providing an overview of running collectors. Some are running (green), some have recently stopped sending data (yellow), and some have not sent data in a longer time (red)](img/dashboard_overview_1.png)
 
@@ -18,36 +18,39 @@ The dashboards use metrics from the collectors' [internal telemetry](https://ope
 See the [list of internal metrics](https://opentelemetry.io/docs/collector/internal-telemetry/#lists-of-internal-metrics) for an overview of which metrics are available.
 
 ## Prerequisites
-The dashboards rely on the selfmonitoring capabilities of the OTel collector as well as certain attributes on the exported metrics data.
+The dashboards rely on the self-monitoring capabilities of the OTel collector as well as certain attributes on the exported metrics data.
 Required attributes are: 
-- `service.name` (automatically added by the collector, and added to data ingested by Dynatrace)
+- `service.name` (automatically added by the collector and added to data ingested by Dynatrace)
 - `service.instance.id` (automatically added by the collector, needs to be [added to the Dynatrace attribute allow list](#adding-serviceinstanceid-to-the-allow-list))
 
 Dynatrace accepts metrics data with Delta temporality via OTLP/HTTP.
 Collector and Collector Contrib versions 0.107.0 and above as well as Dynatrace collector versions 0.12.0 and above support exporting metrics data in that format.
-Earlier versions ignore the `temporality_preference` flag and would therefore require additional processing (cumulative to delta conversion) before ingestion.
+Earlier versions ignore the `temporality_preference` flag and would, therefore, require additional processing (cumulative to delta conversion) before ingestion.
 It is possible to to this conversion in a collector, but would make the setup more complicated, so it is initially omitted in this document.
 
 ### Adding `service.instance.id` to the allow list
 While `service.name` is on the Dynatrace OTLP metrics ingest allow list by default, `service.instance.id` is not.
-In order to add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` to the list.
+To add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` to the list.
 This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace. 
 
-### Dynatrace ingest
-In order to send data to Dynatrace via OTLP, you will need to supply a Dynatrace endpoint and an ingest token with the `metrics.ingest` scope set. See the [Dynatrace docs](https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/getting-started/otlp-export) for more information.
+## Sending internal telemetry to Dynatrace
+Every OpenTelemetry collector has self-monitoring capabilities, but they need to be activated.
+Self-monitoring data can be exported from the collector via the OTLP protocol.
+The configuration below assumes the environment variables `DT_ENDPOINT` and `DT_API_TOKEN` to be set.
+In order to send data to Dynatrace via OTLP, you will need to supply a Dynatrace endpoint and an ingest token with the `metrics.ingest` scope set.
+See the [Dynatrace docs](https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/getting-started/otlp-export) for more information.
 
-## Architecture
-Every OpenTelemetry collector has selfmonitoring capabilities, but they need to be activated.
-Selfmonitoring data can be exported from the collector via the OTLP protocol.
-To send selfmonitoring data to Dynatrace, use the following configuration:
-The configuration assumes the environment variables `DT_ENDPOINT` and `DT_API_TOKEN` to be set.
+To send self-monitoring data to Dynatrace, use the following configuration:
 
 ```yaml
 service:
   # turn on selfmon
   telemetry:
     metrics:
+      # metrics verbosity level. Higher verbosity means more metrics. 
+      # The dashboard relies on metrics at level detailed.
       level: detailed
+      # set up OTLP exporter
       readers:
         - periodic:
             interval: 60000
@@ -58,9 +61,12 @@ service:
                 endpoint: "${env:DT_ENDPOINT}/api/v2/otlp/v1/metrics"
                 headers:
                   Authorization: "Api-Token ${env:DT_API_TOKEN}"
+      # disable prometheus endpoint by setting the address to an empty string.
+      # Since metrics are exported via OTLP, the Prometheus endpoint is no longer needed.
+      address: ""
 ```
 
-Note that the OTel collector can automatically merge configuration files for you, so by assuming the above configuration is in a file called `selfmon-config.yaml`, it is possible to run the collector like this:
+Note that the OTel collector can automatically merge configuration files for you, so by assuming the above configuration is stored in a file called `selfmon-config.yaml`, it is possible to start the collector like this:
 
 ```sh
 ./dynatrace-otel-collector --config=your-already-existing-config.yaml --config=selfmon-config.yaml

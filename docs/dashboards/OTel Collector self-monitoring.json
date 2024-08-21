@@ -1,5 +1,5 @@
 {
-    "version": 11,
+    "version": 15,
     "variables": [
         {
             "key": "CollectorServiceNames",
@@ -17,31 +17,1788 @@
         }
     ],
     "tiles": {
-        "1": {
+        "3": {
+            "type": "markdown",
+            "title": "",
+            "content": "## OpenTelemetry Collector status"
+        },
+        "6": {
             "type": "data",
-            "title": "Total physical memory (resident set size)",
-            "query": "timeseries `A: avg(otelcol_process_memory_rss)` = avg(otelcol_process_memory_rss), by: { service.instance.id, service.name }\n| limit 20",
-            "queryConfig": {
-                "version": "11.1.2",
-                "subQueries": [
+            "title": "Active Collectors (24h)",
+            "query": "// This query is a tricky one and there are a few things that need to be considered.\n// First, the interval needs to be set to 1m for this query. That is required because otherwise the `end()` and `start()` methods will return the start and end timestamp of the interval for which data is rolled up.\n// That means: if the interval is 1 minute, start() and end() values will be 1m apart.\n// Also means: if the interval is 6 hours, start() and end() values will be 6h apart. \n// The query works by finding the latest bucket that has data in it and taking the start time from it.\n// That means: if the interval is higher than 1m, we cant tell how long ago the data was recorded. \n// E.g., if the interval is 6h, we know that there was data one 6h bucket, but there is no way to tell *when* in the 6h timeframe the data was recorded.\n// With 1m intervals, we can tell that somewhere in that minute bucket, data was recorded.\n// In order to get 1m resolution, this query looks at the last 24h only and forces 1m buckets.\n\n// add the interval start times by using start(). Also fix the timeframe and interval.\ntimeseries \n  {\n    count=count(otelcol_process_uptime), \n    intervalStart=start()\n  }, \n  by: { service.name, service.instance.id }, \n  filter: { in(service.name, $CollectorServiceNames) },\n  from:-24h, to:now(), \n  interval:1m\n| fieldsAdd countIsNull=isNull(count[])                                              // find which buckets have values. null means no value has been recorded into that bucket.\n| fieldsAdd lastNonNullIdx = arrayLastIndexOf(countIsNull, false)                    // find the index of the last bucket that is not null, meaning the last bucket that has a value\n| fieldsAdd startTimesAndIdx=record(index=iIndex(), startTime=intervalStart[])       // create a record that contains the interval start times and and index\n| expand startTimesAndIdx                                                            // expand the records to be able to filter\n| filter startTimesAndIdx[index]==lastNonNullIdx                                     // keep only the interval start time for the last bucket that has a value\n| fieldsAdd lastWrittenAfter = startTimesAndIdx[startTime]                        // extract the start time and add it as a column to the result\n| fieldsAdd `Last Seen`=now()-lastWrittenAfter                                 // calculate how long ago the collector was last seen.\n| sort `Last Seen` asc\n| fieldsKeep service.name, service.instance.id, `Last Seen`\n| limit 100\n",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [
                     {
-                        "id": "A",
+                        "id": 1,
+                        "field": "Last Seen",
+                        "title": "metrics from collector last written",
                         "isEnabled": true,
-                        "limit": 20,
-                        "filter": "",
-                        "datatype": "metrics",
-                        "metric": {
-                            "key": "otelcol_process_memory_rss",
-                            "aggregation": "avg"
-                        },
-                        "by": [
-                            "service.instance.id",
-                            "service.name"
+                        "rules": [
+                            {
+                                "id": 0,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6863)"
+                                },
+                                "comparator": "≤",
+                                "label": "",
+                                "value": 120000000000
+                            },
+                            {
+                                "id": 1,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-status-warning-default, #eca440)"
+                                },
+                                "comparator": "≤",
+                                "label": "",
+                                "value": 3600000000000
+                            },
+                            {
+                                "id": 2,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-status-critical-default, #c4233b)"
+                                },
+                                "comparator": ">",
+                                "label": "",
+                                "value": 3600000000000
+                            }
                         ]
+                    }
+                ],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "leftYAxisSettings": {
+                        "max": 2
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "Last Seen",
+                        "categoryAxis": "service.name",
+                        "valueAxis": "Last Seen",
+                        "tooltipVariant": "single"
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "default",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {
+                        "[\"service.instance.id\"]": 309.5
+                    },
+                    "colorThresholdTarget": "background",
+                    "sortBy": {
+                        "columnId": "[\"lastWrittenWithin\"]",
+                        "direction": "ascending"
+                    }
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "Last Seen"
+                    },
+                    "displayedFields": [
+                        "service.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "Last Seen",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "11": {
+            "type": "markdown",
+            "title": "",
+            "content": "### Memory and CPU time per collector instance"
+        },
+        "39": {
+            "type": "data",
+            "title": "Request count totals",
+            "query": "timeseries {`HTTP incoming`=sum(http.server.duration, rollup:count)},\n    filter: { in(service.name, $CollectorServiceNames) }\n| append [\ntimeseries {`HTTP outgoing`=sum(http.client.duration, rollup:count)},\n    filter: { in(service.name, $CollectorServiceNames) }\n] | append [\ntimeseries {`RPC incoming`=sum(rpc.server.duration, rollup:count)},\n    filter: { in(service.name, $CollectorServiceNames) }\n] | append [\ntimeseries {`RPC outgoing`=sum(rpc.client.duration, rollup:count)},\n    filter: { in(service.name, $CollectorServiceNames) }\n]",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxisLabel": "interval"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "HTTP incoming",
+                            "HTTP outgoing",
+                            "RPC incoming",
+                            "RPC outgoing"
+                        ],
+                        "leftAxisDimensions": []
+                    },
+                    "hiddenLegendFields": []
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "42": {
+            "type": "markdown",
+            "title": "",
+            "content": "### Incoming/outgoing telemetry"
+        },
+        "44": {
+            "type": "data",
+            "title": "Span totals",
+            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_spans.filtered) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"filter\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "name",
+                        "valueAxis": "value",
+                        "categoryAxisLabel": "name",
+                        "valueAxisLabel": "value"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "receiver"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {
+                        "[\"name\"]": 111.89999389648438
+                    }
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "0": "a",
+                        "1": "u",
+                        "2": "t",
+                        "3": "o",
+                        "hidden": true
+                    },
+                    "dataMappings": {
+                        "value": "value"
+                    },
+                    "displayedFields": [
+                        "name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "value",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "73": {
+            "type": "data",
+            "title": "Active Collectors (2m)",
+            "query": "timeseries {count=count(otelcol_process_uptime), intervalStart=start()}, \n  by: { service.name, service.instance.id }, \n  filter: { in(service.name, $CollectorServiceNames) }, \n  from:-24h, to:now(), \n  interval:1m\n| fieldsAdd countIsNull=isNull(count[])                                              // find which buckets have values. null means no value has been recorded into that bucket.\n| fieldsAdd lastNonNullIdx = arrayLastIndexOf(countIsNull, false)                    // find the index of the last bucket that is not null, meaning the last bucket that has a value\n| fieldsAdd startTimesAndIdx=record(index=iIndex(), startTime=intervalStart[])       // create a record that contains the interval start times and and index\n| expand startTimesAndIdx                                                            // expand the records to be able to filter\n| filter startTimesAndIdx[index]==lastNonNullIdx                                     // keep only the interval start time for the last bucket that has a value\n| fieldsAdd lastWrittenAfter = startTimesAndIdx[startTime]                        // extract the start time and add it as a column to the result\n| fieldsAdd lastWrittenAfterAgo=now()-lastWrittenAfter                                 // calculate how long ago the collector was last seen.\n| fieldsAdd alive=lastWrittenAfterAgo < 2m\n| filter alive\n| summarize count=count(), by: {alive}\n",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {}
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "count",
+                    "autoscale": true,
+                    "sparklineSettings": {
+                        "isVisible": false
+                    },
+                    "alignment": "center",
+                    "trend": {
+                        "isVisible": false
+                    },
+                    "colorThresholdTarget": "value",
+                    "isIconVisible": false
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "alive"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "74": {
+            "type": "data",
+            "title": "Total collectors (24h)",
+            "query": "timeseries {count=count(otelcol_process_uptime)}, \n  by: { service.name, service.instance.id }, \n  filter: { in(service.name, $CollectorServiceNames) }, \n  from:-24h, to:now(),  \n  interval:1m\n| summarize count=count()\n",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {}
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "count",
+                    "autoscale": true,
+                    "sparklineSettings": {
+                        "isVisible": false
+                    },
+                    "alignment": "center",
+                    "trend": {
+                        "isVisible": false
+                    },
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        null
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "75": {
+            "type": "data",
+            "title": "Span totals",
+            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_spans.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n] ",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "name",
+                        "valueAxisLabel": "value"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "accepted",
+                            "refused",
+                            "sent",
+                            "failed"
+                        ],
+                        "leftAxisDimensions": []
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "76": {
+            "type": "data",
+            "title": "Metric datapoint totals",
+            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_metric_points.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n] ",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "accepted",
+                            "refused",
+                            "sent",
+                            "failed"
+                        ],
+                        "leftAxisDimensions": []
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "77": {
+            "type": "data",
+            "title": "Log totals",
+            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_log_records.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n] ",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "accepted",
+                            "refused",
+                            "sent",
+                            "failed"
+                        ],
+                        "leftAxisDimensions": []
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "79": {
+            "type": "data",
+            "title": "Metric datapoint totals",
+            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_metric_points) }, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_metric_points) }, \n      filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_datapoints.filtered) }, \n      filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"filter\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "name",
+                        "valueAxis": "value",
+                        "categoryAxisLabel": "name",
+                        "valueAxisLabel": "value"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "receiver"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {
+                        "[\"name\"]": 158.89999389648438
+                    }
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "0": "a",
+                        "1": "u",
+                        "2": "t",
+                        "3": "o",
+                        "hidden": true
+                    },
+                    "dataMappings": {
+                        "value": "value"
+                    },
+                    "displayedFields": [
+                        "name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "value",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "80": {
+            "type": "data",
+            "title": "Log record totals",
+            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_logs.filtered) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"filter\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "name",
+                        "valueAxis": "value",
+                        "categoryAxisLabel": "name",
+                        "valueAxisLabel": "value"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "receiver"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {
+                        "[\"name\"]": 158.89999389648438
+                    }
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "0": "a",
+                        "1": "u",
+                        "2": "t",
+                        "3": "o",
+                        "hidden": true
+                    },
+                    "dataMappings": {
+                        "value": "value"
+                    },
+                    "displayedFields": [
+                        "name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "value",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "83": {
+            "type": "data",
+            "title": "Top 5 collectors by resident set size (last 10m)",
+            "query": "timeseries sum=sum(otelcol_process_memory_rss), \n    from: now()-10m, to: now(),\n    by: { service.name, service.instance.id },\n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd averageMb=arrayAvg(sum)/1e6\n  | sort averageMb desc\n  | fieldsKeep service.name, service.instance.id, averageMb",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "leftYAxisSettings": {
+                        "max": "auto"
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "averageMb",
+                        "categoryAxis": "service.name",
+                        "valueAxis": "averageMb",
+                        "tooltipVariant": "single"
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {
+                        "[\"service.instance.id\"]": 210.4666748046875
+                    },
+                    "colorThresholdTarget": "value"
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "averageMb"
+                    },
+                    "displayedFields": [
+                        "service.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "averageMb",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "avg(process_memory_rss)",
+                        "unitCategory": "data",
+                        "baseUnit": "byte",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1719570518103
                     }
                 ]
             },
-            "subType": "dql-builder-metrics",
+            "davis": {
+                "enabled": false,
+                "componentState": {
+                    "selectedAnalyzerName": "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer",
+                    "inputData": {
+                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
+                            "generalParameters": {
+                                "timeframe": {
+                                    "startTime": "2024-07-16T11:33:54.560Z",
+                                    "endTime": "2024-07-16T12:03:54.560Z"
+                                },
+                                "resolveDimensionalQueryData": true,
+                                "logVerbosity": "INFO"
+                            },
+                            "numberOfSignalFluctuations": 1,
+                            "alertCondition": "ABOVE",
+                            "alertOnMissingData": false,
+                            "violatingSamples": 3,
+                            "slidingWindow": 5,
+                            "dealertingSamples": 5,
+                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") AND in(service.instance.id, \"passthrough-collector\",\"passthrough-collector-b9f9334c4b-c4c39\",\"selfmon-collector\",\"selfmon-collector-f9554b9c4b-cvc43\",\"sink-collector\",\"sink-collector-554b9c67f9-c5c4c\") }\n| limit 20"
+                        }
+                    },
+                    "analyzerHints": {
+                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
+                            "unit": {
+                                "unitCategory": "data",
+                                "baseUnit": "byte"
+                            }
+                        }
+                    }
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "85": {
+            "type": "data",
+            "title": "Top 5 collectors by otelcol_process_cpu_seconds (last 10m)",
+            "query": "timeseries sum=sum(otelcol_process_cpu_seconds), \n    from: now()-10m, to: now(),\n    by: { service.name, service.instance.id },\n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd averageMillis=arrayAvg(sum) * 1000\n  | sort averageMillis desc\n  | fieldsKeep service.name, service.instance.id, averageMillis",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "hiddenLegendFields": [],
+                    "leftYAxisSettings": {
+                        "max": "auto"
+                    },
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "averageMillis",
+                        "categoryAxis": "service.name",
+                        "valueAxis": "averageMillis",
+                        "tooltipVariant": "single"
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "averageMillis"
+                    },
+                    "displayedFields": [
+                        "service.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "averageMillis",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "avg(process_memory_rss)",
+                        "unitCategory": "data",
+                        "baseUnit": "byte",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1719570518103
+                    }
+                ]
+            },
+            "davis": {
+                "enabled": false,
+                "componentState": {
+                    "selectedAnalyzerName": "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer",
+                    "inputData": {
+                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
+                            "generalParameters": {
+                                "timeframe": {
+                                    "startTime": "2024-07-16T11:33:54.560Z",
+                                    "endTime": "2024-07-16T12:03:54.560Z"
+                                },
+                                "resolveDimensionalQueryData": true,
+                                "logVerbosity": "INFO"
+                            },
+                            "numberOfSignalFluctuations": 1,
+                            "alertCondition": "ABOVE",
+                            "alertOnMissingData": false,
+                            "violatingSamples": 3,
+                            "slidingWindow": 5,
+                            "dealertingSamples": 5,
+                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") AND in(service.instance.id, \"passthrough-collector\",\"passthrough-collector-b9f9334c4b-c4c39\",\"selfmon-collector\",\"selfmon-collector-f9554b9c4b-cvc43\",\"sink-collector\",\"sink-collector-554b9c67f9-c5c4c\") }\n| limit 20"
+                        }
+                    },
+                    "analyzerHints": {
+                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
+                            "unit": {
+                                "unitCategory": "data",
+                                "baseUnit": "byte"
+                            }
+                        }
+                    }
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "88": {
+            "type": "data",
+            "title": "Request size average",
+            "query": "timeseries {`HTTP incoming`=avg(http.server.request.size)}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries `HTTP outgoing`=avg(http.client.request.size),  \n  filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries `RPC incoming`=avg(rpc.server.request.size), \n  filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries `RPC outgoing`=avg(rpc.client.request.size), \n  filter: { in(service.name, $CollectorServiceNames) }\n]",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxisLabel": "interval"
+                    },
+                    "hiddenLegendFields": [],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "HTTP incoming",
+                            "HTTP outgoing",
+                            "RPC incoming",
+                            "RPC outgoing"
+                        ],
+                        "leftAxisDimensions": []
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "net_peer_name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "RPC incoming",
+                        "unitCategory": "data",
+                        "baseUnit": "byte",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1721215462564
+                    },
+                    {
+                        "identifier": "RPC outgoing",
+                        "unitCategory": "data",
+                        "baseUnit": "byte",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1721215476940
+                    }
+                ]
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "89": {
+            "type": "data",
+            "title": "Request duration average",
+            "query": "timeseries {`HTTP incoming`=avg(http.server.duration)}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries `HTTP outgoing`=avg(http.client.duration), \n  filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries `RPC incoming`=avg(rpc.server.duration), \n  filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries `RPC outgoing`=avg(rpc.client.duration), \n  filter: { in(service.name, $CollectorServiceNames) }\n]",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxisLabel": "interval"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "HTTP incoming",
+                            "HTTP outgoing",
+                            "RPC incoming",
+                            "RPC outgoing"
+                        ],
+                        "leftAxisDimensions": []
+                    },
+                    "hiddenLegendFields": [],
+                    "xAxisScaling": "analyzedTimeframe"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "HTTP incoming",
+                        "unitCategory": "time",
+                        "baseUnit": "millisecond",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1721144587869
+                    },
+                    {
+                        "identifier": "HTTP outgoing",
+                        "unitCategory": "time",
+                        "baseUnit": "millisecond",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1721144601557
+                    },
+                    {
+                        "identifier": "RPC incoming",
+                        "unitCategory": "time",
+                        "baseUnit": "millisecond",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1721215418333
+                    },
+                    {
+                        "identifier": "RPC outgoing",
+                        "unitCategory": "time",
+                        "baseUnit": "millisecond",
+                        "displayUnit": null,
+                        "decimals": 2,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1721215421459
+                    }
+                ]
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "90": {
+            "type": "markdown",
+            "title": "",
+            "content": "### Incoming / outgoing requests"
+        },
+        "91": {
+            "type": "data",
+            "title": "Incoming HTTP requests by collecor instance",
+            "query": "timeseries {count=sum(http.server.duration, rollup:count)}, \n  by: {service.name, service.instance.id}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep service.name, service.instance.id, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "totalRequests",
+                        "categoryAxis": "service.name",
+                        "valueAxis": "totalRequests",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [],
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "totalRequests"
+                    },
+                    "displayedFields": [
+                        "service.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "totalRequests",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "92": {
+            "type": "data",
+            "title": "HTTP requests to the Collector by status code",
+            "query": "timeseries {count=sum(http.server.duration, rollup:count)}, \n  by: {http.status_code}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep http.status_code, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxisLabel": "totalRequests",
+                        "categoryAxis": "http.status_code",
+                        "valueAxis": "totalRequests",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [],
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {
+                        "[\"http.status_code\"]": 156.23333740234375
+                    }
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "totalRequests"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "totalRequests",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "94": {
+            "type": "data",
+            "title": "Incoming RPC requests by collecor instance",
+            "query": "timeseries {count=sum(rpc.server.duration, rollup:count)},\n  by: {service.name, service.instance.id}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep service.name, service.instance.id, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "totalRequests",
+                        "categoryAxis": "service.name",
+                        "valueAxis": "totalRequests",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [],
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "totalRequests"
+                    },
+                    "displayedFields": [
+                        "service.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "totalRequests",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "95": {
+            "type": "data",
+            "title": "HTTP requests from the collector, by status code",
+            "query": "timeseries {count=sum(http.client.duration, rollup:count)}, \n  by: {http.status_code}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep http.status_code, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "http.status_code",
+                        "valueAxisLabel": "totalRequests",
+                        "categoryAxis": "http.status_code",
+                        "valueAxis": "totalRequests",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [],
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "totalRequests"
+                    },
+                    "displayedFields": [
+                        "http.status_code"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "totalRequests",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "unitsOverrides": []
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "98": {
+            "type": "data",
+            "title": "",
+            "query": "timeseries { count=count(otelcol_process_uptime) }, \n  by: { service.name, service.instance.id } \n| summarize count=count(), by:{ is_null=isNull(service.instance.id) }\n| append [\n  data record(is_null=false, count=1)\n]\n| sort is_null desc\n| limit 1\n| fieldsAdd message=if(is_null, \"❌ service.instance.id is missing\", else: \"✅ service.instance.id is available\")",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "message",
+                        "valueAxis": "count",
+                        "categoryAxisLabel": "message",
+                        "valueAxisLabel": "count",
+                        "tooltipVariant": "single"
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "message",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "message"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "99": {
+            "type": "markdown",
+            "title": "",
+            "content": "[Find out how to set up this dashboard](https://github.com/Dynatrace/dynatrace-otel-collector/tree/main/docs/dashboards/README.md#adding-serviceinstanceid-to-the-allow-list)."
+        },
+        "100": {
+            "type": "data",
+            "title": "Number of collectors, by service.name",
+            "query": "timeseries count=count(otelcol_process_uptime), \n  by: {service.name}, \n  filter: { in(service.name, $CollectorServiceNames) }  ",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "curve": "linear",
+                    "pointsDisplay": "auto",
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "service.name",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "service.name",
+                        "valueAxisLabel": "interval",
+                        "tooltipVariant": "single"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "count"
+                        ],
+                        "leftAxisDimensions": [
+                            "service.name"
+                        ]
+                    },
+                    "hiddenLegendFields": [],
+                    "truncationMode": "middle",
+                    "leftYAxisSettings": {
+                        "isLabelVisible": false,
+                        "scale": "linear",
+                        "min": null,
+                        "max": "auto"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "error"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "enableThresholdInRow": false
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "service.name"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "visualization": "lineChart"
+        },
+        "101": {
+            "type": "data",
+            "title": "Total physical memory (resident set size)",
+            "query": "timeseries `avg(otelcol_process_memory_rss)` = avg(otelcol_process_memory_rss), \n  by: { service.instance.id, service.name },\n  filter: { in(service.name, $CollectorServiceNames) }\n| limit 20",
             "visualization": "lineChart",
             "visualizationSettings": {
                 "thresholds": [],
@@ -57,7 +1814,7 @@
                     "fieldMapping": {
                         "timestamp": "timeframe",
                         "leftAxisValues": [
-                            "A: avg(otelcol_process_memory_rss)"
+                            "avg(otelcol_process_memory_rss)"
                         ],
                         "leftAxisDimensions": [
                             "service.instance.id",
@@ -138,156 +1895,10 @@
                 "enableSampling": false
             }
         },
-        "3": {
-            "type": "markdown",
-            "title": "",
-            "content": "# OpenTelemetry Collector status\nThis dashboard contains general information about deployed collectors. For information on how to set it up, please consult the [documentation on the Dynatrace distribution of the OpenTelemetry Collector GitHub page](https://github.com/Dynatrace/dynatrace-otel-collector/tree/main/docs/dashboards/README.md)."
-        },
-        "6": {
-            "type": "data",
-            "title": "last seen in 1m bucket starting at (data from last 24h)",
-            "query": "// This query is a tricky one and there are a few things that need to be considered.\n// First, the interval needs to be set to 1m for this query. That is required because otherwise the `end()` and `start()` methods will return the start and end timestamp of the interval for which data is rolled up.\n// That means: if the interval is 1 minute, start() and end() values will be 1m apart.\n// Also means: if the interval is 6 hours, start() and end() values will be 6h apart. \n// The query works by finding the latest bucket that has data in it and taking the start time from it.\n// That means: if the interval is higher than 1m, we cant tell how long ago the data was recorded. \n// E.g., if the interval is 6h, we know that there was data one 6h bucket, but there is no way to tell *when* in the 6h timeframe the data was recorded.\n// With 1m intervals, we can tell that somewhere in that minute bucket, data was recorded.\n// In order to get 1m resolution, this query looks at the last 24h only and forces 1m buckets.\n\n// add the interval start times by using start(). Also fix the timeframe and interval.\ntimeseries \n  {\n    count=count(otelcol_process_uptime), \n    intervalStart=start()\n  }, \n  by: { service.name, service.instance.id }, \n  filter: { in(service.name, $CollectorServiceNames) },\n  from:-24h, to:now(), \n  interval:1m\n| fieldsAdd countIsNull=isNull(count[])                                              // find which buckets have values. null means no value has been recorded into that bucket.\n| fieldsAdd lastNonNullIdx = arrayLastIndexOf(countIsNull, false)                    // find the index of the last bucket that is not null, meaning the last bucket that has a value\n| fieldsAdd startTimesAndIdx=record(index=iIndex(), startTime=intervalStart[])       // create a record that contains the interval start times and and index\n| expand startTimesAndIdx                                                            // expand the records to be able to filter\n| filter startTimesAndIdx[index]==lastNonNullIdx                                     // keep only the interval start time for the last bucket that has a value\n| fieldsAdd lastWrittenAfter = startTimesAndIdx[startTime]                        // extract the start time and add it as a column to the result\n| fieldsAdd lastWrittenWithin=now()-lastWrittenAfter                                 // calculate how long ago the collector was last seen.\n| sort lastWrittenWithin asc\n| fieldsKeep service.name, service.instance.id, lastWrittenWithin\n| limit 100\n",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [
-                    {
-                        "id": 1,
-                        "field": "lastWrittenWithin",
-                        "title": "metrics from collector last written",
-                        "isEnabled": true,
-                        "rules": [
-                            {
-                                "id": 0,
-                                "color": {
-                                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6863)"
-                                },
-                                "comparator": "≤",
-                                "label": "",
-                                "value": 120000000000
-                            },
-                            {
-                                "id": 1,
-                                "color": {
-                                    "Default": "var(--dt-colors-charts-status-warning-default, #eca440)"
-                                },
-                                "comparator": "≤",
-                                "label": "",
-                                "value": 3600000000000
-                            },
-                            {
-                                "id": 2,
-                                "color": {
-                                    "Default": "var(--dt-colors-charts-status-critical-default, #c4233b)"
-                                },
-                                "comparator": ">",
-                                "label": "",
-                                "value": 3600000000000
-                            }
-                        ]
-                    }
-                ],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "hiddenLegendFields": [],
-                    "leftYAxisSettings": {
-                        "max": 2
-                    },
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "lastWrittenWithin",
-                        "categoryAxis": "service.name",
-                        "valueAxis": "lastWrittenWithin"
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "default",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {
-                        "[\"service.instance.id\"]": 423.5
-                    },
-                    "colorThresholdTarget": "background",
-                    "sortBy": {
-                        "columnId": "[\"lastWrittenWithin\"]",
-                        "direction": "ascending"
-                    }
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "lastWrittenWithin"
-                    },
-                    "displayedFields": [
-                        "service.name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": [
-                        {
-                            "valueAxis": "lastWrittenWithin",
-                            "rangeAxis": ""
-                        }
-                    ]
-                }
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "11": {
-            "type": "markdown",
-            "title": "",
-            "content": "## Memory and CPU time per collector instance"
-        },
-        "13": {
+        "102": {
             "type": "data",
             "title": "Total CPU user and system time in seconds",
-            "query": "timeseries sum(otelcol_process_cpu_seconds), by: { service.name, service.instance.id }\n| limit 20",
-            "queryConfig": {
-                "version": "9.0.2",
-                "subQueries": [
-                    {
-                        "id": "A",
-                        "isEnabled": true,
-                        "limit": 20,
-                        "filters": {},
-                        "datatype": "metrics",
-                        "metric": {
-                            "key": "otelcol_process_cpu_seconds",
-                            "aggregation": "sum"
-                        },
-                        "by": [
-                            "service.name",
-                            "service.instance.id"
-                        ]
-                    }
-                ]
-            },
-            "subType": "dql-builder-metrics",
+            "query": "timeseries `avg(otelcol_process_cpu_seconds)` = avg(otelcol_process_cpu_seconds), \n  by: { service.name, service.instance.id },\n  filter: { in(service.name, $CollectorServiceNames) }\n| limit 20",
             "visualization": "lineChart",
             "visualizationSettings": {
                 "thresholds": [],
@@ -303,7 +1914,7 @@
                     "fieldMapping": {
                         "timestamp": "timeframe",
                         "leftAxisValues": [
-                            "sum(otelcol_process_cpu_seconds)"
+                            "avg(otelcol_process_cpu_seconds)"
                         ],
                         "leftAxisDimensions": [
                             "service.name",
@@ -380,1662 +1991,170 @@
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
             }
-        },
-        "39": {
-            "type": "data",
-            "title": "Request count totals",
-            "query": "timeseries {`HTTP incoming`=sum(http.server.duration, rollup:count)}\n| append [\ntimeseries {`HTTP outgoing`=sum(http.client.duration, rollup:count)}\n] | append [\ntimeseries {`RPC incoming`=sum(rpc.server.duration, rollup:count)}\n] | append [\ntimeseries {`RPC outgoing`=sum(rpc.client.duration, rollup:count)}\n]",
-            "visualization": "lineChart",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "gap",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "http.status_code",
-                        "valueAxisLabel": "interval"
-                    },
-                    "fieldMapping": {
-                        "timestamp": "timeframe",
-                        "leftAxisValues": [
-                            "HTTP incoming",
-                            "HTTP outgoing",
-                            "RPC incoming",
-                            "RPC outgoing"
-                        ],
-                        "leftAxisDimensions": []
-                    },
-                    "hiddenLegendFields": []
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "interval"
-                    },
-                    "displayedFields": [
-                        null
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": []
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "42": {
-            "type": "markdown",
-            "title": "",
-            "content": "## Incoming / outgoing telemetry (aggregated for all collectors)"
-        },
-        "44": {
-            "type": "data",
-            "title": "Span totals",
-            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_spans.filtered) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"filter\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "hiddenLegendFields": [],
-                    "categoricalBarChartSettings": {
-                        "categoryAxis": "name",
-                        "valueAxis": "value",
-                        "categoryAxisLabel": "name",
-                        "valueAxisLabel": "value"
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value",
-                    "recordField": "receiver"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {
-                        "[\"name\"]": 111.89999389648438
-                    }
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": {
-                        "0": "a",
-                        "1": "u",
-                        "2": "t",
-                        "3": "o",
-                        "hidden": true
-                    },
-                    "dataMappings": {
-                        "value": "value"
-                    },
-                    "displayedFields": [
-                        "name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                }
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "73": {
-            "type": "data",
-            "title": "Collectors sending data in the last 2 minutes",
-            "query": "timeseries {count=count(otelcol_process_uptime), intervalStart=start()}, \n  by: { service.name, service.instance.id }, \n  filter: { in(service.name, $CollectorServiceNames) }, \n  from:-24h, to:now(), \n  interval:1m\n| fieldsAdd countIsNull=isNull(count[])                                              // find which buckets have values. null means no value has been recorded into that bucket.\n| fieldsAdd lastNonNullIdx = arrayLastIndexOf(countIsNull, false)                    // find the index of the last bucket that is not null, meaning the last bucket that has a value\n| fieldsAdd startTimesAndIdx=record(index=iIndex(), startTime=intervalStart[])       // create a record that contains the interval start times and and index\n| expand startTimesAndIdx                                                            // expand the records to be able to filter\n| filter startTimesAndIdx[index]==lastNonNullIdx                                     // keep only the interval start time for the last bucket that has a value\n| fieldsAdd lastWrittenAfter = startTimesAndIdx[startTime]                        // extract the start time and add it as a column to the result\n| fieldsAdd lastWrittenAfterAgo=now()-lastWrittenAfter                                 // calculate how long ago the collector was last seen.\n| fieldsAdd alive=lastWrittenAfterAgo < 2m\n| filter alive\n| summarize count=count(), by: {alive}\n",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
-            "visualization": "singleValue",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {}
-                },
-                "singleValue": {
-                    "showLabel": false,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "count",
-                    "autoscale": true,
-                    "sparklineSettings": {
-                        "isVisible": false
-                    },
-                    "alignment": "center",
-                    "trend": {
-                        "isVisible": false
-                    },
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": {
-                        "hidden": false,
-                        "position": "auto"
-                    },
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue",
-                    "dataMappings": {
-                        "value": "count"
-                    },
-                    "displayedFields": [
-                        "alive"
-                    ]
-                },
-                "histogram": {
-                    "dataMappings": []
-                }
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "74": {
-            "type": "data",
-            "title": "Unique collector instances seen in the last 24h",
-            "query": "timeseries {count=count(otelcol_process_uptime)}, \n  by: { service.name, service.instance.id }, \n  filter: { in(service.name, $CollectorServiceNames) }, \n  from:-24h, to:now(),  \n  interval:1m\n| summarize count=count()\n",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
-            "visualization": "singleValue",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {}
-                },
-                "singleValue": {
-                    "showLabel": false,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "count",
-                    "autoscale": true,
-                    "sparklineSettings": {
-                        "isVisible": false
-                    },
-                    "alignment": "center",
-                    "trend": {
-                        "isVisible": false
-                    },
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": {
-                        "hidden": false,
-                        "position": "auto"
-                    },
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue",
-                    "dataMappings": {
-                        "value": "count"
-                    },
-                    "displayedFields": [
-                        null
-                    ]
-                },
-                "histogram": {
-                    "dataMappings": [
-                        {
-                            "valueAxis": "count",
-                            "rangeAxis": ""
-                        }
-                    ]
-                }
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "75": {
-            "type": "data",
-            "title": "Span totals",
-            "query": "// timeseries { \n//   accepted=sum(otelcol_receiver_accepted_spans), \n//   refused=sum(otelcol_receiver_refused_spans),\n//   filtered=sum(otelcol_processor_filter_spans.filtered),\n//   sent=sum(otelcol_exporter_sent_spans),\n//   failed=sum(otelcol_exporter_send_failed_spans)\n//   }, filter: { in(service.name, $CollectorServiceNames) }\n\n\ntimeseries {accepted=sum(otelcol_receiver_accepted_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_spans.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n] ",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
-            "visualization": "lineChart",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "name",
-                        "valueAxisLabel": "value"
-                    },
-                    "hiddenLegendFields": [],
-                    "fieldMapping": {
-                        "timestamp": "timeframe",
-                        "leftAxisValues": [
-                            "accepted",
-                            "refused",
-                            "sent",
-                            "failed"
-                        ],
-                        "leftAxisDimensions": []
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "interval"
-                    },
-                    "displayedFields": [
-                        null
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": []
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "76": {
-            "type": "data",
-            "title": "Metric datapoint totals",
-            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_metric_points.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n] ",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
-            "visualization": "lineChart",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "interval"
-                    },
-                    "hiddenLegendFields": [],
-                    "fieldMapping": {
-                        "timestamp": "timeframe",
-                        "leftAxisValues": [
-                            "accepted",
-                            "refused",
-                            "sent",
-                            "failed"
-                        ],
-                        "leftAxisDimensions": []
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "interval"
-                    },
-                    "displayedFields": [
-                        null
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": []
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "77": {
-            "type": "data",
-            "title": "Log totals",
-            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_log_records.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n] ",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
-            "visualization": "lineChart",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "interval"
-                    },
-                    "hiddenLegendFields": [],
-                    "fieldMapping": {
-                        "timestamp": "timeframe",
-                        "leftAxisValues": [
-                            "accepted",
-                            "refused",
-                            "sent",
-                            "failed"
-                        ],
-                        "leftAxisDimensions": []
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "interval"
-                    },
-                    "displayedFields": [
-                        null
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": []
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "79": {
-            "type": "data",
-            "title": "Metric datapoint totals",
-            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_metric_points) }, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_metric_points) }, \n      filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_datapoints.filtered) }, \n      filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"filter\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "hiddenLegendFields": [],
-                    "categoricalBarChartSettings": {
-                        "categoryAxis": "name",
-                        "valueAxis": "value",
-                        "categoryAxisLabel": "name",
-                        "valueAxisLabel": "value"
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value",
-                    "recordField": "receiver"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {
-                        "[\"name\"]": 158.89999389648438
-                    }
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": {
-                        "0": "a",
-                        "1": "u",
-                        "2": "t",
-                        "3": "o",
-                        "hidden": true
-                    },
-                    "dataMappings": {
-                        "value": "value"
-                    },
-                    "displayedFields": [
-                        "name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                }
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "80": {
-            "type": "data",
-            "title": "Log record totals",
-            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_logs.filtered) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"filter\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "hiddenLegendFields": [],
-                    "categoricalBarChartSettings": {
-                        "categoryAxis": "name",
-                        "valueAxis": "value",
-                        "categoryAxisLabel": "name",
-                        "valueAxisLabel": "value"
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value",
-                    "recordField": "receiver"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {
-                        "[\"name\"]": 158.89999389648438
-                    }
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": {
-                        "0": "a",
-                        "1": "u",
-                        "2": "t",
-                        "3": "o",
-                        "hidden": true
-                    },
-                    "dataMappings": {
-                        "value": "value"
-                    },
-                    "displayedFields": [
-                        "name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                }
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "83": {
-            "type": "data",
-            "title": "Top 5 collectors by resident set size (last 10m)",
-            "query": "timeseries sum=sum(otelcol_process_memory_rss), \n    from: now()-10m, to: now(),\n    by: { service.name, service.instance.id }\n  | fieldsAdd averageMb=arrayAvg(sum)/1e6\n  | sort averageMb desc\n  | fieldsKeep service.name, service.instance.id, averageMb",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "hiddenLegendFields": [],
-                    "leftYAxisSettings": {
-                        "max": "auto"
-                    },
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "averageMb"
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {
-                        "[\"service.instance.id\"]": 210.4666748046875
-                    },
-                    "colorThresholdTarget": "value"
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {},
-                    "displayedFields": [],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": [
-                    {
-                        "identifier": "avg(process_memory_rss)",
-                        "unitCategory": "data",
-                        "baseUnit": "byte",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1719570518103
-                    }
-                ]
-            },
-            "davis": {
-                "enabled": false,
-                "componentState": {
-                    "selectedAnalyzerName": "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer",
-                    "inputData": {
-                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
-                            "generalParameters": {
-                                "timeframe": {
-                                    "startTime": "2024-07-16T11:33:54.560Z",
-                                    "endTime": "2024-07-16T12:03:54.560Z"
-                                },
-                                "resolveDimensionalQueryData": true,
-                                "logVerbosity": "INFO"
-                            },
-                            "numberOfSignalFluctuations": 1,
-                            "alertCondition": "ABOVE",
-                            "alertOnMissingData": false,
-                            "violatingSamples": 3,
-                            "slidingWindow": 5,
-                            "dealertingSamples": 5,
-                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") AND in(service.instance.id, \"passthrough-collector\",\"passthrough-collector-b9f9334c4b-c4c39\",\"selfmon-collector\",\"selfmon-collector-f9554b9c4b-cvc43\",\"sink-collector\",\"sink-collector-554b9c67f9-c5c4c\") }\n| limit 20"
-                        }
-                    },
-                    "analyzerHints": {
-                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
-                            "unit": {
-                                "unitCategory": "data",
-                                "baseUnit": "byte"
-                            }
-                        }
-                    }
-                }
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "85": {
-            "type": "data",
-            "title": "Top 5 collectors by otelcol_process_cpu_seconds (last 10m)",
-            "query": "timeseries sum=sum(otelcol_process_cpu_seconds), \n    from: now()-10m, to: now(),\n    by: { service.name, service.instance.id }\n  | fieldsAdd averageMillis=arrayAvg(sum) * 1000\n  | sort averageMillis desc\n  | fieldsKeep service.name, service.instance.id, averageMillis",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "hiddenLegendFields": [],
-                    "leftYAxisSettings": {
-                        "max": "auto"
-                    },
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "averageMillis",
-                        "categoryAxis": "service.name",
-                        "valueAxis": "averageMillis"
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "averageMillis"
-                    },
-                    "displayedFields": [
-                        "service.name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": [
-                    {
-                        "identifier": "avg(process_memory_rss)",
-                        "unitCategory": "data",
-                        "baseUnit": "byte",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1719570518103
-                    }
-                ]
-            },
-            "davis": {
-                "enabled": false,
-                "componentState": {
-                    "selectedAnalyzerName": "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer",
-                    "inputData": {
-                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
-                            "generalParameters": {
-                                "timeframe": {
-                                    "startTime": "2024-07-16T11:33:54.560Z",
-                                    "endTime": "2024-07-16T12:03:54.560Z"
-                                },
-                                "resolveDimensionalQueryData": true,
-                                "logVerbosity": "INFO"
-                            },
-                            "numberOfSignalFluctuations": 1,
-                            "alertCondition": "ABOVE",
-                            "alertOnMissingData": false,
-                            "violatingSamples": 3,
-                            "slidingWindow": 5,
-                            "dealertingSamples": 5,
-                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") AND in(service.instance.id, \"passthrough-collector\",\"passthrough-collector-b9f9334c4b-c4c39\",\"selfmon-collector\",\"selfmon-collector-f9554b9c4b-cvc43\",\"sink-collector\",\"sink-collector-554b9c67f9-c5c4c\") }\n| limit 20"
-                        }
-                    },
-                    "analyzerHints": {
-                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
-                            "unit": {
-                                "unitCategory": "data",
-                                "baseUnit": "byte"
-                            }
-                        }
-                    }
-                }
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "88": {
-            "type": "data",
-            "title": "Request size average",
-            "query": "timeseries {`HTTP incoming`=avg(http.server.request.size)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries `HTTP outgoing`=avg(http.client.request.size),  filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries `RPC incoming`=avg(rpc.server.request.size), filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries `RPC outgoing`=avg(rpc.client.request.size), filter: { in(service.name, $CollectorServiceNames) }\n]",
-            "visualization": "lineChart",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "gap",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "http.status_code",
-                        "valueAxisLabel": "interval"
-                    },
-                    "hiddenLegendFields": [],
-                    "fieldMapping": {
-                        "timestamp": "timeframe",
-                        "leftAxisValues": [
-                            "HTTP incoming",
-                            "HTTP outgoing",
-                            "RPC incoming",
-                            "RPC outgoing"
-                        ],
-                        "leftAxisDimensions": []
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "net_peer_name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "interval"
-                    },
-                    "displayedFields": [
-                        null
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": [
-                    {
-                        "identifier": "RPC incoming",
-                        "unitCategory": "data",
-                        "baseUnit": "byte",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1721215462564
-                    },
-                    {
-                        "identifier": "RPC outgoing",
-                        "unitCategory": "data",
-                        "baseUnit": "byte",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1721215476940
-                    }
-                ]
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "89": {
-            "type": "data",
-            "title": "Request duration average",
-            "query": "timeseries {`HTTP incoming`=avg(http.server.duration)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries `HTTP outgoing`=avg(http.client.duration),  filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries `RPC incoming`=avg(rpc.server.duration), filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries `RPC outgoing`=avg(rpc.client.duration), filter: { in(service.name, $CollectorServiceNames) }\n]",
-            "visualization": "lineChart",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "gap",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "http.status_code",
-                        "valueAxisLabel": "interval"
-                    },
-                    "fieldMapping": {
-                        "timestamp": "timeframe",
-                        "leftAxisValues": [
-                            "HTTP incoming",
-                            "HTTP outgoing",
-                            "RPC incoming",
-                            "RPC outgoing"
-                        ],
-                        "leftAxisDimensions": []
-                    },
-                    "hiddenLegendFields": [],
-                    "xAxisScaling": "analyzedTimeframe"
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "interval"
-                    },
-                    "displayedFields": [
-                        null
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": [
-                    {
-                        "identifier": "HTTP incoming",
-                        "unitCategory": "time",
-                        "baseUnit": "millisecond",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1721144587869
-                    },
-                    {
-                        "identifier": "HTTP outgoing",
-                        "unitCategory": "time",
-                        "baseUnit": "millisecond",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1721144601557
-                    },
-                    {
-                        "identifier": "RPC incoming",
-                        "unitCategory": "time",
-                        "baseUnit": "millisecond",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1721215418333
-                    },
-                    {
-                        "identifier": "RPC outgoing",
-                        "unitCategory": "time",
-                        "baseUnit": "millisecond",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1721215421459
-                    }
-                ]
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "90": {
-            "type": "markdown",
-            "title": "",
-            "content": "## Requests (aggregated for all collectors)"
-        },
-        "91": {
-            "type": "data",
-            "title": "Incoming HTTP requests by collecor instance",
-            "query": "timeseries {count=sum(http.server.duration, rollup:count)}, \n  by: {service.name, service.instance.id}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep service.name, service.instance.id, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "gap",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "totalRequests",
-                        "categoryAxis": "service.name",
-                        "valueAxis": "totalRequests",
-                        "tooltipVariant": "single"
-                    },
-                    "hiddenLegendFields": [],
-                    "truncationMode": "middle"
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "totalRequests"
-                    },
-                    "displayedFields": [
-                        "service.name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": []
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "92": {
-            "type": "data",
-            "title": "HTTP requests to the Collector by status code",
-            "query": "timeseries {count=sum(http.server.duration, rollup:count)}, \n  by: {http.status_code}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep http.status_code, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "gap",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "http.status_code",
-                        "valueAxisLabel": "totalRequests",
-                        "categoryAxis": "http.status_code",
-                        "valueAxis": "totalRequests",
-                        "tooltipVariant": "single"
-                    },
-                    "hiddenLegendFields": [],
-                    "truncationMode": "middle"
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {
-                        "[\"http.status_code\"]": 156.23333740234375
-                    }
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "totalRequests"
-                    },
-                    "displayedFields": [
-                        "http.status_code"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": []
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "94": {
-            "type": "data",
-            "title": "Incoming RPC requests by collecor instance",
-            "query": "timeseries {count=sum(rpc.server.duration, rollup:count)},\n  by: {service.name, service.instance.id}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep service.name, service.instance.id, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "gap",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "totalRequests",
-                        "categoryAxis": "service.name",
-                        "valueAxis": "totalRequests",
-                        "tooltipVariant": "single"
-                    },
-                    "hiddenLegendFields": [],
-                    "truncationMode": "middle"
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "totalRequests"
-                    },
-                    "displayedFields": [
-                        "service.name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": []
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "95": {
-            "type": "data",
-            "title": "HTTP requests from the collector, by status code",
-            "query": "timeseries {count=sum(http.client.duration, rollup:count)}, \n  by: {http.status_code}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep http.status_code, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "gap",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "http.status_code",
-                        "valueAxisLabel": "totalRequests",
-                        "categoryAxis": "http.status_code",
-                        "valueAxis": "totalRequests",
-                        "tooltipVariant": "single"
-                    },
-                    "hiddenLegendFields": [],
-                    "truncationMode": "middle"
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "totalRequests"
-                    },
-                    "displayedFields": [
-                        "http.status_code"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": []
-                },
-                "unitsOverrides": []
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "96": {
-            "type": "markdown",
-            "title": "",
-            "content": "## Active collectors\nOverview of all collectors sending selfmonitoring data. Use the sections below to gauge the overall health of deployed collectors and to identify collectors to drill down to (see dashboard at [the GitHub repository](https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/docs/collector_selfmon_instance-id_single.json))\n\nOnly collectors with a `service.name` found in this list are considered for this dashboard: `$CollectorServiceNames`"
-        },
-        "98": {
-            "type": "data",
-            "title": "",
-            "query": "timeseries { count=count(otelcol_process_uptime) }, \n  by: { service.name, service.instance.id } \n| summarize count=count(), by:{ is_null=isNull(service.instance.id) }\n| append [\n  data record(is_null=false, count=1)\n]\n| sort is_null desc\n| limit 1\n| fieldsAdd message=if(is_null, \"Found entries where service.instance.id is null. This is likely due to to service.instance.id not being allowlisted.\", else: \"service.instance.id found on the ingested data. You're all set.\")\n",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
-            "visualization": "singleValue",
-            "visualizationSettings": {
-                "thresholds": [
-                    {
-                        "id": 1,
-                        "field": "message",
-                        "title": "",
-                        "isEnabled": true,
-                        "rules": [
-                            {
-                                "id": 0,
-                                "color": {
-                                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6863)"
-                                },
-                                "comparator": "=",
-                                "label": "",
-                                "value": "service.instance.id found on the ingested data. You're all set."
-                            },
-                            {
-                                "id": 1,
-                                "color": {
-                                    "Default": "var(--dt-colors-charts-status-warning-default, #eca440)"
-                                },
-                                "comparator": "≥",
-                                "label": ""
-                            },
-                            {
-                                "id": 2,
-                                "color": {
-                                    "Default": "var(--dt-colors-charts-status-critical-default, #c4233b)"
-                                },
-                                "comparator": "≥",
-                                "label": "",
-                                "value": "Found entries where service.instance.id is null. This is likely due to to service.instance.id not being allowlisted."
-                            }
-                        ]
-                    }
-                ],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxis": "message",
-                        "valueAxis": "count",
-                        "categoryAxisLabel": "message",
-                        "valueAxisLabel": "count",
-                        "tooltipVariant": "single"
-                    },
-                    "truncationMode": "middle"
-                },
-                "singleValue": {
-                    "showLabel": false,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "message",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": {
-                        "hidden": false,
-                        "position": "auto"
-                    },
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue",
-                    "dataMappings": {
-                        "value": "count"
-                    },
-                    "displayedFields": [
-                        "message"
-                    ]
-                },
-                "histogram": {
-                    "dataMappings": [
-                        {
-                            "valueAxis": "count",
-                            "rangeAxis": ""
-                        }
-                    ]
-                }
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
         }
     },
     "layouts": {
-        "1": {
-            "x": 0,
-            "y": 39,
-            "w": 12,
-            "h": 6
-        },
         "3": {
             "x": 0,
             "y": 0,
-            "w": 24,
-            "h": 2
+            "w": 12,
+            "h": 1
         },
         "6": {
             "x": 0,
-            "y": 6,
-            "w": 21,
-            "h": 10
-        },
-        "11": {
-            "x": 0,
-            "y": 38,
-            "w": 24,
-            "h": 1
-        },
-        "13": {
-            "x": 12,
-            "y": 39,
+            "y": 1,
             "w": 12,
             "h": 6
         },
+        "11": {
+            "x": 0,
+            "y": 29,
+            "w": 24,
+            "h": 1
+        },
         "39": {
             "x": 0,
-            "y": 17,
+            "y": 19,
             "w": 8,
             "h": 6
         },
         "42": {
             "x": 0,
-            "y": 23,
+            "y": 7,
             "w": 24,
             "h": 1
         },
         "44": {
             "x": 0,
-            "y": 34,
+            "y": 14,
             "w": 8,
             "h": 4
         },
         "73": {
-            "x": 21,
-            "y": 6,
+            "x": 12,
+            "y": 1,
             "w": 3,
-            "h": 5
+            "h": 6
         },
         "74": {
-            "x": 21,
-            "y": 11,
+            "x": 15,
+            "y": 1,
             "w": 3,
-            "h": 5
+            "h": 6
         },
         "75": {
             "x": 0,
-            "y": 28,
+            "y": 8,
             "w": 8,
             "h": 6
         },
         "76": {
             "x": 8,
-            "y": 28,
+            "y": 8,
             "w": 8,
             "h": 6
         },
         "77": {
             "x": 16,
-            "y": 28,
+            "y": 8,
             "w": 8,
             "h": 6
         },
         "79": {
             "x": 8,
-            "y": 34,
+            "y": 14,
             "w": 8,
             "h": 4
         },
         "80": {
             "x": 16,
-            "y": 34,
+            "y": 14,
             "w": 8,
             "h": 4
         },
         "83": {
             "x": 0,
-            "y": 45,
+            "y": 36,
             "w": 12,
             "h": 4
         },
         "85": {
             "x": 12,
-            "y": 45,
+            "y": 36,
             "w": 12,
             "h": 4
         },
         "88": {
             "x": 8,
-            "y": 17,
+            "y": 19,
             "w": 8,
             "h": 6
         },
         "89": {
             "x": 16,
-            "y": 17,
+            "y": 19,
             "w": 8,
             "h": 6
         },
         "90": {
             "x": 0,
-            "y": 16,
+            "y": 18,
             "w": 24,
             "h": 1
         },
         "91": {
             "x": 0,
-            "y": 24,
+            "y": 25,
             "w": 8,
             "h": 4
         },
         "92": {
             "x": 8,
-            "y": 24,
+            "y": 25,
             "w": 4,
             "h": 4
         },
         "94": {
             "x": 16,
-            "y": 24,
+            "y": 25,
             "w": 8,
             "h": 4
         },
         "95": {
             "x": 12,
-            "y": 24,
+            "y": 25,
             "w": 4,
             "h": 4
         },
-        "96": {
-            "x": 0,
-            "y": 2,
-            "w": 24,
-            "h": 3
-        },
         "98": {
-            "x": 0,
-            "y": 5,
-            "w": 24,
+            "x": 12,
+            "y": 0,
+            "w": 6,
             "h": 1
+        },
+        "99": {
+            "x": 18,
+            "y": 0,
+            "w": 6,
+            "h": 1
+        },
+        "100": {
+            "x": 18,
+            "y": 1,
+            "w": 6,
+            "h": 6
+        },
+        "101": {
+            "x": 0,
+            "y": 30,
+            "w": 12,
+            "h": 6
+        },
+        "102": {
+            "x": 12,
+            "y": 30,
+            "w": 12,
+            "h": 6
         }
     },
     "importedWithCode": false

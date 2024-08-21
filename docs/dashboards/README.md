@@ -28,18 +28,25 @@ Collector and Collector Contrib versions 0.107.0 and above as well as Dynatrace 
 Earlier versions ignore the `temporality_preference` flag and would, therefore, require additional processing (cumulative to delta conversion) before ingestion.
 It is possible to to this conversion in a collector, but would make the setup more complicated, so it is initially omitted in this document.
 
+The dashboard only uses metrics that have a `service.name` from this list: `dynatrace-otel-collector,otelcorecol,otelcontribcol,otelcol,otelcol-contrib`.
+At the top of the dashboard, you can filter for specific `service.name`s.
+You can also edit the variable and add service names if your collector has a different `service.name` and does therefore not show up on the dash.
+
 ### Adding `service.instance.id` to the allow list
 While `service.name` is on the Dynatrace OTLP metrics ingest allow list by default, `service.instance.id` is not.
-To add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` to the list.
-This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace. 
+To add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` (case-sensitive) to the list.
+This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace.
+The dashboard will indicate that `service.instance.id` is not set up correctly at the top of the dashboard:
 
-## Sending internal telemetry to Dynatrace
+![A screenshot of how a missing service.instance.id would look in the dashboard](img/sid-missing.png)
+
+## Sending internal telemetry (self-monitoring data) to Dynatrace
 Every OpenTelemetry collector has self-monitoring capabilities, but they need to be activated.
 Self-monitoring data can be exported from the collector via the OTLP protocol.
-The configuration below assumes the environment variables `DT_URL` and `DT_API_TOKEN` to be set.
+The configuration below assumes the environment variables `DT_ENDPOINT` and `DT_API_TOKEN` to be set.
 In order to send data to Dynatrace via OTLP, you will need to supply a Dynatrace endpoint and an ingest token with the `metrics.ingest` scope set.
 See the [Dynatrace docs](https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/getting-started/otlp-export) for more information.
-The `DT_URL` environment variable should only contain the base url (e.g. `https://{your-environment-id}.live.dynatrace.com`, without a path at the end).
+The `DT_ENDPOINT` environment variable should contain the base url and the base `/api/v2/otlp` (e.g. `https://{your-environment-id}.live.dynatrace.com/api/v2/otlp`).
 
 To send self-monitoring data to Dynatrace, use the following configuration:
 
@@ -59,7 +66,7 @@ service:
               otlp:
                 protocol: http/protobuf
                 temporality_preference: delta
-                endpoint: "${env:DT_URL}/api/v2/otlp/v1/metrics"
+                endpoint: "${env:DT_ENDPOINT}/v1/metrics"
                 headers:
                   Authorization: "Api-Token ${env:DT_API_TOKEN}"
 ```

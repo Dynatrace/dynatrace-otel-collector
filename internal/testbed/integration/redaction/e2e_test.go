@@ -15,7 +15,7 @@ import (
 	"go.opentelemetry.io/collector/consumer/consumertest"
 )
 
-func TestE2E_ClusterRBAC(t *testing.T) {
+func TestE2E_RedactionProcessor(t *testing.T) {
 	testDir := filepath.Join("testdata")
 
 	k8sClient, err := k8stest.NewK8sClient()

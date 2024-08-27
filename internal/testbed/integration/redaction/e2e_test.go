@@ -27,8 +27,6 @@ type expectedValue struct {
 	value string
 }
 
-// TestE2E_ClusterRBAC tests the "Enrich from Kubernetes" use case
-// See: https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-k8s-enrich
 func TestE2E_ClusterRBAC(t *testing.T) {
 	testDir := filepath.Join("testdata")
 

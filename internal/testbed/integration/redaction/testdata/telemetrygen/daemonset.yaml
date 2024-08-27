@@ -1,25 +1,28 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: apps/v1
+kind: DaemonSet
 metadata:
-  name: {{ .Name }}-{{ .DataType}}-job
+  name: {{ .Name }}-{{ .DataType }}-daemonset
   namespace: e2eredaction
 spec:
+  selector:
+    matchLabels:
+      app: {{ .Name }}-{{ .DataType }}-daemonset
   template:
     metadata:
       annotations:
-        workload: job
+        workload: daemonset
       labels:
-        app: {{ .Name }}-{{ .DataType }}-job
+        app: {{ .Name }}-{{ .DataType }}-daemonset
     spec:
       containers:
         - command:
             - /telemetrygen
-            - {{ .DataType }}
+            - {{ .DataType  }}
             - --otlp-insecure
             - --otlp-endpoint={{ .OTLPEndpoint }}
-            - --rate=1
             - --duration=36000s
-            - --otlp-attributes=service.name="test-{{ .DataType }}-job"
+            - --rate=1
+            - --otlp-attributes=service.name="test-{{ .DataType }}-daemonset"
           image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
           name: telemetrygen
-      restartPolicy: OnFailure
+      restartPolicy: Always

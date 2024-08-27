@@ -71,4 +71,78 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 		k8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
+	wantEntries := 30 // Minimal number of traces to wait for.
+	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
+
+	tcs := []struct {
+		name    string
+		service string
+		attrs   map[string]oteltest.ExpectedValue
+	}{
+		{
+			name:    "traces-job",
+			service: "test-traces-job",
+			attrs: map[string]oteltest.ExpectedValue{
+				"service.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-job"),
+				"k8s.pod.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-job-[a-z0-9]*"),
+				"k8s.pod.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "****"),
+				"k8s.job.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-job"),
+				"k8s.namespace.name":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.cluster.uid":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "****"),
+				"redaction.redacted.count": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+				"redaction.masked.count":   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+				"redaction.ignored.count":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+			},
+		},
+		{
+			name:    "traces-statefulset",
+			service: "test-traces-statefulset",
+			attrs: map[string]oteltest.ExpectedValue{
+				"service.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-statefulset"),
+				"k8s.pod.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset-0"),
+				"k8s.pod.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "****"),
+				"k8s.statefulset.name":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset"),
+				"k8s.namespace.name":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.cluster.uid":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "****"),
+				"redaction.redacted.count": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+				"redaction.masked.count":   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+				"redaction.ignored.count":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+			},
+		},
+		{
+			name:    "traces-deployment",
+			service: "test-traces-deployment",
+			attrs: map[string]oteltest.ExpectedValue{
+				"service.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-deployment"),
+				"k8s.pod.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
+				"k8s.pod.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "****"),
+				"k8s.deployment.name":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-deployment"),
+				"k8s.namespace.name":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.cluster.uid":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "****"),
+				"redaction.redacted.count": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+				"redaction.masked.count":   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+				"redaction.ignored.count":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+			},
+		},
+		{
+			name:    "traces-daemonset",
+			service: "test-traces-daemonset",
+			attrs: map[string]oteltest.ExpectedValue{
+				"service.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-daemonset"),
+				"k8s.pod.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-daemonset-[a-z0-9]*"),
+				"k8s.pod.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "****"),
+				"k8s.daemonset.name":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-daemonset"),
+				"k8s.namespace.name":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.cluster.uid":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "****"),
+				"redaction.redacted.count": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+				"redaction.masked.count":   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+				"redaction.ignored.count":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "2"),
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		oteltest.ScanTracesForAttributes(t, tracesConsumer, tc.service, tc.attrs, nil)
+	}
+
 }

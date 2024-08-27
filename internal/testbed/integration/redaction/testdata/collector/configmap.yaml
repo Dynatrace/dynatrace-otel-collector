@@ -14,19 +14,49 @@ data:
           grpc:
             endpoint: ${env:MY_POD_IP}:4317
     processors:
+      k8sattributes:
+        extract:
+          metadata:
+          - k8s.pod.name
+          - k8s.pod.uid
+          - k8s.deployment.name
+          - k8s.statefulset.name
+          - k8s.daemonset.name
+          - k8s.job.name
+          - k8s.cronjob.name
+          - k8s.namespace.name
+          - k8s.node.name
+          - k8s.cluster.uid
+        pod_association:
+        - sources:
+          - from: resource_attribute
+            name: k8s.pod.name
+          - from: resource_attribute
+            name: k8s.namespace.name
+        - sources:
+          - from: resource_attribute
+            name: k8s.pod.ip
+        - sources:
+          - from: resource_attribute
+            name: k8s.pod.uid
+        - sources:
+          - from: connection
       redaction:
         allow_all_keys: false
         allowed_keys:
-          - description
-          - group
-          - name
+          - "k8s.pod.uid"
+          - "k8s.namespace.name"
+          - "k8s.cluster.uid"
+          - "k8s.job.name"
+          - "k8s.statefulset.name"
+          - "k8s.deployment.name"
+          - "k8s.daemonset.name"
         ignored_keys:
-          - safe_attribute
+          - "k8s.pod.name"
+          - "service.name"
         blocked_values:
-          - "4[0-9]{12}(?:[0-9]{3})?"
-          - "(5[1-5][0-9]{14})"
-          - "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\b){4}$"
-          - "^[\\w\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
+          - "^[a-f0-9]{32}$"
+          - "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
         summary: info
     exporters:
       otlp:
@@ -41,6 +71,7 @@ data:
           receivers:
             - otlp
           processors:
+            - k8sattributes
             - redaction
           exporters:
             - otlp

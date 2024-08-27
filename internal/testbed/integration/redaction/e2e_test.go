@@ -15,18 +15,6 @@ import (
 	"go.opentelemetry.io/collector/consumer/consumertest"
 )
 
-const (
-	equal = iota
-	regex
-	exist
-	uidRe = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-)
-
-type expectedValue struct {
-	mode  int
-	value string
-}
-
 func TestE2E_ClusterRBAC(t *testing.T) {
 	testDir := filepath.Join("testdata")
 

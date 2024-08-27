@@ -9,6 +9,10 @@ This folder contains dashboards that can be used to monitor the health of deploy
 
 ![A screenshot of the dashboard providing an overview of running collectors. Some are running (green), some have recently stopped sending data (yellow), and some have not sent data in a longer time (red)](img/dashboard_overview_1.png)
 
+There are two dashboards:
+- [OTel Collector self-monitoring (all collectors)](./OTel%20Collector%20self-monitoring%20(all%20collectors).json) - shows an overview of all detected OpenTelemetry collectors
+- [OTel Collector self-monitoring (single collector)](./OTel%20Collector%20self-monitoring%20(single%20collector).json) - allows to look at one specific collector instance. 
+
 The dashboards rely on the presence of the `service.instance.id` resource attribute.
 This attribute is added automatically by the collector to all exported telemetry.
 However, it is not ingested into Dynatrace by default.
@@ -28,8 +32,8 @@ Collector and Collector Contrib versions 0.107.0 and above as well as Dynatrace 
 Earlier versions ignore the `temporality_preference` flag and would, therefore, require additional processing (cumulative to delta conversion) before ingestion.
 It is possible to to this conversion in a collector, but would make the setup more complicated, so it is initially omitted in this document.
 
-The dashboard only uses metrics that have a `service.name` from this list: `dynatrace-otel-collector,otelcorecol,otelcontribcol,otelcol,otelcol-contrib`.
-At the top of the dashboard, you can filter for specific `service.name`s.
+The dashboards only use metrics that have a `service.name` from this list: `dynatrace-otel-collector,otelcorecol,otelcontribcol,otelcol,otelcol-contrib`.
+At the top of the dashboards, you can filter for specific `service.name`s.
 You can also edit the variable and add service names if your collector has a different `service.name` and does therefore not show up on the dash.
 
 ### Adding `service.instance.id` to the allow list

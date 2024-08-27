@@ -225,12 +225,12 @@
         "42": {
             "type": "markdown",
             "title": "",
-            "content": "### Incoming/outgoing telemetry"
+            "content": "### Telemetry data passing through collectors"
         },
         "44": {
             "type": "data",
             "title": "Span totals",
-            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_spans.filtered) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"filter\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
+            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_spans.filtered) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"processor\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
             "visualization": "table",
             "visualizationSettings": {
                 "thresholds": [],
@@ -247,8 +247,10 @@
                         "categoryAxis": "name",
                         "valueAxis": "value",
                         "categoryAxisLabel": "name",
-                        "valueAxisLabel": "value"
-                    }
+                        "valueAxisLabel": "value",
+                        "tooltipVariant": "single"
+                    },
+                    "truncationMode": "middle"
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -462,7 +464,7 @@
         "75": {
             "type": "data",
             "title": "Span totals",
-            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_spans.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n] ",
+            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd type=\"receiver\"\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"receiver\"\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_spans.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"processor\"\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"exporter\"\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"exporter\"\n] ",
             "davis": {
                 "enabled": false,
                 "davisVisualization": {
@@ -481,8 +483,11 @@
                     },
                     "categoryOverrides": {},
                     "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "name",
-                        "valueAxisLabel": "value"
+                        "categoryAxisLabel": "type",
+                        "valueAxisLabel": "interval",
+                        "categoryAxis": "type",
+                        "valueAxis": "interval",
+                        "tooltipVariant": "single"
                     },
                     "hiddenLegendFields": [],
                     "fieldMapping": {
@@ -490,11 +495,15 @@
                         "leftAxisValues": [
                             "accepted",
                             "refused",
+                            "filtered",
                             "sent",
                             "failed"
                         ],
-                        "leftAxisDimensions": []
-                    }
+                        "leftAxisDimensions": [
+                            "type"
+                        ]
+                    },
+                    "truncationMode": "middle"
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -519,7 +528,7 @@
                         "value": "interval"
                     },
                     "displayedFields": [
-                        null
+                        "type"
                     ],
                     "colorMode": "color-palette",
                     "colorPalette": "blue"
@@ -545,7 +554,7 @@
         "76": {
             "type": "data",
             "title": "Metric datapoint totals",
-            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_metric_points.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n] ",
+            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd type=\"receiver\"\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"receiver\"\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_metric_points.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"processor\"\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"exporter\"\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"exporter\"\n] ",
             "davis": {
                 "enabled": false,
                 "davisVisualization": {
@@ -564,8 +573,11 @@
                     },
                     "categoryOverrides": {},
                     "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "interval"
+                        "categoryAxisLabel": "type",
+                        "valueAxisLabel": "interval",
+                        "categoryAxis": "type",
+                        "valueAxis": "interval",
+                        "tooltipVariant": "single"
                     },
                     "hiddenLegendFields": [],
                     "fieldMapping": {
@@ -576,8 +588,11 @@
                             "sent",
                             "failed"
                         ],
-                        "leftAxisDimensions": []
-                    }
+                        "leftAxisDimensions": [
+                            "type"
+                        ]
+                    },
+                    "truncationMode": "middle"
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -602,7 +617,7 @@
                         "value": "interval"
                     },
                     "displayedFields": [
-                        null
+                        "type"
                     ],
                     "colorMode": "color-palette",
                     "colorPalette": "blue"
@@ -628,7 +643,7 @@
         "77": {
             "type": "data",
             "title": "Log totals",
-            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_log_records.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n] ",
+            "query": "timeseries {accepted=sum(otelcol_receiver_accepted_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd type=\"receiver\"\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"receiver\"\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_log_records.filtered)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"processor\"\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"exporter\"\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records)}, filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd type=\"exporter\"\n] ",
             "davis": {
                 "enabled": false,
                 "davisVisualization": {
@@ -647,8 +662,11 @@
                     },
                     "categoryOverrides": {},
                     "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "interval"
+                        "categoryAxisLabel": "type",
+                        "valueAxisLabel": "interval",
+                        "categoryAxis": "type",
+                        "valueAxis": "interval",
+                        "tooltipVariant": "single"
                     },
                     "hiddenLegendFields": [],
                     "fieldMapping": {
@@ -659,8 +677,11 @@
                             "sent",
                             "failed"
                         ],
-                        "leftAxisDimensions": []
-                    }
+                        "leftAxisDimensions": [
+                            "type"
+                        ]
+                    },
+                    "truncationMode": "middle"
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -685,7 +706,7 @@
                         "value": "interval"
                     },
                     "displayedFields": [
-                        null
+                        "type"
                     ],
                     "colorMode": "color-palette",
                     "colorPalette": "blue"
@@ -711,7 +732,7 @@
         "79": {
             "type": "data",
             "title": "Metric datapoint totals",
-            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_metric_points) }, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_metric_points) }, \n      filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_datapoints.filtered) }, \n      filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"filter\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
+            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_metric_points) }, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_metric_points) }, \n      filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_datapoints.filtered) }, \n      filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"processor\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
             "visualization": "table",
             "visualizationSettings": {
                 "thresholds": [],
@@ -728,8 +749,10 @@
                         "categoryAxis": "name",
                         "valueAxis": "value",
                         "categoryAxisLabel": "name",
-                        "valueAxisLabel": "value"
-                    }
+                        "valueAxisLabel": "value",
+                        "tooltipVariant": "single"
+                    },
+                    "truncationMode": "middle"
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -788,7 +811,7 @@
         "80": {
             "type": "data",
             "title": "Log record totals",
-            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_logs.filtered) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"filter\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
+            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_logs.filtered) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n    | fieldsAdd name=\"filtered\", type=\"processor\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records) }, \n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
             "visualization": "table",
             "visualizationSettings": {
                 "thresholds": [],
@@ -805,8 +828,10 @@
                         "categoryAxis": "name",
                         "valueAxis": "value",
                         "categoryAxisLabel": "name",
-                        "valueAxisLabel": "value"
-                    }
+                        "valueAxisLabel": "value",
+                        "tooltipVariant": "single"
+                    },
+                    "truncationMode": "middle"
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -1323,7 +1348,7 @@
         "90": {
             "type": "markdown",
             "title": "",
-            "content": "### Incoming / outgoing requests"
+            "content": "### Network traffic"
         },
         "91": {
             "type": "data",
@@ -1698,103 +1723,6 @@
             "title": "",
             "content": "[Find out how to set up this dashboard](https://github.com/Dynatrace/dynatrace-otel-collector/tree/main/docs/dashboards/README.md#adding-serviceinstanceid-to-the-allow-list)."
         },
-        "100": {
-            "type": "data",
-            "title": "Number of collectors, by service.name",
-            "query": "timeseries count=count(otelcol_process_uptime), \n  by: {service.name}, \n  filter: { in(service.name, $CollectorServiceNames) }  ",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "curve": "linear",
-                    "pointsDisplay": "auto",
-                    "categoricalBarChartSettings": {
-                        "categoryAxis": "service.name",
-                        "valueAxis": "interval",
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "interval",
-                        "tooltipVariant": "single"
-                    },
-                    "fieldMapping": {
-                        "timestamp": "timeframe",
-                        "leftAxisValues": [
-                            "count"
-                        ],
-                        "leftAxisDimensions": [
-                            "service.name"
-                        ]
-                    },
-                    "hiddenLegendFields": [],
-                    "truncationMode": "middle",
-                    "leftYAxisSettings": {
-                        "isLabelVisible": false,
-                        "scale": "linear",
-                        "min": null,
-                        "max": "auto"
-                    }
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value",
-                    "recordField": "error"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {},
-                    "enableThresholdInRow": false
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": {
-                        "hidden": false,
-                        "position": "auto"
-                    },
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue",
-                    "dataMappings": {
-                        "value": "interval"
-                    },
-                    "displayedFields": [
-                        "service.name"
-                    ]
-                },
-                "histogram": {
-                    "dataMappings": [
-                        {
-                            "valueAxis": "interval",
-                            "rangeAxis": ""
-                        }
-                    ]
-                }
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            },
-            "visualization": "lineChart"
-        },
         "101": {
             "type": "data",
             "title": "Total physical memory (resident set size)",
@@ -1991,19 +1919,215 @@
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
             }
+        },
+        "103": {
+            "type": "data",
+            "title": "",
+            "query": "fetch metric.series\n| filter metric.key==\"otelcol_process_uptime\"",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "curve": "linear",
+                    "pointsDisplay": "auto",
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "otel.scope.name",
+                        "categoryAxisLabel": "otel.scope.name",
+                        "valueAxis": [],
+                        "valueAxisLabel": "",
+                        "tooltipVariant": "single"
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "metric.key",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "enableThresholdInRow": false
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical",
+                    "dataMappings": {
+                        "value": "metric.key"
+                    },
+                    "displayedFields": [
+                        "dt.metrics.source"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": []
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "104": {
+            "type": "data",
+            "title": "",
+            "query": "timeseries `A: avg(otelcol_process_uptime)` = avg(otelcol_process_uptime), by: { service.name, service.instance.id, otel.scope.name, dt.metrics.source, metric.key, dt.system.bucket }\n| limit 20",
+            "queryConfig": {
+                "version": "11.1.4",
+                "subQueries": [
+                    {
+                        "id": "A",
+                        "isEnabled": true,
+                        "limit": 20,
+                        "filter": "",
+                        "datatype": "metrics",
+                        "metric": {
+                            "key": "otelcol_process_uptime",
+                            "aggregation": "avg"
+                        },
+                        "by": [
+                            "service.name",
+                            "service.instance.id",
+                            "otel.scope.name",
+                            "dt.metrics.source",
+                            "metric.key",
+                            "dt.system.bucket"
+                        ]
+                    }
+                ]
+            },
+            "subType": "dql-builder-metrics",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "curve": "linear",
+                    "pointsDisplay": "auto",
+                    "truncationMode": "middle",
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "service.name",
+                        "categoryAxisLabel": "service.name",
+                        "valueAxis": "interval",
+                        "valueAxisLabel": "interval",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "service",
+                        "otel.scope"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "A: avg(otelcol_process_uptime)"
+                        ],
+                        "leftAxisDimensions": [
+                            "service.name",
+                            "service.instance.id",
+                            "otel.scope.name",
+                            "dt.metrics.source",
+                            "metric.key",
+                            "dt.system.bucket"
+                        ]
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "service.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "enableThresholdInRow": false
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "service.name"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "davis": {},
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
         }
     },
     "layouts": {
         "3": {
             "x": 0,
             "y": 0,
-            "w": 12,
+            "w": 18,
             "h": 1
         },
         "6": {
             "x": 0,
             "y": 1,
-            "w": 12,
+            "w": 18,
             "h": 6
         },
         "11": {
@@ -2031,13 +2155,13 @@
             "h": 4
         },
         "73": {
-            "x": 12,
+            "x": 18,
             "y": 1,
             "w": 3,
             "h": 6
         },
         "74": {
-            "x": 15,
+            "x": 21,
             "y": 1,
             "w": 3,
             "h": 6
@@ -2127,22 +2251,16 @@
             "h": 4
         },
         "98": {
-            "x": 12,
+            "x": 18,
             "y": 0,
-            "w": 6,
+            "w": 3,
             "h": 1
         },
         "99": {
-            "x": 18,
+            "x": 21,
             "y": 0,
-            "w": 6,
+            "w": 3,
             "h": 1
-        },
-        "100": {
-            "x": 18,
-            "y": 1,
-            "w": 6,
-            "h": 6
         },
         "101": {
             "x": 0,
@@ -2154,6 +2272,18 @@
             "x": 12,
             "y": 30,
             "w": 12,
+            "h": 6
+        },
+        "103": {
+            "x": 0,
+            "y": 40,
+            "w": 24,
+            "h": 7
+        },
+        "104": {
+            "x": 0,
+            "y": 47,
+            "w": 23,
             "h": 6
         }
     },

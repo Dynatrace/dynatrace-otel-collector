@@ -164,7 +164,6 @@ require (
 	go.opentelemetry.io/collector/exporter/otlphttpexporter v0.108.1 // indirect
 	go.opentelemetry.io/collector/extension v0.108.1 // indirect
 	go.opentelemetry.io/collector/extension/auth v0.108.1 // indirect
-	go.opentelemetry.io/collector/extension/ballastextension v0.107.0 // indirect
 	go.opentelemetry.io/collector/extension/zpagesextension v0.108.1 // indirect
 	go.opentelemetry.io/collector/internal/globalgates v0.108.1 // indirect
 	go.opentelemetry.io/collector/otelcol v0.108.1 // indirect

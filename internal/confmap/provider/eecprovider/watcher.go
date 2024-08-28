@@ -9,8 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
-	"go.opentelemetry.io/collector/confmap"
 )
 
 type watcher struct {
@@ -19,7 +17,7 @@ type watcher struct {
 	getConfigBytes func(context.Context) ([]byte, error)
 
 	refreshInterval time.Duration
-	watcherFunc     confmap.WatcherFunc
+	watcherFunc     func([]byte)
 	configHash      [32]byte
 }
 
@@ -46,7 +44,7 @@ func (w *watcher) watchForChanges(ctx context.Context) {
 				// the Collector and stop watching. A new watcher
 				// will be created once the provider's Retrieve
 				// method is called again.
-				w.watcherFunc(&confmap.ChangeEvent{})
+				w.watcherFunc(body)
 				return
 			}
 		case <-w.shutdown:

@@ -26,3 +26,12 @@ dynatrace-otel-collector --config=eec://my.eec.host:31098#refresh-interval=5s&au
 | refresh-interval | 10s | A time duration that defines how frequently the provider should check the given URL for updates. |
 | timeout | 8s | A time duration that defines how long the provider will wait until cancelling an ongoing HTTP request. |
 | insecure | false | If set to "true", use HTTP for the connection to the server. If unset or set to "false", use HTTPS. |
+
+### Request headers
+
+The following request headers are sent to give information about the current state of the Collector:
+
+| Header | Description |
+|-----|-------------|
+| `X-Otelcol-Config-Refresh`  | Indicates whether this request is refreshing the config. Will be "false" for the first request and "true" for all subsequent requests. |
+| `X-Otelcol-Config-Changed` | Indicates whether the previous request resulted in a config change and therefore reloaded the Collector. Will be "true" if a Collector reload occurred, and "false" otherwise. |

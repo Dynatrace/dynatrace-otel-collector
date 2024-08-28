@@ -33,8 +33,11 @@ type SchemeType string
 const (
 	EECScheme SchemeType = "eec"
 
-	AuthHeaderKey = "Authorization"
+	AuthHeaderKey        = "Authorization"
 	ApiTokenPrefixFormat = "Api-Token %s"
+
+	ConfigRefreshHeaderKey = "X-Otelcol-Config-Refresh"
+	ConfigChangedHeaderKey = "X-Otelcol-Config-Changed"
 )
 
 type provider struct {
@@ -52,6 +55,9 @@ type provider struct {
 	// Keeps track of ongoing watcher functions and cancels existing runs
 	// if the same URL is requested again.
 	watcherCancelMap map[string]func()
+
+	// Caches new config to avoid duplicate requests after the config changes.
+	newConfig map[string][]byte
 }
 
 var _ confmap.Provider = (*provider)(nil)
@@ -67,7 +73,12 @@ func NewFactory() confmap.ProviderFactory {
 
 func newProvider(_ confmap.ProviderSettings) confmap.Provider {
 	shutdown := make(chan struct{})
-	return &provider{shutdown: shutdown, watcherMapMux: &sync.Mutex{}, watcherCancelMap: map[string]func(){}}
+	return &provider{
+		shutdown:         shutdown,
+		watcherMapMux:    &sync.Mutex{},
+		watcherCancelMap: map[string]func(){},
+		newConfig:        map[string][]byte{},
+	}
 }
 
 // Create the client based on the type of scheme that was selected.
@@ -138,8 +149,9 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 		parsedUrl.Scheme = "https"
 	}
 
+	url := parsedUrl.String()
 	newContextBoundRequest := func(ctx context.Context) (*http.Request, error) {
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsedUrl.String(), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -149,16 +161,27 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 		return req, nil
 	}
 
-	reqCtx, cancel := context.WithTimeoutCause(ctx, 3*time.Second, errors.New("request to EEC timed out"))
-	defer cancel()
-	req, err := newContextBoundRequest(reqCtx)
-	if err != nil {
-		return nil, err
-	}
+	var body []byte
 
-	body, err := p.getConfigBytes(client, req)
-	if err != nil {
-		return nil, err
+	// If we have the new config obtained by the watcher, return it directly instead of re-fetching it.
+	// Otherwise, we are making an initial request, so fetch the config.
+	if b, ok := p.newConfig[url]; ok {
+		delete(p.newConfig, url)
+		body = b
+	} else {
+		reqCtx, cancel := context.WithTimeoutCause(ctx, 3*time.Second, errors.New("request to EEC timed out"))
+		defer cancel()
+		req, err := newContextBoundRequest(reqCtx)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Add(ConfigRefreshHeaderKey, "false")
+		req.Header.Add(ConfigChangedHeaderKey, "false")
+
+		body, err = p.getConfigBytes(client, req)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// If the Collector has not provided a watcherFunc, or if
@@ -171,7 +194,6 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 		// so we need to at a minimum protect against this case.
 		watcherCtx, cancel := context.WithCancel(ctx)
 		p.watcherMapMux.Lock()
-		url := req.URL.String()
 		if _, ok := p.watcherCancelMap[url]; ok {
 			p.watcherCancelMap[url]()
 		}
@@ -180,6 +202,8 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 		}
 		p.watcherMapMux.Unlock()
 
+		configChanged := "true"
+
 		watcher := &watcher{
 			shutdown: p.shutdown,
 			getConfigBytes: func(ctx context.Context) ([]byte, error) {
@@ -187,11 +211,25 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 				if err != nil {
 					return nil, err
 				}
+				req.Header.Add(ConfigRefreshHeaderKey, "true")
+
+				req.Header.Add(ConfigChangedHeaderKey, configChanged)
+
+				// The watcher will only ever make a single request where the config
+				// changed changed during the previous request, since after the config
+				// changes, the watcher is recreated.
+				if configChanged == "true" {
+					configChanged = "false"
+				}
+
 				return p.getConfigBytes(client, req)
 			},
 			refreshInterval: cfg.refreshInterval,
-			watcherFunc:     watcherFunc,
-			configHash:      sha256.Sum256(body),
+			watcherFunc: func(b []byte) {
+				p.newConfig[url] = b
+				watcherFunc(&confmap.ChangeEvent{})
+			},
+			configHash: sha256.Sum256(body),
 		}
 
 		go watcher.watchForChanges(watcherCtx)

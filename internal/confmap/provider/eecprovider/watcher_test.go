@@ -14,7 +14,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/confmap"
 )
 
 func TestWatchForChanges(t *testing.T) {
@@ -29,7 +28,7 @@ func TestWatchForChanges(t *testing.T) {
 		shutdown:        shutdown,
 		getConfigBytes:  getConfigBytes,
 		refreshInterval: time.Millisecond,
-		watcherFunc: func(ce *confmap.ChangeEvent) {
+		watcherFunc: func([]byte) {
 			require.FailNow(t, "WatcherFunc should be called when config has not changed")
 		},
 		configHash: sha256.Sum256(nil),
@@ -56,7 +55,7 @@ func TestStopsOnRequestDone(t *testing.T) {
 	w := watcher{
 		getConfigBytes:  getConfigBytes,
 		refreshInterval: time.Hour,
-		watcherFunc:     func(ce *confmap.ChangeEvent) {},
+		watcherFunc:     func([]byte) {},
 		configHash:      sha256.Sum256(nil),
 	}
 
@@ -71,6 +70,7 @@ func TestStopsOnRequestDone(t *testing.T) {
 
 func TestCallsWatcherFunc(t *testing.T) {
 	wg := &sync.WaitGroup{}
+	body := []byte("hello")
 	getConfigBytes := func(context.Context) ([]byte, error) {
 		return []byte("hello"), nil
 	}
@@ -79,8 +79,8 @@ func TestCallsWatcherFunc(t *testing.T) {
 		shutdown:        shutdown,
 		getConfigBytes:  getConfigBytes,
 		refreshInterval: time.Millisecond,
-		watcherFunc: func(ce *confmap.ChangeEvent) {
-			assert.NotNil(t, ce)
+		watcherFunc: func(b []byte) {
+			assert.Equal(t, body, b)
 			wg.Done()
 		},
 		configHash: sha256.Sum256(nil),
@@ -110,7 +110,7 @@ func TestHandlesGetBodyError(t *testing.T) {
 		shutdown:        shutdown,
 		getConfigBytes:  getConfigBytes,
 		refreshInterval: time.Millisecond * 5,
-		watcherFunc: func(ce *confmap.ChangeEvent) {
+		watcherFunc: func([]byte) {
 			require.FailNow(t, "WatcherFunc should be called when config has not changed")
 		},
 		configHash: sha256.Sum256(nil),

@@ -52,7 +52,12 @@ trap 'podman rm -fv $container_name >/dev/null 2>&1 || true' EXIT
 podman build -t "$image_name" --arch "$translated_arch" -f "$SCRIPT_DIR/Dockerfile.test.$pkg_type" "$SCRIPT_DIR"
 podman rm -fv "$container_name" >/dev/null 2>&1 || true
 
+# test install
 podman run --name "$container_name" --arch "$translated_arch" -d "$image_name"
+
+# ensure that the system is up and running by checking if systemctl is running
+$container_exec systemctl is-system-running --quiet --wait
+
 podman_cp "$container_name" internal/testbed/linux-services/config.test.yaml /etc/dynatrace-otel-collector/config.yaml
 install_pkg "$container_name" "$PKG_PATH"
 

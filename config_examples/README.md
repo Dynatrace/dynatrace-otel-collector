@@ -22,6 +22,7 @@ Dynatrace distribution of the OpenTelemetry Collector.
 - [StatsD Receiver](statsd.yaml)
 - [Syslog Receiver](syslog.yaml)
 - [Zipkin Receiver](zipkin.yaml)
+- [Redaction Processor](redaction.yaml)
 
 ## Sending data to Dynatrace
 

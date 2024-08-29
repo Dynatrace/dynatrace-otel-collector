@@ -53,6 +53,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: build
     strategy:
+      fail-fast: false
       matrix:
         os: ["deb", "rpm"]
         arch: ["x86_64", "arm64"]

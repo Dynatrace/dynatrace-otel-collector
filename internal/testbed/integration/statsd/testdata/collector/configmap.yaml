@@ -35,10 +35,8 @@ data:
               - extract_count_metric(true) where type == METRIC_DATA_TYPE_HISTOGRAM
               # Get sum from the histogram. The new metric name will be <histogram_name>_sum
               - extract_sum_metric(true) where type == METRIC_DATA_TYPE_HISTOGRAM
-          - context: datapoint
-            statements:
               # convert the <histogram_name>_sum metrics to gauges.
-              - convert_sum_to_gauge() where IsMatch(metric.name, ".*_sum")
+              - convert_sum_to_gauge() where IsMatch(name, ".*_sum")
       filter:
         metrics:
           metric:

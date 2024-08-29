@@ -58,6 +58,7 @@ podman run --name "$container_name" --arch "$translated_arch" -d "$image_name"
 # ensure that the system is up and running by checking if systemctl is running
 sleep 5
 $container_exec systemctl is-system-running --wait
+$container_exec systemctl --failed
 
 podman_cp "$container_name" internal/testbed/linux-services/config.test.yaml /etc/dynatrace-otel-collector/config.yaml
 install_pkg "$container_name" "$PKG_PATH"

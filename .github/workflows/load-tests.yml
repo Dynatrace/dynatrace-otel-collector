@@ -25,7 +25,21 @@ jobs:
           check-latest: true
           cache: false
 
-      - name: Cache Go
+      - name: Cache tools
+        id: cache-tools
+        uses: actions/cache@v4
+        with:
+          path: .tools
+          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+
+      - name: Install tools
+        if: steps.cache-tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p .tools
+          touch .tools/*
+          make install-tools
+
+      - name: Cache Go modules
         id: go-cache
         timeout-minutes: 5
         uses: actions/cache@v4
@@ -34,13 +48,7 @@ jobs:
             ~/go/bin
             ~/go/pkg/mod
             ~/.cache/go-build
-          key: loadtest-go-${{ hashFiles('**/go.sum') }}
-
-      - name: Install Dependencies
-        run: make gomoddownload
-
-      - name: Install Tools
-        run: make install-tools
+          key: loadtest-mods-${{ runner.os }}-${{ hashFiles('internal/oteltestbedcol/go.sum') }}
 
       - run: make oteltestbedcol
 
@@ -53,8 +61,6 @@ jobs:
   loadtest:
     runs-on: ubuntu-22.04
     needs: [setup-environment]
-    strategy:
-      fail-fast: false
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -66,22 +72,19 @@ jobs:
           check-latest: true
           cache: false
 
-      - name: Cache Go
-        id: go-cache
-        timeout-minutes: 5
+      - name: Cache tools
+        id: cache-tools
         uses: actions/cache@v4
         with:
-          path: |
-            ~/go/bin
-            ~/go/pkg/mod
-            ~/.cache/go-build
-          key: loadtest-go-${{ hashFiles('**/go.sum') }}
+          path: .tools
+          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
 
-      - name: Install Dependencies
-        run: make gomoddownload
-  
-      - name: Install Tools
-        run: make install-tools
+      - name: Install tools
+        if: steps.cache-tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p .tools
+          touch .tools/*
+          make install-tools
 
       - name: Create results folder
         run: mkdir -p results && touch results/TESTRESULTS.md

@@ -36,7 +36,7 @@ const (
 	AuthHeaderKey        = "Authorization"
 	ApiTokenPrefixFormat = "Api-Token %s"
 
-	ConfigRefreshHeaderKey = "X-Otelcol-Config-Refresh"
+	FirstRequestHeaderKey  = "X-Otelcol-First-Request"
 	ConfigChangedHeaderKey = "X-Otelcol-Config-Changed"
 )
 
@@ -175,7 +175,7 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 		if err != nil {
 			return nil, err
 		}
-		req.Header.Add(ConfigRefreshHeaderKey, "false")
+		req.Header.Add(FirstRequestHeaderKey, "true")
 		req.Header.Add(ConfigChangedHeaderKey, "false")
 
 		body, err = p.getConfigBytes(client, req)
@@ -211,7 +211,7 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 				if err != nil {
 					return nil, err
 				}
-				req.Header.Add(ConfigRefreshHeaderKey, "true")
+				req.Header.Add(FirstRequestHeaderKey, "false")
 
 				req.Header.Add(ConfigChangedHeaderKey, configChanged)
 

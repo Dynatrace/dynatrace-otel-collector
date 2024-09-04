@@ -576,7 +576,7 @@ func TestFragmentConfiguration(t *testing.T) {
 	assert.NoError(t, ep.Shutdown(context.Background()))
 }
 
-func TestConfigRefreshHeader(t *testing.T) {
+func TestFirstRequestHeader(t *testing.T) {
 	count := &atomic.Int64{}
 
 	answerWithConfig := func(w http.ResponseWriter, req *http.Request) {
@@ -600,9 +600,9 @@ func TestConfigRefreshHeader(t *testing.T) {
 		}
 
 		if count.Load() == 0 {
-			assert.Equal(t, "false", req.Header.Get(ConfigRefreshHeaderKey))
+			assert.Equal(t, "true", req.Header.Get(FirstRequestHeaderKey))
 		} else {
-			assert.Equal(t, "true", req.Header.Get(ConfigRefreshHeaderKey))
+			assert.Equal(t, "false", req.Header.Get(FirstRequestHeaderKey))
 		}
 
 		count.Add(1)

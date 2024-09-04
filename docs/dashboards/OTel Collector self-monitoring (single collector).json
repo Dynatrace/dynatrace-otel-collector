@@ -121,7 +121,7 @@
         "44": {
             "type": "data",
             "title": "Span totals",
-            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_spans) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n| fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_spans) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_spans.filtered) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }    \n  | fieldsAdd name=\"filtered\", type=\"processor\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
+            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_spans) },\n  by: {receiver},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"accepted\", type=\"receiver\", component=receiver, value=arraySum(accepted)\n  | fieldsKeep name, type, component, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_spans) }, \n  by: {receiver},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"refused\", type=\"receiver\", component=receiver, value=arraySum(refused)\n  | fieldsKeep name, type, component, value\n] | append [\n  timeseries { filtered=sum(otelcol_processor_filter_spans.filtered) },\n  by: {filter},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }    \n  | fieldsAdd name=\"filtered\", type=\"processor\", component=filter, value=arraySum(filtered)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"sent\", type=\"exporter\", component=exporter, value=arraySum(sent)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans) }, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"failed\", type=\"exporter\", component=exporter, value=arraySum(failed)\n  | fieldsKeep name, type, component, value\n]\n| fields name, type, component, value=toLong(value)",
             "visualization": "table",
             "visualizationSettings": {
                 "thresholds": [],
@@ -177,7 +177,9 @@
                         "value": "value"
                     },
                     "displayedFields": [
-                        "name"
+                        "name",
+                        "type",
+                        "component"
                     ],
                     "colorMode": "color-palette",
                     "colorPalette": "blue"
@@ -485,7 +487,7 @@
         "79": {
             "type": "data",
             "title": "Metric datapoint totals",
-            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_metric_points) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_metric_points) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_datapoints.filtered) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }    \n  | fieldsAdd name=\"filtered\", type=\"processor\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
+            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_metric_points) }, \n  by: { receiver },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"accepted\", type=\"receiver\", component=receiver, value=arraySum(accepted)\n  | fieldsKeep name, type, component, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_metric_points) }, \n  by: { receiver },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"refused\", type=\"receiver\", component=receiver, value=arraySum(refused)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_datapoints.filtered) }, \n  by: {filter},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }    \n  | fieldsAdd name=\"filtered\", type=\"processor\", component=filter, value=arraySum(filtered)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"sent\", type=\"exporter\", component=exporter, value=arraySum(sent)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points) }, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"failed\", type=\"exporter\", component=exporter, value=arraySum(failed)\n  | fieldsKeep name, type, component, value\n]\n| fields name, type, component, value=toLong(value)",
             "visualization": "table",
             "visualizationSettings": {
                 "thresholds": [],
@@ -541,7 +543,9 @@
                         "value": "value"
                     },
                     "displayedFields": [
-                        "name"
+                        "name",
+                        "type",
+                        "component"
                     ],
                     "colorMode": "color-palette",
                     "colorPalette": "blue"
@@ -567,7 +571,7 @@
         "80": {
             "type": "data",
             "title": "Log record totals",
-            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_log_records) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"accepted\", type=\"receiver\", value=arraySum(accepted)\n| fieldsKeep name, type, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_log_records) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"refused\", type=\"receiver\", value=arraySum(refused)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_logs.filtered) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }    \n  | fieldsAdd name=\"filtered\", type=\"processor\", value=arraySum(filtered)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"sent\", type=\"exporter\", value=arraySum(sent)\n  | fieldsKeep name, type, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records) }, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"failed\", type=\"exporter\", value=arraySum(failed)\n  | fieldsKeep name, type, value\n]\n| fields name, type, value=toLong(value)",
+            "query": "timeseries { accepted=sum(otelcol_receiver_accepted_log_records) }, \n  by: { receiver },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"accepted\", type=\"receiver\", component=receiver, value=arraySum(accepted)\n  | fieldsKeep name, type, component, value\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_log_records) },\n  by: { receiver },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"refused\", type=\"receiver\", component=receiver, value=arraySum(refused)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {filtered=sum(otelcol_processor_filter_logs.filtered)},\n  by: {filter},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }    \n  | fieldsAdd name=\"filtered\", type=\"processor\", component=filter, value=arraySum(filtered)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"sent\", type=\"exporter\", component=exporter, value=arraySum(sent)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records) }, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"failed\", type=\"exporter\", component=exporter, value=arraySum(failed)\n  | fieldsKeep name, type, component, value\n]\n| fields name, type, component, value=toLong(value)",
             "visualization": "table",
             "visualizationSettings": {
                 "thresholds": [],
@@ -623,7 +627,9 @@
                         "value": "value"
                     },
                     "displayedFields": [
-                        "name"
+                        "name",
+                        "type",
+                        "component"
                     ],
                     "colorMode": "color-palette",
                     "colorPalette": "blue"
@@ -803,12 +809,12 @@
                             "http.status_code"
                         ]
                     },
+                    "truncationMode": "middle",
                     "bandChartSettings": {
                         "lower": "avg",
                         "upper": "max",
                         "time": "timeframe"
-                    },
-                    "truncationMode": "middle"
+                    }
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -914,12 +920,12 @@
                         ]
                     },
                     "hiddenLegendFields": [],
+                    "truncationMode": "middle",
                     "bandChartSettings": {
                         "lower": "avg",
                         "upper": "max",
                         "time": "timeframe"
-                    },
-                    "truncationMode": "middle"
+                    }
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -1491,12 +1497,12 @@
                         ],
                         "tooltipVariant": "single"
                     },
+                    "truncationMode": "middle",
                     "bandChartSettings": {
                         "lower": "avg",
                         "upper": "max",
                         "time": "timeframe"
-                    },
-                    "truncationMode": "middle"
+                    }
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -2695,12 +2701,12 @@
                         ],
                         "tooltipVariant": "single"
                     },
+                    "truncationMode": "middle",
                     "bandChartSettings": {
                         "lower": "avg",
                         "upper": "max",
                         "time": "timeframe"
-                    },
-                    "truncationMode": "middle"
+                    }
                 },
                 "singleValue": {
                     "showLabel": true,

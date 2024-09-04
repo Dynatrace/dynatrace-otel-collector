@@ -33,5 +33,5 @@ The following request headers are sent to give information about the current sta
 
 | Header | Description |
 |-----|-------------|
-| `X-Otelcol-Config-Refresh`  | Indicates whether this request is refreshing the config. Will be "false" for the first request and "true" for all subsequent requests. |
+| `X-Otelcol-First-Request`  | Indicates whether this request is the first request made by the Collector. Will be "true" for the first request and "false" for all subsequent requests. |
 | `X-Otelcol-Config-Changed` | Indicates whether the previous request resulted in a config change and therefore reloaded the Collector. Will be "true" if a Collector reload occurred, and "false" otherwise. |

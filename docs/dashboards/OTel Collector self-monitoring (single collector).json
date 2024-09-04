@@ -652,127 +652,6 @@
                 "enableSampling": false
             }
         },
-        "85": {
-            "type": "data",
-            "title": "Top 5 collectors taking most process time (last 10m)",
-            "query": "timeseries avg=avg(otelcol_process_cpu_seconds), \n    from: now()-10m, to: now(),\n    by: { service.name, service.instance.id },\n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd averageMillis=arrayAvg(avg) * 1000\n  | sort averageMillis desc\n  | fieldsKeep service.name, service.instance.id, averageMillis",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "xAxisScaling": "analyzedTimeframe",
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "hiddenLegendFields": [],
-                    "leftYAxisSettings": {
-                        "max": "auto"
-                    },
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "averageMillis",
-                        "categoryAxis": "service.name",
-                        "valueAxis": [
-                            "averageMillis"
-                        ],
-                        "tooltipVariant": "single"
-                    },
-                    "truncationMode": "middle"
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "averageMillis"
-                    },
-                    "displayedFields": [
-                        "service.name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": [
-                        {
-                            "valueAxis": "averageMillis",
-                            "rangeAxis": ""
-                        }
-                    ]
-                },
-                "unitsOverrides": [
-                    {
-                        "identifier": "avg(process_memory_rss)",
-                        "unitCategory": "data",
-                        "baseUnit": "byte",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1719570518103
-                    }
-                ]
-            },
-            "davis": {
-                "enabled": false,
-                "componentState": {
-                    "selectedAnalyzerName": "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer",
-                    "inputData": {
-                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
-                            "generalParameters": {
-                                "timeframe": {
-                                    "startTime": "2024-07-16T11:33:54.560Z",
-                                    "endTime": "2024-07-16T12:03:54.560Z"
-                                },
-                                "resolveDimensionalQueryData": true,
-                                "logVerbosity": "INFO"
-                            },
-                            "numberOfSignalFluctuations": 1,
-                            "alertCondition": "ABOVE",
-                            "alertOnMissingData": false,
-                            "violatingSamples": 3,
-                            "slidingWindow": 5,
-                            "dealertingSamples": 5,
-                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") AND in(service.instance.id, \"passthrough-collector\",\"passthrough-collector-b9f9334c4b-c4c39\",\"selfmon-collector\",\"selfmon-collector-f9554b9c4b-cvc43\",\"sink-collector\",\"sink-collector-554b9c67f9-c5c4c\") }\n| limit 20"
-                        }
-                    },
-                    "analyzerHints": {
-                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
-                            "unit": {
-                                "unitCategory": "data",
-                                "baseUnit": "byte"
-                            }
-                        }
-                    }
-                }
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
         "88": {
             "type": "data",
             "title": "Request size",
@@ -1549,249 +1428,6 @@
                 "enableSampling": false
             },
             "visualization": "lineChart"
-        },
-        "111": {
-            "type": "data",
-            "title": "Active Collectors (last 24h)",
-            "query": "// This query is a tricky one and there are a few things that need to be considered.\n// First, the interval needs to be set to 1m for this query. That is required because otherwise the `end()` and `start()` methods will return the start and end timestamp of the interval for which data is rolled up.\n// That means: if the interval is 1 minute, start() and end() values will be 1m apart.\n// Also means: if the interval is 6 hours, start() and end() values will be 6h apart. \n// The query works by finding the latest bucket that has data in it and taking the start time from it.\n// That means: if the interval is higher than 1m, we cant tell how long ago the data was recorded. \n// E.g., if the interval is 6h, we know that there was data one 6h bucket, but there is no way to tell *when* in the 6h timeframe the data was recorded.\n// With 1m intervals, we can tell that somewhere in that minute bucket, data was recorded.\n// In order to get 1m resolution, this query looks at the last 24h only and forces 1m buckets.\n\n// add the interval start times by using start(). Also fix the timeframe and interval.\ntimeseries \n  {\n    count=count(otelcol_process_uptime), \n    intervalStart=start()\n  }, \n  by: { service.name, service.instance.id, k8s.pod.name }, \n  filter: { in(service.name, $CollectorServiceNames) },\n  from:-24h, to:now(), \n  interval:1m\n| fieldsAdd countIsNull=isNull(count[])                                              // find which buckets have values. null means no value has been recorded into that bucket.\n| fieldsAdd lastNonNullIdx = arrayLastIndexOf(countIsNull, false)                    // find the index of the last bucket that is not null, meaning the last bucket that has a value\n| fieldsAdd startTimesAndIdx=record(index=iIndex(), startTime=intervalStart[])       // create a record that contains the interval start times and and index\n| expand startTimesAndIdx                                                            // expand the records to be able to filter\n| filter startTimesAndIdx[index]==lastNonNullIdx                                     // keep only the interval start time for the last bucket that has a value\n| fieldsAdd lastWrittenAfter = startTimesAndIdx[startTime]                        // extract the start time and add it as a column to the result\n| fieldsAdd `Last Seen`=now()-lastWrittenAfter                                 // calculate how long ago the collector was last seen.\n| sort `Last Seen` asc\n| fieldsKeep service.name, service.instance.id, `Last Seen`\n| limit 100\n",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "xAxisScaling": "analyzedTimeframe",
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "hiddenLegendFields": [],
-                    "leftYAxisSettings": {
-                        "max": 2
-                    },
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "Last Seen",
-                        "categoryAxis": "service.name",
-                        "valueAxis": [
-                            "Last Seen"
-                        ],
-                        "tooltipVariant": "single"
-                    },
-                    "truncationMode": "middle"
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {
-                        "[\"service.instance.id\"]": 290.5
-                    },
-                    "colorThresholdTarget": "background",
-                    "sortBy": {
-                        "columnId": "[\"lastWrittenWithin\"]",
-                        "direction": "ascending"
-                    }
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "Last Seen"
-                    },
-                    "displayedFields": [
-                        "service.name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": [
-                        {
-                            "valueAxis": "Last Seen",
-                            "rangeAxis": ""
-                        }
-                    ]
-                }
-            },
-            "davis": {},
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "116": {
-            "type": "data",
-            "title": "Top 5 collectors using most memory (last 10m)",
-            "query": "timeseries avg=avg(otelcol_process_memory_rss), \n    from: now()-10m, to: now(),\n    by: { service.name, service.instance.id },\n    filter: { in(service.name, $CollectorServiceNames) }\n  | fieldsAdd averageMb=arrayAvg(avg)/1e6\n  | sort averageMb desc\n  | fieldsKeep service.name, service.instance.id, averageMb",
-            "visualization": "table",
-            "visualizationSettings": {
-                "thresholds": [
-                    {
-                        "id": 1,
-                        "field": "service.instance.id",
-                        "title": "",
-                        "isEnabled": true,
-                        "rules": [
-                            {
-                                "id": 0,
-                                "color": {
-                                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6863)"
-                                },
-                                "comparator": "=",
-                                "label": ""
-                            },
-                            {
-                                "id": 1,
-                                "color": {
-                                    "Default": "var(--dt-colors-charts-status-warning-default, #eca440)"
-                                },
-                                "comparator": "=",
-                                "label": ""
-                            },
-                            {
-                                "id": 2,
-                                "color": {
-                                    "Default": "var(--dt-colors-charts-status-critical-default, #c4233b)"
-                                },
-                                "comparator": "=",
-                                "label": ""
-                            }
-                        ]
-                    }
-                ],
-                "chartSettings": {
-                    "xAxisScaling": "analyzedTimeframe",
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "hiddenLegendFields": [],
-                    "leftYAxisSettings": {
-                        "max": "auto"
-                    },
-                    "categoricalBarChartSettings": {
-                        "categoryAxisLabel": "service.name",
-                        "valueAxisLabel": "averageMb",
-                        "categoryAxis": "service.name",
-                        "valueAxis": [
-                            "averageMb"
-                        ],
-                        "tooltipVariant": "single"
-                    },
-                    "truncationMode": "middle"
-                },
-                "singleValue": {
-                    "showLabel": true,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "service.name",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {},
-                    "colorThresholdTarget": "value",
-                    "linewrapEnabled": false,
-                    "monospacedFontEnabled": false,
-                    "monospacedFontColumns": [],
-                    "columnTypeOverrides": []
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": "auto",
-                    "dataMappings": {
-                        "value": "averageMb"
-                    },
-                    "displayedFields": [
-                        "service.name"
-                    ],
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue"
-                },
-                "histogram": {
-                    "dataMappings": [
-                        {
-                            "valueAxis": "averageMb",
-                            "rangeAxis": ""
-                        }
-                    ]
-                },
-                "unitsOverrides": [
-                    {
-                        "identifier": "avg(process_memory_rss)",
-                        "unitCategory": "data",
-                        "baseUnit": "byte",
-                        "displayUnit": null,
-                        "decimals": 2,
-                        "suffix": "",
-                        "delimiter": false,
-                        "added": 1719570518103
-                    }
-                ]
-            },
-            "davis": {
-                "enabled": false,
-                "componentState": {
-                    "selectedAnalyzerName": "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer",
-                    "inputData": {
-                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
-                            "generalParameters": {
-                                "timeframe": {
-                                    "startTime": "2024-07-16T11:33:54.560Z",
-                                    "endTime": "2024-07-16T12:03:54.560Z"
-                                },
-                                "resolveDimensionalQueryData": true,
-                                "logVerbosity": "INFO"
-                            },
-                            "numberOfSignalFluctuations": 1,
-                            "alertCondition": "ABOVE",
-                            "alertOnMissingData": false,
-                            "violatingSamples": 3,
-                            "slidingWindow": 5,
-                            "dealertingSamples": 5,
-                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") AND in(service.instance.id, \"passthrough-collector\",\"passthrough-collector-b9f9334c4b-c4c39\",\"selfmon-collector\",\"selfmon-collector-f9554b9c4b-cvc43\",\"sink-collector\",\"sink-collector-554b9c67f9-c5c4c\") }\n| limit 20"
-                        }
-                    },
-                    "analyzerHints": {
-                        "dt.statistics.ui.anomaly_detection.AutoAdaptiveAnomalyDetectionAnalyzer": {
-                            "unit": {
-                                "unitCategory": "data",
-                                "baseUnit": "byte"
-                            }
-                        }
-                    }
-                }
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
         },
         "117": {
             "type": "markdown",
@@ -2847,89 +2483,78 @@
             "type": "markdown",
             "title": "",
             "content": "### Network traffic"
-        },
-        "132": {
-            "type": "markdown",
-            "title": "",
-            "content": "### OTel collector ($ServiceInstanceId)"
         }
     },
     "layouts": {
         "11": {
             "x": 0,
-            "y": 32,
+            "y": 28,
             "w": 24,
             "h": 1
         },
         "39": {
             "x": 0,
-            "y": 17,
+            "y": 13,
             "w": 8,
             "h": 3
         },
         "42": {
             "x": 0,
-            "y": 4,
-            "w": 24,
+            "y": 0,
+            "w": 16,
             "h": 1
         },
         "44": {
             "x": 0,
-            "y": 11,
+            "y": 7,
             "w": 8,
             "h": 4
         },
         "75": {
             "x": 0,
-            "y": 5,
+            "y": 1,
             "w": 8,
             "h": 6
         },
         "76": {
             "x": 8,
-            "y": 5,
+            "y": 1,
             "w": 8,
             "h": 6
         },
         "77": {
             "x": 16,
-            "y": 5,
+            "y": 1,
             "w": 8,
             "h": 6
         },
         "79": {
             "x": 8,
-            "y": 11,
+            "y": 7,
             "w": 8,
             "h": 4
         },
         "80": {
             "x": 16,
-            "y": 11,
+            "y": 7,
             "w": 8,
             "h": 4
         },
-        "85": {
-            "x": 16,
-            "y": 1,
-            "w": 8,
-            "h": 3
-        },
         "88": {
             "x": 8,
-            "y": 17,
+            "y": 13,
             "w": 8,
             "h": 3
         },
         "89": {
             "x": 16,
-            "y": 17,
+            "y": 13,
             "w": 8,
             "h": 3
         },
         "90": {
             "x": 0,
-            "y": 16,
+            "y": 12,
             "w": 24,
             "h": 1
         },
@@ -2947,152 +2572,134 @@
         },
         "101": {
             "x": 0,
-            "y": 33,
+            "y": 29,
             "w": 12,
             "h": 6
         },
         "102": {
             "x": 12,
-            "y": 33,
+            "y": 29,
             "w": 12,
             "h": 6
         },
         "105": {
             "x": 0,
-            "y": 47,
+            "y": 43,
             "w": 24,
             "h": 1
         },
         "106": {
             "x": 0,
-            "y": 48,
+            "y": 44,
             "w": 12,
             "h": 6
         },
         "107": {
             "x": 12,
-            "y": 48,
+            "y": 44,
             "w": 12,
             "h": 6
         },
         "108": {
             "x": 0,
-            "y": 39,
+            "y": 35,
             "w": 24,
             "h": 2
         },
         "109": {
             "x": 0,
-            "y": 41,
+            "y": 37,
             "w": 8,
             "h": 6
         },
-        "111": {
-            "x": 0,
-            "y": 1,
-            "w": 8,
-            "h": 3
-        },
-        "116": {
-            "x": 8,
-            "y": 1,
-            "w": 8,
-            "h": 3
-        },
         "117": {
             "x": 0,
-            "y": 20,
+            "y": 16,
             "w": 24,
             "h": 1
         },
         "118": {
             "x": 0,
-            "y": 21,
+            "y": 17,
             "w": 8,
             "h": 3
         },
         "119": {
             "x": 8,
-            "y": 21,
+            "y": 17,
             "w": 8,
             "h": 3
         },
         "120": {
             "x": 16,
-            "y": 21,
+            "y": 17,
             "w": 8,
             "h": 3
         },
         "121": {
             "x": 0,
-            "y": 24,
+            "y": 20,
             "w": 24,
             "h": 1
         },
         "122": {
             "x": 0,
-            "y": 25,
+            "y": 21,
             "w": 8,
             "h": 3
         },
         "123": {
             "x": 8,
-            "y": 25,
+            "y": 21,
             "w": 8,
             "h": 3
         },
         "124": {
             "x": 16,
-            "y": 25,
+            "y": 21,
             "w": 8,
             "h": 3
         },
         "125": {
             "x": 0,
-            "y": 28,
+            "y": 24,
             "w": 24,
             "h": 1
         },
         "126": {
             "x": 0,
-            "y": 29,
+            "y": 25,
             "w": 8,
             "h": 3
         },
         "127": {
             "x": 16,
-            "y": 29,
+            "y": 25,
             "w": 8,
             "h": 3
         },
         "128": {
             "x": 8,
-            "y": 29,
+            "y": 25,
             "w": 8,
             "h": 3
         },
         "129": {
             "x": 8,
-            "y": 41,
+            "y": 37,
             "w": 8,
             "h": 6
         },
         "130": {
             "x": 16,
-            "y": 41,
+            "y": 37,
             "w": 8,
             "h": 6
         },
         "131": {
             "x": 0,
-            "y": 15,
+            "y": 11,
             "w": 24,
-            "h": 1
-        },
-        "132": {
-            "x": 0,
-            "y": 0,
-            "w": 16,
             "h": 1
         }
     },

@@ -21,7 +21,35 @@ v0.108.1:
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 </br>
--
+
+### 🛑 Breaking changes 🛑
+
+- `all`: Added support for go1.23, bumped the minimum version to 1.22 (open-telemetry/opentelemetry-collector-contrib#34658)
+- `transformprocessor`: Promote processor.transform.ConvertBetweenSumAndGaugeMetricContext feature flag from alpha to beta (open-telemetry/opentelemetry-collector-contrib#34567)
+
+### 💡 Enhancements 💡
+
+- `deltatocumulative`: Promote to `alpha` stability (open-telemetry/opentelemetry-collector-contrib#34747)
+  promotes the deltatocumulative processor to alpha stability, as most features are now implemented and ready for wider testing.
+- `deltatocumulative`: explicit-bounds histograms (open-telemetry/opentelemetry-collector-contrib#30705)
+  implements aggregation of explicit-bounds (traditional) histograms.
+- `filelogreceiver`: If acquire_fs_lock is true, attempt to acquire a shared lock before reading a file. (open-telemetry/opentelemetry-collector-contrib#34801)
+  Unix only. If a lock cannot be acquired then the file will be ignored until the next poll cycle.
+- `prometheusreceiver`: Ensure Target Allocator's confighttp is used in the receiver's service discovery (open-telemetry/opentelemetry-collector-contrib#33370)
+- `metricstransformprocessor`: Add scaling exponential histogram support (open-telemetry/opentelemetry-collector-contrib#29803)
+- `pkg/ottl`: Introduce `UserAgent` converter to parse UserAgent strings (open-telemetry/opentelemetry-collector-contrib#32434)
+
+### 🧰 Bug fixes 🧰
+
+- `tailsamplingprocessor`: Update the `policy` value in metrics dimension value to be unique across multiple tail sampling components with the same policy name. (open-telemetry/opentelemetry-collector-contrib#34192)
+  This change ensures that the `policy` value in the metrics exported by the tail sampling processor is unique across multiple tail sampling processors with the same policy name.
+- `prometheusreceiver`: Group scraped metrics into resources created from `job` and `instance` label pairs (open-telemetry/opentelemetry-collector-contrib#34237)
+  The receiver will now create a resource for each distinct job/instance label combination.
+  In addition to the label/instance pairs detected from the scraped metrics, a resource representing the overall
+  scrape configuration will be created. This additional resource will contain the scrape metrics, such as the number of scraped metrics, the scrape duration, etc.
+
+- `tailsamplingprocessor`: Fix the behavior for numeric tag filters with `inverse_match` set to `true`. (open-telemetry/opentelemetry-collector-contrib#34296)
+- `pkg/stanza`: fix nil value conversion (open-telemetry/opentelemetry-collector-contrib#34672)
 
 </details>
 

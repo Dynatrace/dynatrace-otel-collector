@@ -43,6 +43,9 @@ receivers:
         endpoint: localhost:4318
 
 processors:
+  redaction:
+    allow_all_keys: true
+    summary: info
   attributes:
     actions:
       - key: db.table

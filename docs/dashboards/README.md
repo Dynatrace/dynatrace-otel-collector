@@ -85,6 +85,13 @@ Of course, you can also add the configuration directly to your existing collecto
 
 ## More screenshots
 
-![A screenshot of a dashboard showing total numbers for incoming and outgoing telemetry for OpenTelemetry collectors](img/dashboard_overview_2.png)
+### Dashboard containing all collectors
 
+![A screenshot of a dashboard showing total numbers for incoming and outgoing telemetry for OpenTelemetry collectors](img/dashboard_overview_2.png)
 ![A screenshot of a dashboard showing memory and CPU usage metrics for OpenTelemetry collectors](img/dashboard_overview_3.png)
+
+### Single-collector dashboard
+
+![A screenshot of the single-collector dashboard, showing telemetry passing through the collector.](img/dashboard_single_1.png)
+![A screenshot of the single-collector dashboard, showing metrics about incoming HTTP and RPC requests.](img/dashboard_single_2.png)
+![A screenshot of the single-collector dashboard, showing memory, CPU, and batch processor metrics.](img/dashboard_single_3.png)

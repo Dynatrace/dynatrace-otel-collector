@@ -215,9 +215,9 @@ func (p *provider) Retrieve(ctx context.Context, uri string, watcherFunc confmap
 
 				req.Header.Add(ConfigChangedHeaderKey, configChanged)
 
-				// The watcher will only ever make a single request where the config
-				// changed changed during the previous request, since after the config
-				// changes, the watcher is recreated.
+				// The watcher will only ever make a single request where the
+				// config was changed during the previous request, since after
+				// the config changes, the watcher is recreated.
 				if configChanged == "true" {
 					configChanged = "false"
 				}

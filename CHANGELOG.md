@@ -6,14 +6,17 @@
 
 ## v0.13.0
 
-This release includes version XX.YY.ZZ of the upstream Collector components.
+This release includes version 0.108.0/0.108.1 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
-vXX.YY.ZZ:
+v0.108.0:
 
-- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/vXX.YY.ZZ>
-- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/vXX.YY.ZZ>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.108.0>
+
+v0.108.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.108.1>
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>

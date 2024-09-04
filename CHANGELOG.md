@@ -24,11 +24,25 @@ v0.108.1:
 
 ### 🛑 Breaking changes 🛑
 
+- `all`: Added support for go1.23, bumped the minimum version to 1.22 (open-telemetry/opentelemetry-collector#10869)
+- `otelcol`: Remove deprecated `ConfmapProvider` interface. (open-telemetry/opentelemetry-collector#10934)
+- `confmap`: Mark `confmap.strictlyTypedInput` as stable (open-telemetry/opentelemetry-collector#10552)
 - `all`: Added support for go1.23, bumped the minimum version to 1.22 (open-telemetry/opentelemetry-collector-contrib#34658)
 - `transformprocessor`: Promote processor.transform.ConvertBetweenSumAndGaugeMetricContext feature flag from alpha to beta (open-telemetry/opentelemetry-collector-contrib#34567)
 
 ### 💡 Enhancements 💡
 
+- `exporter/otlp`: Add batching option to otlp exporter (open-telemetry/opentelemetry-collector#8122)
+- `builder`: Add a --skip-new-go-module flag to skip creating a module in the output directory. (open-telemetry/opentelemetry-collector#9252)
+- `component`: Add `TelemetrySettings.LeveledMeterProvider` func to replace MetricsLevel in the near future (open-telemetry/opentelemetry-collector#10931)
+- `mdatagen`: Add `LeveledMeter` method to mdatagen (open-telemetry/opentelemetry-collector#10933)
+- `service`: Adds `level` configuration option to `service::telemetry::trace` to allow users to disable the default TracerProvider (open-telemetry/opentelemetry-collector#10892)
+  This replaces the feature gate `service.noopTracerProvider` introduced in v0.107.0
+- `componentstatus`: Add new Reporter interface to define how to report a status via a `component.Host` implementation (open-telemetry/opentelemetry-collector#10852)
+- `mdatagen`: support using a different github project in mdatagen README issues list (open-telemetry/opentelemetry-collector#10484)
+- `mdatagen`: Updates mdatagen's usage to output a complete command line example, including the metadata.yaml file. (open-telemetry/opentelemetry-collector#10886)
+- `extension`: Add ModuleInfo to extension.Settings to allow extensions to access component go module information. (open-telemetry/opentelemetry-collector#10876)
+- `confmap`: Mark module as stable (open-telemetry/opentelemetry-collector#9379)
 - `deltatocumulative`: Promote to `alpha` stability (open-telemetry/opentelemetry-collector-contrib#34747)
   promotes the deltatocumulative processor to alpha stability, as most features are now implemented and ready for wider testing.
 - `deltatocumulative`: explicit-bounds histograms (open-telemetry/opentelemetry-collector-contrib#30705)
@@ -41,6 +55,13 @@ v0.108.1:
 
 ### 🧰 Bug fixes 🧰
 
+- `batchprocessor`: Update units for internal telemetry (open-telemetry/opentelemetry-collector#10652)
+- `confmap`: Fix bug where an unset env var used with a non-string field resulted in a panic (open-telemetry/opentelemetry-collector#10950)
+- `service`: Fix memory leaks during service package shutdown (open-telemetry/opentelemetry-collector#9165)
+- `mdatagen`: Update generated telemetry template to only include context import when there are async metrics. (open-telemetry/opentelemetry-collector#10883)
+- `mdatagen`: Fixed bug in which setting `SkipLifecycle` & `SkipShutdown` to true would result in a generated file with an unused import `confmaptest` (open-telemetry/opentelemetry-collector#10866)
+- `confmap`: Use string representation for field types where all primitive types are strings. (open-telemetry/opentelemetry-collector#10937)
+- `otelcol`: Preserve internal representation when unmarshaling component configs (open-telemetry/opentelemetry-collector#10552)
 - `tailsamplingprocessor`: Update the `policy` value in metrics dimension value to be unique across multiple tail sampling components with the same policy name. (open-telemetry/opentelemetry-collector-contrib#34192)
   This change ensures that the `policy` value in the metrics exported by the tail sampling processor is unique across multiple tail sampling processors with the same policy name.
 - `prometheusreceiver`: Group scraped metrics into resources created from `job` and `instance` label pairs (open-telemetry/opentelemetry-collector-contrib#34237)

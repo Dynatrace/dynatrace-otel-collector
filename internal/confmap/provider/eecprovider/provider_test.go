@@ -402,6 +402,76 @@ func TestReloadIfConfigChanges(t *testing.T) {
 	assert.NoError(t, ep.Shutdown(context.Background()))
 }
 
+func TestCachesConfigOnReload(t *testing.T) {
+	count := &atomic.Uint32{}
+	failOnRequest := &atomic.Bool{}
+	updatedConfigFile := "./testdata/otel-config-updated.yaml"
+	answerWithCount := func(w http.ResponseWriter, _ *http.Request) {
+		configFile := "./testdata/otel-config.yaml"
+		if count.Load() > 0 {
+			configFile = updatedConfigFile
+		}
+		if failOnRequest.Load() {
+			assert.Fail(t, "Should only make a single watch request before shutting down")
+		}
+		f, err := os.ReadFile(configFile)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			_, innerErr := w.Write([]byte("Cannot find the config file"))
+			if innerErr != nil {
+				fmt.Println("Write failed: ", innerErr)
+			}
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write(f)
+		if err != nil {
+			fmt.Println("Write failed: ", err)
+		}
+		count.Add(1)
+	}
+	called := &atomic.Bool{}
+	watcherFunc := func(_ *confmap.ChangeEvent) {
+		if called.Load() {
+			require.FailNow(t, "Reloaded more than once")
+		}
+		called.Store(true)
+	}
+	ep := newEECProvider(confmaptest.NewNopProviderSettings())
+	ts := httptest.NewServer(http.HandlerFunc(answerWithCount))
+	defer ts.Close()
+	uri, err := url.Parse(makeInsecure(t, ts.URL))
+	require.NoError(t, err)
+	params, err := url.ParseQuery(uri.Fragment)
+	require.NoError(t, err)
+	params.Set(RefreshInterval, "20ms")
+	uri.Fragment = params.Encode()
+
+	_, err = ep.Retrieve(context.Background(), uri.String(), watcherFunc)
+	require.NoError(t, err)
+
+	require.Eventually(t, func() bool {
+		return called.Load()
+	}, time.Second*3, time.Millisecond*5)
+	failOnRequest.Store(true)
+
+	cfg, err := ep.Retrieve(context.Background(), uri.String(), watcherFunc)
+	require.NoError(t, err)
+	conf, err := cfg.AsConf()
+	require.NoError(t, err)
+
+	f, err := os.ReadFile(updatedConfigFile)
+	require.NoError(t, err)
+	cfg2, err := NewRetrievedFromYAML(f)
+	require.NoError(t, err)
+	conf2, err := cfg2.AsConf()
+	require.NoError(t, err)
+
+	require.Equal(t, conf.ToStringMap(), conf2.ToStringMap())
+
+	require.NoError(t, ep.Shutdown(context.Background()))
+}
+
 func TestContinuesRetryingOnRefreshError(t *testing.T) {
 	count := &atomic.Uint32{}
 	answerWithCount := func(w http.ResponseWriter, _ *http.Request) {
@@ -480,7 +550,7 @@ func TestFragmentConfiguration(t *testing.T) {
 			fmt.Println("Write failed: ", err)
 		}
 
-		require.Equal(t, "Api-Token " + token, req.Header.Get("Authorization"))
+		require.Equal(t, "Api-Token "+token, req.Header.Get("Authorization"))
 
 		wg.Done()
 	}
@@ -504,6 +574,121 @@ func TestFragmentConfiguration(t *testing.T) {
 	require.NoError(t, err)
 	wg.Wait()
 	assert.NoError(t, ep.Shutdown(context.Background()))
+}
+
+func TestFirstRequestHeader(t *testing.T) {
+	count := &atomic.Int64{}
+
+	answerWithConfig := func(w http.ResponseWriter, req *http.Request) {
+		configFile := "./testdata/otel-config.yaml"
+		if count.Load()%2 == 1 {
+			configFile = "./testdata/otel-config-updated.yaml"
+		}
+		f, err := os.ReadFile(configFile)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			_, innerErr := w.Write([]byte("Cannot find the config file"))
+			if innerErr != nil {
+				fmt.Println("Write failed: ", innerErr)
+			}
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write(f)
+		if err != nil {
+			fmt.Println("Write failed: ", err)
+		}
+
+		if count.Load() == 0 {
+			assert.Equal(t, "true", req.Header.Get(FirstRequestHeaderKey))
+		} else {
+			assert.Equal(t, "false", req.Header.Get(FirstRequestHeaderKey))
+		}
+
+		count.Add(1)
+	}
+	watcherFunc := func(_ *confmap.ChangeEvent) {}
+	ep := newEECProvider(confmaptest.NewNopProviderSettings())
+	ts := httptest.NewServer(http.HandlerFunc(answerWithConfig))
+	defer ts.Close()
+	uri, err := url.Parse(makeInsecure(t, ts.URL))
+	require.NoError(t, err)
+	params, err := url.ParseQuery(uri.Fragment)
+	require.NoError(t, err)
+	params.Set(RefreshInterval, "5ms")
+	uri.Fragment = params.Encode()
+
+	for i := 0; i < 5; i++ {
+		_, err = ep.Retrieve(context.Background(), uri.String(), watcherFunc)
+		require.NoError(t, err)
+
+		require.Eventually(t, func() bool {
+			return count.Load() > int64(i)
+		}, time.Second*3, time.Millisecond*20)
+	}
+
+	require.NoError(t, ep.Shutdown(context.Background()))
+}
+
+func TestConfigChangedHeader(t *testing.T) {
+	count := &atomic.Int64{}
+
+	answerWithConfig := func(w http.ResponseWriter, req *http.Request) {
+		configFile := "./testdata/otel-config.yaml"
+		// Change the config every third request
+		if count.Load()%4 == 1 {
+			configFile = "./testdata/otel-config-updated.yaml"
+		}
+		f, err := os.ReadFile(configFile)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			_, innerErr := w.Write([]byte("Cannot find the config file"))
+			if innerErr != nil {
+				fmt.Println("Write failed: ", innerErr)
+			}
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write(f)
+		if err != nil {
+			fmt.Println("Write failed: ", err)
+		}
+
+		// The header should only be set to true on the request after the config changed
+		if count.Load() == 1 || count.Load()%4 == 2 || count.Load()%4 == 3 {
+			assert.Equal(t, "true", req.Header.Get(ConfigChangedHeaderKey))
+		} else {
+			assert.Equal(t, "false", req.Header.Get(ConfigChangedHeaderKey))
+		}
+
+		count.Add(1)
+	}
+	done := make(chan struct{}, 1)
+	watcherFunc := func(_ *confmap.ChangeEvent) {
+		done <- struct{}{}
+	}
+	ep := newEECProvider(confmaptest.NewNopProviderSettings())
+	ts := httptest.NewServer(http.HandlerFunc(answerWithConfig))
+	defer ts.Close()
+	uri, err := url.Parse(makeInsecure(t, ts.URL))
+	require.NoError(t, err)
+	params, err := url.ParseQuery(uri.Fragment)
+	require.NoError(t, err)
+	params.Set(RefreshInterval, "20ms")
+	uri.Fragment = params.Encode()
+
+	for i := 0; i < 5; i++ {
+		_, err = ep.Retrieve(context.Background(), uri.String(), watcherFunc)
+		require.NoError(t, err)
+
+		select {
+		case <-done:
+		case <-time.After(2 * time.Second):
+			t.Fatal("Timeout waiting for config reload")
+		}
+	}
+
+	require.NoError(t, ep.Shutdown(context.Background()))
 }
 
 func makeInsecure(t *testing.T, URL string) string {

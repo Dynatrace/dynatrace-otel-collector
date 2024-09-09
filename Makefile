@@ -82,7 +82,7 @@ $(CP_FILES_DEST): $(MAIN)
 
 .PHONY: gotidy
 gotidy:
-	find . -iname go.mod -exec bash -c "cd \$$(dirname {}) && go mod tidy" \;
+	$(MAKE) --no-print-directory for-all-target TARGET="modtidy"
 
 FILENAME?=$(shell git branch --show-current)
 .PHONY: chlog-new

@@ -111,33 +111,40 @@ jobs:
           name: test-result-archive-load-tests
           path: ./*.tar
 
-      - name: copy Benchmarks
-        run: cp testbed/tests/results/benchmarks.json internal/testbed/tests/results/load-tests.json
+      - name: Copy Benchmarks
+        run: cp internal/testbed/load/tests/results/benchmarks.json internal/testbed/load/tests/results/load-tests.json
 
       - name: Upload benchmarks.json
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-results-load-tests
-          path: testbed/tests/results/load-tests.json
+          path: internal/testbed/load/tests/results/load-tests.json
 
-  # update-benchmarks:
-  #   runs-on: ubuntu-latest
-  #   needs: [loadtest]
-  #   if: github.event_name != 'pull_request'
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         pattern: benchmark-results-*
-  #         merge-multiple: true
-  #         path: results
-  #     - run: jq -s 'map(.[])' results/*.json > output.json
-  #     - uses: benchmark-action/github-action-benchmark@v1
-  #       with:
-  #         tool: "customSmallerIsBetter"
-  #         output-file-path: output.json
-  #         gh-pages-branch: benchmarks
-  #         max-items-in-chart: 100
-  #         github-token: ${{ secrets.GITHUB_TOKEN }}
-  #         benchmark-data-dir-path: "docs/benchmarks/loadtests"
-  #         auto-push: true
+  update-benchmarks:
+    runs-on: ubuntu-22.04
+    needs: [loadtest]
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Download Benchmark results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: benchmark-results-*
+          merge-multiple: true
+          path: results
+
+      - name: Normalize results
+        run: jq -s 'map(.[])' results/*.json > output.json
+
+      - name: Benchmark
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: "customSmallerIsBetter"
+          output-file-path: output.json
+          gh-pages-branch: benchmarks
+          max-items-in-chart: 100
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          benchmark-data-dir-path: "docs/benchmarks/loadtests"
+          auto-push: true

@@ -1,0 +1,112 @@
+name: load-tests
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+    paths-ignore:
+      - "**/README.md"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  setup-environment:
+    timeout-minutes: 30
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "~1.22.6"
+          check-latest: true
+          cache: false
+
+      - name: Cache Go
+        id: go-cache
+        timeout-minutes: 5
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/bin
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: loadtest-go-${{ hashFiles('**/go.sum') }}
+
+      - name: Install Dependencies
+        run: make gomoddownload
+
+      - name: Install Tools
+        run: make install-tools
+
+      - run: make oteltestbedcol
+
+      - name: Upload Testbed Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: testbed-binaries
+          path: ./bin/*
+
+  loadtest:
+    runs-on: ubuntu-22.04
+    needs: [setup-environment]
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "~1.22.6"
+          check-latest: true
+          cache: false
+
+      - name: Cache Go
+        id: go-cache
+        timeout-minutes: 5
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/bin
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: loadtest-go-${{ hashFiles('**/go.sum') }}
+
+      - name: Install Dependencies
+        run: make gomoddownload
+  
+      - name: Install Tools
+        run: make install-tools
+
+      - name: Cerate results folder
+        run: mkdir -p results && touch results/TESTRESULTS.md
+
+      - name: Download Testbed Binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: testbed-binaries
+          path: bin/
+
+      - name: Make Testbet Binaries executable
+        run: chmod +x bin/*
+
+      - name: Loadtest
+        run: make run-load-tests
+
+      - name: Create Test Result Archive
+        if: ${{ failure() || success() }}
+        continue-on-error: true
+        run: tar -cvf test_results_load-tests.tar internal/testbed/load/tests/results
+
+      - name: Upload Test Results
+        if: ${{ failure() || success() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-result-archive-load-tests
+          path: ./*.tar

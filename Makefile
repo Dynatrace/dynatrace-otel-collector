@@ -100,3 +100,51 @@ chlog-preview: $(CHLOGGEN)
 .PHONY: chlog-update
 chlog-update: $(CHLOGGEN)
 	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --version $(VERSION)
+
+SRC_ROOT := $(shell git rev-parse --show-toplevel)
+
+GOOS=$(shell go env GOOS)
+GOARCH=$(shell go env GOARCH)
+ifeq ($(GOOS),windows)
+	EXTENSION := .exe
+endif
+
+.PHONY: oteltestbedcol
+oteltestbedcol:
+	cd ./internal/oteltestbedcol && GO111MODULE=on CGO_ENABLED=0 go build -trimpath -o ../../bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) .
+
+GOJUNIT = .tools/go-junit-report
+
+.PHONY: run-load-tests
+run-load-tests:
+	mkdir -p ./internal/testbed/bin/
+	cp -a ./bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) ./internal/testbed/bin/
+	PWD=$(pwd)
+	GOJUNIT="$(PWD)/$(GOJUNIT)" $(MAKE) --no-print-directory -C internal/testbed/load run-tests
+
+TOOLS_MOD_DIR    := ./internal/tools
+TOOLS_MOD_REGEX  := "\s+_\s+\".*\""
+TOOLS_PKG_NAMES  := $(shell grep -E $(TOOLS_MOD_REGEX) < $(TOOLS_MOD_DIR)/tools.go | tr -d " _\"")
+TOOLS_BIN_NAMES  := $(addprefix .tools/, $(notdir $(TOOLS_PKG_NAMES)))
+
+.PHONY: install-tools
+install-tools: $(TOOLS_BIN_NAMES)
+
+FIND_MOD_ARGS=-type f -name "go.mod"
+TO_MOD_DIR=dirname {} \; | sort | grep -E '^./'
+INTERNAL_MODS := $(shell find ./internal/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
+ALL_MODS := $(INTERNAL_MODS)
+
+# Define a delegation target for each module
+.PHONY: $(ALL_MODS)
+$(ALL_MODS):
+	@echo "Running target '$(TARGET)' in module '$@' as part of group '$(GROUP)'"
+	$(MAKE) --no-print-directory -C $@ $(TARGET)
+
+# Trigger each module's delegation target
+.PHONY: for-all-target
+for-all-target: $(ALL_MODS)
+
+.PHONY: gomoddownload
+gomoddownload:
+	$(MAKE) --no-print-directory for-all-target TARGET="moddownload"

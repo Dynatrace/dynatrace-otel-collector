@@ -83,7 +83,7 @@ jobs:
       - name: Install Tools
         run: make install-tools
 
-      - name: Cerate results folder
+      - name: Create results folder
         run: mkdir -p results && touch results/TESTRESULTS.md
 
       - name: Download Testbed Binaries

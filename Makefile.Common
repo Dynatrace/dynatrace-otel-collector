@@ -1,0 +1,9 @@
+GOCMD?= go
+
+.PHONY: moddownload
+moddownload:
+	$(GOCMD) mod download
+
+.PHONY: modtidy
+modtidy:
+	$(GOCMD) mod tidy

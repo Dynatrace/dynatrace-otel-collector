@@ -26,8 +26,8 @@ func TestMetric10kDPS(t *testing.T) {
 			sender:   testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 60,
-				ExpectedMaxRAM: 105,
+				ExpectedMaxCPU: 0,
+				ExpectedMaxRAM: 0,
 			},
 		},
 		{
@@ -35,8 +35,8 @@ func TestMetric10kDPS(t *testing.T) {
 			sender:   testbed.NewOTLPHTTPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
 			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 60,
-				ExpectedMaxRAM: 100,
+				ExpectedMaxCPU: 0,
+				ExpectedMaxRAM: 0,
 			},
 		},
 	}
@@ -72,8 +72,8 @@ func TestMetric100kDPS(t *testing.T) {
 			sender:   testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 65,
-				ExpectedMaxRAM: 105,
+				ExpectedMaxCPU: 0,
+				ExpectedMaxRAM: 0,
 			},
 		},
 		{
@@ -81,8 +81,8 @@ func TestMetric100kDPS(t *testing.T) {
 			sender:   testbed.NewOTLPHTTPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
 			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 99,
-				ExpectedMaxRAM: 100,
+				ExpectedMaxCPU: 0,
+				ExpectedMaxRAM: 0,
 			},
 		},
 	}

@@ -57,5 +57,50 @@ func TestMetric10kDPS(t *testing.T) {
 			)
 		})
 	}
+}
 
+func TestMetric100kDPS(t *testing.T) {
+	tests := []struct {
+		name         string
+		sender       testbed.DataSender
+		receiver     testbed.DataReceiver
+		resourceSpec testbed.ResourceSpec
+		skipMessage  string
+	}{
+		{
+			name:     "OTLP",
+			sender:   testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			resourceSpec: testbed.ResourceSpec{
+				ExpectedMaxCPU: 60,
+				ExpectedMaxRAM: 105,
+			},
+		},
+		{
+			name:     "OTLP-HTTP",
+			sender:   testbed.NewOTLPHTTPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
+			resourceSpec: testbed.ResourceSpec{
+				ExpectedMaxCPU: 60,
+				ExpectedMaxRAM: 100,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if test.skipMessage != "" {
+				t.Skip(test.skipMessage)
+			}
+			Scenario100kItemsPerSecond(
+				t,
+				test.sender,
+				test.receiver,
+				test.resourceSpec,
+				performanceResultsSummary,
+				nil,
+				nil,
+			)
+		})
+	}
 }

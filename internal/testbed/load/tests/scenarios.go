@@ -122,51 +122,12 @@ func Scenario10kItemsPerSecond(
 	processors map[string]string,
 	extensions map[string]string,
 ) {
-	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
-	require.NoError(t, err)
-
-	options := testbed.LoadOptions{
+	loadOptions := testbed.LoadOptions{
 		DataItemsPerSecond: 10_000,
 		ItemsPerBatch:      100,
 		Parallel:           1,
 	}
-
-	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
-
-	configStr := createConfigYaml(t, sender, receiver, resultDir, processors, extensions)
-	configCleanup, err := agentProc.PrepareConfig(configStr)
-	require.NoError(t, err)
-	defer configCleanup()
-
-	dataProvider := testbed.NewPerfTestDataProvider(options)
-	tc := testbed.NewTestCase(
-		t,
-		dataProvider,
-		sender,
-		receiver,
-		agentProc,
-		&testbed.PerfTestValidator{},
-		resultsSummary,
-		testbed.WithResourceLimits(resourceSpec),
-	)
-	t.Cleanup(tc.Stop)
-
-	tc.StartBackend()
-	tc.StartAgent()
-
-	tc.StartLoad(options)
-
-	tc.WaitFor(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, "load generator started")
-
-	tc.Sleep(tc.Duration)
-
-	tc.StopLoad()
-
-	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() == tc.MockBackend.DataItemsReceived() },
-		time.Second*30,
-		"all data items received")
-
-	tc.ValidateData()
+	GenericScenario(t, sender, receiver, resourceSpec, resultsSummary, processors, extensions, loadOptions)
 }
 
 // Scenario100kItemsPerSecond runs 10k data items/sec test using specified sender and receiver protocols.
@@ -179,14 +140,26 @@ func Scenario100kItemsPerSecond(
 	processors map[string]string,
 	extensions map[string]string,
 ) {
-	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
-	require.NoError(t, err)
-
-	options := testbed.LoadOptions{
+	loadOptions := testbed.LoadOptions{
 		DataItemsPerSecond: 100_000,
 		ItemsPerBatch:      100,
 		Parallel:           1,
 	}
+	GenericScenario(t, sender, receiver, resourceSpec, resultsSummary, processors, extensions, loadOptions)
+}
+
+func GenericScenario(
+	t *testing.T,
+	sender testbed.DataSender,
+	receiver testbed.DataReceiver,
+	resourceSpec testbed.ResourceSpec,
+	resultsSummary testbed.TestResultsSummary,
+	processors map[string]string,
+	extensions map[string]string,
+	loadOptions testbed.LoadOptions,
+) {
+	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
+	require.NoError(t, err)
 
 	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 
@@ -195,7 +168,7 @@ func Scenario100kItemsPerSecond(
 	require.NoError(t, err)
 	defer configCleanup()
 
-	dataProvider := testbed.NewPerfTestDataProvider(options)
+	dataProvider := testbed.NewPerfTestDataProvider(loadOptions)
 	tc := testbed.NewTestCase(
 		t,
 		dataProvider,
@@ -211,7 +184,7 @@ func Scenario100kItemsPerSecond(
 	tc.StartBackend()
 	tc.StartAgent()
 
-	tc.StartLoad(options)
+	tc.StartLoad(loadOptions)
 
 	tc.WaitFor(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, "load generator started")
 
@@ -219,7 +192,8 @@ func Scenario100kItemsPerSecond(
 
 	tc.StopLoad()
 
-	tc.WaitFor(func() bool { return tc.LoadGenerator.DataItemsSent() == tc.MockBackend.DataItemsReceived() },
+	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() == tc.MockBackend.DataItemsReceived() },
+		time.Second*30,
 		"all data items received")
 
 	tc.ValidateData()

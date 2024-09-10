@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1725959882331,
+  "lastUpdate": 1725969571533,
   "repoUrl": "https://github.com/Dynatrace/dynatrace-otel-collector",
   "entries": {
     "Benchmark": [
@@ -144,6 +144,60 @@ window.BENCHMARK_DATA = {
           {
             "name": "ram_mib_avg",
             "value": 66,
+            "unit": "MiB",
+            "extra": "Log10kDPS/OTLP - RAM (MiB)"
+          },
+          {
+            "name": "ram_mib_max",
+            "value": 95,
+            "unit": "MiB",
+            "extra": "Log10kDPS/OTLP - RAM (MiB)"
+          },
+          {
+            "name": "dropped_span_count",
+            "value": 0,
+            "unit": "spans",
+            "extra": "Log10kDPS/OTLP - Dropped Span Count"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "93584209+odubajDT@users.noreply.github.com",
+            "name": "odubajDT",
+            "username": "odubajDT"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "bd192a55d7d8afa9776bf9e6e8074dcdb0fadfec",
+          "message": "[chore] clean up testbed (#291)\n\nSigned-off-by: odubajDT <ondrej.dubaj@dynatrace.com>",
+          "timestamp": "2024-09-10T11:56:21Z",
+          "tree_id": "e6155281cf882d0beb2f791599430daf10dcddfd",
+          "url": "https://github.com/Dynatrace/dynatrace-otel-collector/commit/bd192a55d7d8afa9776bf9e6e8074dcdb0fadfec"
+        },
+        "date": 1725969571017,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "cpu_percentage_avg",
+            "value": 10.531838621796368,
+            "unit": "%",
+            "extra": "Log10kDPS/OTLP - Cpu Percentage"
+          },
+          {
+            "name": "cpu_percentage_max",
+            "value": 11.664913869490505,
+            "unit": "%",
+            "extra": "Log10kDPS/OTLP - Cpu Percentage"
+          },
+          {
+            "name": "ram_mib_avg",
+            "value": 69,
             "unit": "MiB",
             "extra": "Log10kDPS/OTLP - RAM (MiB)"
           },

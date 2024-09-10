@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	"fmt"
 	"net"
 	"os/exec"
 	"runtime"
@@ -141,4 +142,34 @@ func SetFeatureGateForTest(t testing.TB, gate *featuregate.Gate, enabled bool) f
 	return func() {
 		require.NoError(t, featuregate.GlobalRegistry().Set(gate.ID(), originalValue))
 	}
+}
+
+const CollectorTestsExecPath string = "../../../bin/dynatrace-otel-collector"
+
+func ReplaceOtlpGrpcReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "4317", strconv.Itoa(receiverPort), 1)
+}
+
+func ReplaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "14250", strconv.Itoa(receiverPort), 1)
+}
+
+func ReplaceZipkinReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "9411", strconv.Itoa(receiverPort), 1)
+}
+
+func ReplaceSyslogHostReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "54527", strconv.Itoa(receiverPort), 1)
+}
+
+func ReplaceSyslogF5ReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "54526", strconv.Itoa(receiverPort), 1)
+}
+
+func ReplaceDynatraceExporterEndpoint(cfg string, exporterPort int) string {
+	r := strings.NewReplacer(
+		"${env:DT_ENDPOINT}", fmt.Sprintf("http://0.0.0.0:%v", exporterPort),
+		"${env:API_TOKEN}", "",
+	)
+	return r.Replace(cfg)
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/idutils"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/pdata/ptrace"
@@ -50,7 +51,7 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 					recdSpan := spans.At(k)
 					assert.Contains(t,
 						spansMap,
-						traceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
+						idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
 						fmt.Sprintf("Span with ID: %q not found among expected spans", recdSpan.SpanID()))
 				}
 			}
@@ -67,7 +68,7 @@ func populateSpansMap(spansMap map[string]ptrace.Span, tds []ptrace.Traces) {
 				spans := ilss.At(j).Spans()
 				for k := 0; k < spans.Len(); k++ {
 					span := spans.At(k)
-					key := traceIDAndSpanIDToString(span.TraceID(), span.SpanID())
+					key := idutils.TraceIDAndSpanIDToString(span.TraceID(), span.SpanID())
 					spansMap[key] = span
 				}
 			}

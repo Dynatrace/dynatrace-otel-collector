@@ -2,6 +2,7 @@ package idutils
 
 import (
 	"encoding/binary"
+	"fmt"
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
 )
@@ -19,4 +20,8 @@ func UInt64ToSpanID(id uint64) pcommon.SpanID {
 	spanID := [8]byte{}
 	binary.BigEndian.PutUint64(spanID[:], id)
 	return pcommon.SpanID(spanID)
+}
+
+func TraceIDAndSpanIDToString(traceID pcommon.TraceID, spanID pcommon.SpanID) string {
+	return fmt.Sprintf("%s-%s", traceID, spanID)
 }

@@ -19,7 +19,7 @@ func TestMetric10kDPS(t *testing.T) {
 		"batch": `
   batch:
     send_batch_max_size: 1000
-    timeout: 30s
+    timeout: 10s
     send_batch_size : 800
 `,
 	}

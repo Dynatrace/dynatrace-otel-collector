@@ -5,6 +5,7 @@ import (
 	"path"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -161,7 +162,8 @@ func Scenario10kItemsPerSecond(
 
 	tc.StopLoad()
 
-	tc.WaitFor(func() bool { return tc.LoadGenerator.DataItemsSent() == tc.MockBackend.DataItemsReceived() },
+	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() == tc.MockBackend.DataItemsReceived() },
+		time.Second*30,
 		"all data items received")
 
 	tc.ValidateData()

@@ -11,10 +11,6 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
 
-var (
-	performanceResultsSummary testbed.TestResultsSummary = &testbed.PerformanceResults{}
-)
-
 // createConfigYaml creates a collector config file that corresponds to the
 // sender and receiver used in the test and returns the config file name.
 // Map of processor names to their configs. Config is in YAML and must be

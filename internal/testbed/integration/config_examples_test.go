@@ -16,7 +16,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	semconv "go.opentelemetry.io/collector/semconv/v1.18.0"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/testutil"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 )
 
 const ConfigExamplesDir = "../../../config_examples"

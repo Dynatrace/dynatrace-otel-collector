@@ -7,11 +7,6 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
 
-// TestMain is used to initiate setup, execution and tear down of testbed.
-func TestMain(m *testing.M) {
-	testbed.DoTestMain(m, performanceResultsSummary)
-}
-
 func TestLog10kDPS(t *testing.T) {
 	tests := []struct {
 		name         string

@@ -126,7 +126,7 @@ func Scenario10kItemsPerSecond(
 ) {
 	attributes := make(map[string]string)
 
-	for i := 0; i < 50; i++ {
+	for i := 0; i < 17; i++ {
 		key := "key" + strconv.Itoa(i)
 		value := "value" + strconv.Itoa(rand.Intn(1000))
 		attributes[key] = value
@@ -151,10 +151,19 @@ func Scenario100kItemsPerSecond(
 	processors map[string]string,
 	extensions map[string]string,
 ) {
+	attributes := make(map[string]string)
+
+	for i := 0; i < 17; i++ {
+		key := "key" + strconv.Itoa(i)
+		value := "value" + strconv.Itoa(rand.Intn(1000))
+		attributes[key] = value
+	}
+
 	loadOptions := testbed.LoadOptions{
 		DataItemsPerSecond: 100_000,
 		ItemsPerBatch:      100,
 		Parallel:           1,
+		Attributes:         attributes,
 	}
 	GenericScenario(t, sender, receiver, resourceSpec, resultsSummary, processors, extensions, loadOptions)
 }

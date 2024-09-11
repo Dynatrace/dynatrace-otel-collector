@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"path"
 	"path/filepath"
-	"strconv"
 	"testing"
 	"time"
 
@@ -13,6 +12,13 @@ import (
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
+
+type ExtendedLoadOptions struct {
+	loadOptions  *testbed.LoadOptions
+	resourceSpec testbed.ResourceSpec
+	attrCount    int
+	attrSizeByte int
+}
 
 // createConfigYaml creates a collector config file that corresponds to the
 // sender and receiver used in the test and returns the config file name.
@@ -114,72 +120,18 @@ service:
 	)
 }
 
-// Scenario10kItemsPerSecond runs 10k data items/sec test using specified sender and receiver protocols.
-func Scenario10kItemsPerSecond(
-	t *testing.T,
-	sender testbed.DataSender,
-	receiver testbed.DataReceiver,
-	resourceSpec testbed.ResourceSpec,
-	resultsSummary testbed.TestResultsSummary,
-	processors map[string]string,
-	extensions map[string]string,
-) {
-	attributes := make(map[string]string)
-
-	for i := 0; i < 17; i++ {
-		key := "key" + strconv.Itoa(i)
-		value := "value" + strconv.Itoa(rand.Intn(1000))
-		attributes[key] = value
-	}
-
-	loadOptions := testbed.LoadOptions{
-		DataItemsPerSecond: 10_000,
-		ItemsPerBatch:      100,
-		Parallel:           1,
-		Attributes:         attributes,
-	}
-	GenericScenario(t, sender, receiver, resourceSpec, resultsSummary, processors, extensions, loadOptions)
-}
-
-// Scenario100kItemsPerSecond runs 10k data items/sec test using specified sender and receiver protocols.
-func Scenario100kItemsPerSecond(
-	t *testing.T,
-	sender testbed.DataSender,
-	receiver testbed.DataReceiver,
-	resourceSpec testbed.ResourceSpec,
-	resultsSummary testbed.TestResultsSummary,
-	processors map[string]string,
-	extensions map[string]string,
-) {
-	attributes := make(map[string]string)
-
-	for i := 0; i < 17; i++ {
-		key := "key" + strconv.Itoa(i)
-		value := "value" + strconv.Itoa(rand.Intn(1000))
-		attributes[key] = value
-	}
-
-	loadOptions := testbed.LoadOptions{
-		DataItemsPerSecond: 100_000,
-		ItemsPerBatch:      100,
-		Parallel:           1,
-		Attributes:         attributes,
-	}
-	GenericScenario(t, sender, receiver, resourceSpec, resultsSummary, processors, extensions, loadOptions)
-}
-
 func GenericScenario(
 	t *testing.T,
 	sender testbed.DataSender,
 	receiver testbed.DataReceiver,
-	resourceSpec testbed.ResourceSpec,
 	resultsSummary testbed.TestResultsSummary,
 	processors map[string]string,
 	extensions map[string]string,
-	loadOptions testbed.LoadOptions,
+	loadOptions ExtendedLoadOptions,
 ) {
 	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
 	require.NoError(t, err)
+	constructAttributes(loadOptions)
 
 	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 
@@ -188,7 +140,7 @@ func GenericScenario(
 	require.NoError(t, err)
 	defer configCleanup()
 
-	dataProvider := testbed.NewPerfTestDataProvider(loadOptions)
+	dataProvider := testbed.NewPerfTestDataProvider(*loadOptions.loadOptions)
 	tc := testbed.NewTestCase(
 		t,
 		dataProvider,
@@ -197,14 +149,14 @@ func GenericScenario(
 		agentProc,
 		&testbed.PerfTestValidator{},
 		resultsSummary,
-		testbed.WithResourceLimits(resourceSpec),
+		testbed.WithResourceLimits(loadOptions.resourceSpec),
 	)
 	t.Cleanup(tc.Stop)
 
 	tc.StartBackend()
 	tc.StartAgent()
 
-	tc.StartLoad(loadOptions)
+	tc.StartLoad(*loadOptions.loadOptions)
 
 	tc.WaitFor(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, "load generator started")
 
@@ -217,4 +169,23 @@ func GenericScenario(
 		"all data items received")
 
 	tc.ValidateData()
+}
+
+func constructAttributes(loadOptions ExtendedLoadOptions) ExtendedLoadOptions {
+	loadOptions.loadOptions.Attributes = make(map[string]string)
+
+	// Generate attributes.
+	for i := 0; i < loadOptions.attrCount; i++ {
+		attrName := genRandByteString(rand.Intn(199) + 1)
+		loadOptions.loadOptions.Attributes[attrName] = genRandByteString(rand.Intn(loadOptions.attrSizeByte*2-1) + 1)
+	}
+	return loadOptions
+}
+
+func genRandByteString(length int) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = byte(rand.Intn(128))
+	}
+	return string(b)
 }

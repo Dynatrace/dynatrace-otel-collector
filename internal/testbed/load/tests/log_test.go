@@ -9,19 +9,28 @@ import (
 
 func TestLog10kDPS(t *testing.T) {
 	tests := []struct {
-		name         string
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
-		resourceSpec testbed.ResourceSpec
-		extensions   map[string]string
+		name        string
+		sender      testbed.DataSender
+		receiver    testbed.DataReceiver
+		loadOptions ExtendedLoadOptions
+		extensions  map[string]string
 	}{
 		{
 			name:     "OTLP",
 			sender:   testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 30,
-				ExpectedMaxRAM: 120,
+			loadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 10_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 30,
+					ExpectedMaxRAM: 120,
+				},
+				attrCount:    0,
+				attrSizeByte: 0,
 			},
 		},
 	}
@@ -30,14 +39,14 @@ func TestLog10kDPS(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			Scenario10kItemsPerSecond(
+			GenericScenario(
 				t,
 				test.sender,
 				test.receiver,
-				test.resourceSpec,
 				performanceResultsSummary,
 				processors,
-				map[string]string{},
+				nil,
+				test.loadOptions,
 			)
 		})
 	}

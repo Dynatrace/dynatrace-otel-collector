@@ -15,6 +15,7 @@ import (
 )
 
 func TestMetric10kDPS(t *testing.T) {
+	metricCount := 10_000
 	processors := map[string]string{
 		"batch": `
   batch:
@@ -25,29 +26,47 @@ func TestMetric10kDPS(t *testing.T) {
 	}
 
 	tests := []struct {
-		name         string
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
-		processors   map[string]string
-		resourceSpec testbed.ResourceSpec
-		skipMessage  string
+		name        string
+		sender      testbed.DataSender
+		receiver    testbed.DataReceiver
+		processors  map[string]string
+		loadOptions ExtendedLoadOptions
+		skipMessage string
 	}{
 		{
 			name:     "OTLP",
 			sender:   testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 60,
-				ExpectedMaxRAM: 105,
+			loadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: metricCount,
+					ItemsPerBatch:      1000,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 60,
+					ExpectedMaxRAM: 105,
+				},
+				attrCount:    17,
+				attrSizeByte: 20,
 			},
 		},
 		{
 			name:     "OTLP-HTTP",
 			sender:   testbed.NewOTLPHTTPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
-			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 60,
-				ExpectedMaxRAM: 100,
+			loadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: metricCount,
+					ItemsPerBatch:      1000,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 60,
+					ExpectedMaxRAM: 100,
+				},
+				attrCount:    17,
+				attrSizeByte: 20,
 			},
 		},
 	}
@@ -57,14 +76,14 @@ func TestMetric10kDPS(t *testing.T) {
 			if test.skipMessage != "" {
 				t.Skip(test.skipMessage)
 			}
-			Scenario10kItemsPerSecond(
+			GenericScenario(
 				t,
 				test.sender,
 				test.receiver,
-				test.resourceSpec,
 				performanceResultsSummary,
 				processors,
 				nil,
+				test.loadOptions,
 			)
 		})
 	}
@@ -75,6 +94,7 @@ func TestMetric100kDPS(t *testing.T) {
 		name         string
 		sender       testbed.DataSender
 		receiver     testbed.DataReceiver
+		loadOptions  ExtendedLoadOptions
 		resourceSpec testbed.ResourceSpec
 		skipMessage  string
 	}{
@@ -82,18 +102,36 @@ func TestMetric100kDPS(t *testing.T) {
 			name:     "OTLP",
 			sender:   testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 65,
-				ExpectedMaxRAM: 105,
+			loadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 100_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 65,
+					ExpectedMaxRAM: 105,
+				},
+				attrCount:    0,
+				attrSizeByte: 0,
 			},
 		},
 		{
 			name:     "OTLP-HTTP",
 			sender:   testbed.NewOTLPHTTPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
-			resourceSpec: testbed.ResourceSpec{
-				ExpectedMaxCPU: 99,
-				ExpectedMaxRAM: 100,
+			loadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 100_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 99,
+					ExpectedMaxRAM: 100,
+				},
+				attrCount:    0,
+				attrSizeByte: 0,
 			},
 		},
 	}
@@ -103,14 +141,14 @@ func TestMetric100kDPS(t *testing.T) {
 			if test.skipMessage != "" {
 				t.Skip(test.skipMessage)
 			}
-			Scenario100kItemsPerSecond(
+			GenericScenario(
 				t,
 				test.sender,
 				test.receiver,
-				test.resourceSpec,
 				performanceResultsSummary,
 				nil,
 				nil,
+				test.loadOptions,
 			)
 		})
 	}

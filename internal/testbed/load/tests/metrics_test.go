@@ -14,16 +14,24 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
 
-func TestMetric10kDPS(t *testing.T) {
-	metricCount := 10_000
-	processors := map[string]string{
+var (
+	processors = map[string]string{
 		"batch": `
   batch:
     send_batch_max_size: 1000
     timeout: 10s
     send_batch_size : 800
 `,
+		"memory_limiter": `
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 100
+`,
 	}
+)
+
+func TestMetric10kDPS(t *testing.T) {
+	metricCount := 10_000
 
 	tests := []struct {
 		name        string
@@ -47,7 +55,7 @@ func TestMetric10kDPS(t *testing.T) {
 					ExpectedMaxCPU: 60,
 					ExpectedMaxRAM: 105,
 				},
-				attrCount:    17,
+				attrCount:    25,
 				attrSizeByte: 20,
 			},
 		},
@@ -65,7 +73,7 @@ func TestMetric10kDPS(t *testing.T) {
 					ExpectedMaxCPU: 60,
 					ExpectedMaxRAM: 100,
 				},
-				attrCount:    17,
+				attrCount:    25,
 				attrSizeByte: 20,
 			},
 		},
@@ -112,8 +120,8 @@ func TestMetric100kDPS(t *testing.T) {
 					ExpectedMaxCPU: 65,
 					ExpectedMaxRAM: 105,
 				},
-				attrCount:    0,
-				attrSizeByte: 0,
+				attrCount:    25,
+				attrSizeByte: 20,
 			},
 		},
 		{
@@ -130,8 +138,8 @@ func TestMetric100kDPS(t *testing.T) {
 					ExpectedMaxCPU: 99,
 					ExpectedMaxRAM: 100,
 				},
-				attrCount:    0,
-				attrSizeByte: 0,
+				attrCount:    25,
+				attrSizeByte: 20,
 			},
 		},
 	}
@@ -146,7 +154,7 @@ func TestMetric100kDPS(t *testing.T) {
 				test.sender,
 				test.receiver,
 				performanceResultsSummary,
-				nil,
+				processors,
 				nil,
 				test.loadOptions,
 			)

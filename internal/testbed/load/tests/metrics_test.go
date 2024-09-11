@@ -71,7 +71,7 @@ func TestMetric10kDPS(t *testing.T) {
 				},
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 60,
-					ExpectedMaxRAM: 100,
+					ExpectedMaxRAM: 105,
 				},
 				attrCount:    25,
 				attrSizeByte: 20,

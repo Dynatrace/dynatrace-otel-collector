@@ -2,8 +2,10 @@ package loadtest
 
 import (
 	"fmt"
+	"math/rand"
 	"path"
 	"path/filepath"
+	"strconv"
 	"testing"
 	"time"
 
@@ -122,10 +124,19 @@ func Scenario10kItemsPerSecond(
 	processors map[string]string,
 	extensions map[string]string,
 ) {
+	attributes := make(map[string]string)
+
+	for i := 0; i < 50; i++ {
+		key := "key" + strconv.Itoa(i)
+		value := "value" + strconv.Itoa(rand.Intn(1000))
+		attributes[key] = value
+	}
+
 	loadOptions := testbed.LoadOptions{
 		DataItemsPerSecond: 10_000,
 		ItemsPerBatch:      100,
 		Parallel:           1,
+		Attributes:         attributes,
 	}
 	GenericScenario(t, sender, receiver, resourceSpec, resultsSummary, processors, extensions, loadOptions)
 }

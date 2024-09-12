@@ -9,7 +9,7 @@ require (
 	github.com/jstemmer/go-junit-report v1.0.0
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	go.opentelemetry.io/build-tools/chloggen v0.14.0
-	go.opentelemetry.io/collector/cmd/builder v0.108.1
+	go.opentelemetry.io/collector/cmd/builder v0.109.0
 )
 
 require (

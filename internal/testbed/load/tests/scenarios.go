@@ -9,15 +9,17 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/rand"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
 
 type ExtendedLoadOptions struct {
-	loadOptions  *testbed.LoadOptions
-	resourceSpec testbed.ResourceSpec
-	attrCount    int
-	attrSizeByte int
+	loadOptions     *testbed.LoadOptions
+	resourceSpec    testbed.ResourceSpec
+	attrCount       int
+	attrSizeByte    int
+	attrKeySizeByte int
 }
 
 // createConfigYaml creates a collector config file that corresponds to the
@@ -158,7 +160,7 @@ func GenericScenario(
 
 	tc.StartLoad(*loadOptions.loadOptions)
 
-	tc.WaitFor(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, "load generator started")
+	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, 30*time.Second, "load generator started")
 
 	tc.Sleep(tc.Duration)
 
@@ -176,7 +178,7 @@ func constructAttributes(loadOptions ExtendedLoadOptions) ExtendedLoadOptions {
 
 	// Generate attributes.
 	for i := 0; i < loadOptions.attrCount; i++ {
-		attrName := genRandByteString(rand.Intn(199) + 1)
+		attrName := genRandByteString(rand.Intn(loadOptions.attrKeySizeByte*2-1) + 1)
 		loadOptions.loadOptions.Attributes[attrName] = genRandByteString(rand.Intn(loadOptions.attrSizeByte*2-1) + 1)
 	}
 	return loadOptions

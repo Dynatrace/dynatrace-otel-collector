@@ -29,8 +29,9 @@ func TestLog10kDPS(t *testing.T) {
 					ExpectedMaxCPU: 30,
 					ExpectedMaxRAM: 120,
 				},
-				attrCount:    0,
-				attrSizeByte: 0,
+				attrCount:       0,
+				attrSizeByte:    0,
+				attrKeySizeByte: 0,
 			},
 		},
 	}

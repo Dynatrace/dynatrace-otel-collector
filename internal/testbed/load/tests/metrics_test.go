@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	processors = map[string]string{
+	metricProcessors = map[string]string{
 		"batch": `
   batch:
     send_batch_max_size: 1000
@@ -34,18 +34,17 @@ func TestMetric10kDPS(t *testing.T) {
 	metricCount := 10_000
 
 	tests := []struct {
-		name        string
-		sender      testbed.DataSender
-		receiver    testbed.DataReceiver
-		processors  map[string]string
-		loadOptions ExtendedLoadOptions
-		skipMessage string
+		name                string
+		sender              testbed.DataSender
+		receiver            testbed.DataReceiver
+		processors          map[string]string
+		extendedLoadOptions ExtendedLoadOptions
 	}{
 		{
 			name:     "OTLP",
 			sender:   testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			loadOptions: ExtendedLoadOptions{
+			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: metricCount,
 					ItemsPerBatch:      1000,
@@ -55,15 +54,17 @@ func TestMetric10kDPS(t *testing.T) {
 					ExpectedMaxCPU: 60,
 					ExpectedMaxRAM: 105,
 				},
-				attrCount:    25,
-				attrSizeByte: 20,
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
 			},
+			processors: metricProcessors,
 		},
 		{
 			name:     "OTLP-HTTP",
 			sender:   testbed.NewOTLPHTTPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
-			loadOptions: ExtendedLoadOptions{
+			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: metricCount,
 					ItemsPerBatch:      1000,
@@ -73,25 +74,24 @@ func TestMetric10kDPS(t *testing.T) {
 					ExpectedMaxCPU: 60,
 					ExpectedMaxRAM: 105,
 				},
-				attrCount:    25,
-				attrSizeByte: 20,
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
 			},
+			processors: metricProcessors,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if test.skipMessage != "" {
-				t.Skip(test.skipMessage)
-			}
 			GenericScenario(
 				t,
 				test.sender,
 				test.receiver,
 				performanceResultsSummary,
-				processors,
+				test.processors,
 				nil,
-				test.loadOptions,
+				test.extendedLoadOptions,
 			)
 		})
 	}
@@ -99,18 +99,18 @@ func TestMetric10kDPS(t *testing.T) {
 
 func TestMetric100kDPS(t *testing.T) {
 	tests := []struct {
-		name         string
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
-		loadOptions  ExtendedLoadOptions
-		resourceSpec testbed.ResourceSpec
-		skipMessage  string
+		name                string
+		sender              testbed.DataSender
+		receiver            testbed.DataReceiver
+		extendedLoadOptions ExtendedLoadOptions
+		resourceSpec        testbed.ResourceSpec
+		processors          map[string]string
 	}{
 		{
 			name:     "OTLP",
 			sender:   testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			loadOptions: ExtendedLoadOptions{
+			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: 100_000,
 					ItemsPerBatch:      100,
@@ -120,15 +120,17 @@ func TestMetric100kDPS(t *testing.T) {
 					ExpectedMaxCPU: 65,
 					ExpectedMaxRAM: 105,
 				},
-				attrCount:    25,
-				attrSizeByte: 20,
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
 			},
+			processors: metricProcessors,
 		},
 		{
 			name:     "OTLP-HTTP",
 			sender:   testbed.NewOTLPHTTPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
-			loadOptions: ExtendedLoadOptions{
+			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: 100_000,
 					ItemsPerBatch:      100,
@@ -138,25 +140,24 @@ func TestMetric100kDPS(t *testing.T) {
 					ExpectedMaxCPU: 99,
 					ExpectedMaxRAM: 100,
 				},
-				attrCount:    25,
-				attrSizeByte: 20,
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
 			},
+			processors: metricProcessors,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if test.skipMessage != "" {
-				t.Skip(test.skipMessage)
-			}
 			GenericScenario(
 				t,
 				test.sender,
 				test.receiver,
 				performanceResultsSummary,
-				processors,
+				test.processors,
 				nil,
-				test.loadOptions,
+				test.extendedLoadOptions,
 			)
 		})
 	}

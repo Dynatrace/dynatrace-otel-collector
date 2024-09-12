@@ -2,7 +2,6 @@ package loadtest
 
 import (
 	"fmt"
-	"math/rand"
 	"path"
 	"path/filepath"
 	"testing"

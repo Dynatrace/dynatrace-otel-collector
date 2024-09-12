@@ -7,7 +7,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
 
-var processors = map[string]string{
+var traceProcessors = map[string]string{
 	"batch": `
   batch:
     send_batch_max_size: 1000
@@ -17,7 +17,7 @@ var processors = map[string]string{
 }
 
 func TestTrace10kSPS(t *testing.T) {
-	limitProcessors := map[string]string{
+	traceLimitProcessors := map[string]string{
 		"memory_limiter": `
   memory_limiter:
     check_interval: 1s
@@ -25,68 +25,107 @@ func TestTrace10kSPS(t *testing.T) {
 `,
 	}
 
-	limitProcessors["batch"] = processors["batch"]
+	traceLimitProcessors["batch"] = traceProcessors["batch"]
 
 	tests := []struct {
-		name         string
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
-		resourceSpec testbed.ResourceSpec
-		processors   map[string]string
+		name                string
+		sender              testbed.DataSender
+		receiver            testbed.DataReceiver
+		extendedLoadOptions ExtendedLoadOptions
+		processors          map[string]string
 	}{
 		{
 			"OTLP-gRPC",
 			testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			testbed.ResourceSpec{
-				ExpectedMaxCPU: 30,
-				ExpectedMaxRAM: 120,
+			ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 10_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 30,
+					ExpectedMaxRAM: 120,
+				},
+				attrCount:       10,
+				attrSizeByte:    50,
+				attrKeySizeByte: 50,
 			},
-			processors,
+			traceProcessors,
 		},
 		{
 			"OTLP-HTTP",
 			testbed.NewOTLPHTTPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t), ""),
 			testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
-			testbed.ResourceSpec{
-				ExpectedMaxCPU: 30,
-				ExpectedMaxRAM: 120,
+			ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 10_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 30,
+					ExpectedMaxRAM: 120,
+				},
+				attrCount:       10,
+				attrSizeByte:    50,
+				attrKeySizeByte: 50,
 			},
-			processors,
+			traceProcessors,
 		},
 		{
 			"OTLP-gRPC-memory-limiter",
 			testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			testbed.ResourceSpec{
-				ExpectedMaxCPU: 30,
-				ExpectedMaxRAM: 120,
+			ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 10_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 30,
+					ExpectedMaxRAM: 120,
+				},
+				attrCount:       10,
+				attrSizeByte:    50,
+				attrKeySizeByte: 50,
 			},
-			limitProcessors,
+			traceLimitProcessors,
 		},
 		{
 			"OTLP-HTTP-memory-limiter",
 			testbed.NewOTLPHTTPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t), ""),
 			testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
-			testbed.ResourceSpec{
-				ExpectedMaxCPU: 30,
-				ExpectedMaxRAM: 120,
+			ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 10_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 30,
+					ExpectedMaxRAM: 120,
+				},
+				attrCount:       10,
+				attrSizeByte:    50,
+				attrKeySizeByte: 50,
 			},
-			limitProcessors,
+			traceLimitProcessors,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ScenarioItemsPerSecond(
-				10_000,
+			GenericScenario(
 				t,
 				test.sender,
 				test.receiver,
-				test.resourceSpec,
 				performanceResultsSummary,
 				test.processors,
 				nil,
+				test.extendedLoadOptions,
 			)
 		})
 	}
@@ -94,42 +133,64 @@ func TestTrace10kSPS(t *testing.T) {
 
 func TestTrace100kSPS(t *testing.T) {
 	tests := []struct {
-		name         string
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
-		resourceSpec testbed.ResourceSpec
+		name                string
+		sender              testbed.DataSender
+		receiver            testbed.DataReceiver
+		extendedLoadOptions ExtendedLoadOptions
+		processors          map[string]string
 	}{
 		{
 			"OTLP-gRPC",
 			testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			testbed.ResourceSpec{
-				ExpectedMaxCPU: 80,
-				ExpectedMaxRAM: 120,
+			ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 100_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 80,
+					ExpectedMaxRAM: 120,
+				},
+				attrCount:       10,
+				attrSizeByte:    50,
+				attrKeySizeByte: 50,
 			},
+			traceProcessors,
 		},
 		{
 			"OTLP-HTTP",
 			testbed.NewOTLPHTTPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t), ""),
 			testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
-			testbed.ResourceSpec{
-				ExpectedMaxCPU: 80,
-				ExpectedMaxRAM: 120,
+			ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 100_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 80,
+					ExpectedMaxRAM: 120,
+				},
+				attrCount:       10,
+				attrSizeByte:    50,
+				attrKeySizeByte: 50,
 			},
+			traceProcessors,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ScenarioItemsPerSecond(
-				100_000,
+			GenericScenario(
 				t,
 				test.sender,
 				test.receiver,
-				test.resourceSpec,
 				performanceResultsSummary,
-				processors,
+				test.processors,
 				nil,
+				test.extendedLoadOptions,
 			)
 		})
 	}

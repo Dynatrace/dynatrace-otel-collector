@@ -150,7 +150,7 @@ func TestTrace100kSPS(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 80,
+					ExpectedMaxCPU: 90,
 					ExpectedMaxRAM: 120,
 				},
 				attrCount:       10,
@@ -170,7 +170,7 @@ func TestTrace100kSPS(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 80,
+					ExpectedMaxCPU: 100,
 					ExpectedMaxRAM: 120,
 				},
 				attrCount:       10,

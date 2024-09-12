@@ -14,19 +14,14 @@ var traceProcessors = map[string]string{
     timeout: 10s
     send_batch_size : 800
 `,
-}
-
-func TestTrace10kSPS(t *testing.T) {
-	traceLimitProcessors := map[string]string{
-		"memory_limiter": `
+	"memory_limiter": `
   memory_limiter:
     check_interval: 1s
     limit_percentage: 100
 `,
-	}
+}
 
-	traceLimitProcessors["batch"] = traceProcessors["batch"]
-
+func TestTrace10kSPS(t *testing.T) {
 	tests := []struct {
 		name                string
 		sender              testbed.DataSender
@@ -73,46 +68,6 @@ func TestTrace10kSPS(t *testing.T) {
 				attrKeySizeByte: 50,
 			},
 			traceProcessors,
-		},
-		{
-			"OTLP-gRPC-memory-limiter",
-			testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			ExtendedLoadOptions{
-				loadOptions: &testbed.LoadOptions{
-					DataItemsPerSecond: 10_000,
-					ItemsPerBatch:      100,
-					Parallel:           1,
-				},
-				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 30,
-					ExpectedMaxRAM: 120,
-				},
-				attrCount:       10,
-				attrSizeByte:    50,
-				attrKeySizeByte: 50,
-			},
-			traceLimitProcessors,
-		},
-		{
-			"OTLP-HTTP-memory-limiter",
-			testbed.NewOTLPHTTPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t), ""),
-			testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
-			ExtendedLoadOptions{
-				loadOptions: &testbed.LoadOptions{
-					DataItemsPerSecond: 10_000,
-					ItemsPerBatch:      100,
-					Parallel:           1,
-				},
-				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 30,
-					ExpectedMaxRAM: 120,
-				},
-				attrCount:       10,
-				attrSizeByte:    50,
-				attrKeySizeByte: 50,
-			},
-			traceLimitProcessors,
 		},
 	}
 

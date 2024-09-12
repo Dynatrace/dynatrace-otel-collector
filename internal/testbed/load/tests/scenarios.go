@@ -2,14 +2,23 @@ package loadtest
 
 import (
 	"fmt"
+	"math/rand"
 	"path"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
+
+type ExtendedLoadOptions struct {
+	loadOptions  *testbed.LoadOptions
+	resourceSpec testbed.ResourceSpec
+	attrCount    int
+	attrSizeByte int
+}
 
 // createConfigYaml creates a collector config file that corresponds to the
 // sender and receiver used in the test and returns the config file name.
@@ -111,24 +120,18 @@ service:
 	)
 }
 
-// Scenario10kItemsPerSecond runs 10k data items/sec test using specified sender and receiver protocols.
-func Scenario10kItemsPerSecond(
+func GenericScenario(
 	t *testing.T,
 	sender testbed.DataSender,
 	receiver testbed.DataReceiver,
-	resourceSpec testbed.ResourceSpec,
 	resultsSummary testbed.TestResultsSummary,
 	processors map[string]string,
 	extensions map[string]string,
+	loadOptions ExtendedLoadOptions,
 ) {
 	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
 	require.NoError(t, err)
-
-	options := testbed.LoadOptions{
-		DataItemsPerSecond: 10_000,
-		ItemsPerBatch:      100,
-		Parallel:           1,
-	}
+	constructAttributes(loadOptions)
 
 	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 
@@ -137,7 +140,7 @@ func Scenario10kItemsPerSecond(
 	require.NoError(t, err)
 	defer configCleanup()
 
-	dataProvider := testbed.NewPerfTestDataProvider(options)
+	dataProvider := testbed.NewPerfTestDataProvider(*loadOptions.loadOptions)
 	tc := testbed.NewTestCase(
 		t,
 		dataProvider,
@@ -146,14 +149,14 @@ func Scenario10kItemsPerSecond(
 		agentProc,
 		&testbed.PerfTestValidator{},
 		resultsSummary,
-		testbed.WithResourceLimits(resourceSpec),
+		testbed.WithResourceLimits(loadOptions.resourceSpec),
 	)
 	t.Cleanup(tc.Stop)
 
 	tc.StartBackend()
 	tc.StartAgent()
 
-	tc.StartLoad(options)
+	tc.StartLoad(*loadOptions.loadOptions)
 
 	tc.WaitFor(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, "load generator started")
 
@@ -161,8 +164,28 @@ func Scenario10kItemsPerSecond(
 
 	tc.StopLoad()
 
-	tc.WaitFor(func() bool { return tc.LoadGenerator.DataItemsSent() == tc.MockBackend.DataItemsReceived() },
+	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() == tc.MockBackend.DataItemsReceived() },
+		time.Second*30,
 		"all data items received")
 
 	tc.ValidateData()
+}
+
+func constructAttributes(loadOptions ExtendedLoadOptions) ExtendedLoadOptions {
+	loadOptions.loadOptions.Attributes = make(map[string]string)
+
+	// Generate attributes.
+	for i := 0; i < loadOptions.attrCount; i++ {
+		attrName := genRandByteString(rand.Intn(199) + 1)
+		loadOptions.loadOptions.Attributes[attrName] = genRandByteString(rand.Intn(loadOptions.attrSizeByte*2-1) + 1)
+	}
+	return loadOptions
+}
+
+func genRandByteString(length int) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = byte(rand.Intn(128))
+	}
+	return string(b)
 }

@@ -1,6 +1,7 @@
 package loadtest
 
 import (
+	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders"
 	"testing"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
@@ -48,6 +49,88 @@ func TestLog10kDPS(t *testing.T) {
 				processors,
 				nil,
 				test.loadOptions,
+			)
+		})
+	}
+}
+
+func TestLog70kDPS(t *testing.T) {
+	tests := []struct {
+		name                string
+		sender              testbed.DataSender
+		receiver            testbed.DataReceiver
+		resourceSpec        testbed.ResourceSpec
+		extensions          map[string]string
+		extendedLoadOptions ExtendedLoadOptions
+	}{
+		{
+			name:     "syslog-batch-1",
+			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 1),
+			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
+			resourceSpec: testbed.ResourceSpec{
+				ExpectedMaxCPU: 90,
+				ExpectedMaxRAM: 150,
+			},
+			extendedLoadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 70_000_000,
+					ItemsPerBatch:      1,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 90,
+					ExpectedMaxRAM: 105,
+				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+			},
+		},
+		{
+			name:     "syslog-batch-100",
+			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 100),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			extendedLoadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 70_000_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 90,
+					ExpectedMaxRAM: 105,
+				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+			},
+		},
+	}
+
+	processors := map[string]string{
+		"batch": `
+  batch:
+    send_batch_max_size: 1000
+    timeout: 5s
+    send_batch_size : 800
+`,
+		"memory_limiter": `
+  memory_limiter:
+    check_interval: 1
+    limit_percentage: 100
+`,
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			GenericScenario(
+				t,
+				test.sender,
+				test.receiver,
+				performanceResultsSummary,
+				processors,
+				nil,
+				test.extendedLoadOptions,
 			)
 		})
 	}

@@ -16,14 +16,15 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	semconv "go.opentelemetry.io/collector/semconv/v1.18.0"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/testutil"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/idutils"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 )
 
 const ConfigExamplesDir = "../../../config_examples"
 
 func TestConfigTailSampling(t *testing.T) {
 	// arrange
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))
 	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "tail_sampling.yaml"))
 	require.NoError(t, err)
 
@@ -31,8 +32,8 @@ func TestConfigTailSampling(t *testing.T) {
 	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
-	parsedConfig = replaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
-	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = testutil.ReplaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
+	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
 	// replaces the sampling decision wait so the test doesn't timeout
 	parsedConfig = strings.Replace(parsedConfig, "decision_wait: 30s", "decision_wait: 10ms", 1)
@@ -50,8 +51,8 @@ func TestConfigTailSampling(t *testing.T) {
 
 	// Error ers
 	ers := actualSpans.AppendEmpty()
-	ers.SetTraceID(uInt64ToTraceID(0, uint64(1)))
-	ers.SetSpanID(uInt64ToSpanID(uint64(1)))
+	ers.SetTraceID(idutils.UInt64ToTraceID(0, uint64(1)))
+	ers.SetSpanID(idutils.UInt64ToSpanID(uint64(1)))
 	ers.SetName("Error span")
 	ers.SetKind(ptrace.SpanKindServer)
 	ers.Status().SetCode(ptrace.StatusCodeError)
@@ -60,8 +61,8 @@ func TestConfigTailSampling(t *testing.T) {
 
 	// Ok span
 	oks := actualSpans.AppendEmpty()
-	oks.SetTraceID(uInt64ToTraceID(0, uint64(2)))
-	oks.SetSpanID(uInt64ToSpanID(uint64(2)))
+	oks.SetTraceID(idutils.UInt64ToTraceID(0, uint64(2)))
+	oks.SetSpanID(idutils.UInt64ToSpanID(uint64(2)))
 	oks.SetName("OK span")
 	oks.SetKind(ptrace.SpanKindServer)
 	oks.Status().SetCode(ptrace.StatusCodeOk)
@@ -70,8 +71,8 @@ func TestConfigTailSampling(t *testing.T) {
 
 	// Long-running span
 	lrs := actualSpans.AppendEmpty()
-	lrs.SetTraceID(uInt64ToTraceID(0, uint64(3)))
-	lrs.SetSpanID(uInt64ToSpanID(uint64(3)))
+	lrs.SetTraceID(idutils.UInt64ToTraceID(0, uint64(3)))
+	lrs.SetSpanID(idutils.UInt64ToSpanID(uint64(3)))
 	lrs.SetName("Long-running span")
 	lrs.SetKind(ptrace.SpanKindServer)
 	lrs.Status().SetCode(ptrace.StatusCodeOk)
@@ -120,7 +121,7 @@ func TestConfigTailSampling(t *testing.T) {
 
 func TestConfigJaegerGrpc(t *testing.T) {
 	// arrange
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))
 	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "jaeger.yaml"))
 	require.NoError(t, err)
 
@@ -128,8 +129,8 @@ func TestConfigJaegerGrpc(t *testing.T) {
 	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
-	parsedConfig = replaceJaegerGrpcReceiverPort(parsedConfig, grpcReceiverPort)
-	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = testutil.ReplaceJaegerGrpcReceiverPort(parsedConfig, grpcReceiverPort)
+	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
 	configCleanup, err := col.PrepareConfig(parsedConfig)
 	require.NoError(t, err)
@@ -144,8 +145,8 @@ func TestConfigJaegerGrpc(t *testing.T) {
 
 	// Error ers
 	ers := actualSpans.AppendEmpty()
-	ers.SetTraceID(uInt64ToTraceID(0, uint64(1)))
-	ers.SetSpanID(uInt64ToSpanID(uint64(1)))
+	ers.SetTraceID(idutils.UInt64ToTraceID(0, uint64(1)))
+	ers.SetSpanID(idutils.UInt64ToSpanID(uint64(1)))
 	ers.SetName("Error span")
 	ers.SetKind(ptrace.SpanKindServer)
 	ers.Status().SetCode(ptrace.StatusCodeError)
@@ -154,8 +155,8 @@ func TestConfigJaegerGrpc(t *testing.T) {
 
 	// Ok span
 	oks := actualSpans.AppendEmpty()
-	oks.SetTraceID(uInt64ToTraceID(0, uint64(2)))
-	oks.SetSpanID(uInt64ToSpanID(uint64(2)))
+	oks.SetTraceID(idutils.UInt64ToTraceID(0, uint64(2)))
+	oks.SetSpanID(idutils.UInt64ToSpanID(uint64(2)))
 	oks.SetName("OK span")
 	oks.SetKind(ptrace.SpanKindServer)
 	oks.Status().SetCode(ptrace.StatusCodeOk)
@@ -164,8 +165,8 @@ func TestConfigJaegerGrpc(t *testing.T) {
 
 	// Long-running span
 	lrs := actualSpans.AppendEmpty()
-	lrs.SetTraceID(uInt64ToTraceID(0, uint64(3)))
-	lrs.SetSpanID(uInt64ToSpanID(uint64(3)))
+	lrs.SetTraceID(idutils.UInt64ToTraceID(0, uint64(3)))
+	lrs.SetSpanID(idutils.UInt64ToSpanID(uint64(3)))
 	lrs.SetName("Long-running span")
 	lrs.SetKind(ptrace.SpanKindServer)
 	lrs.Status().SetCode(ptrace.StatusCodeOk)
@@ -213,7 +214,7 @@ func TestConfigJaegerGrpc(t *testing.T) {
 
 func TestConfigZipkin(t *testing.T) {
 	// arrange
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))
 	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "zipkin.yaml"))
 	require.NoError(t, err)
 
@@ -221,8 +222,8 @@ func TestConfigZipkin(t *testing.T) {
 	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
-	parsedConfig = replaceZipkinReceiverPort(parsedConfig, zipkinReceiverPort)
-	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = testutil.ReplaceZipkinReceiverPort(parsedConfig, zipkinReceiverPort)
+	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
 	configCleanup, err := col.PrepareConfig(parsedConfig)
 	require.NoError(t, err)
@@ -237,8 +238,8 @@ func TestConfigZipkin(t *testing.T) {
 
 	// Error ers
 	ers := actualSpans.AppendEmpty()
-	ers.SetTraceID(uInt64ToTraceID(0, uint64(1)))
-	ers.SetSpanID(uInt64ToSpanID(uint64(1)))
+	ers.SetTraceID(idutils.UInt64ToTraceID(0, uint64(1)))
+	ers.SetSpanID(idutils.UInt64ToSpanID(uint64(1)))
 	ers.SetName("Error span")
 	ers.SetKind(ptrace.SpanKindServer)
 	ers.Status().SetCode(ptrace.StatusCodeError)
@@ -247,8 +248,8 @@ func TestConfigZipkin(t *testing.T) {
 
 	// Ok span
 	oks := actualSpans.AppendEmpty()
-	oks.SetTraceID(uInt64ToTraceID(0, uint64(2)))
-	oks.SetSpanID(uInt64ToSpanID(uint64(2)))
+	oks.SetTraceID(idutils.UInt64ToTraceID(0, uint64(2)))
+	oks.SetSpanID(idutils.UInt64ToSpanID(uint64(2)))
 	oks.SetName("OK span")
 	oks.SetKind(ptrace.SpanKindServer)
 	oks.Status().SetCode(ptrace.StatusCodeOk)
@@ -257,8 +258,8 @@ func TestConfigZipkin(t *testing.T) {
 
 	// Long-running span
 	lrs := actualSpans.AppendEmpty()
-	lrs.SetTraceID(uInt64ToTraceID(0, uint64(3)))
-	lrs.SetSpanID(uInt64ToSpanID(uint64(3)))
+	lrs.SetTraceID(idutils.UInt64ToTraceID(0, uint64(3)))
+	lrs.SetSpanID(idutils.UInt64ToSpanID(uint64(3)))
 	lrs.SetName("Long-running span")
 	lrs.SetKind(ptrace.SpanKindServer)
 	lrs.Status().SetCode(ptrace.StatusCodeOk)
@@ -306,7 +307,7 @@ func TestConfigZipkin(t *testing.T) {
 
 func TestConfigHistogramTransform(t *testing.T) {
 	// arrange
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))
 	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "split_histogram.yaml"))
 	require.NoError(t, err)
 
@@ -314,8 +315,8 @@ func TestConfigHistogramTransform(t *testing.T) {
 	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
-	parsedConfig = replaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
-	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = testutil.ReplaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
+	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
 	configCleanup, err := col.PrepareConfig(parsedConfig)
 	require.NoError(t, err)
@@ -416,7 +417,7 @@ func TestConfigHistogramTransform(t *testing.T) {
 
 func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	// arrange
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))
 	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "spanmetrics.yaml"))
 	require.NoError(t, err)
 
@@ -424,8 +425,8 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
-	parsedConfig = replaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
-	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = testutil.ReplaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
+	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
 	// replaces the sampling decision wait so the test doesn't timeout
 	parsedConfig = strings.Replace(parsedConfig, "decision_wait: 30s", "decision_wait: 10ms", 1)
@@ -449,8 +450,8 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 
 	// Error ers
 	ers := actualSpans.AppendEmpty()
-	ers.SetTraceID(uInt64ToTraceID(0, uint64(1)))
-	ers.SetSpanID(uInt64ToSpanID(uint64(1)))
+	ers.SetTraceID(idutils.UInt64ToTraceID(0, uint64(1)))
+	ers.SetSpanID(idutils.UInt64ToSpanID(uint64(1)))
 	ers.SetName("Error span")
 	ers.SetKind(ptrace.SpanKindServer)
 	ers.Status().SetCode(ptrace.StatusCodeError)
@@ -459,8 +460,8 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 
 	// Ok span
 	oks := actualSpans.AppendEmpty()
-	oks.SetTraceID(uInt64ToTraceID(0, uint64(2)))
-	oks.SetSpanID(uInt64ToSpanID(uint64(2)))
+	oks.SetTraceID(idutils.UInt64ToTraceID(0, uint64(2)))
+	oks.SetSpanID(idutils.UInt64ToSpanID(uint64(2)))
 	oks.SetName("OK span")
 	oks.SetKind(ptrace.SpanKindServer)
 	oks.Status().SetCode(ptrace.StatusCodeOk)
@@ -469,8 +470,8 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 
 	// Long-running span
 	lrs := actualSpans.AppendEmpty()
-	lrs.SetTraceID(uInt64ToTraceID(0, uint64(3)))
-	lrs.SetSpanID(uInt64ToSpanID(uint64(3)))
+	lrs.SetTraceID(idutils.UInt64ToTraceID(0, uint64(3)))
+	lrs.SetSpanID(idutils.UInt64ToSpanID(uint64(3)))
 	lrs.SetName("Long-running span")
 	lrs.SetKind(ptrace.SpanKindServer)
 	lrs.Status().SetCode(ptrace.StatusCodeOk)
@@ -518,7 +519,7 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 }
 
 func TestSyslog_WithF5Receiver(t *testing.T) {
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))
 	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "syslog.yaml"))
 	require.NoError(t, err)
 
@@ -526,8 +527,8 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
-	parsedConfig = replaceSyslogF5ReceiverPort(parsedConfig, syslogReceiverPort)
-	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = testutil.ReplaceSyslogF5ReceiverPort(parsedConfig, syslogReceiverPort)
+	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
 	configCleanup, err := col.PrepareConfig(parsedConfig)
 	require.NoError(t, err)
@@ -545,8 +546,8 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	actualSimpleLog.Body().SetStr("simple_1")
 	actualSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(timestamp))
 	actualSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
-	actualSimpleLog.SetTraceID(uInt64ToTraceID(0, uint64(1)))
-	actualSimpleLog.SetSpanID(uInt64ToSpanID(uint64(2)))
+	actualSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(1)))
+	actualSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(2)))
 	actualSimpleLog.Attributes().PutStr("foo", "bar")
 
 	expectedSimpleLog := expectedLogs.AppendEmpty()
@@ -560,8 +561,8 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	expectedSimpleLogAttrDevice := expectedSimpleLog.Attributes().PutEmptyMap("device")
 	expectedSimpleLogAttrDevice.PutStr("type", "f5bigip")
 	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
-	expectedSimpleLog.SetTraceID(uInt64ToTraceID(0, uint64(0)))
-	expectedSimpleLog.SetSpanID(uInt64ToSpanID(uint64(0)))
+	expectedSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(0)))
+	expectedSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(0)))
 	expectedSimpleLog.Body().SetStr("<166> " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\" ] simple_1")
 	// ObservedTimestamp will be the time the receiver "observes" the log, so we test that the timestamp is after what's defined here.
 	expectedSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
@@ -605,7 +606,7 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 }
 
 func TestSyslog_WithHostReceiver(t *testing.T) {
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(CollectorTestsExecPath))
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))
 	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, "syslog.yaml"))
 	require.NoError(t, err)
 
@@ -613,8 +614,8 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	exporterPort := testutil.GetAvailablePort(t)
 
 	parsedConfig := string(cfg)
-	parsedConfig = replaceSyslogHostReceiverPort(parsedConfig, syslogReceiverPort)
-	parsedConfig = replaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = testutil.ReplaceSyslogHostReceiverPort(parsedConfig, syslogReceiverPort)
+	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
 	configCleanup, err := col.PrepareConfig(parsedConfig)
 	require.NoError(t, err)
@@ -632,8 +633,8 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	actualSimpleLog.Body().SetStr("simple_1")
 	actualSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(timestamp))
 	actualSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
-	actualSimpleLog.SetTraceID(uInt64ToTraceID(0, uint64(1)))
-	actualSimpleLog.SetSpanID(uInt64ToSpanID(uint64(2)))
+	actualSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(1)))
+	actualSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(2)))
 	actualSimpleLog.Attributes().PutStr("foo", "bar")
 
 	expectedSimpleLog := expectedLogs.AppendEmpty()
@@ -643,8 +644,8 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	expectedSimpleLogAttrDevice := expectedSimpleLog.Attributes().PutEmptyMap("device")
 	expectedSimpleLogAttrDevice.PutStr("type", "ubuntu-syslog")
 	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
-	expectedSimpleLog.SetTraceID(uInt64ToTraceID(0, uint64(0)))
-	expectedSimpleLog.SetSpanID(uInt64ToSpanID(uint64(0)))
+	expectedSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(0)))
+	expectedSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(0)))
 	expectedSimpleLog.Body().SetStr("<166> " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\" ] simple_1")
 	// ObservedTimestamp will be the time the receiver "observes" the log, so we test that the timestamp is after what's defined here.
 	expectedSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))

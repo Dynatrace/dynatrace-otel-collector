@@ -1,9 +1,7 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
-
-package testutil // import "github.com/open-telemetry/opentelemetry-collector-contrib/internal/common/testutil"
+package testutil
 
 import (
+	"fmt"
 	"net"
 	"os/exec"
 	"runtime"
@@ -110,19 +108,30 @@ func createExclusionsList(t testing.TB, exclusionsText string) []portpair {
 	var exclusions []portpair
 
 	parts := strings.Split(exclusionsText, "--------")
-	require.Equal(t, len(parts), 3)
+	require.Len(t, parts, 3)
 	portsText := strings.Split(parts[2], "*")
 	require.Greater(t, len(portsText), 1) // original text may have a suffix like " - Administered port exclusions."
 	lines := strings.Split(portsText[0], "\n")
 	for _, line := range lines {
 		if strings.TrimSpace(line) != "" {
 			entries := strings.Fields(strings.TrimSpace(line))
-			require.Equal(t, len(entries), 2)
+			require.Len(t, entries, 2)
 			pair := portpair{entries[0], entries[1]}
 			exclusions = append(exclusions, pair)
 		}
 	}
 	return exclusions
+}
+
+func GetAvailablePort(t testing.TB) int {
+	endpoint := GetAvailableLocalAddress(t)
+	_, port, err := net.SplitHostPort(endpoint)
+	require.NoError(t, err)
+
+	portInt, err := strconv.Atoi(port)
+	require.NoError(t, err)
+
+	return portInt
 }
 
 // Force the state of feature gate for a test
@@ -135,13 +144,32 @@ func SetFeatureGateForTest(t testing.TB, gate *featuregate.Gate, enabled bool) f
 	}
 }
 
-func GetAvailablePort(t testing.TB) int {
-	endpoint := GetAvailableLocalAddress(t)
-	_, port, err := net.SplitHostPort(endpoint)
-	require.NoError(t, err)
+const CollectorTestsExecPath string = "../../../bin/dynatrace-otel-collector"
 
-	portInt, err := strconv.Atoi(port)
-	require.NoError(t, err)
+func ReplaceOtlpGrpcReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "4317", strconv.Itoa(receiverPort), 1)
+}
 
-	return portInt
+func ReplaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "14250", strconv.Itoa(receiverPort), 1)
+}
+
+func ReplaceZipkinReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "9411", strconv.Itoa(receiverPort), 1)
+}
+
+func ReplaceSyslogHostReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "54527", strconv.Itoa(receiverPort), 1)
+}
+
+func ReplaceSyslogF5ReceiverPort(cfg string, receiverPort int) string {
+	return strings.Replace(cfg, "54526", strconv.Itoa(receiverPort), 1)
+}
+
+func ReplaceDynatraceExporterEndpoint(cfg string, exporterPort int) string {
+	r := strings.NewReplacer(
+		"${env:DT_ENDPOINT}", fmt.Sprintf("http://0.0.0.0:%v", exporterPort),
+		"${env:API_TOKEN}", "",
+	)
+	return r.Replace(cfg)
 }

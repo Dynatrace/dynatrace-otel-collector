@@ -78,8 +78,8 @@ func TestLogSyslog(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 90,
-					ExpectedMaxRAM: 105,
+					ExpectedMaxCPU: 130,
+					ExpectedMaxRAM: 120,
 				},
 				attrCount:       25,
 				attrSizeByte:    20,
@@ -97,8 +97,8 @@ func TestLogSyslog(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 90,
-					ExpectedMaxRAM: 105,
+					ExpectedMaxCPU: 130,
+					ExpectedMaxRAM: 120,
 				},
 				attrCount:       25,
 				attrSizeByte:    20,

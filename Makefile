@@ -146,4 +146,4 @@ gomoddownload:
 
 .PHONY: install-go-junit-report
 install-go-junit-report:
-	go install github.com/jstemmer/go-junit-report/v2@$(GO_JUNIT_REPORT_VERSION)
+	GOBIN=$(TOOLS_BIN_DIR) go install github.com/jstemmer/go-junit-report/v2@$(GO_JUNIT_REPORT_VERSION)

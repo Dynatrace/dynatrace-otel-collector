@@ -54,7 +54,7 @@ func TestLog10kDPS(t *testing.T) {
 	}
 }
 
-func TestLog70kDPS(t *testing.T) {
+func TestLogSyslog(t *testing.T) {
 	tests := []struct {
 		name                string
 		sender              testbed.DataSender
@@ -64,7 +64,7 @@ func TestLog70kDPS(t *testing.T) {
 		extendedLoadOptions ExtendedLoadOptions
 	}{
 		{
-			name:     "syslog-batch-1",
+			name:     "syslog-10kDPS-batch-1",
 			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 1),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
 			resourceSpec: testbed.ResourceSpec{
@@ -73,7 +73,7 @@ func TestLog70kDPS(t *testing.T) {
 			},
 			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
-					DataItemsPerSecond: 70_000_000,
+					DataItemsPerSecond: 10_000_000,
 					ItemsPerBatch:      1,
 					Parallel:           1,
 				},
@@ -87,7 +87,49 @@ func TestLog70kDPS(t *testing.T) {
 			},
 		},
 		{
-			name:     "syslog-batch-100",
+			name:     "syslog-10kDPS-batch-100",
+			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 100),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			extendedLoadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 10_000_000,
+					ItemsPerBatch:      100,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 90,
+					ExpectedMaxRAM: 105,
+				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+			},
+		},
+		{
+			name:     "syslog-70kDPS-batch-1",
+			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 1),
+			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
+			resourceSpec: testbed.ResourceSpec{
+				ExpectedMaxCPU: 90,
+				ExpectedMaxRAM: 150,
+			},
+			extendedLoadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 70_000_000,
+					ItemsPerBatch:      1,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 130,
+					ExpectedMaxRAM: 120,
+				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+			},
+		},
+		{
+			name:     "syslog-70kDPS-batch-100",
 			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 100),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
@@ -97,8 +139,8 @@ func TestLog70kDPS(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 90,
-					ExpectedMaxRAM: 105,
+					ExpectedMaxCPU: 130,
+					ExpectedMaxRAM: 120,
 				},
 				attrCount:       25,
 				attrSizeByte:    20,

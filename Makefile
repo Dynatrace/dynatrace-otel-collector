@@ -18,6 +18,9 @@ SOURCES := $(shell find internal/confmap -type f | sort )
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
 
+# renovate: datasource=github-releases depName=github.com/jstemmer/go-junit-report
+GO_JUNIT_REPORT_VERSION?=v2.1.0
+
 # Files to be copied directly from the project root
 CP_FILES = LICENSE README.md
 CP_FILES_DEST = $(addprefix $(BUILD_DIR)/, $(CP_FILES))
@@ -59,7 +62,7 @@ clean-tools:
 clean-all: clean clean-tools
 components: $(BIN)
 	$(BIN) components
-install-tools: $(TOOLS_BIN_NAMES)
+install-tools: install-go-junit-report $(TOOLS_BIN_NAMES)
 snapshot: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --snapshot --clean
 release: .goreleaser.yaml $(GORELEASER)
@@ -122,14 +125,6 @@ run-load-tests:
 	PWD=$(pwd)
 	GOJUNIT="$(PWD)/$(GOJUNIT)" $(MAKE) --no-print-directory -C internal/testbed/load run-tests
 
-TOOLS_MOD_DIR    := ./internal/tools
-TOOLS_MOD_REGEX  := "\s+_\s+\".*\""
-TOOLS_PKG_NAMES  := $(shell grep -E $(TOOLS_MOD_REGEX) < $(TOOLS_MOD_DIR)/tools.go | tr -d " _\"")
-TOOLS_BIN_NAMES  := $(addprefix .tools/, $(notdir $(TOOLS_PKG_NAMES)))
-
-.PHONY: install-tools
-install-tools: $(TOOLS_BIN_NAMES)
-
 FIND_MOD_ARGS=-type f -name "go.mod"
 TO_MOD_DIR=dirname {} \; | sort | grep -E '^./'
 INTERNAL_MODS := $(shell find ./internal/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
@@ -148,3 +143,7 @@ for-all-target: $(ALL_MODS)
 .PHONY: gomoddownload
 gomoddownload:
 	$(MAKE) --no-print-directory for-all-target TARGET="moddownload"
+
+.PHONY: install-go-junit-report
+install-go-junit-report:
+	go install github.com/jstemmer/go-junit-report/v2@$(GO_JUNIT_REPORT_VERSION)

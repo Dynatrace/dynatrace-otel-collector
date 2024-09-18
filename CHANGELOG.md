@@ -30,14 +30,17 @@ v0.109.0:
 - `pkg/ottl`: Add `Sort` function to sort array to ascending order or descending order ([#34200](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34200))
 - `transformprocessor`: Support aggregating metrics based on their attribute values and substituting the values with a new value. ([#16224](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/16224))
 - `redactionprocessor`: Add support for logs and metrics ([#34479](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34479))
-- `eecprovider`: Add informational headers to EEC provider requests ([#280](https://github.com/Dynatrace/dynatrace-otel-collector/pull/280))
-- `docs`: Added Dynatrace dashboards that can be used to inspect the collectors internal telemetry ([#274](https://github.com/Dynatrace/dynatrace-otel-collector/pull/274))
 
 ### 🧰 Bug fixes 🧰
   
 - `hostmetricsreceiver`: In filesystem scraper, do not prefix partitions when using the environment variable HOST_PROC_MOUNTINFO ([#35043](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35043))
 
 </details>
+
+### 💡 Enhancements 💡
+
+- `eecprovider`: Add informational headers to EEC provider requests ([#280](https://github.com/Dynatrace/dynatrace-otel-collector/pull/280))
+- `docs`: Added Dynatrace dashboards that can be used to inspect the collectors internal telemetry ([#274](https://github.com/Dynatrace/dynatrace-otel-collector/pull/274))
 
 ## v0.13.0
 

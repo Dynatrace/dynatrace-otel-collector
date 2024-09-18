@@ -39,6 +39,11 @@ v0.109.0:
 
 </details>
 
+### 💡 Enhancements 💡
+
+- `eecprovider`: Add informational headers to EEC provider requests ([#280](https://github.com/Dynatrace/dynatrace-otel-collector/pull/280))
+- `docs`: Added Dynatrace dashboards that can be used to inspect the collectors internal telemetry ([#274](https://github.com/Dynatrace/dynatrace-otel-collector/pull/274))
+
 ## v0.13.0
 
 This release includes version 0.108.0/0.108.1 of the upstream Collector components.

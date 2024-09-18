@@ -649,7 +649,8 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	expectedSimpleLog.Body().SetStr("<166>1 " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [test@12345 trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\"] simple_1")
 	// ObservedTimestamp will be the time the receiver "observes" the log, so we test that the timestamp is after what's defined here.
 	expectedSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
-	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(timestamp))
+	// the timestamp from the actual log will be discarded (it defaults to the beginning of Unix time)
+	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(time.Unix(0, 0)))
 
 	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
 	sender := datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)

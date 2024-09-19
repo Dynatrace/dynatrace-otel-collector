@@ -563,7 +563,7 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
 	expectedSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(0)))
 	expectedSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(0)))
-	expectedSimpleLog.Body().SetStr("<166> " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\" ] simple_1")
+	expectedSimpleLog.Body().SetStr("<166>1 " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [test@12345 trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\"] simple_1")
 	// ObservedTimestamp will be the time the receiver "observes" the log, so we test that the timestamp is after what's defined here.
 	expectedSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
 	// the timestamp from the actual log will be discarded (it defaults to the beginning of Unix time)
@@ -646,7 +646,7 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
 	expectedSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(0)))
 	expectedSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(0)))
-	expectedSimpleLog.Body().SetStr("<166> " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\" ] simple_1")
+	expectedSimpleLog.Body().SetStr("<166>1 " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [test@12345 trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\"] simple_1")
 	// ObservedTimestamp will be the time the receiver "observes" the log, so we test that the timestamp is after what's defined here.
 	expectedSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
 	// the timestamp from the actual log will be discarded (it defaults to the beginning of Unix time)

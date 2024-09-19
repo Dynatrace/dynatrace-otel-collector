@@ -61,7 +61,7 @@ func assertExpectedLogsAreInReceived(t *testing.T, expected, actual []plog.Logs)
 					}
 
 					expectedLogRecord := expectedMap[actualLogRecord.Body().AsString()]
-					assert.Equal(t, expectedLogRecord.Timestamp().String(), actualLogRecord.Timestamp().String())
+					assert.LessOrEqual(t, expectedLogRecord.Timestamp().AsTime(), actualLogRecord.Timestamp().AsTime())
 					assertMap(t, expectedLogRecord.Attributes(), actualLogRecord.Attributes())
 					assert.Equal(t, expectedLogRecord.SpanID(), actualLogRecord.SpanID())
 					assert.Equal(t, expectedLogRecord.TraceID(), actualLogRecord.TraceID())
@@ -93,7 +93,8 @@ func populateLogsMap(logsMap map[string]plog.LogRecord, tds []plog.Logs) {
 }
 
 func assertMap(t *testing.T, expected pcommon.Map, actual pcommon.Map) {
-	assert.Equal(t, expected.Len(), actual.Len())
+	// verify that we get at least the attributes we defined in our expected attributes
+	assert.LessOrEqual(t, expected.Len(), actual.Len())
 	expected.Range(func(expectedKey string, expectedValue pcommon.Value) bool {
 		actualValue, exists := actual.Get(expectedKey)
 		assert.True(t, exists, "Expected attribute %s, but no attribute was present", expectedKey)

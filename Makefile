@@ -9,7 +9,7 @@ BIN_DIR = bin
 SRC_ROOT := $(shell git rev-parse --show-toplevel)
 
 # ALL_MODULES includes ./* dirs (excludes . dir)
-ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
+ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -not -path "./internal/testbed/*" -exec dirname {} \; | sort | grep -E '^./' )
 # Append root module to all modules
 GOMODULES = $(ALL_MODULES)
 

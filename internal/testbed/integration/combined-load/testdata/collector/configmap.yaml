@@ -15,13 +15,18 @@ data:
             endpoint: ${env:MY_POD_IP}:4317
     processors:
       batch:
+        send_batch_max_size: 1000
+        timeout: 10s
+        send_batch_size : 800
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 100
 
     exporters:
       otlp:
         endpoint: {{ .HostEndpoint }}:4317
         tls:
           insecure: true
-      debug:
     service:
       extensions:
         - health_check
@@ -31,22 +36,22 @@ data:
             - otlp
           processors:
             - batch
+            - memory_limiter
           exporters:
             - otlp
-            - debug
         metrics:
           receivers:
             - otlp
           processors:
             - batch
+            - memory_limiter
           exporters:
             - otlp
-            - debug
         logs:
           receivers:
             - otlp
           processors:
             - batch
+            - memory_limiter
           exporters:
             - otlp
-            - debug

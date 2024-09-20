@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telemetrygen-logs-deployment
+  namespace: load-combined
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telemetrygen-logs-deployment
+  template:
+    metadata:
+      annotations:
+        workload: deployment
+      labels:
+        app: telemetrygen-logs-deployment
+    spec:
+      containers:
+        - command:
+            - /telemetrygen
+            - logs
+            - --otlp-insecure
+            - --otlp-endpoint={{ .OTLPEndpoint }}
+            - --duration=90s
+            - --rate=1000
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+          imagePullPolicy: IfNotPresent
+          name: telemetrygen
+      restartPolicy: Always

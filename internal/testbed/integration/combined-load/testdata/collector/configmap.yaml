@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-config
+  namespace: load-combined
+data:
+  relay: |
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: ${env:MY_POD_IP}:4317
+    processors:
+      batch:
+
+    exporters:
+      otlp:
+        endpoint: {{ .HostEndpoint }}:4317
+        tls:
+          insecure: true
+      debug:
+    service:
+      extensions:
+        - health_check
+      pipelines:
+        traces:
+          receivers:
+            - otlp
+          processors:
+            - batch
+          exporters:
+            - otlp
+            - debug
+        metrics:
+          receivers:
+            - otlp
+          processors:
+            - batch
+          exporters:
+            - otlp
+            - debug
+        logs:
+          receivers:
+            - otlp
+          processors:
+            - batch
+          exporters:
+            - otlp
+            - debug

@@ -22,7 +22,9 @@ spec:
             - --otlp-insecure
             - --otlp-endpoint={{ .OTLPEndpoint }}
             - --duration=90s
-            - --rate=1000
+            - --rate=5000
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --severity-text="loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongText"
           image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
           imagePullPolicy: IfNotPresent
           name: telemetrygen

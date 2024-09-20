@@ -83,7 +83,7 @@ func TestLoad_Combined(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Log("collecting data...")
-	for seconds := 15; seconds < 180; seconds += 15 {
+	for seconds := 15; seconds < 151; seconds += 15 {
 		time.Sleep(15 * time.Second)
 
 		//fetch metrics data

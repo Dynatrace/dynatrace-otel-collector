@@ -22,7 +22,7 @@ spec:
             - --otlp-insecure
             - --otlp-endpoint={{ .OTLPEndpoint }}
             - --rate=1000
-            - --duration=90s
+            - --duration=900s
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey1="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey2="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey3="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"

@@ -1,5 +1,76 @@
 # Combined load test
 
+This load test showcases the CPU and memory usage of the `dynatrace-collector` when accepting all
+types of data (logs, metrics, traces).
+[Telemetrygen](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/cmd/telemetrygen#telemetry-generator-for-opentelemetry)
+is used to generate data sent into the collector via OTLP.
+
+The generated data have the following parameters:
+
+- 1000 traces per second (size 1.2 KB)
+- 1MB logs per second
+- 1000 metrics per second (single datapoint; size 1.2KB)
+
+The test firstly sets up the [metrics-server](https://kubernetes-sigs.github.io/metrics-server/)
+in order to collect CPU and memory usage.
+Afterwards, `dynatrace-collector` and 3 `telemetrygen` pods (each for data type)
+are deployed.
+The data from the `metrics-server` are retrieved via `metricsAPIClient` each 15 seconds for 150 seconds
+and written out as part of the logs to showcase how the CPU and memory usage raises in the first 30-90 seconds
+and stabilizes afterwards.
+
+```shell
+$ KUBECONFIG=/Users/ondrej.dubaj/.kube/config CONTAINER_REGISTRY="localhost/" go test -v
+=== RUN   TestLoad_Combined
+    e2e_test.go:36: deploying metrics-server...
+    e2e_test.go:48: metrics-server deployed
+    collector.go:62: waiting for collector pods to be ready
+    collector.go:100: collector pods are ready
+    e2e_test.go:67: deploying telemetrygen...
+    e2e_test.go:78: telemetrygen deployed
+    e2e_test.go:85: collecting data...
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 15 second:
+    e2e_test.go:95: memory: 96Mi, cpu: 124m
+    e2e_test.go:96: ------------------------------------------------------
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 30 second:
+    e2e_test.go:95: memory: 117Mi, cpu: 127m
+    e2e_test.go:96: ------------------------------------------------------
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 45 second:
+    e2e_test.go:95: memory: 136Mi, cpu: 127m
+    e2e_test.go:96: ------------------------------------------------------
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 60 second:
+    e2e_test.go:95: memory: 161Mi, cpu: 127m
+    e2e_test.go:96: ------------------------------------------------------
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 75 second:
+    e2e_test.go:95: memory: 175Mi, cpu: 128m
+    e2e_test.go:96: ------------------------------------------------------
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 90 second:
+    e2e_test.go:95: memory: 203Mi, cpu: 126m
+    e2e_test.go:96: ------------------------------------------------------
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 105 second:
+    e2e_test.go:95: memory: 214Mi, cpu: 127m
+    e2e_test.go:96: ------------------------------------------------------
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 120 second:
+    e2e_test.go:95: memory: 214Mi, cpu: 127m
+    e2e_test.go:96: ------------------------------------------------------
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 135 second:
+    e2e_test.go:95: memory: 215Mi, cpu: 128m
+    e2e_test.go:96: ------------------------------------------------------
+    e2e_test.go:93: ------------------------------------------------------
+    e2e_test.go:94: data after 150 second:
+    e2e_test.go:95: memory: 218Mi, cpu: 126m
+    e2e_test.go:96: ------------------------------------------------------
+--- PASS: TestLoad_Combined (198.28s)
+```
 
 ## Requirements to run the test
 
@@ -85,5 +156,3 @@ KUBECONFIG="~/.kube/config" CONTAINER_REGISTRY="localhost/" go test -v
 cd internal/testbed/integration/combined-load
 KUBECONFIG="/Users/my-user/.kube/config" go test -v
 ```
-
-

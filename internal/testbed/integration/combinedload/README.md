@@ -5,7 +5,7 @@ types of data (logs, metrics, traces).
 [Telemetrygen](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/cmd/telemetrygen#telemetry-generator-for-opentelemetry)
 is used to generate data sent into the collector via OTLP.
 
-The generated data have the following parameters:
+The generated data has the following parameters:
 
 - 1000 traces per second (size 1.2 KB)
 - 1MB logs per second
@@ -13,10 +13,10 @@ The generated data have the following parameters:
 
 The test firstly sets up the [metrics-server](https://kubernetes-sigs.github.io/metrics-server/)
 in order to collect CPU and memory usage.
-Afterwards, `dynatrace-collector` and 3 `telemetrygen` pods (each for data type)
+Afterwards, `dynatrace-collector` and 3 `telemetrygen` pods (one for each data type)
 are deployed.
-The data from the `metrics-server` are retrieved via `metricsAPIClient` each 15 seconds for 150 seconds
-and written out as part of the logs to showcase how the CPU and memory usage raises in the first 30-90 seconds
+The data from the `metrics-server` is retrieved via `metricsAPIClient` every 15 seconds for 150 seconds
+and written out as part of the logs to showcase how the CPU and memory usage increases in the first 30-90 seconds
 and stabilizes afterwards.
 
 ```shell
@@ -102,9 +102,9 @@ This is done using the `make build` command.
 This will build the collector distro, and place the built binary 
 into the `bin` directory of your local copy of the repository.
 
-**NOTE:** When using an M1 mac, the `make build` command will build the `arm64` binary, which
+**NOTE:** When using an ARM-based Mac, the `make build` command will build the `arm64` binary, which
 will not be able to run as a container on a `kind` cluster.
-For now, as workaround you will need to use the `make build-all` command to build all binaries and then copy the
+For now, as a workaround you will need to use the `make build-all` command to build all binaries and then copy the
 `linux_amd64` binary from the `dist` directory into `bin` under the name `dynatrace-otel-collector`.
 
 ### Build the container

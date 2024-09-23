@@ -77,7 +77,7 @@ $ KUBECONFIG=/Users/ondrej.dubaj/.kube/config CONTAINER_REGISTRY="localhost/" go
 - Docker or Podman
 - Kind
 
-The tests require a running Kind k8s cluster. During the tests,
+The test requires a running Kind k8s cluster. During the test,
 a Dynatrace distribution of the OpenTelemetry Collector is deployed
 on the k8s cluster with configurations as per the Dynatrace documentation page.
 

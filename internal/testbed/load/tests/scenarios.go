@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -191,7 +192,7 @@ func PullBasedSenderScenario(
 
 	configStr := createConfigYaml(t, sender, receiver, resultDir, processors, extensions)
 
-	//configStr = strings.Replace(configStr, "scrape_interval: 100ms", "scrape_interval: 10ms", 1)
+	configStr = strings.Replace(configStr, "scrape_interval: 100ms", "scrape_interval: 10ms", 1)
 	configCleanup, err := agentProc.PrepareConfig(configStr)
 	require.NoError(t, err)
 	defer configCleanup()

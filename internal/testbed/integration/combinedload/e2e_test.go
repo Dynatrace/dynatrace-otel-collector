@@ -93,7 +93,7 @@ func TestLoad_Combined(t *testing.T) {
 		require.NoError(t, err)
 
 		t.Log("------------------------------------------------------")
-		t.Logf("data after %d second:", seconds)
+		t.Logf("data after %d seconds:", seconds)
 		t.Logf("memory: %s, cpu: %s", mem, cpu)
 		t.Log("------------------------------------------------------")
 	}

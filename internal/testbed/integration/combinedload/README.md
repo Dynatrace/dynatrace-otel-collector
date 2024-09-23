@@ -81,10 +81,6 @@ The tests require a running Kind k8s cluster. During the tests,
 a Dynatrace distribution of the OpenTelemetry Collector is deployed
 on the k8s cluster with configurations as per the Dynatrace documentation page.
 
-Traces are generated and sent to the Collector, which then
-exports to the test where the k8s attributes are asserted on the
-received traces.
-
 ## Running the tests locally
 
 To execute the tests locally, follow these steps:
@@ -135,9 +131,9 @@ cd ..
 
 ### Running the tests
 
-After the above steps are completed, the E2E tests can be run.
+After the above steps are completed, the load test can be run.
 
-Note that the tests will, by default, use the following `kubeconfig` path: `/tmp/kube-config-collector-e2e-testing`.
+Note that the test will, by default, use the following `kubeconfig` path: `/tmp/kube-config-collector-e2e-testing`.
 This path can be modified by setting the `KUBECONFIG` environment variable (in case you have a local kind cluster with the
 kube config located in `~/.kube.config`).
 Also, if you are using `podman`, the collector image will be prefixed with `localhost/` within the local

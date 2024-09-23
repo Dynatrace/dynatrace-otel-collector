@@ -143,16 +143,16 @@ kube config located in `~/.kube.config`).
 Also, if you are using `podman`, the collector image will be prefixed with `localhost/` within the local
 `kind` registry. In this case, you will need to set the `CONTAINER_REGISTRY` to `localhost/`.
 When using `docker`, setting the `CONTAINER_REGISTRY` env var is not required.
-Below are the commands to execute the `combined-load` e2e test:
+Below are the commands to execute the `combinedload` e2e test:
 
 ** Using podman:**
 ```shell
-cd internal/testbed/integration/combined-load
+cd internal/testbed/integration/combinedload
 KUBECONFIG="~/.kube/config" CONTAINER_REGISTRY="localhost/" go test -v
 ```
 
 ** Using docker:**
 ```shell
-cd internal/testbed/integration/combined-load
+cd internal/testbed/integration/combinedload
 KUBECONFIG="/Users/my-user/.kube/config" go test -v
 ```

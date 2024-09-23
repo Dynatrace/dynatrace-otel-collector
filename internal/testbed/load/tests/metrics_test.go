@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
 
@@ -151,6 +152,52 @@ func TestMetric100kDPS(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			GenericScenario(
+				t,
+				test.sender,
+				test.receiver,
+				performanceResultsSummary,
+				test.processors,
+				nil,
+				test.extendedLoadOptions,
+			)
+		})
+	}
+}
+
+func TestPrometheusMetric100kDPS(t *testing.T) {
+	tests := []struct {
+		name                string
+		sender              testbed.DataSender
+		receiver            testbed.DataReceiver
+		extendedLoadOptions ExtendedLoadOptions
+		resourceSpec        testbed.ResourceSpec
+		processors          map[string]string
+	}{
+		{
+			name:     "Prometheus",
+			sender:   datasenders.NewPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			extendedLoadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 1,
+					ItemsPerBatch:      1,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 70,
+					ExpectedMaxRAM: 105,
+				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+			},
+			processors: metricProcessors,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			PullBasedSenderScenario(
 				t,
 				test.sender,
 				test.receiver,

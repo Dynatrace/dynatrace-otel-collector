@@ -1,9 +1,11 @@
 package loadtest
 
 import (
+	"context"
 	"fmt"
 	"path"
 	"path/filepath"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -172,6 +174,72 @@ func GenericScenario(
 	tc.ValidateData()
 }
 
+func PullBasedSenderScenario(
+	t *testing.T,
+	sender testbed.DataSender,
+	receiver testbed.DataReceiver,
+	resultsSummary testbed.TestResultsSummary,
+	processors map[string]string,
+	extensions map[string]string,
+	loadOptions ExtendedLoadOptions,
+) {
+	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
+	require.NoError(t, err)
+	loadOptions = constructAttributes(loadOptions)
+
+	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
+
+	configStr := createConfigYaml(t, sender, receiver, resultDir, processors, extensions)
+
+	//configStr = strings.Replace(configStr, "scrape_interval: 100ms", "scrape_interval: 10ms", 1)
+	configCleanup, err := agentProc.PrepareConfig(configStr)
+	require.NoError(t, err)
+	defer configCleanup()
+
+	dataProvider := testbed.NewPerfTestDataProvider(*loadOptions.loadOptions)
+	tc := testbed.NewTestCase(
+		t,
+		dataProvider,
+		sender,
+		receiver,
+		agentProc,
+		&simpleTestcaseValidator{
+			perfTestValidator: &testbed.PerfTestValidator{},
+		},
+		resultsSummary,
+		testbed.WithResourceLimits(loadOptions.resourceSpec),
+	)
+	t.Cleanup(tc.Stop)
+
+	tc.StartBackend()
+
+	// first generate 10k metrics
+
+	sender.Start()
+	for i := 0; i < 1000; i++ {
+		dataItemsSent := atomic.Uint64{}
+		tc.LoadGenerator.(*testbed.ProviderSender).Provider.SetLoadGeneratorCounters(&dataItemsSent)
+		metrics, _ := tc.LoadGenerator.(*testbed.ProviderSender).Provider.GenerateMetrics()
+		sender.(testbed.MetricDataSender).ConsumeMetrics(context.Background(), metrics)
+		tc.LoadGenerator.IncDataItemsSent()
+	}
+
+	//tc.StartLoad(*loadOptions.loadOptions)
+	tc.StartAgent()
+
+	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, 30*time.Second, "load generator started")
+
+	tc.Sleep(tc.Duration)
+
+	tc.StopLoad()
+
+	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() <= tc.MockBackend.DataItemsReceived() },
+		time.Second*300,
+		"all data items received")
+
+	tc.ValidateData()
+}
+
 func constructAttributes(loadOptions ExtendedLoadOptions) ExtendedLoadOptions {
 	loadOptions.loadOptions.Attributes = make(map[string]string)
 
@@ -189,4 +257,15 @@ func genRandByteString(length int) string {
 		b[i] = byte(rand.Intn(128))
 	}
 	return string(b)
+}
+
+type simpleTestcaseValidator struct {
+	perfTestValidator *testbed.PerfTestValidator
+}
+
+func (simpleTestcaseValidator) Validate(tc *testbed.TestCase) {
+}
+
+func (s simpleTestcaseValidator) RecordResults(tc *testbed.TestCase) {
+	s.perfTestValidator.RecordResults(tc)
 }

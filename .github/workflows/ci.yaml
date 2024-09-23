@@ -22,18 +22,32 @@ jobs:
         with:
           go-version: "~1.22.6"
           check-latest: true
-          cache-dependency-path: internal/tools/go.sum
+          cache: false
       
       - name: Cache tools
+        id: cache-tools
         uses: actions/cache@v4
         with:
           path: .tools
           key: ci-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
 
-      - name: Touch tools
+      - name: Install tools
+        if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
           touch .tools/*
+          make install-tools
+
+      - name: Generate source files
+        run: make generate
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ci-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 
       - name: Build
         run: make build

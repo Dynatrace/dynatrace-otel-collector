@@ -223,7 +223,7 @@ func TestPrometheusMetric(t *testing.T) {
 			processors: metricProcessors,
 		},
 		{
-			name:     "Prometheus Prometheus 1kDPS - 10 Prometheus Endpoints",
+			name:     "Prometheus Prometheus 1kDPS - 5 Prometheus Endpoints",
 			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, getAvailablePorts(t, 5)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{

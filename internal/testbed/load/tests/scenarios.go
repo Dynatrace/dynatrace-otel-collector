@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -190,7 +191,7 @@ func PullBasedSenderScenario(
 	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 
 	configStr := createConfigYaml(t, sender, receiver, resultDir, processors, extensions)
-
+	configStr = strings.Replace(configStr, "scrape_interval: 100ms", "scrape_interval: 10ms", 1)
 	configCleanup, err := agentProc.PrepareConfig(configStr)
 	require.NoError(t, err)
 	defer configCleanup()
@@ -212,8 +213,7 @@ func PullBasedSenderScenario(
 
 	tc.StartBackend()
 
-	// first generate 10k metrics
-
+	// first generate a fixed number of metrics
 	sender.Start()
 	for i := 0; i < 1000; i++ {
 		dataItemsSent := atomic.Uint64{}
@@ -223,7 +223,6 @@ func PullBasedSenderScenario(
 		tc.LoadGenerator.IncDataItemsSent()
 	}
 
-	//tc.StartLoad(*loadOptions.loadOptions)
 	tc.StartAgent()
 
 	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, 30*time.Second, "load generator started")

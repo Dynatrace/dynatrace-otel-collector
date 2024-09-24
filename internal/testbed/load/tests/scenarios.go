@@ -16,13 +16,18 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
 
-type ExtendedLoadOptions struct {
-	loadOptions                *testbed.LoadOptions
-	resourceSpec               testbed.ResourceSpec
-	attrCount                  int
-	attrSizeByte               int
-	attrKeySizeByte            int
+type scrapeLoadOptions struct {
+	numberOfMetrics            int
 	scrapeIntervalMilliSeconds int
+}
+
+type ExtendedLoadOptions struct {
+	loadOptions       *testbed.LoadOptions
+	resourceSpec      testbed.ResourceSpec
+	attrCount         int
+	attrSizeByte      int
+	attrKeySizeByte   int
+	scrapeLoadOptions scrapeLoadOptions
 }
 
 // createConfigYaml creates a collector config file that corresponds to the
@@ -187,7 +192,6 @@ func PullBasedSenderScenario(
 ) {
 	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
 	require.NoError(t, err)
-	loadOptions = constructAttributes(loadOptions)
 
 	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 
@@ -197,7 +201,7 @@ func PullBasedSenderScenario(
 	configStr = strings.Replace(
 		configStr,
 		"scrape_interval: 100ms",
-		fmt.Sprintf("scrape_interval: %dms", loadOptions.scrapeIntervalMilliSeconds),
+		fmt.Sprintf("scrape_interval: %dms", loadOptions.scrapeLoadOptions.scrapeIntervalMilliSeconds),
 		1,
 	)
 	configCleanup, err := agentProc.PrepareConfig(configStr)
@@ -230,7 +234,7 @@ func PullBasedSenderScenario(
 	metricSender, ok := sender.(testbed.MetricDataSender)
 	require.True(t, ok)
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < loadOptions.scrapeLoadOptions.numberOfMetrics; i++ {
 		dataItemsSent := atomic.Uint64{}
 		providerSender.Provider.SetLoadGeneratorCounters(&dataItemsSent)
 		metrics, _ := providerSender.Provider.GenerateMetrics()

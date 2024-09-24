@@ -8,6 +8,7 @@ package loadtest
 // coded in this file or use scenarios from perf_scenarios.go.
 
 import (
+	datasenders2 "github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/load/tests/datasenders"
 	"testing"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
@@ -178,19 +179,22 @@ func TestPrometheusMetric(t *testing.T) {
 			sender:   datasenders.NewPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 70,
+					ExpectedMaxRAM: 130,
+				},
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: 1,
 					ItemsPerBatch:      1,
 					Parallel:           1,
 				},
-				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 70,
-					ExpectedMaxRAM: 130,
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+				scrapeLoadOptions: scrapeLoadOptions{
+					numberOfMetrics:            1000,
+					scrapeIntervalMilliSeconds: 100,
 				},
-				attrCount:                  25,
-				attrSizeByte:               20,
-				attrKeySizeByte:            100,
-				scrapeIntervalMilliSeconds: 100,
 			},
 			processors: metricProcessors,
 		},
@@ -199,19 +203,70 @@ func TestPrometheusMetric(t *testing.T) {
 			sender:   datasenders.NewPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 70,
+					ExpectedMaxRAM: 130,
+				},
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: 1,
 					ItemsPerBatch:      1,
 					Parallel:           1,
 				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+				scrapeLoadOptions: scrapeLoadOptions{
+					numberOfMetrics:            1000,
+					scrapeIntervalMilliSeconds: 10,
+				},
+			},
+			processors: metricProcessors,
+		},
+		{
+			name:     "Multi Prometheus 10kDPS",
+			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, getAvailablePorts(t, 10)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 70,
 					ExpectedMaxRAM: 130,
 				},
-				attrCount:                  25,
-				attrSizeByte:               20,
-				attrKeySizeByte:            100,
-				scrapeIntervalMilliSeconds: 10,
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 1,
+					ItemsPerBatch:      1,
+					Parallel:           1,
+				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+				scrapeLoadOptions: scrapeLoadOptions{
+					numberOfMetrics:            100,
+					scrapeIntervalMilliSeconds: 100,
+				},
+			},
+			processors: metricProcessors,
+		},
+		{
+			name:     "Multi Prometheus 100kDPS",
+			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, getAvailablePorts(t, 10)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			extendedLoadOptions: ExtendedLoadOptions{
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 70,
+					ExpectedMaxRAM: 130,
+				},
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 1,
+					ItemsPerBatch:      1,
+					Parallel:           1,
+				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+				scrapeLoadOptions: scrapeLoadOptions{
+					numberOfMetrics:            100,
+					scrapeIntervalMilliSeconds: 10,
+				},
 			},
 			processors: metricProcessors,
 		},
@@ -230,4 +285,13 @@ func TestPrometheusMetric(t *testing.T) {
 			)
 		})
 	}
+}
+
+func getAvailablePorts(t *testing.T, numberOfPorts int) []int {
+	ports := make([]int, numberOfPorts)
+
+	for i := 0; i < numberOfPorts; i++ {
+		ports[i] = testutil.GetAvailablePort(t)
+	}
+	return ports
 }

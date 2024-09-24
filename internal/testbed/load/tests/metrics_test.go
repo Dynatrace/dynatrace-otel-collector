@@ -164,7 +164,7 @@ func TestMetric100kDPS(t *testing.T) {
 	}
 }
 
-func TestPrometheusMetric100kDPS(t *testing.T) {
+func TestPrometheusMetric(t *testing.T) {
 	tests := []struct {
 		name                string
 		sender              testbed.DataSender
@@ -174,7 +174,7 @@ func TestPrometheusMetric100kDPS(t *testing.T) {
 		processors          map[string]string
 	}{
 		{
-			name:     "Prometheus",
+			name:     "Prometheus 10kDPS",
 			sender:   datasenders.NewPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
@@ -187,9 +187,31 @@ func TestPrometheusMetric100kDPS(t *testing.T) {
 					ExpectedMaxCPU: 70,
 					ExpectedMaxRAM: 130,
 				},
-				attrCount:       25,
-				attrSizeByte:    20,
-				attrKeySizeByte: 100,
+				attrCount:                  25,
+				attrSizeByte:               20,
+				attrKeySizeByte:            100,
+				scrapeIntervalMilliSeconds: 100,
+			},
+			processors: metricProcessors,
+		},
+		{
+			name:     "Prometheus 100kDPS",
+			sender:   datasenders.NewPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			extendedLoadOptions: ExtendedLoadOptions{
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 1,
+					ItemsPerBatch:      1,
+					Parallel:           1,
+				},
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 70,
+					ExpectedMaxRAM: 130,
+				},
+				attrCount:                  25,
+				attrSizeByte:               20,
+				attrKeySizeByte:            100,
+				scrapeIntervalMilliSeconds: 10,
 			},
 			processors: metricProcessors,
 		},

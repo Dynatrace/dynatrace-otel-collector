@@ -17,11 +17,12 @@ import (
 )
 
 type ExtendedLoadOptions struct {
-	loadOptions     *testbed.LoadOptions
-	resourceSpec    testbed.ResourceSpec
-	attrCount       int
-	attrSizeByte    int
-	attrKeySizeByte int
+	loadOptions                *testbed.LoadOptions
+	resourceSpec               testbed.ResourceSpec
+	attrCount                  int
+	attrSizeByte               int
+	attrKeySizeByte            int
+	scrapeIntervalMilliSeconds int
 }
 
 // createConfigYaml creates a collector config file that corresponds to the
@@ -191,7 +192,14 @@ func PullBasedSenderScenario(
 	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 
 	configStr := createConfigYaml(t, sender, receiver, resultDir, processors, extensions)
-	configStr = strings.Replace(configStr, "scrape_interval: 100ms", "scrape_interval: 10ms", 1)
+
+	// replace the default scrape interval duration with the interval defined in the load options
+	configStr = strings.Replace(
+		configStr,
+		"scrape_interval: 100ms",
+		fmt.Sprintf("scrape_interval: %dms", loadOptions.scrapeIntervalMilliSeconds),
+		1,
+	)
 	configCleanup, err := agentProc.PrepareConfig(configStr)
 	require.NoError(t, err)
 	defer configCleanup()
@@ -214,18 +222,23 @@ func PullBasedSenderScenario(
 	tc.StartBackend()
 
 	// first generate a fixed number of metrics
-	sender.Start()
+	err = sender.Start()
+	require.NoError(t, err)
+
+	providerSender, ok := tc.LoadGenerator.(*testbed.ProviderSender)
+	require.True(t, ok)
+	metricSender, ok := sender.(testbed.MetricDataSender)
+	require.True(t, ok)
+
 	for i := 0; i < 1000; i++ {
 		dataItemsSent := atomic.Uint64{}
-		tc.LoadGenerator.(*testbed.ProviderSender).Provider.SetLoadGeneratorCounters(&dataItemsSent)
-		metrics, _ := tc.LoadGenerator.(*testbed.ProviderSender).Provider.GenerateMetrics()
-		sender.(testbed.MetricDataSender).ConsumeMetrics(context.Background(), metrics)
+		providerSender.Provider.SetLoadGeneratorCounters(&dataItemsSent)
+		metrics, _ := providerSender.Provider.GenerateMetrics()
+		metricSender.ConsumeMetrics(context.Background(), metrics)
 		tc.LoadGenerator.IncDataItemsSent()
 	}
 
 	tc.StartAgent()
-
-	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, 30*time.Second, "load generator started")
 
 	tc.Sleep(tc.Duration)
 

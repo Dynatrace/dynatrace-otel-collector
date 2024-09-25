@@ -85,16 +85,24 @@ func TestLoad_Combined(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Log("collecting data...")
-	for seconds := 15; seconds < 151; seconds += 15 {
-		time.Sleep(15 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 150*time.Second)
+	defer cancel()
+	interval := 15 * time.Second
+	i := 0
+	for {
+		select {
+		case <-time.After(interval):
+			i += 1
+			//fetch metrics data
+			cpu, mem, err := k8stest.FetchPodMetrics(metricsClientSet, testNs, otelColPodName)
+			require.NoError(t, err)
 
-		//fetch metrics data
-		cpu, mem, err := k8stest.FetchPodMetrics(metricsClientSet, testNs, otelColPodName)
-		require.NoError(t, err)
-
-		t.Log("------------------------------------------------------")
-		t.Logf("data after %d seconds:", seconds)
-		t.Logf("memory: %s, cpu: %s", mem, cpu)
-		t.Log("------------------------------------------------------")
+			t.Log("------------------------------------------------------")
+			t.Logf("data after %d seconds:", i * int(interval.Seconds()))
+			t.Logf("memory: %s, cpu: %s", mem, cpu)
+			t.Log("------------------------------------------------------")
+		case <-ctx.Done():
+			break
+		}
 	}
 }

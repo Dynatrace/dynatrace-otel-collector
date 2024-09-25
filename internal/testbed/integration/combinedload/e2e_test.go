@@ -3,6 +3,7 @@
 package combinedload
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -98,11 +99,11 @@ func TestLoad_Combined(t *testing.T) {
 			require.NoError(t, err)
 
 			t.Log("------------------------------------------------------")
-			t.Logf("data after %d seconds:", i * int(interval.Seconds()))
+			t.Logf("data after %d seconds:", i*int(interval.Seconds()))
 			t.Logf("memory: %s, cpu: %s", mem, cpu)
 			t.Log("------------------------------------------------------")
 		case <-ctx.Done():
-			break
+			return
 		}
 	}
 }

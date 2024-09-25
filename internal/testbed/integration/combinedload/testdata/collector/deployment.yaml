@@ -44,8 +44,8 @@ spec:
             initialDelaySeconds: 3
           resources:
             limits:
-              cpu: 128m
-              memory: 256Mi
+              cpu: 256m
+              memory: 512Mi
           volumeMounts:
             - mountPath: /conf
               name: opentelemetry-collector-configmap

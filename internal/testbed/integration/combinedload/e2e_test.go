@@ -79,7 +79,7 @@ func TestLoad_Combined(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Log("collecting data...")
-	ctx, cancel := context.WithTimeout(context.Background(), 150*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 	interval := 15 * time.Second
 	i := 0

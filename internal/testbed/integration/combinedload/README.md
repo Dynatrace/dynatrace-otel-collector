@@ -144,11 +144,11 @@ Below are the commands to execute the `combinedload` e2e test:
 ** Using podman:**
 ```shell
 cd internal/testbed/integration/combinedload
-KUBECONFIG="~/.kube/config" CONTAINER_REGISTRY="localhost/" go test -v
+KUBECONFIG="~/.kube/config" CONTAINER_REGISTRY="localhost/" go test -v --tags=e2e
 ```
 
 ** Using docker:**
 ```shell
 cd internal/testbed/integration/combinedload
-KUBECONFIG="/Users/my-user/.kube/config" go test -v
+KUBECONFIG="/Users/my-user/.kube/config" go test -v --tags=e2e
 ```

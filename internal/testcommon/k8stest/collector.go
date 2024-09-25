@@ -30,6 +30,7 @@ func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, mani
 	var podNamespace string
 	var podLabels map[string]any
 	createdObjs := make([]*unstructured.Unstructured, 0, len(manifestFiles))
+	t.Log("Creating Collector objects...")
 	for _, manifestFile := range manifestFiles {
 		tmpl := template.Must(template.New(manifestFile.Name()).ParseFiles(filepath.Join(manifestsDir, manifestFile.Name())))
 		manifest := &bytes.Buffer{}
@@ -97,7 +98,7 @@ func WaitForCollectorToStart(t *testing.T, client *K8sClient, podNamespace strin
 			}
 		}
 		if podsNotReady == 0 {
-			t.Logf("collector pods are ready")
+			t.Log("Collector deployed successfully")
 			return true
 		}
 		return false

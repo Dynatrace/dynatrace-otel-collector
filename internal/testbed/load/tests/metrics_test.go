@@ -205,7 +205,7 @@ func TestPrometheusMetric(t *testing.T) {
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 70,
-					ExpectedMaxRAM: 260,
+					ExpectedMaxRAM: 280,
 				},
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: 1,

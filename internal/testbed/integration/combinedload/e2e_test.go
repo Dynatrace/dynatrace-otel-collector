@@ -1,5 +1,3 @@
-//go:build e2e
-
 package combinedload
 
 import (
@@ -11,8 +9,10 @@ import (
 	"time"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
+	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/consumer/consumertest"
 )
 
 func TestLoad_Combined(t *testing.T) {
@@ -32,6 +32,16 @@ func TestLoad_Combined(t *testing.T) {
 	defer func() {
 		require.NoErrorf(t, k8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
+
+	tracesConsumer := new(consumertest.TracesSink)
+	metricsConsumer := new(consumertest.MetricsSink)
+	logsConsumer := new(consumertest.LogsSink)
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Traces:  tracesConsumer,
+		Metrics: metricsConsumer,
+		Logs:    logsConsumer,
+	})
+	defer shutdownSinks()
 
 	// start up metrics-server
 	t.Log("deploying metrics-server...")

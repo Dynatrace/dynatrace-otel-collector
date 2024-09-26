@@ -39,7 +39,11 @@ func TestE2E_StatsdReceiver(t *testing.T) {
 	}()
 
 	metricsConsumer := new(consumertest.MetricsSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{Metrics: metricsConsumer})
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Metrics: &oteltest.MetricSinkConfig{
+			Consumer: metricsConsumer,
+		},
+	})
 	defer shutdownSinks()
 
 	// create collector

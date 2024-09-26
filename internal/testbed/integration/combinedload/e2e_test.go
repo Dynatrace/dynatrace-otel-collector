@@ -38,11 +38,29 @@ func TestLoad_Combined(t *testing.T) {
 	tracesConsumer := new(consumertest.TracesSink)
 	metricsConsumer := new(consumertest.MetricsSink)
 	logsConsumer := new(consumertest.LogsSink)
-	shutdownSinks := oteltest.StartUpSeparateSinks(t, oteltest.ReceiverSinks{
-		Traces:  tracesConsumer,
-		Metrics: metricsConsumer,
-		Logs:    logsConsumer,
-	}, "4328", "4329", "4327")
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Traces: &oteltest.TraceSinkConfig{
+			Consumer: tracesConsumer,
+			Ports: &oteltest.ReceiverPorts{
+				Grpc: 4327,
+				Http: 4427,
+			},
+		},
+		Metrics: &oteltest.MetricSinkConfig{
+			Consumer: metricsConsumer,
+			Ports: &oteltest.ReceiverPorts{
+				Grpc: 4328,
+				Http: 4428,
+			},
+		},
+		Logs: &oteltest.LogSinkConfig{
+			Consumer: logsConsumer,
+			Ports: &oteltest.ReceiverPorts{
+				Grpc: 4329,
+				Http: 4429,
+			},
+		},
+	})
 	defer func() {
 		// give some more time to the collector to finish exporting before stopping the sinks
 		// so we do not have any dropped data after the test is finished
@@ -51,19 +69,19 @@ func TestLoad_Combined(t *testing.T) {
 	}()
 
 	// start up metrics-server
-	// t.Log("deploying metrics-server...")
-	// err = k8stest.PerformOperationOnYAMLFiles(k8sClient, filepath.Join(testDir, "metrics-server"), k8stest.CreateObject)
-	// require.NoErrorf(t, err, "failed to create k8s metrics server")
+	t.Log("deploying metrics-server...")
+	err = k8stest.PerformOperationOnYAMLFiles(k8sClient, filepath.Join(testDir, "metrics-server"), k8stest.CreateObject)
+	require.NoErrorf(t, err, "failed to create k8s metrics server")
 
-	// defer func() {
-	// 	err = k8stest.PerformOperationOnYAMLFiles(k8sClient, filepath.Join(testDir, "metrics-server"), k8stest.DeleteObjectFromManifest)
-	// 	require.NoErrorf(t, err, "failed to delete k8s metrics server")
-	// }()
+	defer func() {
+		err = k8stest.PerformOperationOnYAMLFiles(k8sClient, filepath.Join(testDir, "metrics-server"), k8stest.DeleteObjectFromManifest)
+		require.NoErrorf(t, err, "failed to delete k8s metrics server")
+	}()
 
-	// wait for metrics server to be ready
-	// err = k8stest.WaitForDeploymentPods(k8sClient.DynamicClient, "kube-system", "metrics-server", 2*time.Minute)
-	// require.NoErrorf(t, err, "failed to rollout k8s metrics server")
-	// t.Log("metrics-server deployed")
+	wait for metrics server to be ready
+	err = k8stest.WaitForDeploymentPods(k8sClient.DynamicClient, "kube-system", "metrics-server", 2*time.Minute)
+	require.NoErrorf(t, err, "failed to rollout k8s metrics server")
+	t.Log("metrics-server deployed")
 
 	// get metrics client
 	metricsClientSet, err := k8stest.NewMetricsClientSet()

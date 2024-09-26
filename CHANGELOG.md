@@ -4,6 +4,88 @@
 
 <!-- next version -->
 
+## v0.15.0
+
+This release includes version 0.110.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.110.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.110.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.110.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 🛑 Breaking changes 🛑
+
+- `processorhelper`: Update incoming/outgoing metrics to a single metric with a `otel.signal` attributes. ([#11144](https://github.com/open-telemetry/opentelemetry-collector/pull/11144))
+  The following metrics were added in the previous version
+  - otelcol_processor_incoming_spans
+  - otelcol_processor_outgoing_spans
+  - otelcol_processor_incoming_metric_points
+  - otelcol_processor_outgoing_metric_points
+  - otelcol_processor_incoming_log_records
+  - otelcol_processor_outgoing_log_records
+
+  They are being replaced with the following to more closely align with OTEP 259:
+  - otelcol_processor_incoming_items
+  - otelcol_processor_outgoing_items
+
+- `processorhelper`: Remove deprecated `[Traces|Metrics|Logs]`Inserted funcs ([#11151](https://github.com/open-telemetry/opentelemetry-collector/pull/11151))
+- `config`: Mark UseLocalHostAsDefaultHostfeatureGate as stable ([#11235](https://github.com/open-telemetry/opentelemetry-collector/pull/11235))
+- `pkg/stanza`: Move `filelog.container.removeOriginalTimeField` feature gate to beta ([#33389](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33389))
+  - Disable the `filelog.container.removeOriginalTimeField` feature gate to get the old behavior.
+
+- `resourcedetectionprocessor`: Move `processor.resourcedetection.hostCPUSteppingAsString` feature gate to stable. ([#31136](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/31136))
+- `resourcedetectionprocessor`: Remove `processor.resourcedetection.hostCPUModelAndFamilyAsString` feature gate. ([#29025](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/29025))
+
+### 🚩 Deprecations 🚩
+
+- `processorhelper`: deprecate accepted/refused/dropped metrics ([#11201](https://github.com/open-telemetry/opentelemetry-collector/pull/11201))
+  The following metrics are being deprecated as they were only used in a single
+  processor:
+  - `otelcol_processor_accepted_log_records`
+  - `otelcol_processor_accepted_metric_points`
+  - `otelcol_processor_accepted_spans`
+  - `otelcol_processor_dropped_log_records`
+  - `otelcol_processor_dropped_metric_points`
+  - `otelcol_processor_dropped_spans`
+  - `otelcol_processor_refused_log_records`
+  - `otelcol_processor_refused_metric_points`
+  - `otelcol_processor_refused_spans`
+- `hostmetricsreceiver`: Set the receiver.hostmetrics.normalizeProcessCPUUtilization feature gate to stable. ([#34763](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34763))
+
+### 💡 Enhancements 💡
+
+- `mdatagen`: Add stability field to telemetry metrics, allowing the generated description to include a stability string. ([#11160](https://github.com/open-telemetry/opentelemetry-collector/pull/11160))
+- `confmap/provider/envprovider`: Support default values when env var is empty ([#5228](https://github.com/open-telemetry/opentelemetry-collector/pull/5228))
+- `service/telemetry`: Mark useOtelWithSDKConfigurationForInternalTelemetry as stable ([#7532](https://github.com/open-telemetry/opentelemetry-collector/pull/7532))
+- `mdatagen`: mdatagen `validateMetrics()` support validate metrics in `telemetry.metric` ([#10925](https://github.com/open-telemetry/opentelemetry-collector/pull/10925))
+- `mdatagen`: Use cobra for the command, add version flag ([#11196](https://github.com/open-telemetry/opentelemetry-collector/pull/11196))
+- `processor/transform`: Add custom function to the transform processor to convert exponential histograms to explicit histograms. ([#33827](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33827))
+- `pkg/ottl`: Improved JSON unmarshaling performance by 10-20% by switching dependencies. ([#35130](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35130))
+- `pkg/ottl`: Added support for locale in the Time converter ([#32978](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/32978))
+- `transformprocessor`: Remove unnecessary data copy when transform sum to/from gauge ([#35177](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35177))
+- `tailsamplingprocessor`: Fix the behavior for numeric tag filters with `inverse_match` set to `true`. ([#34296](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34296))
+
+### 🧰 Bug fixes 🧰
+
+- `service`: Ensure process telemetry is registered when internal telemetry is configured with readers instead of an address. ([#11093](https://github.com/open-telemetry/opentelemetry-collector/pull/11093))
+- `mdatagen`: Fix incorrect generation of metric tests with boolean attributes. ([#11169](https://github.com/open-telemetry/opentelemetry-collector/pull/11169))
+- `otelcol`: Fix the Windows Event Log configuration when running the Collector as a Windows service. ([#5297](https://github.com/open-telemetry/opentelemetry-collector/pull/5297), [#11051](https://github.com/open-telemetry/opentelemetry-collector/pull/11051))
+- `confmap`: Fix loading config of a component from a different source. ([#11154](https://github.com/open-telemetry/opentelemetry-collector/pull/11154))
+  This issue only affected loading the whole component config, loading parts of a component config from a different source was working correctly.
+- `pkg/stanza`: Do not get formatted message for Windows events without an event provider. ([#35135](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35135))
+  Attempting to get the formatted message for Windows events without an event provider can result in an error being logged. |
+  This change ensures that the formatted message is not retrieved for such events.
+- `prometheusreceiver`: Fix the retrieval of scrape configurations by also considering scrape config files ([#34786](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34786))
+- `redactionprocessor`: Fix panic when using the redaction processor in a logs pipeline ([#35331](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35331))
+
+</details>
+
 ## 0.14.0
 
 This release includes version 0.109.0 of the upstream Collector components.

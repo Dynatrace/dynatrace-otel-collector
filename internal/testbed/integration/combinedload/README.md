@@ -7,9 +7,9 @@ is used to generate data sent into the collector via OTLP.
 
 The generated data has the following parameters:
 
-- 1000 traces per second
+- 1000 traces per second (~1.2KB size)
 - 1MB logs per second
-- 1000 metrics per second
+- 1000 metrics per second (~1.2KB size with single datapoint)
 
 The test firstly sets up the [metrics-server](https://kubernetes-sigs.github.io/metrics-server/)
 in order to collect CPU and memory usage.

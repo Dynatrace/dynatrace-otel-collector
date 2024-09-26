@@ -6,7 +6,7 @@
 
 ## v0.15.0
 
-This release includes version XX.YY.ZZ of the upstream Collector components.
+This release includes version 0.110.0 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 

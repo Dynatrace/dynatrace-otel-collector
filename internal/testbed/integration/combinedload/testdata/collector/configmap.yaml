@@ -24,9 +24,18 @@ data:
 
     exporters:
       otlp:
-        endpoint: {{ .HostEndpoint }}:4317
+        endpoint: {{ .HostEndpoint }}:4327
         tls:
           insecure: true
+      otlp/2:
+        endpoint: {{ .HostEndpoint }}:4328
+        tls:
+          insecure: true
+      otlp/3:
+        endpoint: {{ .HostEndpoint }}:4329
+        tls:
+          insecure: true
+
     service:
       extensions:
         - health_check
@@ -46,7 +55,7 @@ data:
             - batch
             - memory_limiter
           exporters:
-            - otlp
+            - otlp/2
         logs:
           receivers:
             - otlp
@@ -54,4 +63,4 @@ data:
             - batch
             - memory_limiter
           exporters:
-            - otlp
+            - otlp/3

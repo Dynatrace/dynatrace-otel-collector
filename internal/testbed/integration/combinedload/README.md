@@ -7,9 +7,9 @@ is used to generate data sent into the collector via OTLP.
 
 The generated data has the following parameters:
 
-- 1000 traces per second (size 1.2 KB)
+- 1000 traces per second
 - 1MB logs per second
-- 1000 metrics per second (single datapoint; size 1.2KB)
+- 1000 metrics per second
 
 The test firstly sets up the [metrics-server](https://kubernetes-sigs.github.io/metrics-server/)
 in order to collect CPU and memory usage.
@@ -22,6 +22,8 @@ and stabilizes afterwards.
 ```shell
 $ KUBECONFIG=/Users/ondrej.dubaj/.kube/config CONTAINER_REGISTRY="localhost/" go test -v --tags=e2e
 === RUN   TestLoad_Combined
+    e2e_test.go:72: deploying metrics-server...
+    e2e_test.go:84: metrics-server deployed
     collector.go:33: Creating Collector objects...
     collector.go:63: waiting for collector pods to be ready
     collector.go:101: Collector deployed successfully

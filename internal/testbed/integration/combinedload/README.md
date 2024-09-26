@@ -20,56 +20,59 @@ and written out as part of the logs to showcase how the CPU and memory usage inc
 and stabilizes afterwards.
 
 ```shell
-$ KUBECONFIG=/Users/ondrej.dubaj/.kube/config CONTAINER_REGISTRY="localhost/" go test -v
+$ KUBECONFIG=/Users/ondrej.dubaj/.kube/config CONTAINER_REGISTRY="localhost/" go test -v --tags=e2e
 === RUN   TestLoad_Combined
-    e2e_test.go:36: deploying metrics-server...
-    e2e_test.go:48: metrics-server deployed
-    collector.go:62: waiting for collector pods to be ready
-    collector.go:100: collector pods are ready
-    e2e_test.go:67: deploying telemetrygen...
-    e2e_test.go:78: telemetrygen deployed
-    e2e_test.go:85: collecting data...
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 15 second:
-    e2e_test.go:95: memory: 96Mi, cpu: 124m
-    e2e_test.go:96: ------------------------------------------------------
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 30 second:
-    e2e_test.go:95: memory: 117Mi, cpu: 127m
-    e2e_test.go:96: ------------------------------------------------------
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 45 second:
-    e2e_test.go:95: memory: 136Mi, cpu: 127m
-    e2e_test.go:96: ------------------------------------------------------
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 60 second:
-    e2e_test.go:95: memory: 161Mi, cpu: 127m
-    e2e_test.go:96: ------------------------------------------------------
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 75 second:
-    e2e_test.go:95: memory: 175Mi, cpu: 128m
-    e2e_test.go:96: ------------------------------------------------------
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 90 second:
-    e2e_test.go:95: memory: 203Mi, cpu: 126m
-    e2e_test.go:96: ------------------------------------------------------
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 105 second:
-    e2e_test.go:95: memory: 214Mi, cpu: 127m
-    e2e_test.go:96: ------------------------------------------------------
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 120 second:
-    e2e_test.go:95: memory: 214Mi, cpu: 127m
-    e2e_test.go:96: ------------------------------------------------------
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 135 second:
-    e2e_test.go:95: memory: 215Mi, cpu: 128m
-    e2e_test.go:96: ------------------------------------------------------
-    e2e_test.go:93: ------------------------------------------------------
-    e2e_test.go:94: data after 150 second:
-    e2e_test.go:95: memory: 218Mi, cpu: 126m
-    e2e_test.go:96: ------------------------------------------------------
---- PASS: TestLoad_Combined (198.28s)
+    collector.go:33: Creating Collector objects...
+    collector.go:63: waiting for collector pods to be ready
+    collector.go:101: Collector deployed successfully
+    telemetrygen.go:50: Creating telemetrygen object from manifest deployment-logs.yaml
+    telemetrygen.go:50: Creating telemetrygen object from manifest deployment-metrics.yaml
+    telemetrygen.go:50: Creating telemetrygen object from manifest deployment-traces.yaml
+    telemetrygen.go:82: Telemetrygen pod with app label telemetrygen-logs-deployment started successfully
+    telemetrygen.go:82: Telemetrygen pod with app label telemetrygen-metrics-deployment started successfully
+    telemetrygen.go:82: Telemetrygen pod with app label telemetrygen-traces-deployment started successfully
+    e2e_test.go:116: collecting data...
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 15 seconds:
+    e2e_test.go:132: memory: 103Mi, cpu: 221m
+    e2e_test.go:133: ------------------------------------------------------
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 30 seconds:
+    e2e_test.go:132: memory: 133Mi, cpu: 248m
+    e2e_test.go:133: ------------------------------------------------------
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 45 seconds:
+    e2e_test.go:132: memory: 136Mi, cpu: 250m
+    e2e_test.go:133: ------------------------------------------------------
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 60 seconds:
+    e2e_test.go:132: memory: 126Mi, cpu: 250m
+    e2e_test.go:133: ------------------------------------------------------
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 75 seconds:
+    e2e_test.go:132: memory: 126Mi, cpu: 250m
+    e2e_test.go:133: ------------------------------------------------------
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 90 seconds:
+    e2e_test.go:132: memory: 129Mi, cpu: 249m
+    e2e_test.go:133: ------------------------------------------------------
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 105 seconds:
+    e2e_test.go:132: memory: 133Mi, cpu: 249m
+    e2e_test.go:133: ------------------------------------------------------
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 120 seconds:
+    e2e_test.go:132: memory: 139Mi, cpu: 250m
+    e2e_test.go:133: ------------------------------------------------------
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 135 seconds:
+    e2e_test.go:132: memory: 129Mi, cpu: 249m
+    e2e_test.go:133: ------------------------------------------------------
+    e2e_test.go:130: ------------------------------------------------------
+    e2e_test.go:131: data after 150 seconds:
+    e2e_test.go:132: memory: 130Mi, cpu: 250m
+    e2e_test.go:133: ------------------------------------------------------
+--- PASS: TestLoad_Combined (174.92s)
 ```
 
 ## Requirements to run the test

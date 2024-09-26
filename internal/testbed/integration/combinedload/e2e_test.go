@@ -78,7 +78,7 @@ func TestLoad_Combined(t *testing.T) {
 		require.NoErrorf(t, err, "failed to delete k8s metrics server")
 	}()
 
-	wait for metrics server to be ready
+	// wait for metrics server to be ready
 	err = k8stest.WaitForDeploymentPods(k8sClient.DynamicClient, "kube-system", "metrics-server", 2*time.Minute)
 	require.NoErrorf(t, err, "failed to rollout k8s metrics server")
 	t.Log("metrics-server deployed")

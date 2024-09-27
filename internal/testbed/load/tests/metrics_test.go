@@ -18,16 +18,16 @@ import (
 
 var (
 	metricProcessors = map[string]string{
+		"memory_limiter": `
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 100
+`,
 		"batch": `
   batch:
     send_batch_max_size: 1000
     timeout: 10s
     send_batch_size : 800
-`,
-		"memory_limiter": `
-  memory_limiter:
-    check_interval: 1s
-    limit_percentage: 100
 `,
 	}
 )

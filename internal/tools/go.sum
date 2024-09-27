@@ -385,6 +385,8 @@ github.com/google/go-containerregistry v0.20.2 h1:B1wPJ1SN/S7pB+ZAimcciVD+r+yV/l
 github.com/google/go-containerregistry v0.20.2/go.mod h1:z38EKdKh4h7IP2gSfUUqEvalZBqs6AoLeWfUy34nQC8=
 github.com/google/go-github/v64 v64.0.0 h1:4G61sozmY3eiPAjjoOHponXDBONm+utovTKbyUb2Qdg=
 github.com/google/go-github/v64 v64.0.0/go.mod h1:xB3vqMQNdHzilXBiO2I+M7iEFtHf+DP/omBOv6tQzVo=
+github.com/google/go-github/v65 v65.0.0 h1:pQ7BmO3DZivvFk92geC0jB0q2m3gyn8vnYPgV7GSLhQ=
+github.com/google/go-github/v65 v65.0.0/go.mod h1:DvrqWo5hvsdhJvHd4WyVF9ttANN3BniqjP8uTFMNb60=
 github.com/google/go-querystring v1.1.0 h1:AnCroh3fv4ZBgVIf1Iwtovgjaw/GiKJo8M8yD/fhyJ8=
 github.com/google/go-querystring v1.1.0/go.mod h1:Kcdr2DB4koayq7X8pmAG4sNG59So17icRSOU623lUBU=
 github.com/google/go-replayers/grpcreplay v1.3.0 h1:1Keyy0m1sIpqstQmgz307zhiJ1pV4uIlFds5weTmxbo=
@@ -425,6 +427,8 @@ github.com/goreleaser/fileglob v1.3.0 h1:/X6J7U8lbDpQtBvGcwwPS6OpzkNVlVEsFUVRx9+
 github.com/goreleaser/fileglob v1.3.0/go.mod h1:Jx6BoXv3mbYkEzwm9THo7xbr5egkAraxkGorbJb4RxU=
 github.com/goreleaser/goreleaser/v2 v2.3.1 h1:yPL8rveS1O7ciSL2nvE2jIvODsbft/sZn00tTbD06Yg=
 github.com/goreleaser/goreleaser/v2 v2.3.1/go.mod h1:dT4DJ7SNi/u7F8DfILpU7rQUpaT/+sUa+zGDpSIEStY=
+github.com/goreleaser/goreleaser/v2 v2.3.2 h1:/fSs+KwmCXCXN4eeI27z/xp1+FwIS4rWisL6aTUeiGw=
+github.com/goreleaser/goreleaser/v2 v2.3.2/go.mod h1:i5/tmwfer2ICvfrECPWTR5CetxCPRr+sYi6/vmb5S/E=
 github.com/goreleaser/nfpm/v2 v2.40.0 h1:M6WaaHeTCgNopUo9e8zgeHlOiN65LZAKqogzCJXBwYQ=
 github.com/goreleaser/nfpm/v2 v2.40.0/go.mod h1:i9IfzvnHInDQohFs7iVHpWBoGaSDRp0+KG7KzNUXzns=
 github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
@@ -770,6 +774,8 @@ go.opentelemetry.io/build-tools/chloggen v0.14.0 h1:qVal1JO6V5xTaQ6b07eBAcc0jyCb
 go.opentelemetry.io/build-tools/chloggen v0.14.0/go.mod h1:+lbmAIYUT2OewAXITyvPACRxruPm44tNH4k6hIUuasE=
 go.opentelemetry.io/collector/cmd/builder v0.109.0 h1:qjvkUd3Iztg9HBQyUALPtrxAof64QsxXg49kD4DRYBk=
 go.opentelemetry.io/collector/cmd/builder v0.109.0/go.mod h1:ff6h/vfPWVFkUGgslqJ01oKnWyp3zcMLuIQjbk3rQ4g=
+go.opentelemetry.io/collector/cmd/builder v0.110.0 h1:GTtRx84MLDgi84XltxGUxb2bK5I6ekYU3jVLQapKgiY=
+go.opentelemetry.io/collector/cmd/builder v0.110.0/go.mod h1:oNQI2VPkU8UD2CQe1NhmbrU8U4nGdfg2VyLymVm8XoA=
 go.opentelemetry.io/contrib/exporters/autoexport v0.46.1 h1:ysCfPZB9AjUlMa1UHYup3c9dAOCMQX/6sxSfPBUoxHw=
 go.opentelemetry.io/contrib/exporters/autoexport v0.46.1/go.mod h1:ha0aiYm+DOPsLHjh0zoQ8W8sLT+LJ58J3j47lGpSLrU=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.53.0 h1:9G6E0TXzGFVfTnawRzrPl83iHOAV7L8NJiR8RSGYV1g=

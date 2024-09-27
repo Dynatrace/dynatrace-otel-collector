@@ -132,7 +132,7 @@ func GenericScenario(
 ) {
 	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
 	require.NoError(t, err)
-	constructAttributes(loadOptions)
+	loadOptions = constructAttributes(loadOptions)
 
 	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 

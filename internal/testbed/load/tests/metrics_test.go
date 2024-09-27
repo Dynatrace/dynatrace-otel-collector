@@ -224,7 +224,7 @@ func TestPrometheusMetric(t *testing.T) {
 		},
 		{
 			name:     "Prometheus Prometheus 1kDPS - 5 Prometheus Endpoints",
-			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, getAvailablePorts(t, 5)),
+			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePorts(t, 5)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
@@ -261,13 +261,4 @@ func TestPrometheusMetric(t *testing.T) {
 			)
 		})
 	}
-}
-
-func getAvailablePorts(t *testing.T, numberOfPorts int) []int {
-	ports := make([]int, numberOfPorts)
-
-	for i := 0; i < numberOfPorts; i++ {
-		ports[i] = testutil.GetAvailablePort(t)
-	}
-	return ports
 }

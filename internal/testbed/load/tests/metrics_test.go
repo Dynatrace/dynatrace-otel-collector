@@ -18,16 +18,16 @@ import (
 
 var (
 	metricProcessors = map[string]string{
+		"memory_limiter": `
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 100
+`,
 		"batch": `
   batch:
     send_batch_max_size: 1000
     timeout: 10s
     send_batch_size : 800
-`,
-		"memory_limiter": `
-  memory_limiter:
-    check_interval: 1s
-    limit_percentage: 100
 `,
 	}
 )
@@ -225,6 +225,30 @@ func TestPrometheusMetric(t *testing.T) {
 		{
 			name:     "Prometheus Prometheus 1kDPS - 5 Prometheus Endpoints",
 			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, getAvailablePorts(t, 5)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			extendedLoadOptions: ExtendedLoadOptions{
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 150,
+					ExpectedMaxRAM: 280,
+				},
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 1,
+					ItemsPerBatch:      1,
+					Parallel:           1,
+				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+				scrapeLoadOptions: scrapeLoadOptions{
+					numberOfMetrics:            1000,
+					scrapeIntervalMilliSeconds: 1000,
+				},
+			},
+			processors: metricProcessors,
+		},
+		{
+			name:     "Prometheus Prometheus 1kDPS - 10 Prometheus Endpoints",
+			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, getAvailablePorts(t, 10)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{

@@ -7,7 +7,7 @@ This document describes the steps to release a new version of the Dynatrace dist
 Before starting a release, make a PR against to verify and update the following:
 
 1. Make sure that there were no updates to the linux packages
-   - check the goreleaser files upstream for changes under the `nfpms` key
+   - check the [goreleaser files upstream](https://github.com/open-telemetry/opentelemetry-collector-releases/blob/main/distributions/otelcol-contrib/.goreleaser.yaml) for changes under the `nfpms` key
    - check the upstream installation lifecycle scripts as well as the service config files for changes:
      - `postinstall.sh`
      - `preinstall.sh`

@@ -34,7 +34,11 @@ func TestE2E_RedactionProcessor(t *testing.T) {
 	}()
 
 	tracesConsumer := new(consumertest.TracesSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{Traces: tracesConsumer})
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Traces: &oteltest.TraceSinkConfig{
+			Consumer: tracesConsumer,
+		},
+	})
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]

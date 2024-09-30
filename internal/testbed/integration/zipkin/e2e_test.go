@@ -4,14 +4,15 @@ package zipkin
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 // TestE2E_ZipkinReceiver tests the "Ingest data from Zipkin" use case
@@ -35,7 +36,11 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	}()
 
 	tracesConsumer := new(consumertest.TracesSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{Traces: tracesConsumer})
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Traces: &oteltest.TraceSinkConfig{
+			Consumer: tracesConsumer,
+		},
+	})
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]

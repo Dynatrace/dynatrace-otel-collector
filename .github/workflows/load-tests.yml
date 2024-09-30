@@ -13,7 +13,7 @@ on:
 jobs:
   setup-environment:
     timeout-minutes: 30
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -59,7 +59,7 @@ jobs:
           path: ./bin/*
 
   loadtest:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [setup-environment]
     steps:
       - name: Check out code
@@ -124,7 +124,7 @@ jobs:
           path: internal/testbed/load/tests/results/load-tests.json
 
   update-benchmarks:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [loadtest]
     if: github.event_name == 'push'
     steps:

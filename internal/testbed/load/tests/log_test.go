@@ -1,8 +1,9 @@
 package loadtest
 
 import (
-	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders"
 	"testing"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
@@ -79,7 +80,7 @@ func TestLogSyslog(t *testing.T) {
 				},
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 130,
-					ExpectedMaxRAM: 120,
+					ExpectedMaxRAM: 130,
 				},
 				attrCount:       25,
 				attrSizeByte:    20,

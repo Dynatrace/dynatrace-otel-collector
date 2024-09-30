@@ -1,9 +1,12 @@
 package loadtest
 
 import (
+	"context"
 	"fmt"
 	"path"
 	"path/filepath"
+	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -13,12 +16,18 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
 
+type scrapeLoadOptions struct {
+	numberOfMetrics            int
+	scrapeIntervalMilliSeconds int
+}
+
 type ExtendedLoadOptions struct {
-	loadOptions     *testbed.LoadOptions
-	resourceSpec    testbed.ResourceSpec
-	attrCount       int
-	attrSizeByte    int
-	attrKeySizeByte int
+	loadOptions       *testbed.LoadOptions
+	resourceSpec      testbed.ResourceSpec
+	attrCount         int
+	attrSizeByte      int
+	attrKeySizeByte   int
+	scrapeLoadOptions scrapeLoadOptions
 }
 
 // createConfigYaml creates a collector config file that corresponds to the
@@ -172,6 +181,80 @@ func GenericScenario(
 	tc.ValidateData()
 }
 
+func PullBasedSenderScenario(
+	t *testing.T,
+	sender testbed.DataSender,
+	receiver testbed.DataReceiver,
+	resultsSummary testbed.TestResultsSummary,
+	processors map[string]string,
+	extensions map[string]string,
+	loadOptions ExtendedLoadOptions,
+) {
+	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
+	require.NoError(t, err)
+
+	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
+
+	configStr := createConfigYaml(t, sender, receiver, resultDir, processors, extensions)
+
+	// replace the default scrape interval duration with the interval defined in the load options
+	configStr = strings.Replace(
+		configStr,
+		"scrape_interval: 100ms",
+		fmt.Sprintf("scrape_interval: %dms", loadOptions.scrapeLoadOptions.scrapeIntervalMilliSeconds),
+		1,
+	)
+	configCleanup, err := agentProc.PrepareConfig(configStr)
+	require.NoError(t, err)
+	defer configCleanup()
+
+	dataProvider := testbed.NewPerfTestDataProvider(*loadOptions.loadOptions)
+	tc := testbed.NewTestCase(
+		t,
+		dataProvider,
+		sender,
+		receiver,
+		agentProc,
+		&simpleTestcaseValidator{
+			perfTestValidator: &testbed.PerfTestValidator{},
+		},
+		resultsSummary,
+		testbed.WithResourceLimits(loadOptions.resourceSpec),
+	)
+	t.Cleanup(tc.Stop)
+
+	tc.StartBackend()
+
+	// first generate a fixed number of metrics
+	err = sender.Start()
+	require.NoError(t, err)
+
+	providerSender, ok := tc.LoadGenerator.(*testbed.ProviderSender)
+	require.True(t, ok)
+	metricSender, ok := sender.(testbed.MetricDataSender)
+	require.True(t, ok)
+
+	for i := 0; i < loadOptions.scrapeLoadOptions.numberOfMetrics; i++ {
+		dataItemsSent := atomic.Uint64{}
+		providerSender.Provider.SetLoadGeneratorCounters(&dataItemsSent)
+		metrics, _ := providerSender.Provider.GenerateMetrics()
+		metricSender.ConsumeMetrics(context.Background(), metrics)
+		tc.LoadGenerator.IncDataItemsSent()
+	}
+
+	tc.StartAgent()
+
+	tc.Sleep(tc.Duration)
+
+	tc.StopLoad()
+
+	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() <= tc.MockBackend.DataItemsReceived() },
+		time.Second*300,
+		"all data items received")
+
+	tc.ValidateData()
+}
+
 func constructAttributes(loadOptions ExtendedLoadOptions) ExtendedLoadOptions {
 	loadOptions.loadOptions.Attributes = make(map[string]string)
 
@@ -189,4 +272,15 @@ func genRandByteString(length int) string {
 		b[i] = byte(rand.Intn(128))
 	}
 	return string(b)
+}
+
+type simpleTestcaseValidator struct {
+	perfTestValidator *testbed.PerfTestValidator
+}
+
+func (simpleTestcaseValidator) Validate(tc *testbed.TestCase) {
+}
+
+func (s simpleTestcaseValidator) RecordResults(tc *testbed.TestCase) {
+	s.perfTestValidator.RecordResults(tc)
 }

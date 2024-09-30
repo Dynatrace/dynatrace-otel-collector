@@ -4,15 +4,16 @@ package prometheus
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"testing"
+
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"testing"
 )
 
 // TestE2E_PrometheusNodeExporter tests the "Scrape data from Prometheus" use case
@@ -40,7 +41,11 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	require.NoErrorf(t, err, "failed to install Prometheus node exporter")
 
 	metricsConsumer := new(consumertest.MetricsSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{Metrics: metricsConsumer})
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Metrics: &oteltest.MetricSinkConfig{
+			Consumer: metricsConsumer,
+		},
+	})
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]

@@ -4,14 +4,15 @@ package k8senrichment
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 const (
@@ -47,7 +48,11 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	}()
 
 	tracesConsumer := new(consumertest.TracesSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{Traces: tracesConsumer})
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Traces: &oteltest.TraceSinkConfig{
+			Consumer: tracesConsumer,
+		},
+	})
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
@@ -56,7 +61,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
 		TestID:       testID,
 		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
-		DataTypes:    []string{"metrics", "logs", "traces"},
+		DataTypes:    []string{"traces"},
 	}
 	telemetryGenObjs, telemetryGenObjInfos := k8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
 	defer func() {

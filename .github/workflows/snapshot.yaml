@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "~1.22.6"
+          cache: false
       - uses: docker/setup-qemu-action@v3
         with:
           platforms: arm64
@@ -23,13 +24,25 @@ jobs:
       - uses: anchore/sbom-action/download-syft@v0.17.2
       - name: Cache tools
         uses: actions/cache@v4
+        id: cache-tools
         with:
           path: .tools
           key: snapshot-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
-      - name: Touch tools
+      - name: Install tools
+        if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
           touch .tools/*
+          make install-tools
+      - name: Generate source files
+        run: make generate
+      - name: Cache go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
       - name: Create Snapshot for Pull Request
         run: make snapshot
       - name: Upload Pull Request Preview
@@ -53,6 +66,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: build
     strategy:
+      fail-fast: false
       matrix:
         os: ["deb", "rpm"]
         arch: ["x86_64", "arm64"]

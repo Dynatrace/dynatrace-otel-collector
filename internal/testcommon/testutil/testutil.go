@@ -134,6 +134,15 @@ func GetAvailablePort(t testing.TB) int {
 	return portInt
 }
 
+func GetAvailablePorts(t testing.TB, numberOfPorts int) []int {
+	ports := make([]int, numberOfPorts)
+
+	for i := 0; i < numberOfPorts; i++ {
+		ports[i] = GetAvailablePort(t)
+	}
+	return ports
+}
+
 // Force the state of feature gate for a test
 // usage: defer SetFeatureGateForTest("gateName", true)()
 func SetFeatureGateForTest(t testing.TB, gate *featuregate.Gate, enabled bool) func() {

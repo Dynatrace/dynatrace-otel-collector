@@ -47,6 +47,7 @@ func CreateTelemetryGenObjects(t *testing.T, client *K8sClient, createOpts *Tele
 				"OTLPEndpoint": createOpts.OtlpEndpoint,
 				"TestID":       createOpts.TestID,
 			}))
+			t.Logf("Creating telemetrygen object from manifest %s", manifestFile.Name())
 			obj, err := CreateObject(client, manifest.Bytes())
 			require.NoErrorf(t, err, "failed to create telemetrygen object from manifest %s", manifestFile.Name())
 			selector := obj.Object["spec"].(map[string]any)["selector"]
@@ -77,4 +78,6 @@ func WaitForTelemetryGenToStart(t *testing.T, client *K8sClient, podNamespace st
 		return podPhase == "Running"
 	}, time.Duration(podTimeoutMinutes)*time.Minute, 50*time.Millisecond,
 		"telemetrygen pod of Workload [%s] in datatype [%s] haven't started within %d minutes, latest pod phase is %s", workload, dataType, podTimeoutMinutes, podPhase)
+
+	t.Logf("Telemetrygen pod with app label %s started successfully", podLabels["app"])
 }

@@ -62,22 +62,6 @@ data:
       extensions:
       - health_check
       pipelines:
-        logs:
-          receivers:
-          - otlp
-          processors:
-          - k8sattributes
-          - transform
-          exporters:
-          - otlp
-        metrics:
-          receivers:
-          - otlp
-          processors:
-          - k8sattributes
-          - transform
-          exporters:
-          - otlp
         traces:
           receivers:
           - otlp

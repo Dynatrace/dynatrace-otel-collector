@@ -7,20 +7,6 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
 
-var traceProcessors = map[string]string{
-	"batch": `
-  batch:
-    send_batch_max_size: 1000
-    timeout: 10s
-    send_batch_size : 800
-`,
-	"memory_limiter": `
-  memory_limiter:
-    check_interval: 1s
-    limit_percentage: 100
-`,
-}
-
 func TestTrace10kSPS(t *testing.T) {
 	tests := []struct {
 		name                string
@@ -47,7 +33,7 @@ func TestTrace10kSPS(t *testing.T) {
 				attrSizeByte:    50,
 				attrKeySizeByte: 50,
 			},
-			traceProcessors,
+			defaultProcessors,
 		},
 		{
 			"OTLP-HTTP",
@@ -67,7 +53,7 @@ func TestTrace10kSPS(t *testing.T) {
 				attrSizeByte:    50,
 				attrKeySizeByte: 50,
 			},
-			traceProcessors,
+			defaultProcessors,
 		},
 	}
 
@@ -112,7 +98,7 @@ func TestTrace100kSPS(t *testing.T) {
 				attrSizeByte:    50,
 				attrKeySizeByte: 50,
 			},
-			traceProcessors,
+			defaultProcessors,
 		},
 		{
 			"OTLP-HTTP",
@@ -132,7 +118,7 @@ func TestTrace100kSPS(t *testing.T) {
 				attrSizeByte:    50,
 				attrKeySizeByte: 50,
 			},
-			traceProcessors,
+			defaultProcessors,
 		},
 	}
 

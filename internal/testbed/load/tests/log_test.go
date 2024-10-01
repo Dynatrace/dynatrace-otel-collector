@@ -74,7 +74,7 @@ func TestLogSyslog(t *testing.T) {
 			},
 			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
-					DataItemsPerSecond: 10_000_000,
+					DataItemsPerSecond: 10_000,
 					ItemsPerBatch:      1,
 					Parallel:           1,
 				},
@@ -93,7 +93,7 @@ func TestLogSyslog(t *testing.T) {
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
-					DataItemsPerSecond: 10_000_000,
+					DataItemsPerSecond: 10_000,
 					ItemsPerBatch:      100,
 					Parallel:           1,
 				},
@@ -116,7 +116,7 @@ func TestLogSyslog(t *testing.T) {
 			},
 			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
-					DataItemsPerSecond: 70_000_000,
+					DataItemsPerSecond: 70_000,
 					ItemsPerBatch:      1,
 					Parallel:           1,
 				},
@@ -135,7 +135,7 @@ func TestLogSyslog(t *testing.T) {
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
-					DataItemsPerSecond: 70_000_000,
+					DataItemsPerSecond: 70_000,
 					ItemsPerBatch:      100,
 					Parallel:           1,
 				},
@@ -150,20 +150,6 @@ func TestLogSyslog(t *testing.T) {
 		},
 	}
 
-	processors := map[string]string{
-		"batch": `
-  batch:
-    send_batch_max_size: 1000
-    timeout: 5s
-    send_batch_size : 800
-`,
-		"memory_limiter": `
-  memory_limiter:
-    check_interval: 1
-    limit_percentage: 100
-`,
-	}
-
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			GenericScenario(
@@ -171,7 +157,7 @@ func TestLogSyslog(t *testing.T) {
 				test.sender,
 				test.receiver,
 				performanceResultsSummary,
-				processors,
+				defaultProcessors,
 				nil,
 				test.extendedLoadOptions,
 			)

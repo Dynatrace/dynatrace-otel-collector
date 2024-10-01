@@ -8,8 +8,9 @@ package loadtest
 // coded in this file or use scenarios from perf_scenarios.go.
 
 import (
-	datasenders2 "github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/load/tests/datasenders"
 	"testing"
+
+	datasenders2 "github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/load/tests/datasenders"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders"
@@ -17,7 +18,7 @@ import (
 )
 
 var (
-	metricProcessors = map[string]string{
+	defaultProcessors = map[string]string{
 		"memory_limiter": `
   memory_limiter:
     check_interval: 1s
@@ -60,7 +61,7 @@ func TestMetric10kDPS(t *testing.T) {
 				attrSizeByte:    20,
 				attrKeySizeByte: 100,
 			},
-			processors: metricProcessors,
+			processors: defaultProcessors,
 		},
 		{
 			name:     "OTLP-HTTP",
@@ -80,7 +81,7 @@ func TestMetric10kDPS(t *testing.T) {
 				attrSizeByte:    20,
 				attrKeySizeByte: 100,
 			},
-			processors: metricProcessors,
+			processors: defaultProcessors,
 		},
 	}
 
@@ -126,7 +127,7 @@ func TestMetric100kDPS(t *testing.T) {
 				attrSizeByte:    20,
 				attrKeySizeByte: 100,
 			},
-			processors: metricProcessors,
+			processors: defaultProcessors,
 		},
 		{
 			name:     "OTLP-HTTP",
@@ -146,7 +147,7 @@ func TestMetric100kDPS(t *testing.T) {
 				attrSizeByte:    20,
 				attrKeySizeByte: 100,
 			},
-			processors: metricProcessors,
+			processors: defaultProcessors,
 		},
 	}
 
@@ -196,7 +197,7 @@ func TestPrometheusMetric(t *testing.T) {
 					scrapeIntervalMilliSeconds: 1000,
 				},
 			},
-			processors: metricProcessors,
+			processors: defaultProcessors,
 		},
 		{
 			name:     "Prometheus Prometheus 10kDPS - 1 Prometheus Endpoint",
@@ -220,7 +221,7 @@ func TestPrometheusMetric(t *testing.T) {
 					scrapeIntervalMilliSeconds: 1000,
 				},
 			},
-			processors: metricProcessors,
+			processors: defaultProcessors,
 		},
 		{
 			name:     "Prometheus Prometheus 1kDPS - 5 Prometheus Endpoints",
@@ -244,7 +245,7 @@ func TestPrometheusMetric(t *testing.T) {
 					scrapeIntervalMilliSeconds: 1000,
 				},
 			},
-			processors: metricProcessors,
+			processors: defaultProcessors,
 		},
 	}
 

@@ -24,11 +24,9 @@ Container images for the Dynatrace distribution of the OpenTelemetry Collector a
 
 ## Troubleshooting
 
-For help troubleshooting issues, please see the [OpenTelemetry documentation]
-and the Collector's [troubleshooting guide].
+For help troubleshooting issues, please see the OpenTelemetry documentation on [troubleshooting the Collector].
 
-[OpenTelemetry documentation]: https://opentelemetry.io/docs/collector/troubleshooting/
-[troubleshooting guide]: https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/troubleshooting.md
+[troubleshooting the Collector]: https://opentelemetry.io/docs/collector/troubleshooting/
 
 ## Components
 

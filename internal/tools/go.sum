@@ -522,6 +522,8 @@ github.com/knadh/koanf/parsers/yaml v0.1.0 h1:ZZ8/iGfRLvKSaMEECEBPM1HQslrZADk8fP
 github.com/knadh/koanf/parsers/yaml v0.1.0/go.mod h1:cvbUDC7AL23pImuQP0oRw/hPuccrNBS2bps8asS0CwY=
 github.com/knadh/koanf/providers/env v0.1.0 h1:LqKteXqfOWyx5Ab9VfGHmjY9BvRXi+clwyZozgVRiKg=
 github.com/knadh/koanf/providers/env v0.1.0/go.mod h1:RE8K9GbACJkeEnkl8L/Qcj8p4ZyPXZIQ191HJi44ZaQ=
+github.com/knadh/koanf/providers/env v1.0.0 h1:ufePaI9BnWH+ajuxGGiJ8pdTG0uLEUWC7/HDDPGLah0=
+github.com/knadh/koanf/providers/env v1.0.0/go.mod h1:mzFyRZueYhb37oPmC1HAv/oGEEuyvJDA98r3XAa8Gak=
 github.com/knadh/koanf/providers/file v1.1.0 h1:MTjA+gRrVl1zqgetEAIaXHqYje0XSosxSiMD4/7kz0o=
 github.com/knadh/koanf/providers/file v1.1.0/go.mod h1:/faSBcv2mxPVjFrXck95qeoyoZ5myJ6uxN8OOVNJJCI=
 github.com/knadh/koanf/providers/fs v0.1.0 h1:9Hln9GS3bWTItAnGVFYyfkoAIxAFq7pvlF64pTNiDdQ=
@@ -770,6 +772,8 @@ go.opentelemetry.io/build-tools/chloggen v0.14.0 h1:qVal1JO6V5xTaQ6b07eBAcc0jyCb
 go.opentelemetry.io/build-tools/chloggen v0.14.0/go.mod h1:+lbmAIYUT2OewAXITyvPACRxruPm44tNH4k6hIUuasE=
 go.opentelemetry.io/collector/cmd/builder v0.110.0 h1:GTtRx84MLDgi84XltxGUxb2bK5I6ekYU3jVLQapKgiY=
 go.opentelemetry.io/collector/cmd/builder v0.110.0/go.mod h1:oNQI2VPkU8UD2CQe1NhmbrU8U4nGdfg2VyLymVm8XoA=
+go.opentelemetry.io/collector/cmd/builder v0.111.0 h1:9KqCuq8hlsZTqiL1upsIylsDxJbKvqDXmc+5oBzvoA0=
+go.opentelemetry.io/collector/cmd/builder v0.111.0/go.mod h1:FRih5dexF7nTQNzOiRdtNOJykEqRE2CgKDLgskd4K9o=
 go.opentelemetry.io/contrib/exporters/autoexport v0.46.1 h1:ysCfPZB9AjUlMa1UHYup3c9dAOCMQX/6sxSfPBUoxHw=
 go.opentelemetry.io/contrib/exporters/autoexport v0.46.1/go.mod h1:ha0aiYm+DOPsLHjh0zoQ8W8sLT+LJ58J3j47lGpSLrU=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.53.0 h1:9G6E0TXzGFVfTnawRzrPl83iHOAV7L8NJiR8RSGYV1g=

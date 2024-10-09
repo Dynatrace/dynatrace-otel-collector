@@ -57,8 +57,7 @@ jobs:
           path: ./bin/*
 
   loadtest:
-    runs-on:
-      group: "Dynatrace-OTel-Runners"
+    runs-on: "Linux-x64-16-64GB-Runner"
     needs: [setup-environment]
     steps:
       - name: Check out code

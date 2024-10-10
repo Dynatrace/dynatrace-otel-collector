@@ -200,7 +200,7 @@ func TestPrometheusMetric(t *testing.T) {
 			processors: defaultProcessors,
 		},
 		{
-			name:     "Prometheus Prometheus 10kDPS - 1 Prometheus Endpoint",
+			name:     "Prometheus 10kDPS - 1 Prometheus Endpoint",
 			sender:   datasenders.NewPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
@@ -224,13 +224,37 @@ func TestPrometheusMetric(t *testing.T) {
 			processors: defaultProcessors,
 		},
 		{
-			name:     "Prometheus Prometheus 1kDPS - 5 Prometheus Endpoints",
+			name:     "Prometheus 1kDPS - 5 Prometheus Endpoints",
 			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePorts(t, 5)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 150,
 					ExpectedMaxRAM: 280,
+				},
+				loadOptions: &testbed.LoadOptions{
+					DataItemsPerSecond: 1,
+					ItemsPerBatch:      1,
+					Parallel:           1,
+				},
+				attrCount:       25,
+				attrSizeByte:    20,
+				attrKeySizeByte: 100,
+				scrapeLoadOptions: scrapeLoadOptions{
+					numberOfMetrics:            1000,
+					scrapeIntervalMilliSeconds: 1000,
+				},
+			},
+			processors: defaultProcessors,
+		},
+		{
+			name:     "Prometheus 1kDPS - 10 Prometheus Endpoints",
+			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePorts(t, 10)),
+			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			extendedLoadOptions: ExtendedLoadOptions{
+				resourceSpec: testbed.ResourceSpec{
+					ExpectedMaxCPU: 200,
+					ExpectedMaxRAM: 350,
 				},
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: 1,

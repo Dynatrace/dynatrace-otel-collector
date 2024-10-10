@@ -57,7 +57,7 @@ jobs:
           path: ./bin/*
 
   loadtest:
-    runs-on: ubuntu-24.04
+    runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04
     needs: [setup-environment]
     steps:
       - name: Check out code

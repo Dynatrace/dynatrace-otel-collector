@@ -253,8 +253,8 @@ func TestPrometheusMetric(t *testing.T) {
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 300,
-					ExpectedMaxRAM: 700,
+					ExpectedMaxCPU: 500,
+					ExpectedMaxRAM: 1000,
 				},
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: 1,

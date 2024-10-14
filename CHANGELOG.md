@@ -4,6 +4,58 @@
 
 <!-- next version -->
 
+## v0.16.0
+
+This release includes version 0.111.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.111.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.111.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.111.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 🛑 Breaking changes 🛑
+
+- `service/telemetry`: Change default metrics address to "localhost:8888" instead of ":8888" ([#11251](https://github.com/open-telemetry/opentelemetry-collector/pull/11251))
+  This behavior can be disabled by disabling the feature gate 'telemetry.UseLocalHostAsDefaultMetricsAddress'.
+- `config`: Move component.UseLocalHostAsDefaultHost feature gate to stable and therefore remove the ability to disable it. ([#35569](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35569))
+
+
+### 🚩 Deprecations 🚩
+
+- `service/telemetry`: Deprecate service::telemetry::metrics::address in favor of service::telemetry::metrics::readers. ([#11205](https://github.com/open-telemetry/opentelemetry-collector/pull/11205))
+- `processorhelper`: Deprecate BuildProcessorMetricName as it's no longer needed since introduction of mdatagen ([#11328](https://github.com/open-telemetry/opentelemetry-collector/pull/11328))
+
+
+### 💡 Enhancements 💡
+
+- `confighttp`: Snappy compression to lazy read for memory efficiency ([#11177](https://github.com/open-telemetry/opentelemetry-collector/pull/11177))
+- `httpsprovider`: Mark the httpsprovider as stable. ([#11191](https://github.com/open-telemetry/opentelemetry-collector/pull/11191))
+- `httpprovider`: Mark the httpprovider as stable. ([#11191](https://github.com/open-telemetry/opentelemetry-collector/pull/11191))
+- `yamlprovider`: Mark the yamlprovider as stable. ([#11192](https://github.com/open-telemetry/opentelemetry-collector/pull/11192))
+- `confmap`: Allow using any YAML structure as a string when loading configuration including time.Time formats ([#10659](https://github.com/open-telemetry/opentelemetry-collector/pull/10659))
+  Previously, fields with time.Time formats could not be used as strings in configurations
+- `receiver/statsd`: Add support for aggregating on Host/IP.
+  ([#23809](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/23809))
+- `hostmetricsreceiver`: Add ability to mute all errors (mainly due to access rights) coming from process scraper of the hostmetricsreceiver ([#20435](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/20435))
+- `pkg/ottl`: Add InsertXML Converter ([#35436](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35436))
+- `pkg/ottl`: Add GetXML Converter ([#35462](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35462))
+- `pkg/ottl`: Add ToKeyValueString Converter ([#35334](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35334))
+- `pkg/ottl`: Add RemoveXML Converter ([#35301](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35301))
+
+### 🧰 Bug fixes 🧰
+
+- `processorhelper`: Fix data race condition, concurrent writes to the err variable, causes UB (Undefined Behavior) ([#11350](https://github.com/open-telemetry/opentelemetry-collector/pull/11350))
+- `cmd/builder`: re-adds function to properly set and view version number of OpenTelemetry Collector Builder (ocb) binaries ([#11208](https://github.com/open-telemetry/opentelemetry-collector/pull/11208))
+- `pdata`: Unmarshal Span and SpanLink flags from JSON ([#11267](https://github.com/open-telemetry/opentelemetry-collector/pull/11267))
+
+</details>
+
 ## v0.15.0
 
 This release includes version 0.110.0 of the upstream Collector components.

@@ -53,7 +53,6 @@ v0.111.0:
 - `processorhelper`: Fix data race condition, concurrent writes to the err variable, causes UB (Undefined Behavior) (#11350)
 - `cmd/builder`: re-adds function to properly set and view version number of OpenTelemetry Collector Builder (ocb) binaries (#11208)
 - `pdata`: Unmarshal Span and SpanLink flags from JSON (#11267)
-- `webhookeventreceiver`: Fixed a bug where request bodies containing newline characters caused the results to split into multiple log entries (#35028)
 
 </details>
 

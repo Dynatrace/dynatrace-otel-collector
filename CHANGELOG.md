@@ -4,6 +4,24 @@
 
 <!-- next version -->
 
+## v0.16.0
+
+This release includes version 0.111.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.111.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.111.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.111.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+-
+
+</details>
+
 ## v0.15.0
 
 This release includes version 0.110.0 of the upstream Collector components.

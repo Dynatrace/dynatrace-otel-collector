@@ -23,7 +23,7 @@ v0.111.0:
 
 - `service/telemetry`: Change default metrics address to "localhost:8888" instead of ":8888" ([#11251](https://github.com/open-telemetry/opentelemetry-collector/pull/11251))
   This behavior can be disabled by disabling the feature gate 'telemetry.UseLocalHostAsDefaultMetricsAddress'.
-- `config`: Move component.UseLocalHostAsDefaultHost feature gate to stable. ([#35569](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35569))
+- `config`: Move component.UseLocalHostAsDefaultHost feature gate to stable and therefore cannot be disabled anymore. ([#35569](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35569))
 
 
 ### 🚩 Deprecations 🚩

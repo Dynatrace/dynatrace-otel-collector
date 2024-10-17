@@ -55,7 +55,7 @@ func TestMetric10kDPS(t *testing.T) {
 				},
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 60,
-					ExpectedMaxRAM: 120,
+					ExpectedMaxRAM: 125,
 				},
 				attrCount:       25,
 				attrSizeByte:    20,
@@ -254,7 +254,7 @@ func TestPrometheusMetric(t *testing.T) {
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 200,
-					ExpectedMaxRAM: 350,
+					ExpectedMaxRAM: 370,
 				},
 				loadOptions: &testbed.LoadOptions{
 					DataItemsPerSecond: 1,

@@ -14,6 +14,8 @@ import (
 	httpsprovider "go.opentelemetry.io/collector/confmap/provider/httpsprovider"
 	yamlprovider "go.opentelemetry.io/collector/confmap/provider/yamlprovider"
 	"go.opentelemetry.io/collector/otelcol"
+
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/components"
 )
 
 func main() {
@@ -25,7 +27,7 @@ func main() {
 
 	set := otelcol.CollectorSettings{
 		BuildInfo: info,
-		Factories: components,
+		Factories: components.Components,
 		ConfigProviderSettings: otelcol.ConfigProviderSettings{
 			ResolverSettings: confmap.ResolverSettings{
 				ProviderFactories: []confmap.ProviderFactory{

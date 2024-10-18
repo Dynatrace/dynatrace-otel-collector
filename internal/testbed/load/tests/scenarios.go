@@ -252,6 +252,20 @@ func PullBasedSenderScenario(
 		time.Second*300,
 		"all data items received")
 
+	tc.StopAgent()
+
+	// increase the data items sent by the LoadGenerator until they match the number of received items.
+	// this is done because for the pull based scenario, the number of sent data items is the static number of
+	// metrics exposed via each prometheus endpoint (e.g. 1000), whereas the number of received items is the
+	// number of metrics times the number of performed scrape iterations
+	// due to the internal mechanics of the testbed validator's benchmark summary this is then recorded as "dropped_span_count".
+	// The name "dropped_span_count" is also misleading here, as this is calculated from the number of generated data items minus
+	// the number of received items - which don't have to be spans in each case, but can also be metrics or logs.
+
+	for i := tc.LoadGenerator.DataItemsSent(); i < tc.MockBackend.DataItemsReceived(); i++ {
+		tc.LoadGenerator.IncDataItemsSent()
+	}
+
 	tc.ValidateData()
 }
 

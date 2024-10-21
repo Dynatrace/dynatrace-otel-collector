@@ -34,14 +34,14 @@ func TestFiltering(t *testing.T) {
 				Traces: []ptrace.Traces{trace},
 			},
 			compareFunc: func(t *testing.T, expectedData data, out data) {
-				require.Nil(t, expectedData)
+				require.Equal(t, expectedData, out)
 			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			_ = FilteringScenario(
+			outputData := FilteringScenario(
 				t,
 				test.sender,
 				test.receiver,
@@ -50,7 +50,7 @@ func TestFiltering(t *testing.T) {
 				nil,
 			)
 
-			//require.Equal(t, test.expectedData, outputData)
+			require.NotNil(t, outputData)
 
 			//test.compareFunc(t, test.expectedData, outputData)
 		})

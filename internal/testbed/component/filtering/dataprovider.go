@@ -32,13 +32,16 @@ func (dp *dataProvider) SetLoadGeneratorCounters(dataItemsGenerated *atomic.Uint
 }
 
 func (dp *dataProvider) GenerateTraces() (ptrace.Traces, bool) {
+	dp.dataItemsGenerated.Add(1)
 	return dp.InputData.Traces[dp.tracesCounter], false
 }
 
 func (dp *dataProvider) GenerateMetrics() (pmetric.Metrics, bool) {
+	dp.dataItemsGenerated.Add(1)
 	return dp.InputData.Metrics[dp.metricsCouter], false
 }
 
 func (dp *dataProvider) GenerateLogs() (plog.Logs, bool) {
+	dp.dataItemsGenerated.Add(1)
 	return dp.InputData.Logs[dp.logsCounter], true
 }

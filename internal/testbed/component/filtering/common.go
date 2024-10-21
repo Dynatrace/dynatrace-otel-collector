@@ -52,12 +52,12 @@ func FilteringScenario(
 	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
 	require.NoError(t, err)
 
-	//agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 	factories, err := components.Components()
 	require.NoError(t, err, "default components resulted in: %v", err)
 	agentProc := testbed.NewInProcessCollector(factories)
 
 	configStr := testutil.CreateConfigYaml(t, sender, receiver, resultDir, processors, extensions)
+	t.Log(configStr)
 	configCleanup, err := agentProc.PrepareConfig(configStr)
 	require.NoError(t, err)
 	defer configCleanup()

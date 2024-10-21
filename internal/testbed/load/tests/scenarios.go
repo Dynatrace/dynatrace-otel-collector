@@ -46,7 +46,7 @@ func GenericScenario(
 
 	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 
-	configStr := testutil.CreateConfigYaml(t, sender, receiver, resultDir, processors, extensions)
+	configStr := testutil.CreateLoadTestConfigYaml(t, sender, receiver, resultDir, processors, extensions)
 	configCleanup, err := agentProc.PrepareConfig(configStr)
 	require.NoError(t, err)
 	defer configCleanup()
@@ -96,7 +96,7 @@ func PullBasedSenderScenario(
 
 	agentProc := testbed.NewChildProcessCollector(testbed.WithEnvVar("GOMAXPROCS", "2"))
 
-	configStr := testutil.CreateConfigYaml(t, sender, receiver, resultDir, processors, extensions)
+	configStr := testutil.CreateLoadTestConfigYaml(t, sender, receiver, resultDir, processors, extensions)
 
 	// replace the default scrape interval duration with the interval defined in the load options
 	configStr = strings.Replace(

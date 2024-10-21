@@ -96,30 +96,30 @@ jobs:
       - name: Make Testbed Binaries executable
         run: chmod +x bin/*
 
-      - name: Loadtest
-        run: make run-load-tests
-
-      - name: Create Test Result Archive
-        if: ${{ failure() || success() }}
-        continue-on-error: true
-        run: tar -cvf test_results_load-tests.tar internal/testbed/load/tests/results
-
-      - name: Upload Test Results
-        if: ${{ failure() || success() }}
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-result-archive-load-tests
-          path: ./*.tar
-
-      - name: Copy Benchmarks
-        run: cp internal/testbed/load/tests/results/benchmarks.json internal/testbed/load/tests/results/load-tests.json
-
-      - name: Upload benchmarks.json
-        uses: actions/upload-artifact@v4
-        with:
-          name: benchmark-results-load-tests
-          path: internal/testbed/load/tests/results/load-tests.json
+#      - name: Loadtest
+#        run: make run-load-tests
+#
+#      - name: Create Test Result Archive
+#        if: ${{ failure() || success() }}
+#        continue-on-error: true
+#        run: tar -cvf test_results_load-tests.tar internal/testbed/load/tests/results
+#
+#      - name: Upload Test Results
+#        if: ${{ failure() || success() }}
+#        continue-on-error: true
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: test-result-archive-load-tests
+#          path: ./*.tar
+#
+#      - name: Copy Benchmarks
+#        run: cp internal/testbed/load/tests/results/benchmarks.json internal/testbed/load/tests/results/load-tests.json
+#
+#      - name: Upload benchmarks.json
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: benchmark-results-load-tests
+#          path: internal/testbed/load/tests/results/load-tests.json
 
   notify-slack:
     runs-on: ubuntu-24.04

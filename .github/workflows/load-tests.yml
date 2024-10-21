@@ -121,6 +121,20 @@ jobs:
           name: benchmark-results-load-tests
           path: internal/testbed/load/tests/results/load-tests.json
 
+  notify-slack:
+    runs-on: ubuntu-24.04
+    needs: [loadtest]
+    if: failure() && github.event_name == 'push'
+    steps:
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2.3.1
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: "DT OTel Collector Distro - Loadtest Failure"
+          SLACK_COLOR: "failure"
+          SLACK_USERNAME: "GitHub Actions Notifier"
+          SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"
+
   update-benchmarks:
     runs-on: ubuntu-24.04
     needs: [loadtest]

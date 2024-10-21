@@ -121,6 +121,17 @@ jobs:
           name: benchmark-results-load-tests
           path: internal/testbed/load/tests/results/load-tests.json
 
+  notify-slack:
+    runs-on: ubuntu-24.04
+    needs: [loadtest]
+    if: always()
+    steps:
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2.3.1
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: "Failing Load Test"
+
   update-benchmarks:
     runs-on: ubuntu-24.04
     needs: [loadtest]

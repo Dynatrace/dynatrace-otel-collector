@@ -131,9 +131,10 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_TITLE: "Failing Load Test"
-          SLACK_COLOR: ${{ job.status }}
+          SLACK_COLOR: "failure"
           SLACK_USERNAME: "GitHub Actions Notifier"
           SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"
+          SLACK_MESSAGE_ON_SUCCESS: "Nothing to see here :)"
 
   update-benchmarks:
     runs-on: ubuntu-24.04

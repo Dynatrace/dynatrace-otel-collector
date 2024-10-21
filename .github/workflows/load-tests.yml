@@ -124,7 +124,7 @@ jobs:
   notify-slack:
     runs-on: ubuntu-24.04
     needs: [loadtest]
-    if: failure()
+    if: failure() && github.event_name == 'push'
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2.3.1

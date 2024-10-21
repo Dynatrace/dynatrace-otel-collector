@@ -16,45 +16,45 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-#      - name: Setup Go
-#        uses: actions/setup-go@v5
-#        with:
-#          go-version: "~1.22.6"
-#          check-latest: true
-#          cache: false
-#
-#      - name: Cache tools
-#        id: cache-tools
-#        uses: actions/cache@v4
-#        with:
-#          path: .tools
-#          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
-#
-#      - name: Install tools
-#        if: steps.cache-tools.outputs.cache-hit != 'true'
-#        run: |
-#          mkdir -p .tools
-#          touch .tools/*
-#          make install-tools
-#
-#      - name: Cache Go modules
-#        id: go-cache
-#        timeout-minutes: 5
-#        uses: actions/cache@v4
-#        with:
-#          path: |
-#            ~/go/bin
-#            ~/go/pkg/mod
-#            ~/.cache/go-build
-#          key: loadtest-mods-${{ runner.os }}-${{ hashFiles('internal/oteltestbedcol/go.sum') }}
-#
-#      - run: make oteltestbedcol
-#
-#      - name: Upload Testbed Binaries
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: testbed-binaries
-#          path: ./bin/*
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "~1.22.6"
+          check-latest: true
+          cache: false
+
+      - name: Cache tools
+        id: cache-tools
+        uses: actions/cache@v4
+        with:
+          path: .tools
+          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+
+      - name: Install tools
+        if: steps.cache-tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p .tools
+          touch .tools/*
+          make install-tools
+
+      - name: Cache Go modules
+        id: go-cache
+        timeout-minutes: 5
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/bin
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: loadtest-mods-${{ runner.os }}-${{ hashFiles('internal/oteltestbedcol/go.sum') }}
+
+      - run: make oteltestbedcol
+
+      - name: Upload Testbed Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: testbed-binaries
+          path: ./bin/*
 
   loadtest:
     runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04
@@ -63,68 +63,68 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-#      - name: Setup Go
-#        uses: actions/setup-go@v5
-#        with:
-#          go-version: "~1.22.6"
-#          check-latest: true
-#          cache: false
-#
-#      - name: Cache tools
-#        id: cache-tools
-#        uses: actions/cache@v4
-#        with:
-#          path: .tools
-#          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
-#
-#      - name: Install tools
-#        if: steps.cache-tools.outputs.cache-hit != 'true'
-#        run: |
-#          mkdir -p .tools
-#          touch .tools/*
-#          make install-tools
-#
-#      - name: Create results folder
-#        run: mkdir -p results && touch results/TESTRESULTS.md
-#
-#      - name: Download Testbed Binaries
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: testbed-binaries
-#          path: bin/
-#
-#      - name: Make Testbed Binaries executable
-#        run: chmod +x bin/*
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "~1.22.6"
+          check-latest: true
+          cache: false
 
-#      - name: Loadtest
-#        run: make run-load-tests
-#
-#      - name: Create Test Result Archive
-#        if: ${{ failure() || success() }}
-#        continue-on-error: true
-#        run: tar -cvf test_results_load-tests.tar internal/testbed/load/tests/results
-#
-#      - name: Upload Test Results
-#        if: ${{ failure() || success() }}
-#        continue-on-error: true
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: test-result-archive-load-tests
-#          path: ./*.tar
-#
-#      - name: Copy Benchmarks
-#        run: cp internal/testbed/load/tests/results/benchmarks.json internal/testbed/load/tests/results/load-tests.json
-#
-#      - name: Upload benchmarks.json
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: benchmark-results-load-tests
-#          path: internal/testbed/load/tests/results/load-tests.json
+      - name: Cache tools
+        id: cache-tools
+        uses: actions/cache@v4
+        with:
+          path: .tools
+          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+
+      - name: Install tools
+        if: steps.cache-tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p .tools
+          touch .tools/*
+          make install-tools
+
+      - name: Create results folder
+        run: mkdir -p results && touch results/TESTRESULTS.md
+
+      - name: Download Testbed Binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: testbed-binaries
+          path: bin/
+
+      - name: Make Testbed Binaries executable
+        run: chmod +x bin/*
+
+      - name: Loadtest
+        run: make run-load-tests
+
+      - name: Create Test Result Archive
+        if: ${{ failure() || success() }}
+        continue-on-error: true
+        run: tar -cvf test_results_load-tests.tar internal/testbed/load/tests/results
+
+      - name: Upload Test Results
+        if: ${{ failure() || success() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-result-archive-load-tests
+          path: ./*.tar
+
+      - name: Copy Benchmarks
+        run: cp internal/testbed/load/tests/results/benchmarks.json internal/testbed/load/tests/results/load-tests.json
+
+      - name: Upload benchmarks.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-load-tests
+          path: internal/testbed/load/tests/results/load-tests.json
 
   notify-slack:
     runs-on: ubuntu-24.04
     needs: [loadtest]
-    if: always()
+    if: failure()
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2.3.1
@@ -134,7 +134,6 @@ jobs:
           SLACK_COLOR: "failure"
           SLACK_USERNAME: "GitHub Actions Notifier"
           SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"
-          SLACK_MESSAGE_ON_SUCCESS: "Nothing to see here :)"
 
   update-benchmarks:
     runs-on: ubuntu-24.04

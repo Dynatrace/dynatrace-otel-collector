@@ -16,45 +16,45 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "~1.22.6"
-          check-latest: true
-          cache: false
-
-      - name: Cache tools
-        id: cache-tools
-        uses: actions/cache@v4
-        with:
-          path: .tools
-          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
-
-      - name: Install tools
-        if: steps.cache-tools.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p .tools
-          touch .tools/*
-          make install-tools
-
-      - name: Cache Go modules
-        id: go-cache
-        timeout-minutes: 5
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/go/bin
-            ~/go/pkg/mod
-            ~/.cache/go-build
-          key: loadtest-mods-${{ runner.os }}-${{ hashFiles('internal/oteltestbedcol/go.sum') }}
-
-      - run: make oteltestbedcol
-
-      - name: Upload Testbed Binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: testbed-binaries
-          path: ./bin/*
+#      - name: Setup Go
+#        uses: actions/setup-go@v5
+#        with:
+#          go-version: "~1.22.6"
+#          check-latest: true
+#          cache: false
+#
+#      - name: Cache tools
+#        id: cache-tools
+#        uses: actions/cache@v4
+#        with:
+#          path: .tools
+#          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+#
+#      - name: Install tools
+#        if: steps.cache-tools.outputs.cache-hit != 'true'
+#        run: |
+#          mkdir -p .tools
+#          touch .tools/*
+#          make install-tools
+#
+#      - name: Cache Go modules
+#        id: go-cache
+#        timeout-minutes: 5
+#        uses: actions/cache@v4
+#        with:
+#          path: |
+#            ~/go/bin
+#            ~/go/pkg/mod
+#            ~/.cache/go-build
+#          key: loadtest-mods-${{ runner.os }}-${{ hashFiles('internal/oteltestbedcol/go.sum') }}
+#
+#      - run: make oteltestbedcol
+#
+#      - name: Upload Testbed Binaries
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: testbed-binaries
+#          path: ./bin/*
 
   loadtest:
     runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04
@@ -63,38 +63,38 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "~1.22.6"
-          check-latest: true
-          cache: false
-
-      - name: Cache tools
-        id: cache-tools
-        uses: actions/cache@v4
-        with:
-          path: .tools
-          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
-
-      - name: Install tools
-        if: steps.cache-tools.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p .tools
-          touch .tools/*
-          make install-tools
-
-      - name: Create results folder
-        run: mkdir -p results && touch results/TESTRESULTS.md
-
-      - name: Download Testbed Binaries
-        uses: actions/download-artifact@v4
-        with:
-          name: testbed-binaries
-          path: bin/
-
-      - name: Make Testbed Binaries executable
-        run: chmod +x bin/*
+#      - name: Setup Go
+#        uses: actions/setup-go@v5
+#        with:
+#          go-version: "~1.22.6"
+#          check-latest: true
+#          cache: false
+#
+#      - name: Cache tools
+#        id: cache-tools
+#        uses: actions/cache@v4
+#        with:
+#          path: .tools
+#          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+#
+#      - name: Install tools
+#        if: steps.cache-tools.outputs.cache-hit != 'true'
+#        run: |
+#          mkdir -p .tools
+#          touch .tools/*
+#          make install-tools
+#
+#      - name: Create results folder
+#        run: mkdir -p results && touch results/TESTRESULTS.md
+#
+#      - name: Download Testbed Binaries
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: testbed-binaries
+#          path: bin/
+#
+#      - name: Make Testbed Binaries executable
+#        run: chmod +x bin/*
 
 #      - name: Loadtest
 #        run: make run-load-tests

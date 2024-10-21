@@ -49,7 +49,7 @@ test: $(BIN)
 	@result=0; \
 	for MOD in $(GOMODULES); do \
 		cd $${MOD}; \
-		go test -v ./... || result=1; \
+		go test -v -timeout 90s ./... || result=1; \
 		cd -; \
 	done; \
 	exit $$result;

@@ -172,7 +172,10 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/signalfx v0.111.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.111.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.111.0 // indirect
+	github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.111.0 // indirect
+	github.com/open-telemetry/opentelemetry-collector-contrib/processor/redactionprocessor v0.111.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourceprocessor v0.111.0 // indirect
+	github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.111.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.111.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fluentforwardreceiver v0.111.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jaegerreceiver v0.111.0 // indirect

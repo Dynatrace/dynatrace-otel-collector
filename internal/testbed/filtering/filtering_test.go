@@ -17,9 +17,9 @@ func TestFiltering(t *testing.T) {
 		name         string
 		sender       testbed.DataSender
 		receiver     testbed.DataReceiver
-		inputData    data
-		expectedData data
-		compareFunc  func(t *testing.T, expectedData data, out data)
+		inputData    inputData
+		expectedData inputData
+		compareFunc  func(t *testing.T, expectedData inputData, out receivedData)
 		processors   map[string]string
 	}{
 		{
@@ -27,14 +27,16 @@ func TestFiltering(t *testing.T) {
 			sender:     testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:   testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			processors: defaultProcessors,
-			inputData: data{
-				Traces: []ptrace.Traces{trace},
+			inputData: inputData{
+				Traces: trace,
 			},
-			expectedData: data{
-				Traces: []ptrace.Traces{trace},
+			expectedData: inputData{
+				Traces: trace,
 			},
-			compareFunc: func(t *testing.T, expectedData data, out data) {
-				require.Equal(t, expectedData, out)
+			compareFunc: func(t *testing.T, expectedData inputData, out receivedData) {
+				expectedSpan := expectedData.Traces.ResourceSpans().At(0).ScopeSpans().At(0).Spans().At(0)
+				receivedSpan := out.Traces[0].ResourceSpans().At(0).ScopeSpans().At(0).Spans().At(0)
+				require.Equal(t, expectedSpan, receivedSpan)
 			},
 		},
 	}
@@ -50,9 +52,7 @@ func TestFiltering(t *testing.T) {
 				nil,
 			)
 
-			require.NotNil(t, outputData)
-
-			//test.compareFunc(t, test.expectedData, outputData)
+			test.compareFunc(t, test.expectedData, outputData)
 		})
 	}
 }

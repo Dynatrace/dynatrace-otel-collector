@@ -15,7 +15,13 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-type data struct {
+type inputData struct {
+	Traces  ptrace.Traces
+	Metrics pmetric.Metrics
+	Logs    plog.Logs
+}
+
+type receivedData struct {
 	Traces  []ptrace.Traces
 	Metrics []pmetric.Metrics
 	Logs    []plog.Logs
@@ -45,10 +51,10 @@ func FilteringScenario(
 	t *testing.T,
 	sender testbed.DataSender,
 	receiver testbed.DataReceiver,
-	inputData data,
+	inputData inputData,
 	processors map[string]string,
 	extensions map[string]string,
-) data {
+) receivedData {
 	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
 	require.NoError(t, err)
 
@@ -57,18 +63,11 @@ func FilteringScenario(
 	agentProc := testbed.NewInProcessCollector(factories)
 
 	configStr := testutil.CreateConfigYaml(t, sender, receiver, resultDir, processors, extensions)
-	t.Log(configStr)
 	configCleanup, err := agentProc.PrepareConfig(configStr)
 	require.NoError(t, err)
 	defer configCleanup()
 
 	dataProvider := NewDataProvider(inputData)
-	// options := testbed.LoadOptions{
-	// 	DataItemsPerSecond: 1,
-	// 	ItemsPerBatch:      1,
-	// 	Parallel:           1,
-	// }
-	// dataProvider := testbed.NewPerfTestDataProvider(options)
 	tc := testbed.NewTestCase(
 		t,
 		dataProvider,
@@ -85,6 +84,7 @@ func FilteringScenario(
 	t.Cleanup(tc.Stop)
 
 	tc.StartBackend()
+	tc.MockBackend.EnableRecording()
 	tc.StartAgent()
 
 	tc.StartLoad(testbed.LoadOptions{
@@ -104,7 +104,7 @@ func FilteringScenario(
 
 	tc.ValidateData()
 
-	return data{
+	return receivedData{
 		Traces:  tc.MockBackend.ReceivedTraces,
 		Metrics: tc.MockBackend.ReceivedMetrics,
 		Logs:    tc.MockBackend.ReceivedLogs,

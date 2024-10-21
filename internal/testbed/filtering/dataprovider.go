@@ -12,18 +12,12 @@ import (
 
 type dataProvider struct {
 	dataItemsGenerated *atomic.Uint64
-	InputData          data
-	tracesCounter      int
-	metricsCouter      int
-	logsCounter        int
+	InputData          inputData
 }
 
-func NewDataProvider(inputData data) oteltestbed.DataProvider {
+func NewDataProvider(inputData inputData) oteltestbed.DataProvider {
 	return &dataProvider{
-		InputData:     inputData,
-		metricsCouter: 0,
-		logsCounter:   0,
-		tracesCounter: 0,
+		InputData: inputData,
 	}
 }
 
@@ -33,15 +27,15 @@ func (dp *dataProvider) SetLoadGeneratorCounters(dataItemsGenerated *atomic.Uint
 
 func (dp *dataProvider) GenerateTraces() (ptrace.Traces, bool) {
 	dp.dataItemsGenerated.Add(1)
-	return dp.InputData.Traces[dp.tracesCounter], false
+	return dp.InputData.Traces, false
 }
 
 func (dp *dataProvider) GenerateMetrics() (pmetric.Metrics, bool) {
 	dp.dataItemsGenerated.Add(1)
-	return dp.InputData.Metrics[dp.metricsCouter], false
+	return dp.InputData.Metrics, false
 }
 
 func (dp *dataProvider) GenerateLogs() (plog.Logs, bool) {
 	dp.dataItemsGenerated.Add(1)
-	return dp.InputData.Logs[dp.logsCounter], true
+	return dp.InputData.Logs, true
 }

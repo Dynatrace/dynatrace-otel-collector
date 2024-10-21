@@ -6,7 +6,10 @@ require (
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension v0.111.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.111.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.111.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/processor/redactionprocessor v0.111.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourceprocessor v0.111.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.111.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.111.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fluentforwardreceiver v0.111.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jaegerreceiver v0.111.0

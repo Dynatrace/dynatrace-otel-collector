@@ -554,8 +554,14 @@ github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin 
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.111.0/go.mod h1:HK8p16A0OoXqhehCTW3QxgWNeshuIDucGUpGwpw88Og=
 github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.111.0 h1:h5TnZkApRY8MbauD64R2CXKY3SvkjL3+H0xzdee8Yx0=
 github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.111.0/go.mod h1:5sDugbmzTH9mwv+/bHHeDh3GxG2OFcgsBNvAeb5HQS0=
+github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.111.0 h1:HY9tieXpiyNQYPVzRR4uzBuAmyWOqwHUcYSKD2a0wxU=
+github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.111.0/go.mod h1:H9N5NbDS3ZIsERRBxZaUoM+F5tM3Uphuw/757T1HM3Y=
+github.com/open-telemetry/opentelemetry-collector-contrib/processor/redactionprocessor v0.111.0 h1:tccFBcrI5a5QGqlQ9JN1QLbJiDd7Sz5ack9sU7fyY9E=
+github.com/open-telemetry/opentelemetry-collector-contrib/processor/redactionprocessor v0.111.0/go.mod h1:9QdKwgeGrkkyr/aYLxfW+opa1nipZbnUiB8L3YylX/o=
 github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourceprocessor v0.111.0 h1:Ce2Ucsp+DOk6OTYsAp8ocQ0NbGPkYXYDlIp/XJeeMck=
 github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourceprocessor v0.111.0/go.mod h1:k49ONUacPMoCrfUpBJES5MdriG90hvcDKvr9abTItRc=
+github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.111.0 h1:KkHeODEukk2RveIEHvV5dPe06oA2PKAKbpjVZPtCRsQ=
+github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.111.0/go.mod h1:Ijvd5VMB2tstz3+3BiQy5azewQ31N4fytMFNdo8dLWE=
 github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.111.0 h1:iQmn0AXvTu5VV/YxW5HncVm3gapV6+PA4a5NrJVA2+M=
 github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.111.0/go.mod h1:CVYv1VaSYvQFmeRCDXvq0lfE+MjVuuxGqz8i6OYJGO8=
 github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fluentforwardreceiver v0.111.0 h1:njXy1jWZIB/FGgH5PuD7GEFijog+dIHKkCk0/KK3ie4=

@@ -9,26 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var (
-	defaultProcessors = map[string]string{
-		"memory_limiter": `
-  memory_limiter:
-    check_interval: 1s
-    limit_percentage: 100
-`,
-		"batch": `
-  batch:
-    send_batch_max_size: 1000
-    timeout: 10s
-    send_batch_size : 800
-`,
-	}
-)
-
-var (
-	performanceResultsSummary testbed.TestResultsSummary = &testbed.PerformanceResults{}
-)
-
 func FilteringScenario(
 	t *testing.T,
 	dataProvider testbed.DataProvider,

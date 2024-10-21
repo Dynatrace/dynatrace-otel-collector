@@ -30,7 +30,7 @@ func TestFiltering(t *testing.T) {
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewTraceSampleConfigsValidator(t, trace),
-			processors:   defaultProcessors,
+			processors:   map[string]string{},
 		},
 		{
 			name:         "basic metrics",
@@ -38,7 +38,7 @@ func TestFiltering(t *testing.T) {
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewMetricSampleConfigsValidator(t, metric),
-			processors:   defaultProcessors,
+			processors:   map[string]string{},
 		},
 		{
 			name:         "basic logs",
@@ -46,7 +46,7 @@ func TestFiltering(t *testing.T) {
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewSyslogSampleConfigValidator(t, logs),
-			processors:   defaultProcessors,
+			processors:   map[string]string{},
 		},
 	}
 

@@ -198,6 +198,10 @@ func CreateLoadTestConfigYaml(
     save_to_file: %v/cpu.prof
 `, resultDir)
 
+	if extensions == nil {
+		extensions = map[string]string{}
+	}
+
 	extensions["pprof"] = pprofString
 
 	return CreateGeneralConfigYaml(t, sender, receiver, processors, extensions)

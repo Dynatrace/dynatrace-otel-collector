@@ -6,7 +6,6 @@ import (
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
-	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
@@ -18,39 +17,30 @@ func TestFiltering(t *testing.T) {
 		dataProvider testbed.DataProvider
 		sender       testbed.DataSender
 		receiver     testbed.DataReceiver
-		expectedData inputData
-		compareFunc  func(t *testing.T, expectedData inputData, out receivedData)
+		validator    testbed.TestCaseValidator
 		processors   map[string]string
 	}{
 		{
-			name:         "basic",
+			name:         "basic traces",
 			dataProvider: NewSampleConfigsTraceDataProvider(trace),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewTraceSampleConfigsValidator(t, trace),
 			processors:   defaultProcessors,
-			expectedData: inputData{
-				Traces: trace,
-			},
-			compareFunc: func(t *testing.T, expectedData inputData, out receivedData) {
-				expectedSpan := expectedData.Traces.ResourceSpans().At(0).ScopeSpans().At(0).Spans().At(0)
-				receivedSpan := out.Traces[0].ResourceSpans().At(0).ScopeSpans().At(0).Spans().At(0)
-				require.Equal(t, expectedSpan, receivedSpan)
-			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			outputData := FilteringScenario(
+			FilteringScenario(
 				t,
 				test.dataProvider,
 				test.sender,
 				test.receiver,
+				test.validator,
 				test.processors,
 				nil,
 			)
-
-			test.compareFunc(t, test.expectedData, outputData)
 		})
 	}
 }

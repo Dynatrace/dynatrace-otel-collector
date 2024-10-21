@@ -1,31 +1,13 @@
 package integration
 
 import (
-	"path"
-	"path/filepath"
 	"testing"
 	"time"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/components"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/pdata/plog"
-	"go.opentelemetry.io/collector/pdata/pmetric"
-	"go.opentelemetry.io/collector/pdata/ptrace"
 )
-
-type inputData struct {
-	Traces  ptrace.Traces
-	Metrics pmetric.Metrics
-	Logs    plog.Logs
-}
-
-type receivedData struct {
-	Traces  []ptrace.Traces
-	Metrics []pmetric.Metrics
-	Logs    []plog.Logs
-}
 
 var (
 	defaultProcessors = map[string]string{
@@ -52,50 +34,38 @@ func FilteringScenario(
 	dataProvider testbed.DataProvider,
 	sender testbed.DataSender,
 	receiver testbed.DataReceiver,
+	validator testbed.TestCaseValidator,
 	processors map[string]string,
 	extensions map[string]string,
-) receivedData {
-	resultDir, err := filepath.Abs(path.Join("results", t.Name()))
-	require.NoError(t, err)
+) {
+	agentProc := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))
 
-	factories, err := components.Components()
-	require.NoError(t, err, "default components resulted in: %v", err)
-	agentProc := testbed.NewInProcessCollector(factories)
+	configStr := testutil.CreateGeneralConfigYaml(t, sender, receiver, processors, extensions)
 
-	configStr := testutil.CreateConfigYaml(t, sender, receiver, resultDir, processors, extensions)
 	configCleanup, err := agentProc.PrepareConfig(configStr)
 	require.NoError(t, err)
-	defer configCleanup()
+	t.Cleanup(configCleanup)
 
-	//dataProvider := NewDataProvider(inputData)
 	tc := testbed.NewTestCase(
 		t,
 		dataProvider,
 		sender,
 		receiver,
 		agentProc,
-		&testbed.PerfTestValidator{},
-		performanceResultsSummary,
-		testbed.WithResourceLimits(testbed.ResourceSpec{
-			ExpectedMaxCPU: 130,
-			ExpectedMaxRAM: 120,
-		}),
+		validator,
+		&testbed.CorrectnessResults{},
 	)
 	t.Cleanup(tc.Stop)
 
+	tc.EnableRecording()
 	tc.StartBackend()
-	tc.MockBackend.EnableRecording()
 	tc.StartAgent()
 
 	tc.StartLoad(testbed.LoadOptions{
-		DataItemsPerSecond: 1,
-		ItemsPerBatch:      1,
+		DataItemsPerSecond: 3,
+		ItemsPerBatch:      3,
 	})
-
-	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() > 0 }, 30*time.Second, "load generator started")
-
-	tc.Sleep(tc.Duration)
-
+	tc.Sleep(2 * time.Second)
 	tc.StopLoad()
 
 	tc.WaitForN(func() bool { return tc.LoadGenerator.DataItemsSent() == tc.MockBackend.DataItemsReceived() },
@@ -103,10 +73,4 @@ func FilteringScenario(
 		"all data items received")
 
 	tc.ValidateData()
-
-	return receivedData{
-		Traces:  tc.MockBackend.ReceivedTraces,
-		Metrics: tc.MockBackend.ReceivedMetrics,
-		Logs:    tc.MockBackend.ReceivedLogs,
-	}
 }

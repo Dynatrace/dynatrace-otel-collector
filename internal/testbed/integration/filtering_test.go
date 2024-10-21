@@ -1,4 +1,4 @@
-package filtering
+package integration
 
 import (
 	"testing"
@@ -15,21 +15,19 @@ func TestFiltering(t *testing.T) {
 	trace := generateBasicTrace()
 	tests := []struct {
 		name         string
+		dataProvider testbed.DataProvider
 		sender       testbed.DataSender
 		receiver     testbed.DataReceiver
-		inputData    inputData
 		expectedData inputData
 		compareFunc  func(t *testing.T, expectedData inputData, out receivedData)
 		processors   map[string]string
 	}{
 		{
-			name:       "basic",
-			sender:     testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:   testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			processors: defaultProcessors,
-			inputData: inputData{
-				Traces: trace,
-			},
+			name:         "basic",
+			dataProvider: NewSampleConfigsTraceDataProvider(trace),
+			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			processors:   defaultProcessors,
 			expectedData: inputData{
 				Traces: trace,
 			},
@@ -45,9 +43,9 @@ func TestFiltering(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			outputData := FilteringScenario(
 				t,
+				test.dataProvider,
 				test.sender,
 				test.receiver,
-				test.inputData,
 				test.processors,
 				nil,
 			)

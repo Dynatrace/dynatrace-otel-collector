@@ -148,8 +148,8 @@ gomoddownload:
 install-go-junit-report:
 	GOBIN=$(TOOLS_BIN_DIR) go install github.com/jstemmer/go-junit-report/v2@$(GO_JUNIT_REPORT_VERSION)
 
-.PHONY: run-filtering-tests
-run-filtering-tests:
+.PHONY: run-integration-tests
+run-integration-tests:
 	mkdir -p ./internal/testbed/bin/
 	cp -a ./bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) ./internal/testbed/bin/
-	$(MAKE) --no-print-directory -C internal/testbed/filtering run-tests
+	$(MAKE) --no-print-directory -C internal/testbed/integration run-tests

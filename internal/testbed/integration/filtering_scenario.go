@@ -1,4 +1,4 @@
-package filtering
+package integration
 
 import (
 	"path"
@@ -49,9 +49,9 @@ var (
 
 func FilteringScenario(
 	t *testing.T,
+	dataProvider testbed.DataProvider,
 	sender testbed.DataSender,
 	receiver testbed.DataReceiver,
-	inputData inputData,
 	processors map[string]string,
 	extensions map[string]string,
 ) receivedData {
@@ -67,7 +67,7 @@ func FilteringScenario(
 	require.NoError(t, err)
 	defer configCleanup()
 
-	dataProvider := NewDataProvider(inputData)
+	//dataProvider := NewDataProvider(inputData)
 	tc := testbed.NewTestCase(
 		t,
 		dataProvider,

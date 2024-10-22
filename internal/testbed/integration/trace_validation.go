@@ -2,6 +2,8 @@ package integration
 
 import (
 	"fmt"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/idutils"
@@ -49,10 +51,13 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 				spans := ss.At(j).Spans()
 				for k := 0; k < spans.Len(); k++ {
 					recdSpan := spans.At(k)
-					assert.Contains(t,
+					require.Contains(t,
 						spansMap,
 						idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
 						fmt.Sprintf("Span with ID: %q not found among expected spans", recdSpan.SpanID()))
+
+					expectedSpan := spansMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())]
+					require.NoError(t, ptracetest.CompareSpan(expectedSpan, recdSpan))
 				}
 			}
 		}

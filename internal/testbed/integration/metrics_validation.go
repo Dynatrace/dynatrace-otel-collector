@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -34,7 +35,7 @@ func (v *MetricsSampleConfigsValidator) RecordResults(tc *testbed.TestCase) {
 }
 
 func assertExpectedMetricsAreInReceived(t *testing.T, expected, actual []pmetric.Metrics) {
-	expectedMap := make(map[string]pmetric.Metric)
+	expectedMap := make(map[string]pmetric.Metrics)
 	populateMetricsMap(expectedMap, expected)
 
 	for _, td := range actual {
@@ -45,18 +46,23 @@ func assertExpectedMetricsAreInReceived(t *testing.T, expected, actual []pmetric
 				metrics := scopeMetrics.At(j).Metrics()
 				for k := 0; k < metrics.Len(); k++ {
 					actualMetric := metrics.At(k)
-					assert.Contains(t,
+					hasEntry := assert.Contains(t,
 						expectedMap,
 						actualMetric.Name(),
 						fmt.Sprintf("Metric with name : %q not found among expected metrics", actualMetric.Name()))
-					assert.Equal(t, expectedMap[actualMetric.Name()], actualMetric)
+
+					// avoid panic due to expectedMap being nil
+					if !hasEntry {
+						return
+					}
+					assert.Nil(t, pmetrictest.CompareMetrics(expectedMap[actualMetric.Name()], td), pmetrictest.IgnoreDatapointAttributesOrder())
 				}
 			}
 		}
 	}
 }
 
-func populateMetricsMap(metricsMap map[string]pmetric.Metric, tds []pmetric.Metrics) {
+func populateMetricsMap(metricsMap map[string]pmetric.Metrics, tds []pmetric.Metrics) {
 	for _, td := range tds {
 		resourceMetrics := td.ResourceMetrics()
 		for i := 0; i < resourceMetrics.Len(); i++ {
@@ -66,7 +72,7 @@ func populateMetricsMap(metricsMap map[string]pmetric.Metric, tds []pmetric.Metr
 				for k := 0; k < metrics.Len(); k++ {
 					metric := metrics.At(k)
 					key := metric.Name()
-					metricsMap[key] = metric
+					metricsMap[key] = td
 				}
 			}
 		}

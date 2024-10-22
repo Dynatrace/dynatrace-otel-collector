@@ -2,10 +2,11 @@ package integration
 
 import (
 	"fmt"
-	"go.opentelemetry.io/collector/pdata/pcommon"
-	"go.opentelemetry.io/collector/pdata/plog"
 	"testing"
 
+	"go.opentelemetry.io/collector/pdata/plog"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/plogtest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/assert"
 )
@@ -39,7 +40,7 @@ func (v *SyslogSampleConfigsValidator) RecordResults(tc *testbed.TestCase) {
 }
 
 func assertExpectedLogsAreInReceived(t *testing.T, expected, actual []plog.Logs) {
-	expectedMap := make(map[string]plog.LogRecord)
+	expectedMap := make(map[string]plog.Logs)
 	populateLogsMap(expectedMap, expected)
 
 	for _, td := range actual {
@@ -60,14 +61,7 @@ func assertExpectedLogsAreInReceived(t *testing.T, expected, actual []plog.Logs)
 						return
 					}
 
-					expectedLogRecord := expectedMap[actualLogRecord.Body().AsString()]
-					assert.LessOrEqual(t, expectedLogRecord.Timestamp().AsTime(), actualLogRecord.Timestamp().AsTime())
-					assertMap(t, expectedLogRecord.Attributes(), actualLogRecord.Attributes())
-					assert.Equal(t, expectedLogRecord.SpanID(), actualLogRecord.SpanID())
-					assert.Equal(t, expectedLogRecord.TraceID(), actualLogRecord.TraceID())
-					assert.Equal(t, expectedLogRecord.Body(), actualLogRecord.Body())
-					// the syslog receiver will override the ObservedTimestamp with the current timestamp on the collector, so we test if the actual timestamp has been after the expected one.
-					assert.LessOrEqual(t, expectedLogRecord.ObservedTimestamp().AsTime(), actualLogRecord.ObservedTimestamp().AsTime())
+					assert.Nil(t, plogtest.CompareLogs(expectedMap[actualLogRecord.Body().AsString()], td))
 				}
 			}
 		}
@@ -75,7 +69,7 @@ func assertExpectedLogsAreInReceived(t *testing.T, expected, actual []plog.Logs)
 }
 
 // populateLogsMap populates a map with the body as the key and a LogRecord as the value for easier log record matching
-func populateLogsMap(logsMap map[string]plog.LogRecord, tds []plog.Logs) {
+func populateLogsMap(logsMap map[string]plog.Logs, tds []plog.Logs) {
 	for _, td := range tds {
 		resourceLogs := td.ResourceLogs()
 		for i := 0; i < resourceLogs.Len(); i++ {
@@ -85,31 +79,9 @@ func populateLogsMap(logsMap map[string]plog.LogRecord, tds []plog.Logs) {
 				for k := 0; k < logs.Len(); k++ {
 					log := logs.At(k)
 					key := log.Body().AsString()
-					logsMap[key] = log
+					logsMap[key] = td
 				}
 			}
 		}
-	}
-}
-
-func assertMap(t *testing.T, expected pcommon.Map, actual pcommon.Map) {
-	// verify that we get at least the attributes we defined in our expected attributes
-	assert.LessOrEqual(t, expected.Len(), actual.Len())
-	expected.Range(func(expectedKey string, expectedValue pcommon.Value) bool {
-		actualValue, exists := actual.Get(expectedKey)
-		assert.True(t, exists, "Expected attribute %s, but no attribute was present", expectedKey)
-		assertValue(t, expectedValue, actualValue)
-		return true
-	})
-}
-
-func assertValue(t *testing.T, expected pcommon.Value, actual pcommon.Value) {
-	assert.Equal(t, expected.Type(), actual.Type())
-	switch expected.Type() {
-	case pcommon.ValueTypeMap:
-		assertMap(t, expected.Map(), actual.Map())
-		break
-	default:
-		assert.Equal(t, expected, actual)
 	}
 }

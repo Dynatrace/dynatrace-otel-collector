@@ -13,7 +13,7 @@ import (
 )
 
 func TestFiltering(t *testing.T) {
-	trace := generateBasicTrace()
+	trace := generateBasicTrace(nil)
 	metric := generateBasicMetric()
 	logs := generatebasicLogs()
 	tests := []struct {
@@ -65,7 +65,74 @@ func TestFiltering(t *testing.T) {
 	}
 }
 
-func generateBasicTrace() ptrace.Traces {
+func TestFilteringDTAPIToken(t *testing.T) {
+	redactionProcessor := `
+	redaction:
+		allow_all_keys: true
+		blocked_values:
+			- dt0s0[1-9]\.[A-Za-z0-9]{24}\.([A-Za-z0-9]{64})
+`
+	ingestedTrace := generateBasicTrace(map[string]string{
+		// NOTE: the token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
+		"t": "dt0s01.ST2EY72KQINMH574WMNVI7YN.G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM572RZM",
+	})
+	expectedTrace := generateBasicTrace(map[string]string{
+		"t": "dt0s01.ST2EY72KQINMH574WMNVI7YN.****",
+	})
+	metric := generateBasicMetric()
+	logs := generatebasicLogs()
+	tests := []struct {
+		name         string
+		dataProvider testbed.DataProvider
+		sender       testbed.DataSender
+		receiver     testbed.DataReceiver
+		validator    testbed.TestCaseValidator
+		processors   map[string]string
+	}{
+		{
+			name:         "basic traces",
+			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
+			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewTraceSampleConfigsValidator(t, expectedTrace),
+			processors: map[string]string{
+				"redaction": redactionProcessor,
+			},
+		},
+		{
+			name:         "basic metrics",
+			dataProvider: NewSampleConfigsMetricsDataProvider(metric),
+			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewMetricSampleConfigsValidator(t, metric),
+			processors:   map[string]string{},
+		},
+		{
+			name:         "basic logs",
+			dataProvider: NewSampleConfigsLogsDataProvider(logs),
+			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewSyslogSampleConfigValidator(t, logs),
+			processors:   map[string]string{},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			FilteringScenario(
+				t,
+				test.dataProvider,
+				test.sender,
+				test.receiver,
+				test.validator,
+				test.processors,
+				nil,
+			)
+		})
+	}
+}
+
+func generateBasicTrace(attributes map[string]string) ptrace.Traces {
 	traceData := ptrace.NewTraces()
 	spans := traceData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
 	spans.EnsureCapacity(1)
@@ -77,7 +144,10 @@ func generateBasicTrace() ptrace.Traces {
 	span.SetName("filtering-span")
 	span.SetKind(ptrace.SpanKindClient)
 	attrs := span.Attributes()
-	attrs.PutStr("key", "value")
+
+	for k, v := range attributes {
+		attrs.PutStr(k, v)
+	}
 
 	span.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime))
 	span.SetEndTimestamp(pcommon.NewTimestampFromTime(endTime))

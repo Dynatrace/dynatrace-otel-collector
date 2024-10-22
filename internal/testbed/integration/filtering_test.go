@@ -15,7 +15,7 @@ import (
 func TestFiltering(t *testing.T) {
 	trace := generateBasicTrace(nil)
 	metric := generateBasicMetric(nil)
-	logs := generatebasicLogs()
+	logs := generateBasicLogs(pcommon.NewTimestampFromTime(time.Now()), nil)
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider
@@ -73,21 +73,24 @@ func TestFilteringDTAPIToken(t *testing.T) {
       - dt0s0[1-9]\.[A-Za-z0-9]{24}\.([A-Za-z0-9]{64})
 `
 	ingestedAttrs := map[string]string{
-		// NOTE: the token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
+		// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
 		"t": "dt0s01.ST2EY72KQINMH574WMNVI7YN.G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM572RZM",
 	}
 
-	expectedAttr := map[string]string{
+	expectedAttrs := map[string]string{
 		"t": "****",
 	}
 
 	ingestedTrace := generateBasicTrace(ingestedAttrs)
-	expectedTrace := generateBasicTrace(expectedAttr)
+	expectedTrace := generateBasicTrace(expectedAttrs)
 
 	ingestedMetric := generateBasicMetric(ingestedAttrs)
-	expectedMetric := generateBasicMetric(expectedAttr)
+	expectedMetric := generateBasicMetric(expectedAttrs)
 
-	logs := generatebasicLogs()
+	now := pcommon.NewTimestampFromTime(time.Now())
+	ingestedLog := generateBasicLogs(now, ingestedAttrs)
+	expectedLog := generateBasicLogs(now, expectedAttrs)
+
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider
@@ -118,11 +121,13 @@ func TestFilteringDTAPIToken(t *testing.T) {
 		},
 		{
 			name:         "basic logs",
-			dataProvider: NewSampleConfigsLogsDataProvider(logs),
+			dataProvider: NewSampleConfigsLogsDataProvider(ingestedLog),
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewSyslogSampleConfigValidator(t, logs),
-			processors:   map[string]string{},
+			validator:    NewSyslogSampleConfigValidator(t, expectedLog),
+			processors: map[string]string{
+				"redaction": redactionProcessor,
+			},
 		},
 	}
 
@@ -189,24 +194,24 @@ func generateBasicMetric(attributes map[string]string) pmetric.Metrics {
 	return md
 }
 
-func generatebasicLogs() plog.Logs {
+func generateBasicLogs(timestamp pcommon.Timestamp, attributes map[string]string) plog.Logs {
 	logs := plog.NewLogs()
 	rl := logs.ResourceLogs().AppendEmpty()
 
 	logRecords := rl.ScopeLogs().AppendEmpty().LogRecords()
 	logRecords.EnsureCapacity(1)
 
-	now := pcommon.NewTimestampFromTime(time.Now())
-
 	record := logRecords.AppendEmpty()
 	record.SetSeverityNumber(plog.SeverityNumberInfo3)
 	record.SetSeverityText("INFO")
 	record.Body().SetStr("Info testing filtering")
 	record.SetFlags(plog.DefaultLogRecordFlags.WithIsSampled(true))
-	record.SetTimestamp(now)
+	record.SetTimestamp(timestamp)
 
 	attrs := record.Attributes()
-	attrs.PutStr("a", "test")
+	for k, v := range attributes {
+		attrs.PutStr(k, v)
+	}
 
 	return logs
 }

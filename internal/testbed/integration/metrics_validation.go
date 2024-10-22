@@ -2,6 +2,8 @@ package integration
 
 import (
 	"fmt"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
@@ -49,7 +51,8 @@ func assertExpectedMetricsAreInReceived(t *testing.T, expected, actual []pmetric
 						expectedMap,
 						actualMetric.Name(),
 						fmt.Sprintf("Metric with name : %q not found among expected metrics", actualMetric.Name()))
-					assert.Equal(t, expectedMap[actualMetric.Name()], actualMetric)
+
+					require.NoError(t, pmetrictest.CompareMetric(expectedMap[actualMetric.Name()], actualMetric))
 				}
 			}
 		}

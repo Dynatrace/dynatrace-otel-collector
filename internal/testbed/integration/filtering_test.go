@@ -14,7 +14,7 @@ import (
 
 func TestFiltering(t *testing.T) {
 	trace := generateBasicTrace(nil)
-	metric := generateBasicMetric()
+	metric := generateBasicMetric(nil)
 	logs := generatebasicLogs()
 	tests := []struct {
 		name         string
@@ -67,19 +67,26 @@ func TestFiltering(t *testing.T) {
 
 func TestFilteringDTAPIToken(t *testing.T) {
 	redactionProcessor := `
-	redaction:
-		allow_all_keys: true
-		blocked_values:
-			- dt0s0[1-9]\.[A-Za-z0-9]{24}\.([A-Za-z0-9]{64})
+  redaction:
+    allow_all_keys: true
+    blocked_values:
+      - dt0s0[1-9]\.[A-Za-z0-9]{24}\.([A-Za-z0-9]{64})
 `
-	ingestedTrace := generateBasicTrace(map[string]string{
+	ingestedAttrs := map[string]string{
 		// NOTE: the token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
 		"t": "dt0s01.ST2EY72KQINMH574WMNVI7YN.G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM572RZM",
-	})
-	expectedTrace := generateBasicTrace(map[string]string{
-		"t": "dt0s01.ST2EY72KQINMH574WMNVI7YN.****",
-	})
-	metric := generateBasicMetric()
+	}
+
+	expectedAttr := map[string]string{
+		"t": "****",
+	}
+
+	ingestedTrace := generateBasicTrace(ingestedAttrs)
+	expectedTrace := generateBasicTrace(expectedAttr)
+
+	ingestedMetric := generateBasicMetric(ingestedAttrs)
+	expectedMetric := generateBasicMetric(expectedAttr)
+
 	logs := generatebasicLogs()
 	tests := []struct {
 		name         string
@@ -94,18 +101,20 @@ func TestFilteringDTAPIToken(t *testing.T) {
 			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewTraceSampleConfigsValidator(t, expectedTrace),
+			validator:    NewTraceSampleConfigsValidator(t, expectedTrace, WithTraceAttributeCheck()),
 			processors: map[string]string{
 				"redaction": redactionProcessor,
 			},
 		},
 		{
 			name:         "basic metrics",
-			dataProvider: NewSampleConfigsMetricsDataProvider(metric),
+			dataProvider: NewSampleConfigsMetricsDataProvider(ingestedMetric),
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewMetricSampleConfigsValidator(t, metric),
-			processors:   map[string]string{},
+			validator:    NewMetricSampleConfigsValidator(t, expectedMetric),
+			processors: map[string]string{
+				"redaction": redactionProcessor,
+			},
 		},
 		{
 			name:         "basic logs",
@@ -137,8 +146,8 @@ func generateBasicTrace(attributes map[string]string) ptrace.Traces {
 	spans := traceData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
 	spans.EnsureCapacity(1)
 
-	startTime := time.Now()
-	endTime := startTime.Add(time.Millisecond)
+	//startTime := time.Now()
+	//endTime := startTime.Add(time.Millisecond)
 
 	span := spans.AppendEmpty()
 	span.SetName("filtering-span")
@@ -149,15 +158,19 @@ func generateBasicTrace(attributes map[string]string) ptrace.Traces {
 		attrs.PutStr(k, v)
 	}
 
-	span.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime))
-	span.SetEndTimestamp(pcommon.NewTimestampFromTime(endTime))
+	//span.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime))
+	//span.SetEndTimestamp(pcommon.NewTimestampFromTime(endTime))
 
 	return traceData
 }
 
-func generateBasicMetric() pmetric.Metrics {
+func generateBasicMetric(attributes map[string]string) pmetric.Metrics {
 	md := pmetric.NewMetrics()
 	rm := md.ResourceMetrics().AppendEmpty()
+
+	for k, v := range attributes {
+		rm.Resource().Attributes().PutStr(k, v)
+	}
 
 	metrics := rm.ScopeMetrics().AppendEmpty().Metrics()
 	metrics.EnsureCapacity(1)
@@ -167,9 +180,11 @@ func generateBasicMetric() pmetric.Metrics {
 	dps := metric.SetEmptyGauge().DataPoints()
 
 	dataPoint := dps.AppendEmpty()
-	dataPoint.SetStartTimestamp(pcommon.NewTimestampFromTime(time.Now()))
 	dataPoint.SetIntValue(int64(42))
-	dataPoint.Attributes().PutStr("item_index", "item_1")
+
+	for k, v := range attributes {
+		dataPoint.Attributes().PutStr(k, v)
+	}
 
 	return md
 }

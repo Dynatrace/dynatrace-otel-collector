@@ -60,7 +60,7 @@ func TestFilteringCreditCard(t *testing.T) {
 			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewTraceSampleConfigsValidator(t, generateBasicTracesWithAttributes(attributesMasked)),
+			validator:    NewTraceValidator(t, generateBasicTracesWithAttributes(attributesMasked)),
 			processors:   creditCardProcessor,
 		},
 		{
@@ -68,7 +68,7 @@ func TestFilteringCreditCard(t *testing.T) {
 			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewMetricSampleConfigsValidator(t, generateBasicMetricWithAttributes(attributesMasked)),
+			validator:    NewMetricValidator(t, generateBasicMetricWithAttributes(attributesMasked)),
 			processors:   creditCardProcessor,
 		},
 		{
@@ -76,7 +76,7 @@ func TestFilteringCreditCard(t *testing.T) {
 			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewSyslogSampleConfigValidator(t, generateBasicLogsWithAttributes(attributesMasked)),
+			validator:    NewLogsValidator(t, generateBasicLogsWithAttributes(attributesMasked)),
 			processors:   creditCardProcessor,
 		},
 	}

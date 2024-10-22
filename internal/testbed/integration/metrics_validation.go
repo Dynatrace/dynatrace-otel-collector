@@ -10,28 +10,28 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 )
 
-var _ testbed.TestCaseValidator = &MetricsSampleConfigsValidator{}
+var _ testbed.TestCaseValidator = &MetricsValidator{}
 
-type MetricsSampleConfigsValidator struct {
+type MetricsValidator struct {
 	expectedMetrics pmetric.Metrics
 	t               *testing.T
 }
 
-func NewMetricSampleConfigsValidator(t *testing.T, expectedMetrics pmetric.Metrics) *MetricsSampleConfigsValidator {
-	return &MetricsSampleConfigsValidator{
+func NewMetricValidator(t *testing.T, expectedMetrics pmetric.Metrics) *MetricsValidator {
+	return &MetricsValidator{
 		expectedMetrics: expectedMetrics,
 		t:               t,
 	}
 }
 
-func (v *MetricsSampleConfigsValidator) Validate(tc *testbed.TestCase) {
+func (v *MetricsValidator) Validate(tc *testbed.TestCase) {
 	actualMetrics := tc.MockBackend.DataItemsReceived()
 
 	assert.EqualValues(v.t, v.expectedMetrics.MetricCount(), actualMetrics, "Received and expected number of metrics do not match.")
 	assertExpectedMetricsAreInReceived(v.t, []pmetric.Metrics{v.expectedMetrics}, tc.MockBackend.ReceivedMetrics)
 }
 
-func (v *MetricsSampleConfigsValidator) RecordResults(tc *testbed.TestCase) {
+func (v *MetricsValidator) RecordResults(tc *testbed.TestCase) {
 }
 
 func assertExpectedMetricsAreInReceived(t *testing.T, expected, actual []pmetric.Metrics) {

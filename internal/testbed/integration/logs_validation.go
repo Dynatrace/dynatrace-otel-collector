@@ -11,22 +11,22 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var _ testbed.TestCaseValidator = &SyslogSampleConfigsValidator{}
+var _ testbed.TestCaseValidator = &LogsValidator{}
 
-type SyslogSampleConfigsValidator struct {
+type LogsValidator struct {
 	expectedLogs plog.Logs
 	t            *testing.T
 }
 
-// NewSyslogSampleConfigValidator ensures expected logs are present in the output.
-func NewSyslogSampleConfigValidator(t *testing.T, expectedLogs plog.Logs) *SyslogSampleConfigsValidator {
-	return &SyslogSampleConfigsValidator{
+// NewLogsValidator ensures expected logs are present in the output.
+func NewLogsValidator(t *testing.T, expectedLogs plog.Logs) *LogsValidator {
+	return &LogsValidator{
 		expectedLogs: expectedLogs,
 		t:            t,
 	}
 }
 
-func (v *SyslogSampleConfigsValidator) Validate(tc *testbed.TestCase) {
+func (v *LogsValidator) Validate(tc *testbed.TestCase) {
 	actualLogs := 0
 	for _, td := range tc.MockBackend.ReceivedLogs {
 		actualLogs += td.LogRecordCount()
@@ -36,7 +36,7 @@ func (v *SyslogSampleConfigsValidator) Validate(tc *testbed.TestCase) {
 	assertExpectedLogsAreInReceived(v.t, []plog.Logs{v.expectedLogs}, tc.MockBackend.ReceivedLogs)
 }
 
-func (v *SyslogSampleConfigsValidator) RecordResults(tc *testbed.TestCase) {
+func (v *LogsValidator) RecordResults(tc *testbed.TestCase) {
 }
 
 func assertExpectedLogsAreInReceived(t *testing.T, expected, actual []plog.Logs) {

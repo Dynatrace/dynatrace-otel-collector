@@ -86,7 +86,7 @@ func TestConfigTailSampling(t *testing.T) {
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
 	sender := testbed.NewOTLPTraceDataSender(testbed.DefaultHost, receiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+	validator := NewTraceValidator(t, expectedSpansData)
 
 	tc := testbed.NewTestCase(
 		t,
@@ -179,7 +179,7 @@ func TestConfigJaegerGrpc(t *testing.T) {
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
 	sender := datasenders.NewJaegerGRPCDataSender(testbed.DefaultHost, grpcReceiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+	validator := NewTraceValidator(t, expectedSpansData)
 
 	tc := testbed.NewTestCase(
 		t,
@@ -272,7 +272,7 @@ func TestConfigZipkin(t *testing.T) {
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
 	sender := datasenders.NewZipkinDataSender(testbed.DefaultHost, zipkinReceiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+	validator := NewTraceValidator(t, expectedSpansData)
 
 	tc := testbed.NewTestCase(
 		t,
@@ -382,7 +382,7 @@ func TestConfigHistogramTransform(t *testing.T) {
 	dataProvider := NewSampleConfigsMetricsDataProvider(actualMetricsData)
 	sender := testbed.NewOTLPMetricDataSender(testbed.DefaultHost, receiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewMetricSampleConfigsValidator(t, expectedMetricData)
+	validator := NewMetricValidator(t, expectedMetricData)
 
 	tc := testbed.NewTestCase(
 		t,
@@ -484,7 +484,7 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
 	sender := testbed.NewOTLPTraceDataSender(testbed.DefaultHost, receiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+	validator := NewTraceValidator(t, expectedSpansData)
 
 	tc := testbed.NewTestCase(
 		t,
@@ -572,7 +572,7 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
 	sender := datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewSyslogSampleConfigValidator(t, expectedLogsData)
+	validator := NewLogsValidator(t, expectedLogsData)
 
 	tc := testbed.NewTestCase(
 		t,
@@ -655,7 +655,7 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
 	sender := datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewSyslogSampleConfigValidator(t, expectedLogsData)
+	validator := NewLogsValidator(t, expectedLogsData)
 
 	tc := testbed.NewTestCase(
 		t,

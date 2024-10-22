@@ -12,21 +12,21 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-var _ testbed.TestCaseValidator = &TraceSampleConfigsValidator{}
+var _ testbed.TestCaseValidator = &TraceValidator{}
 
-type TraceSampleConfigsValidator struct {
+type TraceValidator struct {
 	expectedTraces ptrace.Traces
 	t              *testing.T
 }
 
-func NewTraceSampleConfigsValidator(t *testing.T, expectedTraces ptrace.Traces) *TraceSampleConfigsValidator {
-	return &TraceSampleConfigsValidator{
+func NewTraceValidator(t *testing.T, expectedTraces ptrace.Traces) *TraceValidator {
+	return &TraceValidator{
 		expectedTraces: expectedTraces,
 		t:              t,
 	}
 }
 
-func (v *TraceSampleConfigsValidator) Validate(tc *testbed.TestCase) {
+func (v *TraceValidator) Validate(tc *testbed.TestCase) {
 	actualSpans := 0
 	for _, td := range tc.MockBackend.ReceivedTraces {
 		actualSpans += td.SpanCount()
@@ -36,7 +36,7 @@ func (v *TraceSampleConfigsValidator) Validate(tc *testbed.TestCase) {
 	assertExpectedSpansAreInReceived(v.t, []ptrace.Traces{v.expectedTraces}, tc.MockBackend.ReceivedTraces)
 }
 
-func (v *TraceSampleConfigsValidator) RecordResults(tc *testbed.TestCase) {
+func (v *TraceValidator) RecordResults(tc *testbed.TestCase) {
 }
 
 func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Traces) {

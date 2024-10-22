@@ -55,14 +55,14 @@ func TestFilteringCreditCard(t *testing.T) {
 		validator    testbed.TestCaseValidator
 		processors   map[string]string
 	}{
-		// {
-		// 	name:         "basic traces",
-		// 	dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
-		// 	sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-		// 	receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-		// 	validator:    NewTraceSampleConfigsValidator(t, generateBasicTracesWithAttributes(attributesMasked)),
-		// 	processors:   creditCardProcessor,
-		// },
+		{
+			name:         "basic traces",
+			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
+			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewTraceSampleConfigsValidator(t, generateBasicTracesWithAttributes(attributesMasked)),
+			processors:   creditCardProcessor,
+		},
 		{
 			name:         "metrics",
 			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),

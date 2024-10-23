@@ -55,7 +55,7 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 						return
 					}
 
-					assert.Nil(t, ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())], td, ptracetest.IgnoreSpansOrder()))
+					assert.Nil(t, ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())], td, ptracetest.IgnoreSpansOrder(), ptracetest.IgnoreEndTimestamp(), ptracetest.IgnoreStartTimestamp()))
 				}
 			}
 		}

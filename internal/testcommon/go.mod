@@ -12,10 +12,10 @@ require (
 	go.opentelemetry.io/collector/pdata v1.17.0
 	go.opentelemetry.io/collector/receiver v0.111.0
 	go.opentelemetry.io/collector/receiver/otlpreceiver v0.111.0
-	k8s.io/api v0.31.1
-	k8s.io/apimachinery v0.31.1
-	k8s.io/client-go v0.31.1
-	k8s.io/metrics v0.31.1
+	k8s.io/api v0.31.2
+	k8s.io/apimachinery v0.31.2
+	k8s.io/client-go v0.31.2
+	k8s.io/metrics v0.31.2
 )
 
 require (

@@ -8,7 +8,7 @@ import (
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/plogtest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var _ testbed.TestCaseValidator = &LogsValidator{}
@@ -45,17 +45,12 @@ func assertExpectedLogsAreInReceived(t *testing.T, expected, actual []plog.Logs)
 				logRecords := scopeLogs.At(j).LogRecords()
 				for k := 0; k < logRecords.Len(); k++ {
 					actualLogRecord := logRecords.At(k)
-					hasEntry := assert.Contains(t,
+					require.Contains(t,
 						expectedMap,
 						actualLogRecord.Body().AsString(),
 						fmt.Sprintf("Actual log with body : %q not found among expected logRecords", actualLogRecord.Body().AsString()))
 
-					// avoid panic due to expectedLogRecord being nil
-					if !hasEntry {
-						return
-					}
-
-					assert.Nil(t, plogtest.CompareLogs(expectedMap[actualLogRecord.Body().AsString()], td, plogtest.IgnoreObservedTimestamp()))
+					require.Nil(t, plogtest.CompareLogs(expectedMap[actualLogRecord.Body().AsString()], td, plogtest.IgnoreObservedTimestamp()))
 				}
 			}
 		}

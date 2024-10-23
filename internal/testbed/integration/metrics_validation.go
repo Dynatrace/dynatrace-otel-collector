@@ -6,7 +6,7 @@ import (
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 )
 
@@ -43,16 +43,12 @@ func assertExpectedMetricsAreInReceived(t *testing.T, expected, actual []pmetric
 				metrics := scopeMetrics.At(j).Metrics()
 				for k := 0; k < metrics.Len(); k++ {
 					actualMetric := metrics.At(k)
-					hasEntry := assert.Contains(t,
+					require.Contains(t,
 						expectedMap,
 						actualMetric.Name(),
 						fmt.Sprintf("Metric with name : %q not found among expected metrics", actualMetric.Name()))
 
-					// avoid panic due to expectedMap being nil
-					if !hasEntry {
-						return
-					}
-					assert.Nil(t, pmetrictest.CompareMetrics(expectedMap[actualMetric.Name()], td), pmetrictest.IgnoreDatapointAttributesOrder())
+					require.Nil(t, pmetrictest.CompareMetrics(expectedMap[actualMetric.Name()], td), pmetrictest.IgnoreDatapointAttributesOrder())
 				}
 			}
 		}

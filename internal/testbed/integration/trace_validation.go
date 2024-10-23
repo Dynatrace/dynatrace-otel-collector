@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
+	"github.com/stretchr/testify/require"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/idutils"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
-	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
@@ -45,17 +45,12 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 				spans := ss.At(j).Spans()
 				for k := 0; k < spans.Len(); k++ {
 					recdSpan := spans.At(k)
-					hasEntry := assert.Contains(t,
+					require.Contains(t,
 						expectedMap,
 						idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
 						fmt.Sprintf("Span with ID: %q not found among expected spans", recdSpan.SpanID()))
 
-					// avoid panic due to expectedLogRecord being nil
-					if !hasEntry {
-						return
-					}
-
-					assert.Nil(t, ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())], td, ptracetest.IgnoreSpansOrder(), ptracetest.IgnoreEndTimestamp(), ptracetest.IgnoreStartTimestamp()))
+					require.Nil(t, ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())], td, ptracetest.IgnoreSpansOrder(), ptracetest.IgnoreEndTimestamp(), ptracetest.IgnoreStartTimestamp()))
 				}
 			}
 		}

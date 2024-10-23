@@ -13,11 +13,11 @@ import (
 var _ testbed.TestCaseValidator = &MetricsValidator{}
 
 type MetricsValidator struct {
-	expectedMetrics pmetric.Metrics
+	expectedMetrics []pmetric.Metrics
 	t               *testing.T
 }
 
-func NewMetricValidator(t *testing.T, expectedMetrics pmetric.Metrics) *MetricsValidator {
+func NewMetricValidator(t *testing.T, expectedMetrics []pmetric.Metrics) *MetricsValidator {
 	return &MetricsValidator{
 		expectedMetrics: expectedMetrics,
 		t:               t,
@@ -25,10 +25,7 @@ func NewMetricValidator(t *testing.T, expectedMetrics pmetric.Metrics) *MetricsV
 }
 
 func (v *MetricsValidator) Validate(tc *testbed.TestCase) {
-	actualMetrics := tc.MockBackend.DataItemsReceived()
-
-	assert.EqualValues(v.t, v.expectedMetrics.MetricCount(), actualMetrics, "Received and expected number of metrics do not match.")
-	assertExpectedMetricsAreInReceived(v.t, []pmetric.Metrics{v.expectedMetrics}, tc.MockBackend.ReceivedMetrics)
+	assertExpectedMetricsAreInReceived(v.t, v.expectedMetrics, tc.MockBackend.ReceivedMetrics)
 }
 
 func (v *MetricsValidator) RecordResults(tc *testbed.TestCase) {

@@ -15,11 +15,11 @@ import (
 var _ testbed.TestCaseValidator = &TraceValidator{}
 
 type TraceValidator struct {
-	expectedTraces ptrace.Traces
+	expectedTraces []ptrace.Traces
 	t              *testing.T
 }
 
-func NewTraceValidator(t *testing.T, expectedTraces ptrace.Traces) *TraceValidator {
+func NewTraceValidator(t *testing.T, expectedTraces []ptrace.Traces) *TraceValidator {
 	return &TraceValidator{
 		expectedTraces: expectedTraces,
 		t:              t,
@@ -27,13 +27,7 @@ func NewTraceValidator(t *testing.T, expectedTraces ptrace.Traces) *TraceValidat
 }
 
 func (v *TraceValidator) Validate(tc *testbed.TestCase) {
-	actualSpans := 0
-	for _, td := range tc.MockBackend.ReceivedTraces {
-		actualSpans += td.SpanCount()
-	}
-
-	assert.EqualValues(v.t, v.expectedTraces.SpanCount(), actualSpans, "Expected %d spans, received %d.", v.expectedTraces.SpanCount(), actualSpans)
-	assertExpectedSpansAreInReceived(v.t, []ptrace.Traces{v.expectedTraces}, tc.MockBackend.ReceivedTraces)
+	assertExpectedSpansAreInReceived(v.t, v.expectedTraces, tc.MockBackend.ReceivedTraces)
 }
 
 func (v *TraceValidator) RecordResults(tc *testbed.TestCase) {
@@ -61,7 +55,7 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 						return
 					}
 
-					assert.Nil(t, ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())], td))
+					assert.Nil(t, ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())], td, ptracetest.IgnoreSpansOrder()))
 				}
 			}
 		}

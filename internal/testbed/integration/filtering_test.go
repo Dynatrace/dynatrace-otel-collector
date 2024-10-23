@@ -29,7 +29,7 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesMasked.PutStr("card_amex_no_spaces", "****")
 	attributesMasked.PutInt("redaction.masked.count", int64(6))
 
-	creditCardProcessor := map[string]string{
+	creditCardRedactionProcessor := map[string]string{
 		"redaction": `
   redaction:
     allow_all_keys: false
@@ -56,12 +56,12 @@ func TestFilteringCreditCard(t *testing.T) {
 		processors   map[string]string
 	}{
 		{
-			name:         "basic traces",
+			name:         "traces",
 			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewTraceValidator(t, []ptrace.Traces{generateBasicTracesWithAttributes(attributesMasked)}),
-			processors:   creditCardProcessor,
+			processors:   creditCardRedactionProcessor,
 		},
 		{
 			name:         "metrics",
@@ -69,7 +69,7 @@ func TestFilteringCreditCard(t *testing.T) {
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewMetricValidator(t, []pmetric.Metrics{generateBasicMetricWithAttributes(attributesMasked)}),
-			processors:   creditCardProcessor,
+			processors:   creditCardRedactionProcessor,
 		},
 		{
 			name:         "logs",
@@ -77,7 +77,7 @@ func TestFilteringCreditCard(t *testing.T) {
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesMasked)}),
-			processors:   creditCardProcessor,
+			processors:   creditCardRedactionProcessor,
 		},
 	}
 

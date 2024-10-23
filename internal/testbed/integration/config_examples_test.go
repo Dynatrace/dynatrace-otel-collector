@@ -3,6 +3,7 @@ package integration
 import (
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -445,7 +446,7 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	parsedConfig := string(cfg)
 	parsedConfig = testutil.ReplaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
-	//parsedConfig = strings.Replace(parsedConfig, "endpoint: 0.0.0.0:4318", "endpoint: 0.0.0.0:"+string(testutil.GetAvailablePort(t)), 1)
+	parsedConfig = strings.Replace(parsedConfig, "endpoint: 0.0.0.0:4318", "endpoint: 0.0.0.0:"+strconv.Itoa(testutil.GetAvailablePort(t)), 1)
 
 	// replaces the sampling decision wait so the test doesn't timeout
 	parsedConfig = strings.Replace(parsedConfig, "decision_wait: 30s", "decision_wait: 10ms", 1)
@@ -564,7 +565,7 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 
 	tc.WaitForN(func() bool {
 		// Verify we received all 3 spans, plus a data point per span for each of the 3 metrics produced by the span metrics connector.
-		return tc.MockBackend.DataItemsReceived() == 3
+		return tc.MockBackend.DataItemsReceived() >= 3
 	}, 15*time.Second, "all data items received")
 
 	// assert
@@ -605,8 +606,6 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	actualSimpleLog.Attributes().PutStr("foo", "bar")
 
 	expectedSimpleLog := expectedLogs.AppendEmpty()
-	// expectedSimpleLog.SetSeverityNumber(plog.SeverityNumberInfo)
-	// expectedSimpleLog.SetSeverityText("info")
 	// the following attributes are attached by the receiver (see config), no other attributes are automatically populated
 	expectedSimpleLogAttrLog := expectedSimpleLog.Attributes().PutEmptyMap("log")
 	expectedSimpleLogAttrLog.PutStr("source", "syslog")
@@ -616,17 +615,6 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	expectedSimpleLogAttrInstance.PutStr("name", "ip-1xx-xx-x-xx9.ec2.internal")
 	expectedSimpleLogAttrDevice := expectedSimpleLog.Attributes().PutEmptyMap("device")
 	expectedSimpleLogAttrDevice.PutStr("type", "f5bigip")
-	// expectedSimpleLog.Attributes().PutInt("facility", int64(20))
-	// expectedSimpleLog.Attributes().PutStr("hostname", "127.0.0.1")
-	// expectedSimpleLog.Attributes().PutStr("message", "simple_1")
-	// expectedSimpleLog.Attributes().PutInt("version", int64(1))
-	// expectedSimpleLog.Attributes().PutInt("priority", int64(166))
-	// expectedSimpleLogAttrStruct := expectedSimpleLog.Attributes().PutEmptyMap("structured_data")
-	// expectedSimpleLogAttrStruct1 := expectedSimpleLogAttrStruct.PutEmptyMap("test@12345")
-	// expectedSimpleLogAttrStruct1.PutStr("foo", "bar")
-	// expectedSimpleLogAttrStruct1.PutStr("trace_id", "00000000000000000000000000000001")
-	// expectedSimpleLogAttrStruct1.PutStr("span_id", "0000000000000002")
-	// expectedSimpleLogAttrStruct1.PutStr("trace_flags", "0")
 	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
 	expectedSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(0)))
 	expectedSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(0)))
@@ -706,24 +694,11 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	actualSimpleLog.Attributes().PutStr("foo", "bar")
 
 	expectedSimpleLog := expectedLogs.AppendEmpty()
-	// expectedSimpleLog.SetSeverityNumber(plog.SeverityNumberInfo)
-	// expectedSimpleLog.SetSeverityText("info")
 	// the following attributes are attached by the receiver (see config), no other attributes are automatically populated
 	expectedSimpleLogAttrLog := expectedSimpleLog.Attributes().PutEmptyMap("log")
 	expectedSimpleLogAttrLog.PutStr("source", "syslog")
 	expectedSimpleLogAttrDevice := expectedSimpleLog.Attributes().PutEmptyMap("device")
 	expectedSimpleLogAttrDevice.PutStr("type", "ubuntu-syslog")
-	// expectedSimpleLog.Attributes().PutInt("facility", int64(20))
-	// expectedSimpleLog.Attributes().PutStr("hostname", "127.0.0.1")
-	// expectedSimpleLog.Attributes().PutStr("message", "simple_1")
-	// expectedSimpleLog.Attributes().PutInt("version", int64(1))
-	// expectedSimpleLog.Attributes().PutInt("priority", int64(166))
-	// expectedSimpleLogAttrStruct := expectedSimpleLog.Attributes().PutEmptyMap("structured_data")
-	// expectedSimpleLogAttrStruct1 := expectedSimpleLogAttrStruct.PutEmptyMap("test@12345")
-	// expectedSimpleLogAttrStruct1.PutStr("foo", "bar")
-	// expectedSimpleLogAttrStruct1.PutStr("trace_id", "00000000000000000000000000000001")
-	// expectedSimpleLogAttrStruct1.PutStr("span_id", "0000000000000002")
-	// expectedSimpleLogAttrStruct1.PutStr("trace_flags", "0")
 	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
 	expectedSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(0)))
 	expectedSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(0)))

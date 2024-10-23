@@ -50,7 +50,13 @@ func assertExpectedLogsAreInReceived(t *testing.T, expected, actual []plog.Logs)
 						actualLogRecord.Body().AsString(),
 						fmt.Sprintf("Actual log with body : %q not found among expected logRecords", actualLogRecord.Body().AsString()))
 
-					require.Nil(t, plogtest.CompareLogs(expectedMap[actualLogRecord.Body().AsString()], td, plogtest.IgnoreObservedTimestamp()))
+					require.Nil(t,
+						plogtest.CompareLogs(
+							expectedMap[actualLogRecord.Body().AsString()],
+							td,
+							plogtest.IgnoreObservedTimestamp(),
+						),
+					)
 				}
 			}
 		}

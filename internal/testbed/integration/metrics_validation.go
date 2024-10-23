@@ -48,7 +48,14 @@ func assertExpectedMetricsAreInReceived(t *testing.T, expected, actual []pmetric
 						actualMetric.Name(),
 						fmt.Sprintf("Metric with name : %q not found among expected metrics", actualMetric.Name()))
 
-					require.Nil(t, pmetrictest.CompareMetrics(expectedMap[actualMetric.Name()], td), pmetrictest.IgnoreDatapointAttributesOrder())
+					require.Nil(
+						t,
+						pmetrictest.CompareMetrics(
+							expectedMap[actualMetric.Name()],
+							td,
+							pmetrictest.IgnoreDatapointAttributesOrder(),
+							pmetrictest.IgnoreStartTimestamp()),
+					)
 				}
 			}
 		}

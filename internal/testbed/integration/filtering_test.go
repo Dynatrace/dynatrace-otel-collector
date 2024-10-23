@@ -1,7 +1,11 @@
 package integration
 
 import (
+	"crypto/rand"
+	"fmt"
+	"math/big"
 	"testing"
+	"time"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
@@ -101,26 +105,50 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
   redaction:
     allow_all_keys: true
     blocked_values:
-      - dt0s0[1-9]\.[A-Za-z0-9]{24}\.([A-Za-z0-9]{64})
+      - dt0[a-z]0[1-9]\.[A-Za-z0-9]{24}\.([A-Za-z0-9]{64})
 `
-	ingestedAttrs := map[string]string{
-		// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
-		"t": "dt0s01.ST2EY72KQINMH574WMNVI7YN.G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM572RZM",
-	}
 
-	expectedAttrs := map[string]string{
-		"t": "****",
-	}
+	ingestedAttrs := pcommon.NewMap()
 
-	ingestedTrace := generateBasicTrace(ingestedAttrs)
-	expectedTrace := generateBasicTrace(expectedAttrs)
+	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
 
-	ingestedMetric := generateBasicMetric(ingestedAttrs)
-	expectedMetric := generateBasicMetric(expectedAttrs)
+	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
+	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("non-redacted", "foo")
 
-	now := pcommon.NewTimestampFromTime(time.Now())
-	ingestedLog := generateBasicLogs(now, ingestedAttrs)
-	expectedLog := generateBasicLogs(now, expectedAttrs)
+	redactedString := "****"
+	expectedAttrs := pcommon.NewMap()
+	expectedAttrs.PutStr("t1", redactedString)
+	expectedAttrs.PutStr("t2", redactedString)
+	expectedAttrs.PutStr("t3", redactedString)
+	expectedAttrs.PutStr("t4", redactedString)
+	expectedAttrs.PutStr("t5", redactedString)
+	expectedAttrs.PutStr("t6", redactedString)
+	expectedAttrs.PutStr("t7", redactedString)
+	expectedAttrs.PutStr("t8", redactedString)
+	expectedAttrs.PutStr("t9", redactedString)
+	expectedAttrs.PutStr("t10", redactedString)
+	expectedAttrs.PutStr("t11", redactedString)
+	expectedAttrs.PutStr("non-redacted", "foo")
+
+	ingestedTrace := generateBasicTracesWithAttributes(ingestedAttrs)
+	expectedTrace := generateBasicTracesWithAttributes(expectedAttrs)
+
+	ingestedMetric := generateBasicMetricWithAttributes(ingestedAttrs)
+	expectedMetric := generateBasicMetricWithAttributes(expectedAttrs)
+
+	ingestedLog := generateBasicLogsWithAttributes(ingestedAttrs)
+	expectedLog := generateBasicLogsWithAttributes(expectedAttrs)
 
 	tests := []struct {
 		name         string
@@ -131,31 +159,31 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 		processors   map[string]string
 	}{
 		{
-			name:         "basic traces",
+			name:         "traces",
 			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewTraceSampleConfigsValidator(t, expectedTrace, WithTraceAttributeCheck()),
+			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}),
 			processors: map[string]string{
 				"redaction": redactionProcessor,
 			},
 		},
 		{
-			name:         "basic metrics",
+			name:         "metrics",
 			dataProvider: NewSampleConfigsMetricsDataProvider(ingestedMetric),
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewMetricSampleConfigsValidator(t, expectedMetric),
+			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}),
 			processors: map[string]string{
 				"redaction": redactionProcessor,
 			},
 		},
 		{
-			name:         "basic logs",
+			name:         "logs",
 			dataProvider: NewSampleConfigsLogsDataProvider(ingestedLog),
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewSyslogSampleConfigValidator(t, expectedLog),
+			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}),
 			processors: map[string]string{
 				"redaction": redactionProcessor,
 			},
@@ -175,6 +203,16 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 			)
 		})
 	}
+}
+
+func getRandomString(length int) string {
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	result := make([]byte, length)
+	for i := range result {
+		num, _ := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		result[i] = charset[num.Int64()]
+	}
+	return string(result)
 }
 
 func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
@@ -183,37 +221,59 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
     trace_statements:
       - context: span
         statements:
-          - replace_all_patterns(attributes, "value", "(dt0s0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
+          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
     metric_statements:
       - context: datapoint
         statements:
-          - replace_all_patterns(attributes, "value", "(dt0s0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
+          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
       - context: resource
         statements:
-          - replace_all_patterns(attributes, "value", "(dt0s0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
+          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
     log_statements:
       - context: log
         statements:
-          - replace_all_patterns(attributes, "value", "(dt0s0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
+          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
 `
-	ingestedAttrs := map[string]string{
-		// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
-		"t": "dt0s01.ST2EY72KQINMH574WMNVI7YN.G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM572RZM",
-	}
+	ingestedAttrs := pcommon.NewMap()
 
-	expectedAttrs := map[string]string{
-		"t": "dt0s01.ST2EY72KQINMH574WMNVI7YN.****",
-	}
+	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
+	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
+	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	ingestedAttrs.PutStr("non-redacted", "foo")
 
-	ingestedTrace := generateBasicTrace(ingestedAttrs)
-	expectedTrace := generateBasicTrace(expectedAttrs)
+	redactedString := "****"
+	expectedAttrs := pcommon.NewMap()
+	expectedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("non-redacted", "foo")
 
-	ingestedMetric := generateBasicMetric(ingestedAttrs)
-	expectedMetric := generateBasicMetric(expectedAttrs)
+	ingestedTrace := generateBasicTracesWithAttributes(ingestedAttrs)
+	expectedTrace := generateBasicTracesWithAttributes(expectedAttrs)
 
-	now := pcommon.NewTimestampFromTime(time.Now())
-	ingestedLog := generateBasicLogs(now, ingestedAttrs)
-	expectedLog := generateBasicLogs(now, expectedAttrs)
+	ingestedMetric := generateBasicMetricWithAttributes(ingestedAttrs)
+	expectedMetric := generateBasicMetricWithAttributes(expectedAttrs)
+
+	ingestedLog := generateBasicLogsWithAttributes(ingestedAttrs)
+	expectedLog := generateBasicLogsWithAttributes(expectedAttrs)
 
 	tests := []struct {
 		name         string
@@ -224,31 +284,31 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 		processors   map[string]string
 	}{
 		{
-			name:         "basic traces",
+			name:         "traces",
 			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewTraceSampleConfigsValidator(t, expectedTrace, WithTraceAttributeCheck()),
+			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}),
 			processors: map[string]string{
 				"transform": transformProcessor,
 			},
 		},
 		{
-			name:         "basic metrics",
+			name:         "metrics",
 			dataProvider: NewSampleConfigsMetricsDataProvider(ingestedMetric),
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewMetricSampleConfigsValidator(t, expectedMetric),
+			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}),
 			processors: map[string]string{
 				"transform": transformProcessor,
 			},
 		},
 		{
-			name:         "basic logs",
+			name:         "logs",
 			dataProvider: NewSampleConfigsLogsDataProvider(ingestedLog),
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewSyslogSampleConfigValidator(t, expectedLog),
+			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}),
 			processors: map[string]string{
 				"transform": transformProcessor,
 			},
@@ -270,26 +330,26 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 	}
 }
 
-	func generateBasicTracesWithAttributes(attributes pcommon.Map) ptrace.Traces {
-		traceData := ptrace.NewTraces()
-		spans := traceData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
-		spans.EnsureCapacity(1)
+func generateBasicTracesWithAttributes(attributes pcommon.Map) ptrace.Traces {
+	traceData := ptrace.NewTraces()
+	spans := traceData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
+	spans.EnsureCapacity(1)
 
-		span := spans.AppendEmpty()
-		span.SetName("filtering-span")
-		attrs := span.Attributes()
-		for k, v := range attributes.AsRaw() {
+	span := spans.AppendEmpty()
+	span.SetName("filtering-span")
+	attrs := span.Attributes()
+	for k, v := range attributes.AsRaw() {
 		switch v.(type) {
-	case int64:
-		attrs.PutInt(k, v.(int64))
-	case string:
-		attrs.PutStr(k, v.(string))
-	}
+		case int64:
+			attrs.PutInt(k, v.(int64))
+		case string:
+			attrs.PutStr(k, v.(string))
+		}
 
 	}
 
-		return traceData
-	}
+	return traceData
+}
 
 func generateBasicMetricWithAttributes(attributes pcommon.Map) pmetric.Metrics {
 	md := pmetric.NewMetrics()

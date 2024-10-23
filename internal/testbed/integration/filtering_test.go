@@ -54,36 +54,35 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesMasked.PutStr("card_amex_no_spaces2", "****")
 	attributesMasked.PutStr("card_amex_no_spaces3", "****")
 	attributesMasked.PutInt("redaction.masked.count", int64(18))
-	attributesMasked.PutInt("redaction.ignored.count", int64(2))
 	attributesMasked.PutStr("safe_attribute1", "371")
 	attributesMasked.PutStr("safe_attribute2", "37810005")
+
+	attributesFiltered := pcommon.NewMap()
+	attributesFiltered.PutStr("card_master_spaces1", "**** 6789")
+	attributesFiltered.PutStr("card_master_spaces2", "**** 5100")
+	attributesFiltered.PutStr("card_master_spaces3", "**** 5100")
+	attributesFiltered.PutStr("card_master_no_spaces1", "**** 6789")
+	attributesFiltered.PutStr("card_master_no_spaces2", "**** 5100")
+	attributesFiltered.PutStr("card_master_no_spaces3", "**** 5100")
+	attributesFiltered.PutStr("card_visa_spaces1", "**** 6467")
+	attributesFiltered.PutStr("card_visa_spaces2", "**** 343 6")
+	attributesFiltered.PutStr("card_visa_spaces3", "**** 7 234")
+	attributesFiltered.PutStr("card_visa_no_spaces1", "**** 6467")
+	attributesFiltered.PutStr("card_visa_no_spaces2", "**** 3436")
+	attributesFiltered.PutStr("card_visa_no_spaces3", "**** 7234")
+	attributesFiltered.PutStr("card_amex_spaces1", "**** 8431")
+	attributesFiltered.PutStr("card_amex_spaces2", "**** 1000")
+	attributesFiltered.PutStr("card_amex_spaces3", "**** 0005")
+	attributesFiltered.PutStr("card_amex_no_spaces1", "**** 8431")
+	attributesFiltered.PutStr("card_amex_no_spaces2", "**** 1000")
+	attributesFiltered.PutStr("card_amex_no_spaces3", "**** 0005")
+	attributesFiltered.PutStr("safe_attribute1", "371")
+	attributesFiltered.PutStr("safe_attribute2", "37810005")
 
 	creditCardRedactionProcessor := map[string]string{
 		"redaction": `
   redaction:
-    allow_all_keys: false
-    allowed_keys:
-      - card_master_spaces1
-      - card_master_spaces2
-      - card_master_spaces3
-      - card_master_no_spaces1
-      - card_master_no_spaces2
-      - card_master_no_spaces3
-      - card_visa_spaces1
-      - card_visa_spaces2
-      - card_visa_spaces3
-      - card_visa_no_spaces1
-      - card_visa_no_spaces2
-      - card_visa_no_spaces3
-      - card_amex_spaces1
-      - card_amex_spaces2
-      - card_amex_spaces3
-      - card_amex_no_spaces1
-      - card_amex_no_spaces2
-      - card_amex_no_spaces3
-    ignored_keys:
-      - safe_attribute1
-      - safe_attribute2
+    allow_all_keys: true
     blocked_values:
       - "^4(\\s*[0-9]){12}(?:(\\s*[0-9]){3})?(?:(\\s*[0-9]){3})?$"
       - "^5[1-5](\\s*[0-9]){14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){12}$"
@@ -91,6 +90,32 @@ func TestFilteringCreditCard(t *testing.T) {
     summary: info
 `,
 	}
+
+	creditCardTransformProcessor := map[string]string{
+		"transform": `
+  transform:
+    error_mode: ignore
+    trace_statements:
+      - context: span
+        statements:
+          - replace_all_patterns(attributes, "value", "^3\\s*[47](\\s*[0-9]){9}((\\s*[0-9]){4})$", "**** $$2")
+          - replace_all_patterns(attributes, "value", "^(5[1-5]([0-9]){2}|222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){8}\\s*([0-9]{4})$", "**** $$4")
+          - replace_all_patterns(attributes, "value", "^4(\\s*[0-9]){8,14}\\s*(([0-9]\\s*){4})$", "**** $$2")
+    metric_statements:
+      - context: datapoint
+        statements:
+          - replace_all_patterns(attributes, "value", "^3\\s*[47](\\s*[0-9]){9}((\\s*[0-9]){4})$", "**** $$2")
+          - replace_all_patterns(attributes, "value", "^(5[1-5]([0-9]){2}|222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){8}\\s*([0-9]{4})$", "**** $$4")
+          - replace_all_patterns(attributes, "value", "^4(\\s*[0-9]){8,14}\\s*(([0-9]\\s*){4})$", "**** $$2")
+    log_statements:
+      - context: log
+        statements:
+          - replace_all_patterns(attributes, "value", "^3\\s*[47](\\s*[0-9]){9}((\\s*[0-9]){4})$", "**** $$2")
+          - replace_all_patterns(attributes, "value", "^(5[1-5]([0-9]){2}|222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){8}\\s*([0-9]{4})$", "**** $$4")
+          - replace_all_patterns(attributes, "value", "^4(\\s*[0-9]){8,14}\\s*(([0-9]\\s*){4})$", "**** $$2")
+`,
+	}
+
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider
@@ -100,7 +125,7 @@ func TestFilteringCreditCard(t *testing.T) {
 		processors   map[string]string
 	}{
 		{
-			name:         "traces",
+			name:         "traces redaction",
 			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
@@ -108,7 +133,7 @@ func TestFilteringCreditCard(t *testing.T) {
 			processors:   creditCardRedactionProcessor,
 		},
 		{
-			name:         "metrics",
+			name:         "metrics redaction",
 			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
@@ -116,12 +141,36 @@ func TestFilteringCreditCard(t *testing.T) {
 			processors:   creditCardRedactionProcessor,
 		},
 		{
-			name:         "logs",
+			name:         "logs redaction",
 			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesMasked)}),
 			processors:   creditCardRedactionProcessor,
+		},
+		{
+			name:         "traces transform",
+			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
+			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewTraceValidator(t, []ptrace.Traces{generateBasicTracesWithAttributes(attributesFiltered)}),
+			processors:   creditCardTransformProcessor,
+		},
+		{
+			name:         "metrics transform",
+			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
+			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewMetricValidator(t, []pmetric.Metrics{generateBasicMetricWithAttributes(attributesFiltered)}),
+			processors:   creditCardTransformProcessor,
+		},
+		{
+			name:         "logs transform",
+			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
+			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesFiltered)}),
+			processors:   creditCardTransformProcessor,
 		},
 	}
 

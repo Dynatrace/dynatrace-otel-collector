@@ -1,0 +1,37 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  redaction:
+    allow_all_keys: true
+    allowed_keys:
+      - credit_card
+    blocked_values:
+      - "^4(\\s*[0-9]){12}(?:(\\s*[0-9]){3})?(?:(\\s*[0-9]){3})?$"                                         ## Visa credit card number
+      - "^5[1-5](\\s*[0-9]){14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){12}$"       ## MasterCard credit card number
+      - "^3\\s*[47](\\s*[0-9]){13}$"                                                                       ## AmEx credit card number
+    summary: info
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]

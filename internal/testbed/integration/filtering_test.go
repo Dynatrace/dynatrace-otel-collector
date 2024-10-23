@@ -2,7 +2,6 @@ package integration
 
 import (
 	"testing"
-	"time"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
@@ -12,10 +11,42 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-func TestFiltering(t *testing.T) {
-	trace := generateBasicTrace(nil)
-	metric := generateBasicMetric(nil)
-	logs := generateBasicLogs(pcommon.NewTimestampFromTime(time.Now()), nil)
+func TestFilteringCreditCard(t *testing.T) {
+	attributesNonMasked := pcommon.NewMap()
+	attributesNonMasked.PutStr("card_master_spaces", "2367 8901 2345 6789")
+	attributesNonMasked.PutStr("card_master_no_spaces", "5105105105105100")
+	attributesNonMasked.PutStr("card_visa_spaces", "4539 1488 0343 6467")
+	attributesNonMasked.PutStr("card_visa_no_spaces", "4111111111111111")
+	attributesNonMasked.PutStr("card_amex_spaces", "3714 496353 98431")
+	attributesNonMasked.PutStr("card_amex_no_spaces", "378282246310005")
+
+	attributesMasked := pcommon.NewMap()
+	attributesMasked.PutStr("card_master_spaces", "****")
+	attributesMasked.PutStr("card_master_no_spaces", "****")
+	attributesMasked.PutStr("card_visa_spaces", "****")
+	attributesMasked.PutStr("card_visa_no_spaces", "****")
+	attributesMasked.PutStr("card_amex_spaces", "****")
+	attributesMasked.PutStr("card_amex_no_spaces", "****")
+	attributesMasked.PutInt("redaction.masked.count", int64(6))
+
+	creditCardRedactionProcessor := map[string]string{
+		"redaction": `
+  redaction:
+    allow_all_keys: false
+    allowed_keys:
+      - card_master_spaces
+      - card_master_no_spaces
+      - card_visa_spaces
+      - card_visa_no_spaces
+      - card_amex_spaces
+      - card_amex_no_spaces
+    blocked_values:
+      - "^4(\\s*[0-9]){12}(?:(\\s*[0-9]){3})?(?:(\\s*[0-9]){3})?$"
+      - "^5[1-5](\\s*[0-9]){14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){12}$"
+      - "^3\\s*[47](\\s*[0-9]){13}$"
+    summary: info
+`,
+	}
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider
@@ -25,28 +56,28 @@ func TestFiltering(t *testing.T) {
 		processors   map[string]string
 	}{
 		{
-			name:         "basic traces",
-			dataProvider: NewSampleConfigsTraceDataProvider(trace),
+			name:         "traces",
+			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewTraceSampleConfigsValidator(t, trace),
-			processors:   map[string]string{},
+			validator:    NewTraceValidator(t, []ptrace.Traces{generateBasicTracesWithAttributes(attributesMasked)}),
+			processors:   creditCardRedactionProcessor,
 		},
 		{
-			name:         "basic metrics",
-			dataProvider: NewSampleConfigsMetricsDataProvider(metric),
+			name:         "metrics",
+			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewMetricSampleConfigsValidator(t, metric),
-			processors:   map[string]string{},
+			validator:    NewMetricValidator(t, []pmetric.Metrics{generateBasicMetricWithAttributes(attributesMasked)}),
+			processors:   creditCardRedactionProcessor,
 		},
 		{
-			name:         "basic logs",
-			dataProvider: NewSampleConfigsLogsDataProvider(logs),
+			name:         "logs",
+			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewSyslogSampleConfigValidator(t, logs),
-			processors:   map[string]string{},
+			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesMasked)}),
+			processors:   creditCardRedactionProcessor,
 		},
 	}
 
@@ -239,55 +270,53 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 	}
 }
 
-func generateBasicTrace(attributes map[string]string) ptrace.Traces {
-	traceData := ptrace.NewTraces()
-	spans := traceData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
-	spans.EnsureCapacity(1)
+	func generateBasicTracesWithAttributes(attributes pcommon.Map) ptrace.Traces {
+		traceData := ptrace.NewTraces()
+		spans := traceData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
+		spans.EnsureCapacity(1)
 
-	//startTime := time.Now()
-	//endTime := startTime.Add(time.Millisecond)
-
-	span := spans.AppendEmpty()
-	span.SetName("filtering-span")
-	span.SetKind(ptrace.SpanKindClient)
-	attrs := span.Attributes()
-
-	for k, v := range attributes {
-		attrs.PutStr(k, v)
+		span := spans.AppendEmpty()
+		span.SetName("filtering-span")
+		attrs := span.Attributes()
+		for k, v := range attributes.AsRaw() {
+		switch v.(type) {
+	case int64:
+		attrs.PutInt(k, v.(int64))
+	case string:
+		attrs.PutStr(k, v.(string))
 	}
 
-	//span.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime))
-	//span.SetEndTimestamp(pcommon.NewTimestampFromTime(endTime))
+	}
 
-	return traceData
-}
+		return traceData
+	}
 
-func generateBasicMetric(attributes map[string]string) pmetric.Metrics {
+func generateBasicMetricWithAttributes(attributes pcommon.Map) pmetric.Metrics {
 	md := pmetric.NewMetrics()
 	rm := md.ResourceMetrics().AppendEmpty()
 
-	for k, v := range attributes {
-		rm.Resource().Attributes().PutStr(k, v)
-	}
-
 	metrics := rm.ScopeMetrics().AppendEmpty().Metrics()
-	metrics.EnsureCapacity(1)
-
 	metric := metrics.AppendEmpty()
 	metric.SetName("filtering_metric")
 	dps := metric.SetEmptyGauge().DataPoints()
 
 	dataPoint := dps.AppendEmpty()
+	dataPoint.SetStartTimestamp(pcommon.NewTimestampFromTime(time.Now()))
 	dataPoint.SetIntValue(int64(42))
-
-	for k, v := range attributes {
-		dataPoint.Attributes().PutStr(k, v)
+	attrs := dataPoint.Attributes()
+	for k, v := range attributes.AsRaw() {
+		switch v.(type) {
+		case int64:
+			attrs.PutInt(k, v.(int64))
+		case string:
+			attrs.PutStr(k, v.(string))
+		}
 	}
 
 	return md
 }
 
-func generateBasicLogs(timestamp pcommon.Timestamp, attributes map[string]string) plog.Logs {
+func generateBasicLogsWithAttributes(attributes pcommon.Map) plog.Logs {
 	logs := plog.NewLogs()
 	rl := logs.ResourceLogs().AppendEmpty()
 
@@ -298,12 +327,15 @@ func generateBasicLogs(timestamp pcommon.Timestamp, attributes map[string]string
 	record.SetSeverityNumber(plog.SeverityNumberInfo3)
 	record.SetSeverityText("INFO")
 	record.Body().SetStr("Info testing filtering")
-	record.SetFlags(plog.DefaultLogRecordFlags.WithIsSampled(true))
-	record.SetTimestamp(timestamp)
 
 	attrs := record.Attributes()
-	for k, v := range attributes {
-		attrs.PutStr(k, v)
+	for k, v := range attributes.AsRaw() {
+		switch v.(type) {
+		case int64:
+			attrs.PutInt(k, v.(int64))
+		case string:
+			attrs.PutStr(k, v.(string))
+		}
 	}
 
 	return logs

@@ -2,62 +2,40 @@ package integration
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	"github.com/stretchr/testify/require"
-	"testing"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/idutils"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
-	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-var _ testbed.TestCaseValidator = &TraceSampleConfigsValidator{}
+var _ testbed.TestCaseValidator = &TraceValidator{}
 
-func WithTraceAttributeCheck() func(validator *TraceSampleConfigsValidator) {
-	return func(validator *TraceSampleConfigsValidator) {
-		validator.checkAttributes = true
-	}
+type TraceValidator struct {
+	expectedTraces []ptrace.Traces
+	t              *testing.T
 }
 
-type TraceSampleConfigsValidator struct {
-	expectedTraces  ptrace.Traces
-	t               *testing.T
-	checkAttributes bool
-}
-
-func NewTraceSampleConfigsValidator(
-	t *testing.T,
-	expectedTraces ptrace.Traces,
-	opts ...func(v *TraceSampleConfigsValidator),
-) *TraceSampleConfigsValidator {
-	v := &TraceSampleConfigsValidator{
+func NewTraceValidator(t *testing.T, expectedTraces []ptrace.Traces) *TraceValidator {
+	return &TraceValidator{
 		expectedTraces: expectedTraces,
 		t:              t,
 	}
-
-	for _, o := range opts {
-		o(v)
-	}
-	return v
 }
 
-func (v *TraceSampleConfigsValidator) Validate(tc *testbed.TestCase) {
-	actualSpans := 0
-	for _, td := range tc.MockBackend.ReceivedTraces {
-		actualSpans += td.SpanCount()
-	}
-
-	assert.EqualValues(v.t, v.expectedTraces.SpanCount(), actualSpans, "Expected %d spans, received %d.", v.expectedTraces.SpanCount(), actualSpans)
-	assertExpectedSpansAreInReceived(v.t, []ptrace.Traces{v.expectedTraces}, tc.MockBackend.ReceivedTraces, v.checkAttributes)
+func (v *TraceValidator) Validate(tc *testbed.TestCase) {
+	assertExpectedSpansAreInReceived(v.t, v.expectedTraces, tc.MockBackend.ReceivedTraces)
 }
 
-func (v *TraceSampleConfigsValidator) RecordResults(tc *testbed.TestCase) {
+func (v *TraceValidator) RecordResults(tc *testbed.TestCase) {
 }
 
-func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Traces, checkAttributes bool) {
-	spansMap := make(map[string]ptrace.Span)
-	populateSpansMap(spansMap, expected)
+func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Traces) {
+	expectedMap := make(map[string]ptrace.Traces)
+	populateSpansMap(expectedMap, expected)
 
 	for _, td := range actual {
 		rss := td.ResourceSpans()
@@ -68,19 +46,18 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 				for k := 0; k < spans.Len(); k++ {
 					recdSpan := spans.At(k)
 					require.Contains(t,
-						spansMap,
+						expectedMap,
 						idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
 						fmt.Sprintf("Span with ID: %q not found among expected spans", recdSpan.SpanID()))
 
-					expectedSpan := spansMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())]
-					require.NoError(t, ptracetest.CompareSpan(expectedSpan, recdSpan))
+					require.Nil(t, ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())], td, ptracetest.IgnoreSpansOrder(), ptracetest.IgnoreEndTimestamp(), ptracetest.IgnoreStartTimestamp()))
 				}
 			}
 		}
 	}
 }
 
-func populateSpansMap(spansMap map[string]ptrace.Span, tds []ptrace.Traces) {
+func populateSpansMap(expectedMap map[string]ptrace.Traces, tds []ptrace.Traces) {
 	for _, td := range tds {
 		rss := td.ResourceSpans()
 		for i := 0; i < rss.Len(); i++ {
@@ -90,7 +67,7 @@ func populateSpansMap(spansMap map[string]ptrace.Span, tds []ptrace.Traces) {
 				for k := 0; k < spans.Len(); k++ {
 					span := spans.At(k)
 					key := idutils.TraceIDAndSpanIDToString(span.TraceID(), span.SpanID())
-					spansMap[key] = span
+					expectedMap[key] = td
 				}
 			}
 		}

@@ -33,3 +33,11 @@ service:
       receivers: [otlp]
       processors: [redaction]
       exporters: [otlphttp]
+    metrics:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]

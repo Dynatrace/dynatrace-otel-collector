@@ -234,3 +234,31 @@ jobs:
         run: |
           cd internal/confmap/provider/eecprovider
           go test -v --tags=e2e
+
+  notify-slack-combined-load-test:
+    runs-on: ubuntu-24.04
+    needs: [combined-load-test]
+    if: failure() && github.event_name == 'push'
+    steps:
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2.3.1
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: "DT OTel Collector Distro - Combined Load Test Failure"
+          SLACK_COLOR: "failure"
+          SLACK_USERNAME: "GitHub Actions Notifier"
+          SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"
+
+  notify-slack-e2e-tests:
+    runs-on: ubuntu-24.04
+    needs: [k8s-e2e-test-matrix, eec-confmap-provider]
+    if: failure() && github.event_name == 'push'
+    steps:
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2.3.1
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: "DT OTel Collector Distro - E2E Test Failure"
+          SLACK_COLOR: "failure"
+          SLACK_USERNAME: "GitHub Actions Notifier"
+          SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"

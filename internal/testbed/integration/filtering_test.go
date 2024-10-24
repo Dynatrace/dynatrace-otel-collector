@@ -103,6 +103,7 @@ func TestFilteringUserProperties(t *testing.T) {
 	attributesNonMasked.PutStr("user.full_name", "Firstname Lastname")
 	attributesNonMasked.PutStr("user.email", "user@email.com")
 	attributesNonMasked.PutStr("safe-attribute", "foo")
+	attributesNonMasked.PutStr("another-attribute", "bar")
 
 	attributesMasked := pcommon.NewMap()
 	attributesMasked.PutStr("user.id", "****")
@@ -110,6 +111,7 @@ func TestFilteringUserProperties(t *testing.T) {
 	attributesMasked.PutStr("user.full_name", "****")
 	attributesMasked.PutStr("user.email", "****")
 	attributesMasked.PutStr("safe-attribute", "foo")
+	attributesMasked.PutStr("another-attribute", "bar")
 
 	processors := map[string]string{
 		"transform": `

@@ -96,6 +96,97 @@ func TestFilteringCreditCard(t *testing.T) {
 	}
 }
 
+func TestFilteringUserProperties(t *testing.T) {
+	attributesNonMasked := pcommon.NewMap()
+	attributesNonMasked.PutStr("user.id", "1234")
+	attributesNonMasked.PutStr("user.name", "username")
+	attributesNonMasked.PutStr("user.full_name", "Firstname Lastname")
+	attributesNonMasked.PutStr("user.email", "user@email.com")
+	attributesNonMasked.PutStr("safe-attribute", "foo")
+
+	attributesMasked := pcommon.NewMap()
+	attributesMasked.PutStr("user.id", "****")
+	attributesMasked.PutStr("user.name", "****")
+	attributesMasked.PutStr("user.full_name", "****")
+	attributesMasked.PutStr("user.email", "****")
+	attributesMasked.PutStr("safe-attribute", "foo")
+
+	processors := map[string]string{
+		"transform": `
+  transform:
+     error_mode: ignore
+     trace_statements:
+       - context: span
+         statements:
+           - set(attributes["user.id"], "****")
+           - set(attributes["user.name"], "****")
+           - set(attributes["user.full_name"], "****")
+           - set(attributes["user.email"], "****")
+     metric_statements:
+       - context: datapoint
+         statements:
+           - set(attributes["user.id"], "****")
+           - set(attributes["user.name"], "****")
+           - set(attributes["user.full_name"], "****")
+           - set(attributes["user.email"], "****")
+     log_statements:
+       - context: log
+         statements:
+           - set(attributes["user.id"], "****")
+           - set(attributes["user.name"], "****")
+           - set(attributes["user.full_name"], "****")
+           - set(attributes["user.email"], "****")
+`,
+	}
+	tests := []struct {
+		name         string
+		dataProvider testbed.DataProvider
+		sender       testbed.DataSender
+		receiver     testbed.DataReceiver
+		validator    testbed.TestCaseValidator
+		processors   map[string]string
+	}{
+		{
+			name:         "traces",
+			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
+			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewTraceValidator(t, []ptrace.Traces{generateBasicTracesWithAttributes(attributesMasked)}),
+			processors:   processors,
+		},
+		{
+			name:         "metrics",
+			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
+			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewMetricValidator(t, []pmetric.Metrics{generateBasicMetricWithAttributes(attributesMasked)}),
+			processors:   processors,
+		},
+		{
+			name:         "logs",
+			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
+			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesMasked)}),
+			processors:   processors,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			FilteringScenario(
+				t,
+				test.dataProvider,
+				test.sender,
+				test.receiver,
+				test.validator,
+				test.processors,
+				nil,
+			)
+		})
+	}
+}
+
 func generateBasicTracesWithAttributes(attributes pcommon.Map) ptrace.Traces {
 	traceData := ptrace.NewTraces()
 	spans := traceData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()

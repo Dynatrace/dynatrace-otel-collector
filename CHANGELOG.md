@@ -4,6 +4,51 @@
 
 <!-- next version -->
 
+## v0.17.0
+
+This release includes version 0.112.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.112.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.112.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.112.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+</br>
+
+### 💡 Enhancements 💡
+
+- `pkg/ottl`: Add ConvertAttributesToElementsXML Converter (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35328)
+- `pkg/ottl`: Parsing invalid statements and conditions now prints all errors instead of just the first one found. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35728)
+- `pkg/ottl`: Add ParseSimplifiedXML Converter (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35421)
+- `pkg/ottl`: Add ConvertTextToElements Converter (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35364)
+
+### 🧰 Bug fixes 🧰
+
+- `filelogreceiver`: Supports `add_metadata_from_filepath` for Windows filepaths (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35558)
+- `filelogreceiver`: Suppress errors on EBADF when unlocking files. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35706)
+  This error is harmless and happens regularly when delete_after_read is set. This is because we acquire the lock right at the start of the ReadToEnd function and then defer the unlock, but that function also performs the delete. So, by the time it returns and the defer runs the file descriptor is no longer valid.
+- `hostmetricsreceiver`: Fix duplicate filesystem metrics (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34635, https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34512)
+  The hostmetrics exposes duplicate metrics of identical mounts exposed in namespaces. The duplication causes errors in exporters that are sensitive to duplicate metrics. We can safely drop the duplicates as the metrics should be exactly the same.
+
+
+</details>
+
+### 💡 Enhancements 💡
+
+- `redactionprocessor`: Add example config for redacting credit card numbers. (#337)
+- `transformprocessor`: Add example for DT API Token filtering using the redaction and transform processor. (#346)
+- `transformprocessor`: Introduce masking example of credit card numbers. (#340)
+- `transformprocessor`: Introduce masking and redaction example of international IBANs. (#343)
+- `transformprocessor`: Add config example for redacting user related data with transform processor (#342)
+
+### 🧰 Bug fixes 🧰
+
+- `installer`: Move the documentation key in the linux service file to the correct section (#334)
+
 ## v0.16.0
 
 This release includes version 0.111.0 of the upstream Collector components.

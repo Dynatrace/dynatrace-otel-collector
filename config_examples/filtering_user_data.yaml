@@ -1,0 +1,55 @@
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "127.0.0.1:4137"
+exporters:
+  otlp:
+    endpoint: "127.0.0.1:4137"
+    tls:
+      insecure: true
+    compression: "none"
+
+processors:
+  transform:
+    error_mode: ignore
+    trace_statements:
+      - context: span
+        statements:
+          - set(attributes["user.id"], "****")
+          - set(attributes["user.name"], "****")
+          - set(attributes["user.full_name"], "****")
+          - set(attributes["user.email"], "****")
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(attributes["user.id"], "****")
+          - set(attributes["user.name"], "****")
+          - set(attributes["user.full_name"], "****")
+          - set(attributes["user.email"], "****")
+    log_statements:
+      - context: log
+        statements:
+          - set(attributes["user.id"], "****")
+          - set(attributes["user.name"], "****")
+          - set(attributes["user.full_name"], "****")
+          - set(attributes["user.email"], "****")
+
+extensions:
+
+service:
+  extensions: []
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [transform]
+      exporters: [otlp]
+    logs:
+      receivers: [ otlp ]
+      processors: [ transform ]
+      exporters: [ otlp ]
+    metrics:
+      receivers: [ otlp ]
+      processors: [ transform ]
+      exporters: [ otlp ]

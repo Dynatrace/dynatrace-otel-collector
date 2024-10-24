@@ -46,3 +46,11 @@ service:
       receivers: [otlp]
       processors: [transform]
       exporters: [otlphttp]
+    metrics:
+      receivers: [otlp]
+      processors: [transform]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [transform]
+      exporters: [otlphttp]

@@ -1,0 +1,41 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  redaction:
+    allow_all_keys: true
+    blocked_values:
+      - "^[A-Z]{2}[0-9]{2}(\\s*[A-Z0-9]){8,30}$"
+    summary: info
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]

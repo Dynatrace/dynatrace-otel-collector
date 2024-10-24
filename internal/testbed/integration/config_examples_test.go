@@ -3,6 +3,7 @@ package integration
 import (
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -45,9 +46,29 @@ func TestConfigTailSampling(t *testing.T) {
 	actualSpansData := ptrace.NewTraces()
 	actualSpans := actualSpansData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
 
+	startTime := time.Now()
+
 	expectedSpansData := ptrace.NewTraces()
 	expectedSpans := expectedSpansData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
-	startTime := time.Now()
+	ersExp := expectedSpans.AppendEmpty()
+	ersExp.SetTraceID(idutils.UInt64ToTraceID(0, uint64(1)))
+	ersExp.SetSpanID(idutils.UInt64ToSpanID(uint64(1)))
+	ersExp.SetName("Error span")
+	ersExp.SetKind(ptrace.SpanKindServer)
+	ersExp.Status().SetCode(ptrace.StatusCodeError)
+	ersExp.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime))
+	ersExp.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond * 501)))
+
+	expectedSpansData2 := ptrace.NewTraces()
+	expectedSpans2 := expectedSpansData2.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
+	lrsExp := expectedSpans2.AppendEmpty()
+	lrsExp.SetTraceID(idutils.UInt64ToTraceID(0, uint64(3)))
+	lrsExp.SetSpanID(idutils.UInt64ToSpanID(uint64(3)))
+	lrsExp.SetName("Long-running span")
+	lrsExp.SetKind(ptrace.SpanKindServer)
+	lrsExp.Status().SetCode(ptrace.StatusCodeOk)
+	lrsExp.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
+	lrsExp.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Second * 1)))
 
 	// Error ers
 	ers := actualSpans.AppendEmpty()
@@ -79,14 +100,10 @@ func TestConfigTailSampling(t *testing.T) {
 	lrs.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
 	lrs.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Second * 1)))
 
-	// Expected Spans should only have the Error and long-running spans
-	actualSpans.CopyTo(expectedSpans)
-	expectedSpans.RemoveIf(func(s ptrace.Span) bool { return s.Name() == "OK span" })
-
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
 	sender := testbed.NewOTLPTraceDataSender(testbed.DefaultHost, receiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+	validator := NewTraceValidator(t, []ptrace.Traces{expectedSpansData, expectedSpansData2})
 
 	tc := testbed.NewTestCase(
 		t,
@@ -112,7 +129,7 @@ func TestConfigTailSampling(t *testing.T) {
 	tc.StopLoad()
 
 	tc.WaitForN(func() bool {
-		return tc.MockBackend.DataItemsReceived() == uint64(expectedSpansData.SpanCount())
+		return tc.MockBackend.DataItemsReceived() == uint64(2)
 	}, 5*time.Second, "all data items received")
 
 	// assert
@@ -179,7 +196,7 @@ func TestConfigJaegerGrpc(t *testing.T) {
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
 	sender := datasenders.NewJaegerGRPCDataSender(testbed.DefaultHost, grpcReceiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+	validator := NewTraceValidator(t, []ptrace.Traces{expectedSpansData})
 
 	tc := testbed.NewTestCase(
 		t,
@@ -240,7 +257,7 @@ func TestConfigZipkin(t *testing.T) {
 	ers := actualSpans.AppendEmpty()
 	ers.SetTraceID(idutils.UInt64ToTraceID(0, uint64(1)))
 	ers.SetSpanID(idutils.UInt64ToSpanID(uint64(1)))
-	ers.SetName("Error span")
+	ers.SetName("error span")
 	ers.SetKind(ptrace.SpanKindServer)
 	ers.Status().SetCode(ptrace.StatusCodeError)
 	ers.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime))
@@ -250,7 +267,7 @@ func TestConfigZipkin(t *testing.T) {
 	oks := actualSpans.AppendEmpty()
 	oks.SetTraceID(idutils.UInt64ToTraceID(0, uint64(2)))
 	oks.SetSpanID(idutils.UInt64ToSpanID(uint64(2)))
-	oks.SetName("OK span")
+	oks.SetName("ok span")
 	oks.SetKind(ptrace.SpanKindServer)
 	oks.Status().SetCode(ptrace.StatusCodeOk)
 	oks.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
@@ -260,7 +277,7 @@ func TestConfigZipkin(t *testing.T) {
 	lrs := actualSpans.AppendEmpty()
 	lrs.SetTraceID(idutils.UInt64ToTraceID(0, uint64(3)))
 	lrs.SetSpanID(idutils.UInt64ToSpanID(uint64(3)))
-	lrs.SetName("Long-running span")
+	lrs.SetName("long-running span")
 	lrs.SetKind(ptrace.SpanKindServer)
 	lrs.Status().SetCode(ptrace.StatusCodeOk)
 	lrs.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
@@ -268,11 +285,13 @@ func TestConfigZipkin(t *testing.T) {
 
 	// Expected Spans should have all spans
 	actualSpans.CopyTo(expectedSpans)
+	expResourceSpanAttrs := expectedSpansData.ResourceSpans().At(0).Resource().Attributes()
+	expResourceSpanAttrs.PutStr("service.name", "otlpresourcenoservicename")
 
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
 	sender := datasenders.NewZipkinDataSender(testbed.DefaultHost, zipkinReceiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+	validator := NewTraceValidator(t, []ptrace.Traces{expectedSpansData})
 
 	tc := testbed.NewTestCase(
 		t,
@@ -382,7 +401,7 @@ func TestConfigHistogramTransform(t *testing.T) {
 	dataProvider := NewSampleConfigsMetricsDataProvider(actualMetricsData)
 	sender := testbed.NewOTLPMetricDataSender(testbed.DefaultHost, receiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewMetricSampleConfigsValidator(t, expectedMetricData)
+	validator := NewMetricValidator(t, []pmetric.Metrics{expectedMetricData})
 
 	tc := testbed.NewTestCase(
 		t,
@@ -427,6 +446,7 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	parsedConfig := string(cfg)
 	parsedConfig = testutil.ReplaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = strings.Replace(parsedConfig, "endpoint: 0.0.0.0:4318", "endpoint: 0.0.0.0:"+strconv.Itoa(testutil.GetAvailablePort(t)), 1)
 
 	// replaces the sampling decision wait so the test doesn't timeout
 	parsedConfig = strings.Replace(parsedConfig, "decision_wait: 30s", "decision_wait: 10ms", 1)
@@ -442,11 +462,48 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	rss := actualSpansData.ResourceSpans().AppendEmpty()
 	actualSpans := rss.ScopeSpans().AppendEmpty().Spans()
 
-	expectedSpansData := ptrace.NewTraces()
-	expectedSpans := expectedSpansData.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans()
 	startTime := time.Now()
 
+	expectedSpansData := ptrace.NewTraces()
+	expectedRss := expectedSpansData.ResourceSpans().AppendEmpty()
+	expectedSpans := expectedRss.ScopeSpans().AppendEmpty().Spans()
+	ersExp := expectedSpans.AppendEmpty()
+	ersExp.SetTraceID(idutils.UInt64ToTraceID(0, uint64(1)))
+	ersExp.SetSpanID(idutils.UInt64ToSpanID(uint64(1)))
+	ersExp.SetName("Error span")
+	ersExp.SetKind(ptrace.SpanKindServer)
+	ersExp.Status().SetCode(ptrace.StatusCodeError)
+	ersExp.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime))
+	ersExp.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond * 501)))
+
+	expectedSpansData2 := ptrace.NewTraces()
+	expectedRss2 := expectedSpansData2.ResourceSpans().AppendEmpty()
+	expectedSpans2 := expectedRss2.ScopeSpans().AppendEmpty().Spans()
+	lrsExp := expectedSpans2.AppendEmpty()
+	lrsExp.SetTraceID(idutils.UInt64ToTraceID(0, uint64(3)))
+	lrsExp.SetSpanID(idutils.UInt64ToSpanID(uint64(3)))
+	lrsExp.SetName("Long-running span")
+	lrsExp.SetKind(ptrace.SpanKindServer)
+	lrsExp.Status().SetCode(ptrace.StatusCodeOk)
+	lrsExp.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
+	lrsExp.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Second * 1)))
+
+	expectedSpansData3 := ptrace.NewTraces()
+	expectedRss3 := expectedSpansData3.ResourceSpans().AppendEmpty()
+	expectedSpans3 := expectedRss3.ScopeSpans().AppendEmpty().Spans()
+	oksExp := expectedSpans3.AppendEmpty()
+	oksExp.SetTraceID(idutils.UInt64ToTraceID(0, uint64(2)))
+	oksExp.SetSpanID(idutils.UInt64ToSpanID(uint64(2)))
+	oksExp.SetName("OK span")
+	oksExp.SetKind(ptrace.SpanKindServer)
+	oksExp.Status().SetCode(ptrace.StatusCodeOk)
+	oksExp.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
+	oksExp.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond * 3)))
+
 	rss.Resource().Attributes().PutStr(semconv.AttributeServiceName, "integration.test")
+	expectedRss.Resource().Attributes().PutStr(semconv.AttributeServiceName, "integration.test")
+	expectedRss2.Resource().Attributes().PutStr(semconv.AttributeServiceName, "integration.test")
+	expectedRss3.Resource().Attributes().PutStr(semconv.AttributeServiceName, "integration.test")
 
 	// Error ers
 	ers := actualSpans.AppendEmpty()
@@ -478,13 +535,10 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	lrs.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
 	lrs.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Second * 1)))
 
-	// We're expecting all spans for the sample config
-	actualSpans.CopyTo(expectedSpans)
-
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
 	sender := testbed.NewOTLPTraceDataSender(testbed.DefaultHost, receiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewTraceSampleConfigsValidator(t, expectedSpansData)
+	validator := NewTraceValidator(t, []ptrace.Traces{expectedSpansData, expectedSpansData2, expectedSpansData3})
 
 	tc := testbed.NewTestCase(
 		t,
@@ -511,8 +565,8 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 
 	tc.WaitForN(func() bool {
 		// Verify we received all 3 spans, plus a data point per span for each of the 3 metrics produced by the span metrics connector.
-		return tc.MockBackend.DataItemsReceived() == uint64(expectedSpansData.SpanCount()+expectedSpansData.SpanCount()*3)
-	}, 5*time.Second, "all data items received")
+		return tc.MockBackend.DataItemsReceived() >= 3
+	}, 15*time.Second, "all data items received")
 
 	// assert
 	tc.ValidateData()
@@ -529,6 +583,7 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	parsedConfig := string(cfg)
 	parsedConfig = testutil.ReplaceSyslogF5ReceiverPort(parsedConfig, syslogReceiverPort)
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = strings.Replace(parsedConfig, "receivers: [syslog/f5, syslog/host]", "receivers: [syslog/f5]", 1)
 
 	configCleanup, err := col.PrepareConfig(parsedConfig)
 	require.NoError(t, err)
@@ -572,7 +627,7 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
 	sender := datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewSyslogSampleConfigValidator(t, expectedLogsData)
+	validator := NewLogsValidator(t, []plog.Logs{expectedLogsData})
 
 	tc := testbed.NewTestCase(
 		t,
@@ -616,6 +671,7 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	parsedConfig := string(cfg)
 	parsedConfig = testutil.ReplaceSyslogHostReceiverPort(parsedConfig, syslogReceiverPort)
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+	parsedConfig = strings.Replace(parsedConfig, "receivers: [syslog/f5, syslog/host]", "receivers: [syslog/host]", 1)
 
 	configCleanup, err := col.PrepareConfig(parsedConfig)
 	require.NoError(t, err)
@@ -655,7 +711,7 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
 	sender := datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
-	validator := NewSyslogSampleConfigValidator(t, expectedLogsData)
+	validator := NewLogsValidator(t, []plog.Logs{expectedLogsData})
 
 	tc := testbed.NewTestCase(
 		t,

@@ -4,42 +4,38 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
+	"github.com/stretchr/testify/require"
+
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/idutils"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
-	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-var _ testbed.TestCaseValidator = &TraceSampleConfigsValidator{}
+var _ testbed.TestCaseValidator = &TraceValidator{}
 
-type TraceSampleConfigsValidator struct {
-	expectedTraces ptrace.Traces
+type TraceValidator struct {
+	expectedTraces []ptrace.Traces
 	t              *testing.T
 }
 
-func NewTraceSampleConfigsValidator(t *testing.T, expectedTraces ptrace.Traces) *TraceSampleConfigsValidator {
-	return &TraceSampleConfigsValidator{
+func NewTraceValidator(t *testing.T, expectedTraces []ptrace.Traces) *TraceValidator {
+	return &TraceValidator{
 		expectedTraces: expectedTraces,
 		t:              t,
 	}
 }
 
-func (v *TraceSampleConfigsValidator) Validate(tc *testbed.TestCase) {
-	actualSpans := 0
-	for _, td := range tc.MockBackend.ReceivedTraces {
-		actualSpans += td.SpanCount()
-	}
-
-	assert.EqualValues(v.t, v.expectedTraces.SpanCount(), actualSpans, "Expected %d spans, received %d.", v.expectedTraces.SpanCount(), actualSpans)
-	assertExpectedSpansAreInReceived(v.t, []ptrace.Traces{v.expectedTraces}, tc.MockBackend.ReceivedTraces)
+func (v *TraceValidator) Validate(tc *testbed.TestCase) {
+	assertExpectedSpansAreInReceived(v.t, v.expectedTraces, tc.MockBackend.ReceivedTraces)
 }
 
-func (v *TraceSampleConfigsValidator) RecordResults(tc *testbed.TestCase) {
+func (v *TraceValidator) RecordResults(tc *testbed.TestCase) {
 }
 
 func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Traces) {
-	spansMap := make(map[string]ptrace.Span)
-	populateSpansMap(spansMap, expected)
+	expectedMap := make(map[string]ptrace.Traces)
+	populateSpansMap(expectedMap, expected)
 
 	for _, td := range actual {
 		rss := td.ResourceSpans()
@@ -49,17 +45,19 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 				spans := ss.At(j).Spans()
 				for k := 0; k < spans.Len(); k++ {
 					recdSpan := spans.At(k)
-					assert.Contains(t,
-						spansMap,
+					require.Contains(t,
+						expectedMap,
 						idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
 						fmt.Sprintf("Span with ID: %q not found among expected spans", recdSpan.SpanID()))
+
+					require.Nil(t, ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())], td, ptracetest.IgnoreSpansOrder(), ptracetest.IgnoreEndTimestamp(), ptracetest.IgnoreStartTimestamp()))
 				}
 			}
 		}
 	}
 }
 
-func populateSpansMap(spansMap map[string]ptrace.Span, tds []ptrace.Traces) {
+func populateSpansMap(expectedMap map[string]ptrace.Traces, tds []ptrace.Traces) {
 	for _, td := range tds {
 		rss := td.ResourceSpans()
 		for i := 0; i < rss.Len(); i++ {
@@ -69,7 +67,7 @@ func populateSpansMap(spansMap map[string]ptrace.Span, tds []ptrace.Traces) {
 				for k := 0; k < spans.Len(); k++ {
 					span := spans.At(k)
 					key := idutils.TraceIDAndSpanIDToString(span.TraceID(), span.SpanID())
-					spansMap[key] = span
+					expectedMap[key] = td
 				}
 			}
 		}

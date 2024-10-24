@@ -152,6 +152,47 @@ jobs:
           cd internal/testbed/integration/${{ matrix.usecase }}
           go test -v --tags=e2e
 
+  eec-confmap-provider:
+    runs-on: ubuntu-latest
+    needs: docker-build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "~1.22.6"
+          check-latest: true
+          cache: false
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dynatrace-otel-collector-bin
+          path: bin
+
+      - run: chmod +x bin/*
+
+      - name: Run e2e tests
+        run: |
+          cd internal/confmap/provider/eecprovider
+          go test -v --tags=e2e
+
+  notify-slack-e2e-tests:
+    runs-on: ubuntu-24.04
+    needs: [k8s-e2e-test-matrix, eec-confmap-provider]
+    if: failure() && github.event_name == 'push'
+    steps:
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2.3.1
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: "DT OTel Collector Distro - E2E Test Failure"
+          SLACK_COLOR: "failure"
+          SLACK_USERNAME: "GitHub Actions Notifier"
+          SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"
+
   combined-load-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04
@@ -208,33 +249,6 @@ jobs:
           cd internal/testbed/integration/combinedload
           go test -v --tags=e2e
 
-  eec-confmap-provider:
-    runs-on: ubuntu-latest
-    needs: docker-build
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "~1.22.6"
-          check-latest: true
-          cache: false
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dynatrace-otel-collector-bin
-          path: bin
-
-      - run: chmod +x bin/*
-
-      - name: Run e2e tests
-        run: |
-          cd internal/confmap/provider/eecprovider
-          go test -v --tags=e2e
-
   notify-slack-combined-load-test:
     runs-on: ubuntu-24.04
     needs: [combined-load-test]
@@ -245,20 +259,6 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_TITLE: "DT OTel Collector Distro - Combined Load Test Failure"
-          SLACK_COLOR: "failure"
-          SLACK_USERNAME: "GitHub Actions Notifier"
-          SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"
-
-  notify-slack-e2e-tests:
-    runs-on: ubuntu-24.04
-    needs: [k8s-e2e-test-matrix, eec-confmap-provider]
-    if: failure() && github.event_name == 'push'
-    steps:
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2.3.1
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_TITLE: "DT OTel Collector Distro - E2E Test Failure"
           SLACK_COLOR: "failure"
           SLACK_USERNAME: "GitHub Actions Notifier"
           SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"

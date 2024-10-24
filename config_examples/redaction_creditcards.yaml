@@ -9,8 +9,6 @@ receivers:
 processors:
   redaction:
     allow_all_keys: true
-    allowed_keys:
-      - credit_card
     blocked_values:
       - "^4(\\s*[0-9]){12}(?:(\\s*[0-9]){3})?(?:(\\s*[0-9]){3})?$"                                         ## Visa credit card number
       - "^5[1-5](\\s*[0-9]){14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){12}$"       ## MasterCard credit card number
@@ -32,6 +30,14 @@ service:
     - health_check
   pipelines:
     traces:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]
+    logs:
       receivers: [otlp]
       processors: [redaction]
       exporters: [otlphttp]

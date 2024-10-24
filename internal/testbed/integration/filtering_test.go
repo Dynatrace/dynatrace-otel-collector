@@ -2,6 +2,7 @@ package integration
 
 import (
 	"os"
+	"path"
 	"testing"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
@@ -81,13 +82,13 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesFiltered.PutStr("safe_attribute1", "371")
 	attributesFiltered.PutStr("safe_attribute2", "37810005")
 
-	content, err := os.ReadFile("../../../config_examples/masking_creditcards.yaml")
+	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "masking_creditcards.yaml"))
 	require.Nil(t, err)
 
 	creditCardTransformProcessor, err := extractProcessorsFromYAML(content)
 	require.Nil(t, err)
 
-	content, err = os.ReadFile("../../../config_examples/redaction_creditcards.yaml")
+	content, err = os.ReadFile(path.Join(ConfigExamplesDir, "redaction_creditcards.yaml"))
 	require.Nil(t, err)
 
 	creditCardRedactionProcessor, err := extractProcessorsFromYAML(content)

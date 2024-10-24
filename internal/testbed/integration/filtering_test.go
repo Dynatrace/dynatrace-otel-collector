@@ -1,10 +1,12 @@
 package integration
 
 import (
+	"os"
 	"testing"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
+	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -79,42 +81,17 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesFiltered.PutStr("safe_attribute1", "371")
 	attributesFiltered.PutStr("safe_attribute2", "37810005")
 
-	creditCardRedactionProcessor := map[string]string{
-		"redaction": `
-  redaction:
-    allow_all_keys: true
-    blocked_values:
-      - "^4(\\s*[0-9]){12}(?:(\\s*[0-9]){3})?(?:(\\s*[0-9]){3})?$"
-      - "^5[1-5](\\s*[0-9]){14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){12}$"
-      - "^3\\s*[47](\\s*[0-9]){13}$"
-    summary: info
-`,
-	}
+	content, err := os.ReadFile("../../../config_examples/masking_creditcards.yaml")
+	require.Nil(t, err)
 
-	creditCardTransformProcessor := map[string]string{
-		"transform": `
-  transform:
-    error_mode: ignore
-    trace_statements:
-      - context: span
-        statements:
-          - replace_all_patterns(attributes, "value", "^3\\s*[47](\\s*[0-9]){9}((\\s*[0-9]){4})$", "**** $$2")
-          - replace_all_patterns(attributes, "value", "^(5[1-5]([0-9]){2}|222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){8}\\s*([0-9]{4})$", "**** $$4")
-          - replace_all_patterns(attributes, "value", "^4(\\s*[0-9]){8,14}\\s*(([0-9]\\s*){4})$", "**** $$2")
-    metric_statements:
-      - context: datapoint
-        statements:
-          - replace_all_patterns(attributes, "value", "^3\\s*[47](\\s*[0-9]){9}((\\s*[0-9]){4})$", "**** $$2")
-          - replace_all_patterns(attributes, "value", "^(5[1-5]([0-9]){2}|222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){8}\\s*([0-9]{4})$", "**** $$4")
-          - replace_all_patterns(attributes, "value", "^4(\\s*[0-9]){8,14}\\s*(([0-9]\\s*){4})$", "**** $$2")
-    log_statements:
-      - context: log
-        statements:
-          - replace_all_patterns(attributes, "value", "^3\\s*[47](\\s*[0-9]){9}((\\s*[0-9]){4})$", "**** $$2")
-          - replace_all_patterns(attributes, "value", "^(5[1-5]([0-9]){2}|222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){8}\\s*([0-9]{4})$", "**** $$4")
-          - replace_all_patterns(attributes, "value", "^4(\\s*[0-9]){8,14}\\s*(([0-9]\\s*){4})$", "**** $$2")
-`,
-	}
+	creditCardTransformProcessor, err := extractProcessorsFromYAML(content)
+	require.Nil(t, err)
+
+	content, err = os.ReadFile("../../../config_examples/redaction_creditcards.yaml")
+	require.Nil(t, err)
+
+	creditCardRedactionProcessor, err := extractProcessorsFromYAML(content)
+	require.Nil(t, err)
 
 	tests := []struct {
 		name         string

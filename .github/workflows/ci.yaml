@@ -66,3 +66,17 @@ jobs:
         with:
           command: monitor
           args: --file=build/go.mod
+
+  notify-slack:
+    runs-on: ubuntu-24.04
+    needs: [build]
+    if: failure() && github.event_name == 'push'
+    steps:
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2.3.1
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: "DT OTel Collector Distro - CI Failure"
+          SLACK_COLOR: "failure"
+          SLACK_USERNAME: "GitHub Actions Notifier"
+          SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"

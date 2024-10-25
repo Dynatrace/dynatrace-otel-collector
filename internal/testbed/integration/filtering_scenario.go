@@ -70,12 +70,12 @@ func extractProcessorsFromYAML(yamlStr []byte) (map[string]string, error) {
 
 	result := make(map[string]string)
 	for key, _ := range data.Processors {
-		processorYAML, err := yaml.Marshal(data.Processors)
+		processorYAML, err := yaml.Marshal(data.Processors[key])
 		if err != nil {
 			return nil, err
 		}
 
-		result[key] = strings.ReplaceAll(string(processorYAML), "\n", "\n"+"  ")
+		result[key] = "  " + key + ":\n    " + strings.ReplaceAll(string(processorYAML), "\n", "\n"+"    ")
 	}
 
 	return result, nil

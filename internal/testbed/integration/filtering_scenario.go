@@ -69,12 +69,15 @@ func extractProcessorsFromYAML(yamlStr []byte) (map[string]string, error) {
 	}
 
 	result := make(map[string]string)
-	for key, _ := range data.Processors {
-		processorYAML, err := yaml.Marshal(data.Processors[key])
+	for key, value := range data.Processors {
+		processorYAML, err := yaml.Marshal(value)
 		if err != nil {
 			return nil, err
 		}
 
+		// marshall removes the starting indentation and aligns the root element(s) of value with indent == 0
+		// adding the indentation back
+		// name of the processor is indented by 2 spaces, rest of the body, by 4
 		result[key] = "  " + key + ":\n    " + strings.ReplaceAll(string(processorYAML), "\n", "\n"+"    ")
 	}
 

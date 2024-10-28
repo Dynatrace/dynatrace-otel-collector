@@ -268,34 +268,17 @@ func TestFilteringIBAN(t *testing.T) {
 	attributesFiltered.PutStr("iban30", "NO **** 7947")
 	attributesFiltered.PutStr("non-iban", "no4444 ds")
 
-	ibanRedactionProcessor := map[string]string{
-		"redaction": `
-  redaction:
-    allow_all_keys: true
-    blocked_values:
-      - "^[A-Z]{2}[0-9]{2}(\\s*[A-Z0-9]){8,30}$"
-    summary: info
-`,
-	}
+	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "masking_iban.yaml"))
+	require.Nil(t, err)
 
-	ibanTransformProcessor := map[string]string{
-		"transform": `
-  transform:
-    error_mode: ignore
-    trace_statements:
-      - context: span
-        statements:
-          - replace_all_patterns(attributes, "value", "^([A-Z]{2})[0-9]{2}((\\s*[A-Z0-9]){4,26})\\s*((\\s*[A-Z0-9]){4})$", "$$1 **** $$4")
-    metric_statements:
-      - context: datapoint
-        statements:
-          - replace_all_patterns(attributes, "value", "^([A-Z]{2})[0-9]{2}((\\s*[A-Z0-9]){4,26})\\s*((\\s*[A-Z0-9]){4})$", "$$1 **** $$4")
-    log_statements:
-      - context: log
-        statements:
-          - replace_all_patterns(attributes, "value", "^([A-Z]{2})[0-9]{2}((\\s*[A-Z0-9]){4,26})\\s*((\\s*[A-Z0-9]){4})$", "$$1 **** $$4")
-`,
-	}
+	ibanTransformProcessor, err := extractProcessorsFromYAML(content)
+	require.Nil(t, err)
+
+	content, err = os.ReadFile(path.Join(ConfigExamplesDir, "redaction_iban.yaml"))
+	require.Nil(t, err)
+
+	ibanRedactionProcessor, err := extractProcessorsFromYAML(content)
+	require.Nil(t, err)
 
 	tests := []struct {
 		name         string

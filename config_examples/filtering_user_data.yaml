@@ -16,25 +16,17 @@ processors:
     error_mode: ignore
     trace_statements:
       - context: span
-        statements:
+        statements: &filter-statements
           - set(attributes["user.id"], "****")
           - set(attributes["user.name"], "****")
           - set(attributes["user.full_name"], "****")
           - set(attributes["user.email"], "****")
     metric_statements:
       - context: datapoint
-        statements:
-          - set(attributes["user.id"], "****")
-          - set(attributes["user.name"], "****")
-          - set(attributes["user.full_name"], "****")
-          - set(attributes["user.email"], "****")
+        statements: *filter-statements
     log_statements:
       - context: log
-        statements:
-          - set(attributes["user.id"], "****")
-          - set(attributes["user.name"], "****")
-          - set(attributes["user.full_name"], "****")
-          - set(attributes["user.email"], "****")
+        statements: *filter-statements
 
 extensions:
 

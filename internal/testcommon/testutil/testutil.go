@@ -274,10 +274,10 @@ func CreateGeneralConfigYaml(
 receivers:%v
 exporters:%v
 processors:
-  %s
+%s
 
 extensions:
-  %s
+%s
 
 service:
   extensions: [%s]

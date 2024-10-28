@@ -1,9 +1,7 @@
 package integration
 
 import (
-	"crypto/rand"
 	"fmt"
-	"math/big"
 	"testing"
 	"time"
 
@@ -113,17 +111,19 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
 
 	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
-	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	sampleToken := "G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM573RZM"
+
+	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, sampleToken))
 	ingestedAttrs.PutStr("non-redacted", "foo")
 
 	redactedString := "****"
@@ -205,16 +205,6 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 	}
 }
 
-func getRandomString(length int) string {
-	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	result := make([]byte, length)
-	for i := range result {
-		num, _ := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
-		result[i] = charset[num.Int64()]
-	}
-	return string(result)
-}
-
 func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 	transformProcessor := `
   transform:
@@ -237,18 +227,21 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 	ingestedAttrs := pcommon.NewMap()
 
 	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
+
 	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
-	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, getRandomString(64)))
-	ingestedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, getRandomString(64)))
+	sampleToken := "G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM573RZM"
+
+	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, sampleToken))
 	ingestedAttrs.PutStr("non-redacted", "foo")
 
 	redactedString := "****"

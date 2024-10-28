@@ -50,7 +50,15 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 						idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
 						fmt.Sprintf("Span with ID: %q not found among expected spans", recdSpan.SpanID()))
 
-					require.Nil(t, ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())], td, ptracetest.IgnoreSpansOrder(), ptracetest.IgnoreEndTimestamp(), ptracetest.IgnoreStartTimestamp()))
+					require.NoError(
+						t,
+						ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())],
+							td,
+							ptracetest.IgnoreSpansOrder(),
+							ptracetest.IgnoreEndTimestamp(),
+							ptracetest.IgnoreStartTimestamp(),
+						),
+					)
 				}
 			}
 		}

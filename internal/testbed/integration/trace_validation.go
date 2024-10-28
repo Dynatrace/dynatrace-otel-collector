@@ -14,26 +14,40 @@ import (
 
 var _ testbed.TestCaseValidator = &TraceValidator{}
 
-type TraceValidator struct {
-	expectedTraces []ptrace.Traces
-	t              *testing.T
-}
-
-func NewTraceValidator(t *testing.T, expectedTraces []ptrace.Traces) *TraceValidator {
-	return &TraceValidator{
-		expectedTraces: expectedTraces,
-		t:              t,
+func WithHiddenTracesValidationErrorMessages() func(*TraceValidator) {
+	return func(v *TraceValidator) {
+		v.hideValidationErrorMessage = true
 	}
 }
 
+type TraceValidator struct {
+	expectedTraces []ptrace.Traces
+	t              *testing.T
+
+	hideValidationErrorMessage bool
+}
+
+func NewTraceValidator(t *testing.T, expectedTraces []ptrace.Traces, opts ...func(*TraceValidator)) *TraceValidator {
+	v := &TraceValidator{
+		expectedTraces: expectedTraces,
+		t:              t,
+	}
+
+	for _, opt := range opts {
+		opt(v)
+	}
+
+	return v
+}
+
 func (v *TraceValidator) Validate(tc *testbed.TestCase) {
-	assertExpectedSpansAreInReceived(v.t, v.expectedTraces, tc.MockBackend.ReceivedTraces)
+	assertExpectedSpansAreInReceived(v.t, v.expectedTraces, tc.MockBackend.ReceivedTraces, v.hideValidationErrorMessage)
 }
 
 func (v *TraceValidator) RecordResults(tc *testbed.TestCase) {
 }
 
-func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Traces) {
+func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Traces, hideError bool) {
 	expectedMap := make(map[string]ptrace.Traces)
 	populateSpansMap(expectedMap, expected)
 
@@ -50,15 +64,25 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 						idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
 						fmt.Sprintf("Span with ID: %q not found among expected spans", recdSpan.SpanID()))
 
-					require.NoError(
-						t,
-						ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())],
-							td,
-							ptracetest.IgnoreSpansOrder(),
-							ptracetest.IgnoreEndTimestamp(),
-							ptracetest.IgnoreStartTimestamp(),
-						),
+					err := ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())],
+						td,
+						ptracetest.IgnoreSpansOrder(),
+						ptracetest.IgnoreEndTimestamp(),
+						ptracetest.IgnoreStartTimestamp(),
 					)
+
+					// if hideError is set, the actual error message is not logged. This is for testing scenarios where we validate the
+					// redaction of API Tokens in the attributes of the received data items.
+					// If the redaction is not applied correctly, the original values would otherwise be visible in the logs,
+					// which in turn might lead to false positive security alerts (the sample tokens are in an allow list, but just to be on the safe side).
+					if hideError && err != nil {
+						t.Error("Received traces did not match expected traces")
+					} else {
+						require.NoError(
+							t,
+							err,
+						)
+					}
 				}
 			}
 		}

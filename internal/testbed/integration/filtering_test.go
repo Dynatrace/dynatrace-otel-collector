@@ -163,7 +163,7 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}),
+			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}, WithHiddenTracesValidationErrorMessages()),
 			processors: map[string]string{
 				"redaction": redactionProcessor,
 			},
@@ -173,7 +173,7 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 			dataProvider: NewSampleConfigsMetricsDataProvider(ingestedMetric),
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}),
+			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}, WithHiddenMetricsValidationErrorMessages()),
 			processors: map[string]string{
 				"redaction": redactionProcessor,
 			},
@@ -183,7 +183,7 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 			dataProvider: NewSampleConfigsLogsDataProvider(ingestedLog),
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}),
+			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}, WithHiddenLogsValidationErrorMessages()),
 			processors: map[string]string{
 				"redaction": redactionProcessor,
 			},
@@ -281,7 +281,7 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}),
+			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}, WithHiddenTracesValidationErrorMessages()),
 			processors: map[string]string{
 				"transform": transformProcessor,
 			},
@@ -291,7 +291,7 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 			dataProvider: NewSampleConfigsMetricsDataProvider(ingestedMetric),
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}),
+			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}, WithHiddenMetricsValidationErrorMessages()),
 			processors: map[string]string{
 				"transform": transformProcessor,
 			},
@@ -301,7 +301,7 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 			dataProvider: NewSampleConfigsLogsDataProvider(ingestedLog),
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
-			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}),
+			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}, WithHiddenLogsValidationErrorMessages()),
 			processors: map[string]string{
 				"transform": transformProcessor,
 			},

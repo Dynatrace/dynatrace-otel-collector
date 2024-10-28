@@ -10,7 +10,7 @@ processors:
   redaction:
     allow_all_keys: true
     blocked_values:
-      - dt0[a-z]0[1-9]\.[A-Za-z0-9]{24}\.([A-Za-z0-9]{64})                                                                ## AmEx credit card number
+      - dt0[a-z]0[1-9]\.[A-Za-z0-9]{24}\.([A-Za-z0-9]{64})
     summary: info
 
 exporters:

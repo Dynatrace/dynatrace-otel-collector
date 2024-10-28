@@ -184,33 +184,12 @@ func TestFilteringUserProperties(t *testing.T) {
 	attributesMasked.PutStr("safe-attribute", "foo")
 	attributesMasked.PutStr("another-attribute", "bar")
 
-	processors := map[string]string{
-		"transform": `
-  transform:
-     error_mode: ignore
-     trace_statements:
-       - context: span
-         statements:
-           - set(attributes["user.id"], "****")
-           - set(attributes["user.name"], "****")
-           - set(attributes["user.full_name"], "****")
-           - set(attributes["user.email"], "****")
-     metric_statements:
-       - context: datapoint
-         statements:
-           - set(attributes["user.id"], "****")
-           - set(attributes["user.name"], "****")
-           - set(attributes["user.full_name"], "****")
-           - set(attributes["user.email"], "****")
-     log_statements:
-       - context: log
-         statements:
-           - set(attributes["user.id"], "****")
-           - set(attributes["user.name"], "****")
-           - set(attributes["user.full_name"], "****")
-           - set(attributes["user.email"], "****")
-`,
-	}
+	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "filtering_user_data.yaml"))
+	require.Nil(t, err)
+
+	processors, err := extractProcessorsFromYAML(content)
+	require.Nil(t, err)
+
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider

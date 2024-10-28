@@ -1,0 +1,52 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  transform:
+    trace_statements:
+      - context: span
+        statements:
+          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
+    metric_statements:
+      - context: datapoint
+        statements:
+          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
+      - context: resource
+        statements:
+          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
+    log_statements:
+      - context: log
+        statements:
+          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [redaction]
+      exporters: [otlphttp]

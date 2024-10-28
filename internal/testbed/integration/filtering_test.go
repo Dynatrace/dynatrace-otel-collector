@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"testing"
@@ -149,6 +150,208 @@ func TestFilteringCreditCard(t *testing.T) {
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesFiltered)}),
 			processors:   creditCardTransformProcessor,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			FilteringScenario(
+				t,
+				test.dataProvider,
+				test.sender,
+				test.receiver,
+				test.validator,
+				test.processors,
+				nil,
+			)
+		})
+	}
+}
+
+func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
+
+	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "redaction_api_token.yaml"))
+	require.Nil(t, err)
+
+	redactionProcessor, err := extractProcessorsFromYAML(content)
+	require.Nil(t, err)
+
+	ingestedAttrs := pcommon.NewMap()
+
+	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
+
+	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
+	sampleToken := "G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM573RZM"
+
+	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("non-redacted", "foo")
+
+	redactedString := "****"
+	expectedAttrs := pcommon.NewMap()
+	expectedAttrs.PutStr("t1", redactedString)
+	expectedAttrs.PutStr("t2", redactedString)
+	expectedAttrs.PutStr("t3", redactedString)
+	expectedAttrs.PutStr("t4", redactedString)
+	expectedAttrs.PutStr("t5", redactedString)
+	expectedAttrs.PutStr("t6", redactedString)
+	expectedAttrs.PutStr("t7", redactedString)
+	expectedAttrs.PutStr("t8", redactedString)
+	expectedAttrs.PutStr("t9", redactedString)
+	expectedAttrs.PutStr("t10", redactedString)
+	expectedAttrs.PutStr("t11", redactedString)
+	expectedAttrs.PutStr("non-redacted", "foo")
+	expectedAttrs.PutInt("redaction.masked.count", 11)
+
+	ingestedTrace := generateBasicTracesWithAttributes(ingestedAttrs)
+	expectedTrace := generateBasicTracesWithAttributes(expectedAttrs)
+
+	ingestedMetric := generateBasicMetricWithAttributes(ingestedAttrs)
+	expectedMetric := generateBasicMetricWithAttributes(expectedAttrs)
+
+	ingestedLog := generateBasicLogsWithAttributes(ingestedAttrs)
+	expectedLog := generateBasicLogsWithAttributes(expectedAttrs)
+
+	tests := []struct {
+		name         string
+		dataProvider testbed.DataProvider
+		sender       testbed.DataSender
+		receiver     testbed.DataReceiver
+		validator    testbed.TestCaseValidator
+		processors   map[string]string
+	}{
+		{
+			name:         "traces",
+			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
+			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}, WithHiddenTracesValidationErrorMessages()),
+			processors:   redactionProcessor,
+		},
+		{
+			name:         "metrics",
+			dataProvider: NewSampleConfigsMetricsDataProvider(ingestedMetric),
+			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}, WithHiddenMetricsValidationErrorMessages()),
+			processors:   redactionProcessor,
+		},
+		{
+			name:         "logs",
+			dataProvider: NewSampleConfigsLogsDataProvider(ingestedLog),
+			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}, WithHiddenLogsValidationErrorMessages()),
+			processors:   redactionProcessor,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			FilteringScenario(
+				t,
+				test.dataProvider,
+				test.sender,
+				test.receiver,
+				test.validator,
+				test.processors,
+				nil,
+			)
+		})
+	}
+}
+
+func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
+	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "masking_api_token.yaml"))
+	require.Nil(t, err)
+
+	transformProcessor, err := extractProcessorsFromYAML(content)
+	require.Nil(t, err)
+
+	ingestedAttrs := pcommon.NewMap()
+
+	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
+
+	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
+	sampleToken := "G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM573RZM"
+
+	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, sampleToken))
+	ingestedAttrs.PutStr("non-redacted", "foo")
+
+	redactedString := "****"
+	expectedAttrs := pcommon.NewMap()
+	expectedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t2", fmt.Sprintf("dt0s02.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t3", fmt.Sprintf("dt0s03.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t4", fmt.Sprintf("dt0s04.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t5", fmt.Sprintf("dt0s05.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t6", fmt.Sprintf("dt0s06.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t7", fmt.Sprintf("dt0s07.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t8", fmt.Sprintf("dt0s08.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t9", fmt.Sprintf("dt0s09.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t10", fmt.Sprintf("dt0a01.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("t11", fmt.Sprintf("dt0c01.%s.%s", publicTokenIdentifier, redactedString))
+	expectedAttrs.PutStr("non-redacted", "foo")
+
+	ingestedTrace := generateBasicTracesWithAttributes(ingestedAttrs)
+	expectedTrace := generateBasicTracesWithAttributes(expectedAttrs)
+
+	ingestedMetric := generateBasicMetricWithAttributes(ingestedAttrs)
+	expectedMetric := generateBasicMetricWithAttributes(expectedAttrs)
+
+	ingestedLog := generateBasicLogsWithAttributes(ingestedAttrs)
+	expectedLog := generateBasicLogsWithAttributes(expectedAttrs)
+
+	tests := []struct {
+		name         string
+		dataProvider testbed.DataProvider
+		sender       testbed.DataSender
+		receiver     testbed.DataReceiver
+		validator    testbed.TestCaseValidator
+		processors   map[string]string
+	}{
+		{
+			name:         "traces",
+			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
+			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}, WithHiddenTracesValidationErrorMessages()),
+			processors:   transformProcessor,
+		},
+		{
+			name:         "metrics",
+			dataProvider: NewSampleConfigsMetricsDataProvider(ingestedMetric),
+			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}, WithHiddenMetricsValidationErrorMessages()),
+			processors:   transformProcessor,
+		},
+		{
+			name:         "logs",
+			dataProvider: NewSampleConfigsLogsDataProvider(ingestedLog),
+			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
+			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}, WithHiddenLogsValidationErrorMessages()),
+			processors:   transformProcessor,
 		},
 	}
 

@@ -1,9 +1,9 @@
 package integration
 
 import (
+	"fmt"
 	"os"
 	"path"
-	"fmt"
 	"testing"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
@@ -169,12 +169,12 @@ func TestFilteringCreditCard(t *testing.T) {
 }
 
 func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
-	redactionProcessor := `
-  redaction:
-    allow_all_keys: true
-    blocked_values:
-      - dt0[a-z]0[1-9]\.[A-Za-z0-9]{24}\.([A-Za-z0-9]{64})
-`
+
+	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "redaction_api_token.yaml"))
+	require.Nil(t, err)
+
+	redactionProcessor, err := extractProcessorsFromYAML(content)
+	require.Nil(t, err)
 
 	ingestedAttrs := pcommon.NewMap()
 
@@ -210,6 +210,7 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 	expectedAttrs.PutStr("t10", redactedString)
 	expectedAttrs.PutStr("t11", redactedString)
 	expectedAttrs.PutStr("non-redacted", "foo")
+	expectedAttrs.PutInt("redaction.masked.count", 11)
 
 	ingestedTrace := generateBasicTracesWithAttributes(ingestedAttrs)
 	expectedTrace := generateBasicTracesWithAttributes(expectedAttrs)
@@ -234,9 +235,7 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}, WithHiddenTracesValidationErrorMessages()),
-			processors: map[string]string{
-				"redaction": redactionProcessor,
-			},
+			processors:   redactionProcessor,
 		},
 		{
 			name:         "metrics",
@@ -244,9 +243,7 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}, WithHiddenMetricsValidationErrorMessages()),
-			processors: map[string]string{
-				"redaction": redactionProcessor,
-			},
+			processors:   redactionProcessor,
 		},
 		{
 			name:         "logs",
@@ -254,9 +251,7 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}, WithHiddenLogsValidationErrorMessages()),
-			processors: map[string]string{
-				"redaction": redactionProcessor,
-			},
+			processors:   redactionProcessor,
 		},
 	}
 
@@ -276,24 +271,12 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 }
 
 func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
-	transformProcessor := `
-  transform:
-    trace_statements:
-      - context: span
-        statements:
-          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
-    metric_statements:
-      - context: datapoint
-        statements:
-          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
-      - context: resource
-        statements:
-          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
-    log_statements:
-      - context: log
-        statements:
-          - replace_all_patterns(attributes, "value", "(dt0[a-z]0[1-9].[A-Za-z0-9]{24}.)([A-Za-z0-9]{64})", "$1****")
-`
+	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "masking_api_token.yaml"))
+	require.Nil(t, err)
+
+	transformProcessor, err := extractProcessorsFromYAML(content)
+	require.Nil(t, err)
+
 	ingestedAttrs := pcommon.NewMap()
 
 	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
@@ -352,9 +335,7 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}, WithHiddenTracesValidationErrorMessages()),
-			processors: map[string]string{
-				"transform": transformProcessor,
-			},
+			processors:   transformProcessor,
 		},
 		{
 			name:         "metrics",
@@ -362,9 +343,7 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}, WithHiddenMetricsValidationErrorMessages()),
-			processors: map[string]string{
-				"transform": transformProcessor,
-			},
+			processors:   transformProcessor,
 		},
 		{
 			name:         "logs",
@@ -372,9 +351,7 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
 			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}, WithHiddenLogsValidationErrorMessages()),
-			processors: map[string]string{
-				"transform": transformProcessor,
-			},
+			processors:   transformProcessor,
 		},
 	}
 

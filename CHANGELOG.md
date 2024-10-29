@@ -34,6 +34,7 @@ v0.112.0:
 - `hostmetricsreceiver`: Fix duplicate filesystem metrics (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34635, https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34512)
   The hostmetrics exposes duplicate metrics of identical mounts exposed in namespaces. The duplication causes errors in exporters that are sensitive to duplicate metrics. We can safely drop the duplicates as the metrics should be exactly the same.
 
+---
 
 </details>
 
@@ -98,6 +99,8 @@ v0.111.0:
 - `processorhelper`: Fix data race condition, concurrent writes to the err variable, causes UB (Undefined Behavior) ([#11350](https://github.com/open-telemetry/opentelemetry-collector/pull/11350))
 - `cmd/builder`: re-adds function to properly set and view version number of OpenTelemetry Collector Builder (ocb) binaries ([#11208](https://github.com/open-telemetry/opentelemetry-collector/pull/11208))
 - `pdata`: Unmarshal Span and SpanLink flags from JSON ([#11267](https://github.com/open-telemetry/opentelemetry-collector/pull/11267))
+
+---
 
 </details>
 
@@ -181,6 +184,8 @@ v0.110.0:
 - `prometheusreceiver`: Fix the retrieval of scrape configurations by also considering scrape config files ([#34786](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34786))
 - `redactionprocessor`: Fix panic when using the redaction processor in a logs pipeline ([#35331](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35331))
 
+---
+
 </details>
 
 ## 0.14.0
@@ -213,6 +218,8 @@ v0.109.0:
 ### 🧰 Bug fixes 🧰
   
 - `hostmetricsreceiver`: In filesystem scraper, do not prefix partitions when using the environment variable HOST_PROC_MOUNTINFO ([#35043](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35043))
+
+---
 
 </details>
 
@@ -289,6 +296,8 @@ v0.108.1:
 - `tailsamplingprocessor`: Fix the behavior for numeric tag filters with `inverse_match` set to `true`. (open-telemetry/opentelemetry-collector-contrib#34296)
 - `pkg/stanza`: fix nil value conversion (open-telemetry/opentelemetry-collector-contrib#34672)
 
+---
+
 </details>
 
 ### 🚀 New components 🚀
@@ -346,6 +355,8 @@ v0.107.0:
 - `component`: Allow component names of up to 1024 characters in length. (open-telemetry/opentelemetry-collector#10816)
 - `confmap`: Remove original string representation if invalid. (open-telemetry/opentelemetry-collector#10787)
 
+---
+
 </details>
 
 ### 🧰 Bug fixes 🧰
@@ -386,6 +397,8 @@ v0.106.0:
 - `transformprocessor`: Support aggregating metrics based on their attributes. (open-telemetry/opentelemetry-collector-contrib#16224)
 - `pkg/ottl`: Adds an `Format` function to OTTL that calls `fmt.Sprintf` (open-telemetry/opentelemetry-collector-contrib#33405)
 
+---
+
 </details>
 
 ### 💡 Enhancements 💡
@@ -407,11 +420,6 @@ v0.105.0:
 
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.105.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.105.0>
-
-### 🚀 New components 🚀
-
-- `statsdreceiver`: Add statsd receiver to manifest (#229)
-- `zipkinreceiver`: Added the zipkin receiver to the Dynatrace collector distro (#225)
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
@@ -449,7 +457,14 @@ v0.105.0:
 - `receiver/filelog`: Add filelog.container.removeOriginalTimeField feature-flag for removing original time field ([#33946](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33946))
 - `statsdreceiver`: Allow configuring summary percentiles ([#33701](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33701))
 
+---
+
 </details>
+
+### 🚀 New components 🚀
+
+- `statsdreceiver`: Add statsd receiver to manifest (#229)
+- `zipkinreceiver`: Added the zipkin receiver to the Dynatrace collector distro (#225)
 
 ## v0.9.0
 
@@ -500,6 +515,8 @@ v0.104.0:
 - `otlpexporter`: Update validation to support both dns:// and dns:/// ([#10449](https://github.com/open-telemetry/opentelemetry-collector/issues/10449))
 - `service`: Fixed a bug that caused otel-collector to fail to start with ipv6 metrics endpoint service telemetry. ([#10011](https://github.com/open-telemetry/opentelemetry-collector/issues/10011))
   
+---
+
 </details>
 
 ## v0.8.0
@@ -537,6 +554,8 @@ v0.103.0:
 
 - `filelogreceiver`: Container parser should add k8s metadata as resource attributes and not as log record attributes ([#33341](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33341))
 - `prometheusreceiver`: Fall back to scrape config job/instance labels for aggregated metrics without instance/job labels ([#32555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32555))
+
+---
 
 </details>
 
@@ -584,6 +603,8 @@ The individual upstream Collector changelogs can be found here:
 - `configrpc`: Use own compressors for zstd (#10323)
    Before this change, the zstd compressor we used didn't respect the max message size. This addresses CVE-2024-36129 (GHSA-c74f-6mfw-mm4v) on `configgrpc`.
 
+---
+
 </details>
 
 ## v0.6.0
@@ -612,6 +633,8 @@ This should not have any meaningful impact on most users but the logging format 
 - `filelogreceiver`: Add container operator parser ([#31959](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/31959))
 - `resourcedetectionprocessor`: Support GCP Bare Metal Solution in resource detection processor. ([#32985](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/32985))
 - `processor/transform`: Allow common where clause ([#27830](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/27830))
+
+---
 
 </details>
 

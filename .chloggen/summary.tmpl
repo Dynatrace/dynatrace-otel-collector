@@ -23,10 +23,14 @@ vXX.YY.ZZ:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
--
+
+---
 
 </details>
+
+{{- if or .BreakingChanges .Deprecations .NewComponents .BugFixes }}
+
+#### Dynatrace distribution changelog:
 
 {{- if .BreakingChanges }}
 
@@ -81,4 +85,6 @@ vXX.YY.ZZ:
 {{end}}
 {{ template "entry" $change }}
 {{- end }}
+{{- end }}
+
 {{- end }}

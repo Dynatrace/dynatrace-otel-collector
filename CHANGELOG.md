@@ -17,7 +17,6 @@ v0.112.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 💡 Enhancements 💡
 
@@ -37,6 +36,8 @@ v0.112.0:
 ---
 
 </details>
+
+#### Dynatrace distribution changelog:
 
 ### 💡 Enhancements 💡
 
@@ -63,7 +64,6 @@ v0.111.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🛑 Breaking changes 🛑
 
@@ -117,7 +117,6 @@ v0.110.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🛑 Breaking changes 🛑
 
@@ -200,7 +199,6 @@ v0.109.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🛑 Breaking changes 🛑
   
@@ -223,6 +221,8 @@ v0.109.0:
 
 </details>
 
+#### Dynatrace distribution changelog:
+
 ### 💡 Enhancements 💡
 
 - `eecprovider`: Add informational headers to EEC provider requests ([#280](https://github.com/Dynatrace/dynatrace-otel-collector/pull/280))
@@ -244,7 +244,6 @@ v0.108.1:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🛑 Breaking changes 🛑
 
@@ -300,6 +299,8 @@ v0.108.1:
 
 </details>
 
+#### Dynatrace distribution changelog:
+
 ### 🚀 New components 🚀
 
 - `redactionprocessor`: Added the redaction processor to the Dynatrace collector distro. (#275)
@@ -317,7 +318,6 @@ v0.107.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🛑 Breaking changes 🛑
 
@@ -359,6 +359,8 @@ v0.107.0:
 
 </details>
 
+#### Dynatrace distribution changelog:
+
 ### 🧰 Bug fixes 🧰
 
 - `release`: Add missing dependency to /bin/sh to the RPM linux package (#264)
@@ -381,7 +383,6 @@ v0.106.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🚩 Deprecations 🚩
 
@@ -400,6 +401,8 @@ v0.106.0:
 ---
 
 </details>
+
+#### Dynatrace distribution changelog:
 
 ### 💡 Enhancements 💡
 
@@ -423,7 +426,6 @@ v0.105.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🛑 Breaking changes 🛑
 
@@ -461,6 +463,8 @@ v0.105.0:
 
 </details>
 
+#### Dynatrace distribution changelog:
+
 ### 🚀 New components 🚀
 
 - `statsdreceiver`: Add statsd receiver to manifest (#229)
@@ -486,7 +490,6 @@ v0.104.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🛑 Breaking changes 🛑
 
@@ -535,7 +538,6 @@ v0.103.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🛑 Breaking changes 🛑
 
@@ -559,6 +561,8 @@ v0.103.0:
 
 </details>
 
+#### Dynatrace distribution changelog:
+
 ### 💡 Enhancements 💡
 
 - `examples`: Added an example for using the syslog receiver, as well as integration tests for the added example. (#136)
@@ -581,7 +585,6 @@ The individual upstream Collector changelogs can be found here:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### This release addresses CVE-2024-36129 ([GHSA-c74f-6mfw-mm4v](https://github.com/open-telemetry/opentelemetry-collector/security/advisories/GHSA-c74f-6mfw-mm4v)) fully
 
@@ -621,7 +624,6 @@ v0.101.0:
 <details>
 
 <summary>Highlights from the upstream Collector changelog</summary>
-</br>
 
 ### 🛑 Breaking changes 🛑
 
@@ -637,6 +639,8 @@ This should not have any meaningful impact on most users but the logging format 
 ---
 
 </details>
+
+#### Dynatrace distribution changelog:
 
 ### 💡 Enhancements 💡
 

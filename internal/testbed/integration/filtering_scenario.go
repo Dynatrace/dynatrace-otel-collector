@@ -1,38 +1,48 @@
 package integration
 
 import (
-	"strings"
+	"os"
+	"path"
 	"testing"
 	"time"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/yaml.v2"
 )
+
+type SenderFunc func(host string, port int) testbed.DataSender
+type ReceiverFunc func(port int) *testbed.BaseOTLPDataReceiver
 
 func FilteringScenario(
 	t *testing.T,
 	dataProvider testbed.DataProvider,
-	sender testbed.DataSender,
-	receiver testbed.DataReceiver,
+	senderFunc SenderFunc,
+	receiverFunc ReceiverFunc,
 	validator testbed.TestCaseValidator,
-	processors map[string]string,
-	extensions map[string]string,
+	configName string,
 ) {
 	agentProc := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))
 
-	configStr := testutil.CreateGeneralConfigYaml(t, sender, receiver, processors, extensions)
+	cfg, err := os.ReadFile(path.Join(ConfigExamplesDir, configName))
+	require.NoError(t, err)
 
-	configCleanup, err := agentProc.PrepareConfig(configStr)
+	receiverPort := testutil.GetAvailablePort(t)
+	exporterPort := testutil.GetAvailablePort(t)
+
+	parsedConfig := string(cfg)
+	parsedConfig = testutil.ReplaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
+	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
+
+	configCleanup, err := agentProc.PrepareConfig(parsedConfig)
 	require.NoError(t, err)
 	t.Cleanup(configCleanup)
 
 	tc := testbed.NewTestCase(
 		t,
 		dataProvider,
-		sender,
-		receiver,
+		senderFunc(testbed.DefaultHost, receiverPort),
+		receiverFunc(exporterPort),
 		agentProc,
 		validator,
 		&testbed.CorrectnessResults{},
@@ -57,29 +67,14 @@ func FilteringScenario(
 	tc.ValidateData()
 }
 
-type ProcessorConfig struct {
-	Processors map[string]any `yaml:"processors"`
+func NewOTLPTraceDataSenderWrapper(host string, port int) testbed.DataSender {
+	return testbed.NewOTLPTraceDataSender(host, port)
 }
 
-func extractProcessorsFromYAML(yamlStr []byte) (map[string]string, error) {
-	var data ProcessorConfig
-	err := yaml.Unmarshal(yamlStr, &data)
-	if err != nil {
-		return nil, err
-	}
+func NewOTLPMetricDataSenderWrapper(host string, port int) testbed.DataSender {
+	return testbed.NewOTLPMetricDataSender(host, port)
+}
 
-	result := make(map[string]string)
-	for key, value := range data.Processors {
-		processorYAML, err := yaml.Marshal(value)
-		if err != nil {
-			return nil, err
-		}
-
-		// marshall removes the starting indentation and aligns the root element(s) of value with indent == 0
-		// adding the indentation back
-		// name of the processor is indented by 2 spaces, rest of the body, by 4
-		result[key] = "  " + key + ":\n    " + strings.ReplaceAll(string(processorYAML), "\n", "\n"+"    ")
-	}
-
-	return result, nil
+func NewOTLPLogsDataSenderWrapper(host string, port int) testbed.DataSender {
+	return testbed.NewOTLPLogsDataSender(host, port)
 }

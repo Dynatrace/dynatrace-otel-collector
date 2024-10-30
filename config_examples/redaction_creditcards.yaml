@@ -3,8 +3,11 @@ receivers:
     protocols:
       grpc:
         endpoint: 0.0.0.0:4317
-      http:
-        endpoint: 0.0.0.0:4318
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
 
 processors:
   redaction:
@@ -15,19 +18,7 @@ processors:
       - "^3\\s*[47](\\s*[0-9]){13}$"                                                                       ## AmEx credit card number
     summary: info
 
-exporters:
-  otlphttp:
-    endpoint: ${env:DT_ENDPOINT}
-    headers:
-      Authorization: "Api-Token ${env:API_TOKEN}"
-
-extensions:
-  health_check:
-    endpoint: 0.0.0.0:13133
-
 service:
-  extensions:
-    - health_check
   pipelines:
     traces:
       receivers: [otlp]

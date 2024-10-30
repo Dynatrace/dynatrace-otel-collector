@@ -2,13 +2,9 @@ package integration
 
 import (
 	"fmt"
-	"os"
-	"path"
 	"testing"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
-	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -83,73 +79,65 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesFiltered.PutStr("safe_attribute1", "371")
 	attributesFiltered.PutStr("safe_attribute2", "37810005")
 
-	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "masking_creditcards.yaml"))
-	require.Nil(t, err)
+	creditCardTransformConfig := "masking_creditcards.yaml"
 
-	creditCardTransformProcessor, err := extractProcessorsFromYAML(content)
-	require.Nil(t, err)
-
-	content, err = os.ReadFile(path.Join(ConfigExamplesDir, "redaction_creditcards.yaml"))
-	require.Nil(t, err)
-
-	creditCardRedactionProcessor, err := extractProcessorsFromYAML(content)
-	require.Nil(t, err)
+	creditCardRedactionConfig := "redaction_creditcards.yaml"
 
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
+		sender       SenderFunc
+		receiver     ReceiverFunc
 		validator    testbed.TestCaseValidator
-		processors   map[string]string
+		configName   string
 	}{
 		{
 			name:         "traces redaction",
 			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPTraceDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewTraceValidator(t, []ptrace.Traces{generateBasicTracesWithAttributes(attributesMasked)}),
-			processors:   creditCardRedactionProcessor,
+			configName:   creditCardRedactionConfig,
 		},
 		{
 			name:         "metrics redaction",
 			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPMetricDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewMetricValidator(t, []pmetric.Metrics{generateBasicMetricWithAttributes(attributesMasked)}),
-			processors:   creditCardRedactionProcessor,
+			configName:   creditCardRedactionConfig,
 		},
 		{
 			name:         "logs redaction",
 			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPLogsDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesMasked)}),
-			processors:   creditCardRedactionProcessor,
+			configName:   creditCardRedactionConfig,
 		},
 		{
 			name:         "traces transform",
 			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPTraceDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewTraceValidator(t, []ptrace.Traces{generateBasicTracesWithAttributes(attributesFiltered)}),
-			processors:   creditCardTransformProcessor,
+			configName:   creditCardTransformConfig,
 		},
 		{
 			name:         "metrics transform",
 			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPMetricDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewMetricValidator(t, []pmetric.Metrics{generateBasicMetricWithAttributes(attributesFiltered)}),
-			processors:   creditCardTransformProcessor,
+			configName:   creditCardTransformConfig,
 		},
 		{
 			name:         "logs transform",
 			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPLogsDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesFiltered)}),
-			processors:   creditCardTransformProcessor,
+			configName:   creditCardTransformConfig,
 		},
 	}
 
@@ -161,20 +149,14 @@ func TestFilteringCreditCard(t *testing.T) {
 				test.sender,
 				test.receiver,
 				test.validator,
-				test.processors,
-				nil,
+				test.configName,
 			)
 		})
 	}
 }
 
 func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
-
-	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "redaction_api_token.yaml"))
-	require.Nil(t, err)
-
-	redactionProcessor, err := extractProcessorsFromYAML(content)
-	require.Nil(t, err)
+	configName := "redaction_api_token.yaml"
 
 	ingestedAttrs := pcommon.NewMap()
 
@@ -224,34 +206,34 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
+		sender       SenderFunc
+		receiver     ReceiverFunc
 		validator    testbed.TestCaseValidator
-		processors   map[string]string
+		configName   string
 	}{
 		{
 			name:         "traces",
 			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
-			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPTraceDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}, WithHiddenTracesValidationErrorMessages()),
-			processors:   redactionProcessor,
+			configName:   configName,
 		},
 		{
 			name:         "metrics",
 			dataProvider: NewSampleConfigsMetricsDataProvider(ingestedMetric),
-			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPMetricDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}, WithHiddenMetricsValidationErrorMessages()),
-			processors:   redactionProcessor,
+			configName:   configName,
 		},
 		{
 			name:         "logs",
 			dataProvider: NewSampleConfigsLogsDataProvider(ingestedLog),
-			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPLogsDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}, WithHiddenLogsValidationErrorMessages()),
-			processors:   redactionProcessor,
+			configName:   configName,
 		},
 	}
 
@@ -263,20 +245,13 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 				test.sender,
 				test.receiver,
 				test.validator,
-				test.processors,
-				nil,
+				test.configName,
 			)
 		})
 	}
 }
 
 func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
-	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "masking_api_token.yaml"))
-	require.Nil(t, err)
-
-	transformProcessor, err := extractProcessorsFromYAML(content)
-	require.Nil(t, err)
-
 	ingestedAttrs := pcommon.NewMap()
 
 	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
@@ -321,37 +296,39 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 	ingestedLog := generateBasicLogsWithAttributes(ingestedAttrs)
 	expectedLog := generateBasicLogsWithAttributes(expectedAttrs)
 
+	configName := "masking_api_token.yaml"
+
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
+		sender       SenderFunc
+		receiver     ReceiverFunc
 		validator    testbed.TestCaseValidator
-		processors   map[string]string
+		configName   string
 	}{
 		{
 			name:         "traces",
 			dataProvider: NewSampleConfigsTraceDataProvider(ingestedTrace),
-			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPTraceDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewTraceValidator(t, []ptrace.Traces{expectedTrace}, WithHiddenTracesValidationErrorMessages()),
-			processors:   transformProcessor,
+			configName:   configName,
 		},
 		{
 			name:         "metrics",
 			dataProvider: NewSampleConfigsMetricsDataProvider(ingestedMetric),
-			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPMetricDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewMetricValidator(t, []pmetric.Metrics{expectedMetric}, WithHiddenMetricsValidationErrorMessages()),
-			processors:   transformProcessor,
+			configName:   configName,
 		},
 		{
 			name:         "logs",
 			dataProvider: NewSampleConfigsLogsDataProvider(ingestedLog),
-			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPLogsDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewLogsValidator(t, []plog.Logs{expectedLog}, WithHiddenLogsValidationErrorMessages()),
-			processors:   transformProcessor,
+			configName:   configName,
 		},
 	}
 
@@ -363,8 +340,7 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 				test.sender,
 				test.receiver,
 				test.validator,
-				test.processors,
-				nil,
+				test.configName,
 			)
 		})
 	}
@@ -387,43 +363,39 @@ func TestFilteringUserProperties(t *testing.T) {
 	attributesMasked.PutStr("safe-attribute", "foo")
 	attributesMasked.PutStr("another-attribute", "bar")
 
-	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "filtering_user_data.yaml"))
-	require.Nil(t, err)
-
-	processors, err := extractProcessorsFromYAML(content)
-	require.Nil(t, err)
+	configName := "filtering_user_data.yaml"
 
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
+		sender       SenderFunc
+		receiver     ReceiverFunc
 		validator    testbed.TestCaseValidator
-		processors   map[string]string
+		configName   string
 	}{
 		{
 			name:         "traces",
 			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPTraceDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewTraceValidator(t, []ptrace.Traces{generateBasicTracesWithAttributes(attributesMasked)}),
-			processors:   processors,
+			configName:   configName,
 		},
 		{
 			name:         "metrics",
 			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPMetricDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewMetricValidator(t, []pmetric.Metrics{generateBasicMetricWithAttributes(attributesMasked)}),
-			processors:   processors,
+			configName:   configName,
 		},
 		{
 			name:         "logs",
 			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPLogsDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesMasked)}),
-			processors:   processors,
+			configName:   configName,
 		},
 	}
 
@@ -435,8 +407,7 @@ func TestFilteringUserProperties(t *testing.T) {
 				test.sender,
 				test.receiver,
 				test.validator,
-				test.processors,
-				nil,
+				test.configName,
 			)
 		})
 	}
@@ -543,73 +514,65 @@ func TestFilteringIBAN(t *testing.T) {
 	attributesFiltered.PutStr("iban30", "NO **** 7947")
 	attributesFiltered.PutStr("non-iban", "no4444 ds")
 
-	content, err := os.ReadFile(path.Join(ConfigExamplesDir, "masking_iban.yaml"))
-	require.Nil(t, err)
+	ibanTransformConfig := "masking_iban.yaml"
 
-	ibanTransformProcessor, err := extractProcessorsFromYAML(content)
-	require.Nil(t, err)
-
-	content, err = os.ReadFile(path.Join(ConfigExamplesDir, "redaction_iban.yaml"))
-	require.Nil(t, err)
-
-	ibanRedactionProcessor, err := extractProcessorsFromYAML(content)
-	require.Nil(t, err)
+	ibanRedactionConfig := "redaction_iban.yaml"
 
 	tests := []struct {
 		name         string
 		dataProvider testbed.DataProvider
-		sender       testbed.DataSender
-		receiver     testbed.DataReceiver
+		sender       SenderFunc
+		receiver     ReceiverFunc
 		validator    testbed.TestCaseValidator
-		processors   map[string]string
+		configName   string
 	}{
 		{
 			name:         "traces redaction",
 			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPTraceDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewTraceValidator(t, []ptrace.Traces{generateBasicTracesWithAttributes(attributesMasked)}),
-			processors:   ibanRedactionProcessor,
+			configName:   ibanRedactionConfig,
 		},
 		{
 			name:         "metrics redaction",
 			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPMetricDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewMetricValidator(t, []pmetric.Metrics{generateBasicMetricWithAttributes(attributesMasked)}),
-			processors:   ibanRedactionProcessor,
+			configName:   ibanRedactionConfig,
 		},
 		{
 			name:         "logs redaction",
 			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPLogsDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesMasked)}),
-			processors:   ibanRedactionProcessor,
+			configName:   ibanRedactionConfig,
 		},
 		{
 			name:         "traces transform",
 			dataProvider: NewSampleConfigsTraceDataProvider(generateBasicTracesWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPTraceDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPTraceDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewTraceValidator(t, []ptrace.Traces{generateBasicTracesWithAttributes(attributesFiltered)}),
-			processors:   ibanTransformProcessor,
+			configName:   ibanTransformConfig,
 		},
 		{
 			name:         "metrics transform",
 			dataProvider: NewSampleConfigsMetricsDataProvider(generateBasicMetricWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPMetricDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPMetricDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewMetricValidator(t, []pmetric.Metrics{generateBasicMetricWithAttributes(attributesFiltered)}),
-			processors:   ibanTransformProcessor,
+			configName:   ibanTransformConfig,
 		},
 		{
 			name:         "logs transform",
 			dataProvider: NewSampleConfigsLogsDataProvider(generateBasicLogsWithAttributes(attributesNonMasked)),
-			sender:       testbed.NewOTLPLogsDataSender(testbed.DefaultHost, testutil.GetAvailablePort(t)),
-			receiver:     testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
+			sender:       NewOTLPLogsDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesFiltered)}),
-			processors:   ibanTransformProcessor,
+			configName:   ibanTransformConfig,
 		},
 	}
 
@@ -621,8 +584,7 @@ func TestFilteringIBAN(t *testing.T) {
 				test.sender,
 				test.receiver,
 				test.validator,
-				test.processors,
-				nil,
+				test.configName,
 			)
 		})
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/featuregate"
+	"gopkg.in/yaml.v2"
 )
 
 type portpair struct {
@@ -301,4 +302,31 @@ service:
 		processorsList,
 		receiver.ProtocolName(),
 	)
+}
+
+type ProcessorConfig struct {
+	Processors map[string]any `yaml:"processors"`
+}
+
+func extractProcessorsFromYAML(yamlStr []byte) (map[string]string, error) {
+	var data ProcessorConfig
+	err := yaml.Unmarshal(yamlStr, &data)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]string)
+	for key, value := range data.Processors {
+		processorYAML, err := yaml.Marshal(value)
+		if err != nil {
+			return nil, err
+		}
+
+		// marshall removes the starting indentation and aligns the root element(s) of value with indent == 0
+		// adding the indentation back
+		// name of the processor is indented by 2 spaces, rest of the body, by 4
+		result[key] = "  " + key + ":\n    " + strings.ReplaceAll(string(processorYAML), "\n", "\n"+"    ")
+	}
+
+	return result, nil
 }

@@ -522,8 +522,6 @@ github.com/knadh/koanf/parsers/yaml v0.1.0 h1:ZZ8/iGfRLvKSaMEECEBPM1HQslrZADk8fP
 github.com/knadh/koanf/parsers/yaml v0.1.0/go.mod h1:cvbUDC7AL23pImuQP0oRw/hPuccrNBS2bps8asS0CwY=
 github.com/knadh/koanf/providers/env v1.0.0 h1:ufePaI9BnWH+ajuxGGiJ8pdTG0uLEUWC7/HDDPGLah0=
 github.com/knadh/koanf/providers/env v1.0.0/go.mod h1:mzFyRZueYhb37oPmC1HAv/oGEEuyvJDA98r3XAa8Gak=
-github.com/knadh/koanf/providers/file v1.1.0 h1:MTjA+gRrVl1zqgetEAIaXHqYje0XSosxSiMD4/7kz0o=
-github.com/knadh/koanf/providers/file v1.1.0/go.mod h1:/faSBcv2mxPVjFrXck95qeoyoZ5myJ6uxN8OOVNJJCI=
 github.com/knadh/koanf/providers/file v1.1.2 h1:aCC36YGOgV5lTtAFz2qkgtWdeQsgfxUkxDOe+2nQY3w=
 github.com/knadh/koanf/providers/file v1.1.2/go.mod h1:/faSBcv2mxPVjFrXck95qeoyoZ5myJ6uxN8OOVNJJCI=
 github.com/knadh/koanf/providers/fs v0.1.0 h1:9Hln9GS3bWTItAnGVFYyfkoAIxAFq7pvlF64pTNiDdQ=
@@ -770,8 +768,6 @@ go.opencensus.io v0.24.0 h1:y73uSU6J157QMP2kn2r30vwW1A2W2WFwSCGnAVxeaD0=
 go.opencensus.io v0.24.0/go.mod h1:vNK8G9p7aAivkbmorf4v+7Hgx+Zs0yY+0fOtgBfjQKo=
 go.opentelemetry.io/build-tools/chloggen v0.14.0 h1:qVal1JO6V5xTaQ6b07eBAcc0jyCblk8lfVAJHijwqFk=
 go.opentelemetry.io/build-tools/chloggen v0.14.0/go.mod h1:+lbmAIYUT2OewAXITyvPACRxruPm44tNH4k6hIUuasE=
-go.opentelemetry.io/collector/cmd/builder v0.111.0 h1:9KqCuq8hlsZTqiL1upsIylsDxJbKvqDXmc+5oBzvoA0=
-go.opentelemetry.io/collector/cmd/builder v0.111.0/go.mod h1:FRih5dexF7nTQNzOiRdtNOJykEqRE2CgKDLgskd4K9o=
 go.opentelemetry.io/collector/cmd/builder v0.112.0 h1:7hfvY0HpUDVTmBku0LMygY+sDgArz7nXU7iTI2IOJzg=
 go.opentelemetry.io/collector/cmd/builder v0.112.0/go.mod h1:pO0F87jHIBmDzCsLB/kEA3EaWHjs1+HgI/pKY0oVQWo=
 go.opentelemetry.io/contrib/exporters/autoexport v0.46.1 h1:ysCfPZB9AjUlMa1UHYup3c9dAOCMQX/6sxSfPBUoxHw=

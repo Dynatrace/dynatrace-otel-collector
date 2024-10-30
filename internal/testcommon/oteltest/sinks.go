@@ -77,7 +77,7 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 		fMetric := otlpreceiver.NewFactory()
 		cfg := fMetric.CreateDefaultConfig().(*otlpreceiver.Config)
 		setupReceiverPorts(cfg, sinks.Metrics.Ports)
-		metricsRcvr, err := fMetric.CreateMetricsReceiver(context.Background(), receivertest.NewNopSettings(), cfg, sinks.Metrics.Consumer)
+		metricsRcvr, err := fMetric.CreateMetrics(context.Background(), receivertest.NewNopSettings(), cfg, sinks.Metrics.Consumer)
 		require.NoError(t, err, "failed creating metrics receiver")
 		require.NoError(t, metricsRcvr.Start(context.Background(), componenttest.NewNopHost()))
 		shutDownFuncs = append(shutDownFuncs, func() {
@@ -88,7 +88,7 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 		fTrace := otlpreceiver.NewFactory()
 		cfg := fTrace.CreateDefaultConfig().(*otlpreceiver.Config)
 		setupReceiverPorts(cfg, sinks.Traces.Ports)
-		tracesRcvr, err := fTrace.CreateTracesReceiver(context.Background(), receivertest.NewNopSettings(), cfg, sinks.Traces.Consumer)
+		tracesRcvr, err := fTrace.CreateTraces(context.Background(), receivertest.NewNopSettings(), cfg, sinks.Traces.Consumer)
 		require.NoError(t, err, "failed creating traces receiver")
 		require.NoError(t, tracesRcvr.Start(context.Background(), componenttest.NewNopHost()))
 		shutDownFuncs = append(shutDownFuncs, func() {
@@ -99,7 +99,7 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 		fLog := otlpreceiver.NewFactory()
 		cfg := fLog.CreateDefaultConfig().(*otlpreceiver.Config)
 		setupReceiverPorts(cfg, sinks.Logs.Ports)
-		logsRcvr, err := fLog.CreateLogsReceiver(context.Background(), receivertest.NewNopSettings(), cfg, sinks.Logs.Consumer)
+		logsRcvr, err := fLog.CreateLogs(context.Background(), receivertest.NewNopSettings(), cfg, sinks.Logs.Consumer)
 		require.NoError(t, err, "failed creating logs receiver")
 		require.NoError(t, logsRcvr.Start(context.Background(), componenttest.NewNopHost()))
 		shutDownFuncs = append(shutDownFuncs, func() {

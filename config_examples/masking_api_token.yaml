@@ -40,13 +40,13 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [redaction]
+      processors: [transform]
       exporters: [otlphttp]
     metrics:
       receivers: [otlp]
-      processors: [redaction]
+      processors: [transform]
       exporters: [otlphttp]
     logs:
       receivers: [otlp]
-      processors: [redaction]
+      processors: [transform]
       exporters: [otlphttp]

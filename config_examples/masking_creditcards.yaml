@@ -14,16 +14,28 @@ processors:
     error_mode: ignore
     trace_statements:
       - context: span
-        statements: &filter-statements
-          - replace_all_patterns(attributes, "value", "^3\\s*[47](\\s*[0-9]){9}((\\s*[0-9]){4})$", "**** $$2")
-          - replace_all_patterns(attributes, "value", "^(5[1-5]([0-9]){2}|222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){8}\\s*([0-9]{4})$", "**** $$4")
-          - replace_all_patterns(attributes, "value", "^4(\\s*[0-9]){8,14}\\s*(([0-9]\\s*){4})$", "**** $$2")
+        statements:
+          - &filter-visa
+            replace_all_patterns(attributes, "value", "^3\\s*[47](\\s*[0-9]){9}((\\s*[0-9]){4})$", "**** $$2")
+          - &filter-mc
+            replace_all_patterns(attributes, "value", "^(5[1-5]([0-9]){2}|222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){8}\\s*([0-9]{4})$", "**** $$4")
+          - &filter-amex
+            replace_all_patterns(attributes, "value", "^4(\\s*[0-9]){8,14}\\s*(([0-9]\\s*){4})$", "**** $$2")
     metric_statements:
       - context: datapoint
-        statements: *filter-statements
+        statements:
+          - *filter-visa
+          - *filter-mc
+          - *filter-amex
     log_statements:
       - context: log
-        statements: *filter-statements
+        statements:
+          - *filter-visa
+          - *filter-mc
+          - *filter-amex
+          - replace_all_patterns(body, "value", "^3\\s*[47](\\s*[0-9]){9}((\\s*[0-9]){4})$", "**** $$2")
+          - replace_all_patterns(body, "value", "^(5[1-5]([0-9]){2}|222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)(\\s*[0-9]){8}\\s*([0-9]{4})$", "**** $$4")
+          - replace_all_patterns(body, "value", "^4(\\s*[0-9]){8,14}\\s*(([0-9]\\s*){4})$", "**** $$2")
 
 service:
   pipelines:

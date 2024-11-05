@@ -79,52 +79,6 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesFiltered.PutStr("safe_attribute1", "371")
 	attributesFiltered.PutStr("safe_attribute2", "37810005")
 
-	logsNonMasked := []string{
-		"card_master_spaces1 2367 8901 2345 6789",
-		"card_master_spaces2 5105 1051 0510 5100",
-		"card_master_spaces3 2720 1051 0510 5100",
-		"card_master_no_spaces1 2367890123456789",
-		"card_master_no_spaces2 5105105105105100",
-		"card_master_no_spaces3 2720105105105100",
-		"card_visa_spaces1 4539 1488 0343 6467",
-		"card_visa_spaces2 4539 1488 0343 6",
-		"card_visa_spaces3 4539 1488 0343 6467 234",
-		"card_visa_no_spaces1 4539148803436467",
-		"card_visa_no_spaces2 4539148803436",
-		"card_visa_no_spaces3 4539148803436467234",
-		"card_amex_spaces1 3714 496353 98431",
-		"card_amex_spaces2 3487 344936 71000",
-		"card_amex_spaces3 3782 822463 10005",
-		"card_amex_no_spaces1 371449635398431",
-		"card_amex_no_spaces2 348734493671000",
-		"card_amex_no_spaces3 378282246310005",
-		"safe_attribute1 371",
-		"safe_attribute2 37810005",
-	}
-
-	logsFiltered := []string{
-		"card_master_spaces1 **** 6789",
-		"card_master_spaces2 **** 5100",
-		"card_master_spaces3 **** 5100",
-		"card_master_no_spaces1 **** 6789",
-		"card_master_no_spaces2 **** 5100",
-		"card_master_no_spaces3 **** 5100",
-		"card_visa_spaces1 **** 6467",
-		"card_visa_spaces2 **** 343 6",
-		"card_visa_spaces3 **** 7 234",
-		"card_visa_no_spaces1 **** 6467",
-		"card_visa_no_spaces2 **** 3436",
-		"card_visa_no_spaces3 **** 7234",
-		"card_amex_spaces1 **** 8431",
-		"card_amex_spaces2 **** 1000",
-		"card_amex_spaces3 **** 0005",
-		"card_amex_no_spaces1 **** 8431",
-		"card_amex_no_spaces2 **** 1000",
-		"card_amex_no_spaces3 **** 0005",
-		"safe_attribute1 371",
-		"safe_attribute2 37810005",
-	}
-
 	creditCardTransformConfig := "masking_creditcards.yaml"
 
 	creditCardRedactionConfig := "redaction_creditcards.yaml"
@@ -185,6 +139,80 @@ func TestFilteringCreditCard(t *testing.T) {
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesFiltered)}),
 			configName:   creditCardTransformConfig,
 		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			FilteringScenario(
+				t,
+				test.dataProvider,
+				test.sender,
+				test.receiver,
+				test.validator,
+				test.configName,
+			)
+		})
+	}
+}
+
+func TestFilteringCreditCardLogBody(t *testing.T) {
+
+	logsNonMasked := []string{
+		"card_master_spaces1 2367 8901 2345 6789",
+		"card_master_spaces2 5105 1051 0510 5100",
+		"card_master_spaces3 2720 1051 0510 5100",
+		"card_master_no_spaces1 2367890123456789",
+		"card_master_no_spaces2 5105105105105100",
+		"card_master_no_spaces3 2720105105105100",
+		"card_visa_spaces1 4539 1488 0343 6467",
+		"card_visa_spaces2 4539 1488 0343 6",
+		"card_visa_spaces3 4539 1488 0343 6467 234",
+		"card_visa_no_spaces1 4539148803436467",
+		"card_visa_no_spaces2 4539148803436",
+		"card_visa_no_spaces3 4539148803436467234",
+		"card_amex_spaces1 3714 496353 98431",
+		"card_amex_spaces2 3487 344936 71000",
+		"card_amex_spaces3 3782 822463 10005",
+		"card_amex_no_spaces1 371449635398431",
+		"card_amex_no_spaces2 348734493671000",
+		"card_amex_no_spaces3 378282246310005",
+		"safe_attribute1 371",
+		"safe_attribute2 37810005",
+	}
+
+	logsFiltered := []string{
+		"card_master_spaces1 **** 6789",
+		"card_master_spaces2 **** 5100",
+		"card_master_spaces3 **** 5100",
+		"card_master_no_spaces1 **** 6789",
+		"card_master_no_spaces2 **** 5100",
+		"card_master_no_spaces3 **** 5100",
+		"card_visa_spaces1 **** 6467",
+		"card_visa_spaces2 **** 343 6",
+		"card_visa_spaces3 **** 7 234",
+		"card_visa_no_spaces1 **** 6467",
+		"card_visa_no_spaces2 **** 3436",
+		"card_visa_no_spaces3 **** 7234",
+		"card_amex_spaces1 **** 8431",
+		"card_amex_spaces2 **** 1000",
+		"card_amex_spaces3 **** 0005",
+		"card_amex_no_spaces1 **** 8431",
+		"card_amex_no_spaces2 **** 1000",
+		"card_amex_no_spaces3 **** 0005",
+		"safe_attribute1 371",
+		"safe_attribute2 37810005",
+	}
+
+	creditCardTransformConfig := "masking_creditcards_logbody.yaml"
+
+	tests := []struct {
+		name         string
+		dataProvider testbed.DataProvider
+		sender       SenderFunc
+		receiver     ReceiverFunc
+		validator    testbed.TestCaseValidator
+		configName   string
+	}{
 		{
 			name:         "log bodies transform",
 			dataProvider: NewSampleConfigsLogsDataProvider(generateLogsWithBodies(logsNonMasked)),

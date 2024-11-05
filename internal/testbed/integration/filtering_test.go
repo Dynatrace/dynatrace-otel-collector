@@ -34,6 +34,11 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesNonMasked.PutStr("safe_attribute1", "371")
 	attributesNonMasked.PutStr("safe_attribute2", "37810005")
 
+	var logsNonMasked []string
+	for k, v := range attributesNonMasked.AsRaw() {
+		logsNonMasked = append(logsNonMasked, fmt.Sprintf("%s %s", k, v))
+	}
+
 	attributesMasked := pcommon.NewMap()
 	attributesMasked.PutStr("card_master_spaces1", "****")
 	attributesMasked.PutStr("card_master_spaces2", "****")
@@ -57,6 +62,11 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesMasked.PutStr("safe_attribute1", "371")
 	attributesMasked.PutStr("safe_attribute2", "37810005")
 
+	var logsMasked []string
+	for k, v := range attributesMasked.AsRaw() {
+		logsMasked = append(logsMasked, fmt.Sprintf("%s %s", k, v))
+	}
+
 	attributesFiltered := pcommon.NewMap()
 	attributesFiltered.PutStr("card_master_spaces1", "**** 6789")
 	attributesFiltered.PutStr("card_master_spaces2", "**** 5100")
@@ -78,6 +88,11 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesFiltered.PutStr("card_amex_no_spaces3", "**** 0005")
 	attributesFiltered.PutStr("safe_attribute1", "371")
 	attributesFiltered.PutStr("safe_attribute2", "37810005")
+
+	var logsFiltered []string
+	for k, v := range attributesFiltered.AsRaw() {
+		logsFiltered = append(logsFiltered, fmt.Sprintf("%s %s", k, v))
+	}
 
 	creditCardTransformConfig := "masking_creditcards.yaml"
 
@@ -137,6 +152,14 @@ func TestFilteringCreditCard(t *testing.T) {
 			sender:       NewOTLPLogsDataSenderWrapper,
 			receiver:     testbed.NewOTLPHTTPDataReceiver,
 			validator:    NewLogsValidator(t, []plog.Logs{generateBasicLogsWithAttributes(attributesFiltered)}),
+			configName:   creditCardTransformConfig,
+		},
+		{
+			name:         "log bodies transform",
+			dataProvider: NewSampleConfigsLogsDataProvider(generateLogsWithBodies(attributesNonMasked, logsNonMasked)),
+			sender:       NewOTLPLogsDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
+			validator:    NewLogsValidator(t, []plog.Logs{generateLogsWithBodies(attributesFiltered, logsFiltered)}),
 			configName:   creditCardTransformConfig,
 		},
 	}
@@ -656,6 +679,33 @@ func generateBasicLogsWithAttributes(attributes pcommon.Map) plog.Logs {
 			attrs.PutInt(k, v.(int64))
 		case string:
 			attrs.PutStr(k, v.(string))
+		}
+	}
+
+	return logs
+}
+
+func generateLogsWithBodies(attributes pcommon.Map, bodies []string) plog.Logs {
+	logs := plog.NewLogs()
+	rl := logs.ResourceLogs().AppendEmpty()
+
+	for _, body := range bodies {
+		logRecords := rl.ScopeLogs().AppendEmpty().LogRecords()
+		logRecords.EnsureCapacity(1)
+
+		record := logRecords.AppendEmpty()
+		record.SetSeverityNumber(plog.SeverityNumberInfo3)
+		record.SetSeverityText("INFO")
+		record.Body().SetStr(body)
+
+		attrs := record.Attributes()
+		for k, v := range attributes.AsRaw() {
+			switch v.(type) {
+			case int64:
+				attrs.PutInt(k, v.(int64))
+			case string:
+				attrs.PutStr(k, v.(string))
+			}
 		}
 	}
 

@@ -34,11 +34,6 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesNonMasked.PutStr("safe_attribute1", "371")
 	attributesNonMasked.PutStr("safe_attribute2", "37810005")
 
-	var logsNonMasked []string
-	for k, v := range attributesNonMasked.AsRaw() {
-		logsNonMasked = append(logsNonMasked, fmt.Sprintf("%s %s", k, v))
-	}
-
 	attributesMasked := pcommon.NewMap()
 	attributesMasked.PutStr("card_master_spaces1", "****")
 	attributesMasked.PutStr("card_master_spaces2", "****")
@@ -62,11 +57,6 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesMasked.PutStr("safe_attribute1", "371")
 	attributesMasked.PutStr("safe_attribute2", "37810005")
 
-	var logsMasked []string
-	for k, v := range attributesMasked.AsRaw() {
-		logsMasked = append(logsMasked, fmt.Sprintf("%s %s", k, v))
-	}
-
 	attributesFiltered := pcommon.NewMap()
 	attributesFiltered.PutStr("card_master_spaces1", "**** 6789")
 	attributesFiltered.PutStr("card_master_spaces2", "**** 5100")
@@ -89,9 +79,50 @@ func TestFilteringCreditCard(t *testing.T) {
 	attributesFiltered.PutStr("safe_attribute1", "371")
 	attributesFiltered.PutStr("safe_attribute2", "37810005")
 
-	var logsFiltered []string
-	for k, v := range attributesFiltered.AsRaw() {
-		logsFiltered = append(logsFiltered, fmt.Sprintf("%s %s", k, v))
+	logsNonMasked := []string{
+		"card_master_spaces1 2367 8901 2345 6789",
+		"card_master_spaces2 5105 1051 0510 5100",
+		"card_master_spaces3 2720 1051 0510 5100",
+		"card_master_no_spaces1 2367890123456789",
+		"card_master_no_spaces2 5105105105105100",
+		"card_master_no_spaces3 2720105105105100",
+		"card_visa_spaces1 4539 1488 0343 6467",
+		"card_visa_spaces2 4539 1488 0343 6",
+		"card_visa_spaces3 4539 1488 0343 6467 234",
+		"card_visa_no_spaces1 4539148803436467",
+		"card_visa_no_spaces2 4539148803436",
+		"card_visa_no_spaces3 4539148803436467234",
+		"card_amex_spaces1 3714 496353 98431",
+		"card_amex_spaces2 3487 344936 71000",
+		"card_amex_spaces3 3782 822463 10005",
+		"card_amex_no_spaces1 371449635398431",
+		"card_amex_no_spaces2 348734493671000",
+		"card_amex_no_spaces3 378282246310005",
+		"safe_attribute1 371",
+		"safe_attribute2 37810005",
+	}
+
+	logsFiltered := []string{
+		"card_master_spaces1 **** 6789",
+		"card_master_spaces2 **** 5100",
+		"card_master_spaces3 **** 5100",
+		"card_master_no_spaces1 **** 6789",
+		"card_master_no_spaces2 **** 5100",
+		"card_master_no_spaces3 **** 5100",
+		"card_visa_spaces1 **** 6467",
+		"card_visa_spaces2 **** 343 6",
+		"card_visa_spaces3 **** 7 234",
+		"card_visa_no_spaces1 **** 6467",
+		"card_visa_no_spaces2 **** 3436",
+		"card_visa_no_spaces3 **** 7234",
+		"card_amex_spaces1 **** 8431",
+		"card_amex_spaces2 **** 1000",
+		"card_amex_spaces3 **** 0005",
+		"card_amex_no_spaces1 **** 8431",
+		"card_amex_no_spaces2 **** 1000",
+		"card_amex_no_spaces3 **** 0005",
+		"safe_attribute1 371",
+		"safe_attribute2 37810005",
 	}
 
 	creditCardTransformConfig := "masking_creditcards.yaml"
@@ -156,10 +187,10 @@ func TestFilteringCreditCard(t *testing.T) {
 		},
 		{
 			name:         "log bodies transform",
-			dataProvider: NewSampleConfigsLogsDataProvider(generateLogsWithBodies(attributesNonMasked, logsNonMasked)),
+			dataProvider: NewSampleConfigsLogsDataProvider(generateLogsWithBodies(logsNonMasked)),
 			sender:       NewOTLPLogsDataSenderWrapper,
 			receiver:     testbed.NewOTLPHTTPDataReceiver,
-			validator:    NewLogsValidator(t, []plog.Logs{generateLogsWithBodies(attributesFiltered, logsFiltered)}),
+			validator:    NewLogsValidator(t, []plog.Logs{generateLogsWithBodies(logsFiltered)}),
 			configName:   creditCardTransformConfig,
 		},
 	}
@@ -685,7 +716,7 @@ func generateBasicLogsWithAttributes(attributes pcommon.Map) plog.Logs {
 	return logs
 }
 
-func generateLogsWithBodies(attributes pcommon.Map, bodies []string) plog.Logs {
+func generateLogsWithBodies(bodies []string) plog.Logs {
 	logs := plog.NewLogs()
 	rl := logs.ResourceLogs().AppendEmpty()
 
@@ -697,16 +728,6 @@ func generateLogsWithBodies(attributes pcommon.Map, bodies []string) plog.Logs {
 		record.SetSeverityNumber(plog.SeverityNumberInfo3)
 		record.SetSeverityText("INFO")
 		record.Body().SetStr(body)
-
-		attrs := record.Attributes()
-		for k, v := range attributes.AsRaw() {
-			switch v.(type) {
-			case int64:
-				attrs.PutInt(k, v.(int64))
-			case string:
-				attrs.PutStr(k, v.(string))
-			}
-		}
 	}
 
 	return logs

@@ -155,9 +155,8 @@ func TestFilteringCreditCard(t *testing.T) {
 	}
 }
 
-func TestFilteringCreditCardLogBody(t *testing.T) {
-
-	logsNonMasked := []string{
+func TestFilteringLogBody(t *testing.T) {
+	logsCCPlain := []string{
 		"card_master_spaces1 2367 8901 2345 6789",
 		"card_master_spaces2 5105 1051 0510 5100",
 		"card_master_spaces3 2720 1051 0510 5100",
@@ -180,7 +179,7 @@ func TestFilteringCreditCardLogBody(t *testing.T) {
 		"safe_attribute2 37810005",
 	}
 
-	logsFiltered := []string{
+	logsCCFiltered := []string{
 		"card_master_spaces1 **** 6789",
 		"card_master_spaces2 **** 5100",
 		"card_master_spaces3 **** 5100",
@@ -203,7 +202,75 @@ func TestFilteringCreditCardLogBody(t *testing.T) {
 		"safe_attribute2 37810005",
 	}
 
-	creditCardTransformConfig := "masking_creditcards_logbody.yaml"
+	logsIbanPlain := []string{
+		"iban1 DE89 3704 0044 0532 0130 00",
+		"iban2 FR14 2004 1010 0505 0001 3M02 606",
+		"iban3 ES91 2100 0418 4502 0005 1332",
+		"iban4 IT60 X054 2811 1010 0000 0123 456",
+		"iban5 NL91 ABNA 0417 1643 00",
+		"iban6 BE71 0961 2345 6769",
+		"iban7 AT48 3200 0000 0123 4568",
+		"iban8 SE72 8000 0810 0340 0978 3242",
+		"iban9 PL61 1090 1014 0000 0712 1981 2874",
+		"iban10 GB29 NWBK 6016 1331 9268 19",
+		"iban11 AL47 2121 1009 0000 0002 3569 8741",
+		"iban12 CY17 0020 0128 0000 0012 0052 7600",
+		"iban13 KW81 CBKU 0000 0000 0000 1234 5601 01",
+		"iban14 LU28 0019 4006 4475 0000",
+		"iban15 NO93 8601 1117 947",
+		"iban16 DE89370400440532013000",
+		"iban17 FR1420041010050500013M02606",
+		"iban18 ES9121000418450200051332",
+		"iban19 IT60X0542811101000000123456",
+		"iban20 NL91ABNA0417164300",
+		"iban21 BE71096123456769",
+		"iban22 AT483200000001234568",
+		"iban23 SE7280000810034009783242",
+		"iban24 PL61109010140000071219812874",
+		"iban25 GB29NWBK60161331926819",
+		"iban26 AL47212110090000000235698741",
+		"iban27 CY17002001280000001200527600",
+		"iban28 KW81CBKU0000000000001234560101",
+		"iban29 LU280019400644750000",
+		"iban30 NO9386011117947",
+		"non-iban no4444 ds",
+	}
+
+	logsIbanFiltered := []string{
+		"iban1 DE **** 30 00",
+		"iban2 FR **** 2 606",
+		"iban3 ES **** 1332",
+		"iban4 IT **** 3 456",
+		"iban5 NL **** 43 00",
+		"iban6 BE **** 6769",
+		"iban7 AT **** 4568",
+		"iban8 SE **** 3242",
+		"iban9 PL **** 2874",
+		"iban10 GB **** 68 19",
+		"iban11 AL **** 8741",
+		"iban12 CY **** 7600",
+		"iban13 KW **** 01 01",
+		"iban14 LU **** 0000",
+		"iban15 NO **** 7 947",
+		"iban16 DE **** 3000",
+		"iban17 FR **** 2606",
+		"iban18 ES **** 1332",
+		"iban19 IT **** 3456",
+		"iban20 NL **** 4300",
+		"iban21 BE **** 6769",
+		"iban22 AT **** 4568",
+		"iban23 SE **** 3242",
+		"iban24 PL **** 2874",
+		"iban25 GB **** 6819",
+		"iban26 AL **** 8741",
+		"iban27 CY **** 7600",
+		"iban28 KW **** 0101",
+		"iban29 LU **** 0000",
+		"iban30 NO **** 7947",
+		"non-iban no4444 ds",
+	}
+
+	creditCardTransformConfig := "masking_logbody.yaml"
 
 	tests := []struct {
 		name         string
@@ -214,11 +281,19 @@ func TestFilteringCreditCardLogBody(t *testing.T) {
 		configName   string
 	}{
 		{
-			name:         "log bodies transform",
-			dataProvider: NewSampleConfigsLogsDataProvider(generateLogsWithBodies(logsNonMasked)),
+			name:         "CC log bodies transform",
+			dataProvider: NewSampleConfigsLogsDataProvider(generateLogsWithBodies(logsCCPlain)),
 			sender:       NewOTLPLogsDataSenderWrapper,
 			receiver:     testbed.NewOTLPHTTPDataReceiver,
-			validator:    NewLogsValidator(t, []plog.Logs{generateLogsWithBodies(logsFiltered)}),
+			validator:    NewLogsValidator(t, []plog.Logs{generateLogsWithBodies(logsCCFiltered)}),
+			configName:   creditCardTransformConfig,
+		},
+		{
+			name:         "IBAN log bodies transform",
+			dataProvider: NewSampleConfigsLogsDataProvider(generateLogsWithBodies(logsIbanPlain)),
+			sender:       NewOTLPLogsDataSenderWrapper,
+			receiver:     testbed.NewOTLPHTTPDataReceiver,
+			validator:    NewLogsValidator(t, []plog.Logs{generateLogsWithBodies(logsIbanFiltered)}),
 			configName:   creditCardTransformConfig,
 		},
 	}

@@ -83,6 +83,163 @@ Note that the OTel collector can automatically merge configuration files for you
 
 Of course, you can also add the configuration directly to your existing collector configuration.
 
+## Enriching OTel collector self-monitoring data with Kubernetes attributes
+
+Out of the box, the collector will add `service.instance.id` to all exported metrics.
+This allows distinguishing between collector instances.
+However, the `service.instance.id` is a randomly created UUID, and is therefore not very easy to interpret.
+It is possible to enrich the exported data with more attributes, for examples Kubernetes attributes, that are more easily interpreted by humans.
+
+There are two main ways of adding Kubernetes attributes to OTel collector telemetry data:
+1. Routing all collector self-monitoring data through a "gateway" or "selfmonitoring" collector, and using the `k8sattributesprocessor` to enrich that telemetry data.
+2. Injecting the relevant attributes into the container environment, reading them in the collector, and adding them to the telemetry generated on the collector.
+
+```mermaid
+%%{ init: { 'flowchart': { 'curve': 'natural' } } }%%
+flowchart LR
+    subgraph alignOthersSg[" "]
+        subgraph dtOtlpApi[" "]
+            otlpApi[Dynatrace OTLP API]:::API
+        end
+
+        subgraph legend[Legend]
+            direction LR
+            leg1[ ]:::hide-- application telemetry data -->leg2[ ]:::hide
+            leg3[ ]:::hide-. collector selfmonitoring data .-> leg4[ ]:::hide
+            leg5[ ]:::hide-. inject k8s attributes .-> leg6[ ]:::hide
+            classDef hide height:0px
+        end
+    end
+
+    subgraph alignAlternativesSg[" "]
+        subgraph alt1[Self-monitoring collector]
+            attributesProcessorApi[k8s API]  
+
+            app1[Application w/ OTel]:::OpenTelemetryApp
+            app2[Application w/ OTel]:::OpenTelemetryApp
+            app3[Application w/ OTel]:::OpenTelemetryApp
+
+            otelcol1[OpenTelemetry Collector]:::OTelCollector
+            otelcol2[OpenTelemetry Collector]:::OTelCollector
+
+            selfmonGateway[Self-monitoring Collector with k8sattributesprocessor]:::SelfmonCollector
+
+            app1-->otelcol1
+            app2-->otelcol2
+            app3-->otelcol2
+
+            otelcol1-->otlpApi
+
+            otelcol1-.->selfmonGateway
+            otelcol2-.->selfmonGateway
+
+            otelcol2-->otlpApi
+
+            attributesProcessorApi -.  k8sattributesprocessor retrieves k8s attributes from the k8s API .- selfmonGateway
+
+            selfmonGateway-.->otlpApi
+        end
+
+        subgraph alt2[Direct k8s enrichment]
+            k8sInjection[k8s API]  
+            
+            app4[Application w/ OTel]:::OpenTelemetryApp
+            app5[Application w/ OTel]:::OpenTelemetryApp
+            app6[Application w/ OTel]:::OpenTelemetryApp
+
+            otelcol4[OpenTelemetry Collector]:::OTelCollector
+            otelcol5[OpenTelemetry Collector]:::OTelCollector
+
+            k8sInjection -.- otelcol4
+            k8sInjection -. inject k8s attributes as environment variables via k8s downwards API .- otelcol5
+
+            app4-->otelcol4
+            app5-->otelcol5
+            app6-->otelcol5
+
+            otelcol4-.->otlpApi
+            otelcol5-.->otlpApi
+            otelcol4-->otlpApi
+            otelcol5-->otlpApi
+        end
+    end
+
+classDef OpenTelemetryApp fill:#adc9ff,stroke:#1966FF
+classDef OTelCollector fill:#9afee0,stroke:#02D394
+classDef SelfmonCollector fill:#C2C2C2,stroke:#707070
+classDef AlternativeClass rx:100,fill:
+classDef hideSg fill:white,stroke:white
+classDef API fill:#ae70ff,stroke:#7F1AFF
+class alignAlternativesSg,alignOthersSg,dtOtlpApi hideSg
+class alt1,alt2 AlternativeClass
+
+linkStyle default stroke-width:3px
+linkStyle 1,7,8,11,17,18 stroke:#707070
+linkStyle 2,10,12,13 stroke:#C2C2C2,stroke-width:2px
+```
+
+### Gateway collector
+
+In this approach, collectors are configured to send their internal telemetry to one single dedicated collector, which enriches the incoming telemetry with k8s attributes using the `k8sattributesprocessor`.
+The `k8sattributesprocessor` retrieves this data from the k8s API, and attaches it to the telemetry passing through it.
+One limitataion of this approach is that the automatic enrichment will not work for the telemetry that that one collector instance (the "gateway" collector instance) exports itself.
+
+### Read attributes from the container environment
+
+The Kubernetes downwards API allows injecting information about the Kubernetes environment that a certain pod is running in.
+Pod and container information can be exposed to the container via environment variables.
+[The Kubernetes documentation](https://kubernetes.io/docs/tasks/inject-data-application/environment-variable-expose-pod-information/#use-pod-fields-as-values-for-environment-variables) explains how to specify data like the node name, namespace, or pod name as environment variables.
+These variables are then available to be read from inside the container.
+An example pod spec could be (values in `<>` are placeholders for your actual pod specifications, dependent on your setup):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: <your-pod-name>
+spec:
+  containers:
+    - name: <your-container>
+      image: <your-image>
+      env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+```
+
+The OTel collector configuration for self-monitoring data allows adding attributes based on environment variables.
+The configuration below assumes that you injected the environment variables `MY_NODE_NAME`, `MY_POD_NAME`, and `MY_POD_NAMESPACE` into your OTel collector container, and adds the attributes on the exported telemetry.
+No extra collector is required to enrich in-flight telemetry.
+
+```yaml
+service:
+  telemetry:
+    resource:
+      # This section reads the previously injected environment variables 
+      # and attaches them to the telemetry the collector generates about itself.
+      k8s.namespace.name: "${env:MY_POD_NAMESPACE}"
+      k8s.pod.name: "${env:MY_POD_NAME}"
+      k8s.node.name: "${env:MY_NODE_NAME}"
+
+    # the rest of the configuration did not change compared to above.
+    metrics:
+      level: detailed
+      readers:
+        - periodic:
+            exporter:
+              otlp:
+                endpoint: <...>
+```
+
 ## More screenshots
 
 ### Dashboard containing all collectors

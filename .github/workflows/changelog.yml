@@ -89,5 +89,4 @@ jobs:
           markdown-link-check \
             --verbose \
             --config .markdown_link_check_config.json \
-            changelog_preview.md \
-            || { echo "Check that anchor links are lowercase"; exit 1; }
+            changelog_preview.md

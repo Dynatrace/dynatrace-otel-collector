@@ -16,11 +16,5 @@
       "pattern": "https://github.com/open-telemetry/opentelemetry-collector(-contrib)?/releases/tag/vXX.YY.ZZ"
     }
   ],
-  "replacementPatterns": [
-    {
-      "pattern": "\\(\\#(?<prnumber>\\d+)\\)",
-      "replacement": "https://github.com/Dynatrace/dynatrace-otel-collector/pull/$<prnumber>"
-    }
-  ],
   "aliveStatusCodes": [429, 200]
 }

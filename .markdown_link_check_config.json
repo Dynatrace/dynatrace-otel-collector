@@ -18,7 +18,7 @@
   ],
   "replacementPatterns": [
     {
-      "pattern": " \\(#(?<prnumber>\\d+)\\)$",
+      "pattern": "\\(#(?<prnumber>\\d+)\\)",
       "replacement": "https://github.com/Dynatrace/dynatrace-otel-collector/pull/$<prnumber>"
     }
   ],

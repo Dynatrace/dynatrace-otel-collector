@@ -11,6 +11,9 @@
     },
     {
       "pattern": "^#"
+    },
+    {
+      "pattern": "https://github.com/open-telemetry/opentelemetry-collector(-contrib)?/releases/tag/vXX.YY.ZZ"
     }
   ],
   "aliveStatusCodes": [429, 200]

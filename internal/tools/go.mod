@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/goreleaser/goreleaser/v2 v2.3.2
-	go.opentelemetry.io/build-tools/chloggen v0.14.0
+	go.opentelemetry.io/build-tools/chloggen v0.15.0
 	go.opentelemetry.io/collector/cmd/builder v0.112.0
 )
 

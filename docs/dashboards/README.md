@@ -95,7 +95,6 @@ There are two main ways of adding Kubernetes attributes to OTel collector teleme
 2. Injecting the relevant attributes into the container environment, reading them in the collector, and adding them to the telemetry generated on the collector.
 
 ```mermaid
-%%{ init: { 'flowchart': { 'curve': 'stepBefore' } } }%%
 flowchart LR
     subgraph alignOthersSg[" "]
         subgraph dtOtlpApi[" "]

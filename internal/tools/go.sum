@@ -772,6 +772,8 @@ go.opentelemetry.io/build-tools/chloggen v0.15.0 h1:G5UeYUgP6x4QXie0yNs/6TjK9nCu
 go.opentelemetry.io/build-tools/chloggen v0.15.0/go.mod h1:oovDPiOQS4iruTVH469/68hEYjWC48c8u+qJpWJc8Eg=
 go.opentelemetry.io/collector/cmd/builder v0.112.0 h1:7hfvY0HpUDVTmBku0LMygY+sDgArz7nXU7iTI2IOJzg=
 go.opentelemetry.io/collector/cmd/builder v0.112.0/go.mod h1:pO0F87jHIBmDzCsLB/kEA3EaWHjs1+HgI/pKY0oVQWo=
+go.opentelemetry.io/collector/cmd/builder v0.113.0 h1:ZeUJOyTCHB+kCHonKFWyb9q/CEXxRuXs79nCBrNR6b4=
+go.opentelemetry.io/collector/cmd/builder v0.113.0/go.mod h1:SLfEUrCIKrcpEHBn1aL5THiSLYW1UMIDIA4erdSxF9Y=
 go.opentelemetry.io/contrib/exporters/autoexport v0.46.1 h1:ysCfPZB9AjUlMa1UHYup3c9dAOCMQX/6sxSfPBUoxHw=
 go.opentelemetry.io/contrib/exporters/autoexport v0.46.1/go.mod h1:ha0aiYm+DOPsLHjh0zoQ8W8sLT+LJ58J3j47lGpSLrU=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.53.0 h1:9G6E0TXzGFVfTnawRzrPl83iHOAV7L8NJiR8RSGYV1g=

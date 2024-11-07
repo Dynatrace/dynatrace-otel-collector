@@ -78,7 +78,7 @@ jobs:
       - name: Render .chloggen changelog entries
         run: make -s chlog-preview > changelog_preview.md
 
-      - name: Print changelog preview for debugging
+      - name: Print changelog preview
         run: cat changelog_preview.md
 
       - name: Install markdown-link-check

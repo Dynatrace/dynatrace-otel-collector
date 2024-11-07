@@ -18,8 +18,8 @@
   ],
   "replacementPatterns": [
     {
-      "pattern": " \\(#(?pr-number\\d+)\\)$",
-      "replacement": "https://github.com/Dynatrace/dynatrace-otel-collector/pull/$pr-number"
+      "pattern": " \\(#(?<pr-number>\\d+)\\)$",
+      "replacement": "https://github.com/Dynatrace/dynatrace-otel-collector/pull/$<pr-number>"
     }
   ],
   "aliveStatusCodes": [429, 200]

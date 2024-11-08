@@ -352,6 +352,7 @@ func TestFilteringUserProperties(t *testing.T) {
 	attributesNonMasked.PutStr("user.name", "username")
 	attributesNonMasked.PutStr("user.full_name", "Firstname Lastname")
 	attributesNonMasked.PutStr("user.email", "user@email.com")
+	attributesNonMasked.PutStr("client.address", "127.0.0.1")
 	attributesNonMasked.PutStr("safe-attribute", "foo")
 	attributesNonMasked.PutStr("another-attribute", "bar")
 
@@ -360,6 +361,7 @@ func TestFilteringUserProperties(t *testing.T) {
 	attributesMasked.PutStr("user.name", "****")
 	attributesMasked.PutStr("user.full_name", "****")
 	attributesMasked.PutStr("user.email", "****")
+	attributesMasked.PutStr("client.address", "****")
 	attributesMasked.PutStr("safe-attribute", "foo")
 	attributesMasked.PutStr("another-attribute", "bar")
 

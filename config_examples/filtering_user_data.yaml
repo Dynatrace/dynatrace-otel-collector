@@ -20,6 +20,9 @@ processors:
           - set(attributes["user.name"], "****")
           - set(attributes["user.full_name"], "****")
           - set(attributes["user.email"], "****")
+          # this will not only redact end user client IP addresses,
+          # but also the address of a server acting as a client when establishing a connection to another server
+          - set(attributes["client.address"], "****")
     metric_statements:
       - context: datapoint
         statements: *filter-statements

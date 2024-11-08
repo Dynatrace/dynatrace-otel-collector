@@ -4,6 +4,66 @@
 
 <!-- next version -->
 
+## v0.18.0
+
+This release includes version 0.113.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.113.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.113.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.113.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `internal/fanoutconsumer`: Extract internal/fanoutconsumer as a separate go module (https://github.com/open-telemetry/opentelemetry-collector/pull/11441)
+- `builder`: Remove builder support to build old version, and the otelcol_version config (https://github.com/open-telemetry/opentelemetry-collector/pull/11405)
+  User should remove this property from their config, to build older versions use older builders.
+- `receiver`: Make receivertest into its own module (https://github.com/open-telemetry/opentelemetry-collector/pull/11462)
+- `builder`: Remove deprecated flags from Builder (https://github.com/open-telemetry/opentelemetry-collector/pull/11576)
+  Here is the list of flags | --name, --description, --version, --otelcol-version, --go, --module
+- `internal/sharedcomponent`: Extract internal/sharedcomponent as a separate go module (https://github.com/open-telemetry/opentelemetry-collector/pull/11442)
+
+- `pkg/ottl`: Promote `processor.transform.ConvertBetweenSumAndGaugeMetricContext` feature gate to Stable (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36216)
+    This gate can no longer be disabled. The `convert_sum_to_gauge` and `convert_gauge_to_sum` may now only be used with the `metric` context.
+- `hostmetrics`: Adjust scraper creation to make it so the scraper name is reported with hostmetrics scraper errors. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35814)
+- `pkg/ottl`: Add SliceToMap function (#35256)
+
+### 💡 Enhancements 💡
+
+- `mdatagen`: Add otlp as supported distribution (https://github.com/open-telemetry/opentelemetry-collector/pull/11527)
+- `batchprocessor`: Move single shard batcher creation to the constructor (https://github.com/open-telemetry/opentelemetry-collector/pull/11594)
+- `service`: add support for using the otelzap bridge and emit logs using the OTel Go SDK (https://github.com/open-telemetry/opentelemetry-collector/pull/10544)
+
+- `hostmetricsreceiver`: Add the system.uptime metric in the hostmetrics receiver (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/31627)
+  This metric is provided by the new `system` scraper.
+
+### 🧰 Bug fixes 🧰
+
+- `service`: ensure traces and logs emitted by the otel go SDK use the same resource information (https://github.com/open-telemetry/opentelemetry-collector/pull/11578)
+- `config/configgrpc`: Patch for bug in the grpc-go NewClient that makes the way the hostname is resolved incompatible with the way proxy setting are applied. (https://github.com/open-telemetry/opentelemetry-collector/pull/11537)
+- `builder`: Update builder default providers to lastest stable releases (https://github.com/open-telemetry/opentelemetry-collector/pull/11566)
+
+- `pkg/stanza`: Fixed bug causing Operators with DropOnErrorQuiet to send log entries to the next operator. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35010)
+  This issue was introduced by a bug fix meant to ensure Silent Operators are not logging errors (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35010). With this fix,
+  this side effect bug has been resolved.
+- `receiver/filelog`: fix record counting with header (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35869)
+- `pkg/stanza/operator`: Retain Operator should propagate the severity field (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35832)
+  The retain operator should propagate the severity field like it does with timestamps.
+
+- `pkg/stanza`: Handle error of callback function of `ParserOperator.ProcessWithCallback` (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35769)
+  `ProcessWithCallback` of `ParserOperator` first calls the `ParseWith` method
+  which properly handles errors with `HandleEntryError`.
+  Then the callback function is called and its returned error should also
+  be handled by the `HandleEntryError` ensuring a consistent experience.
+---
+
+</details>
+
 ## v0.17.0
 
 This release includes version 0.112.0 of the upstream Collector components.

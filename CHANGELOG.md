@@ -31,7 +31,7 @@ v0.113.0:
 - `pkg/ottl`: Promote `processor.transform.ConvertBetweenSumAndGaugeMetricContext` feature gate to Stable (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36216)
     This gate can no longer be disabled. The `convert_sum_to_gauge` and `convert_gauge_to_sum` may now only be used with the `metric` context.
 - `hostmetrics`: Adjust scraper creation to make it so the scraper name is reported with hostmetrics scraper errors. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35814)
-- `pkg/ottl`: Add SliceToMap function (#35256)
+- `pkg/ottl`: Add SliceToMap function (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35256)
 
 ### 💡 Enhancements 💡
 

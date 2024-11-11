@@ -64,6 +64,14 @@ v0.113.0:
 
 </details>
 
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `transformprocessor`: Extend the user data filtering example with a statement for masking the `client.address` attribute. (#356)
+- `transformprocessor`: Extend the credit card filtering example with log body filtering (#357)
+- `docs`: Add a note about k8s enrichment of collector internal telemetry (#364)
+
 ## v0.17.0
 
 This release includes version 0.112.0 of the upstream Collector components.

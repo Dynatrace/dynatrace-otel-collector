@@ -25,7 +25,7 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
-      - uses: anchore/sbom-action/download-syft@v0.17.6
+      - uses: anchore/sbom-action/download-syft@v0.17.7
 
       - name: Cache tools
         id: cache-tools

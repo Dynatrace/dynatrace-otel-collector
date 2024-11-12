@@ -26,6 +26,7 @@ Before starting a release, make a PR against to verify and update the following:
 4. Update the upstream changelog links to the relevant upstream release.
 5. Look through the upstream release(s) and add any highlights to the
    corresponding section(s).
+6. Ensure all `go.mod` and `go.sum` files are up-to-date by running `make gotidy`
 
 ## Making a production release
 

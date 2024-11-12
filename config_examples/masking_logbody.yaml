@@ -25,7 +25,7 @@ processors:
     log_statements:
       - context: log
         statements:
-          - replace_pattern(body, "(^|\\s)([A-Z]{2})[0-9]{2}((\\s*[A-Z0-9]){4,26})\\s*((\\s*[A-Z0-9]){4})($|\\s)", "$$1$$2 **** $$5$$7")
+          - replace_pattern(body, "(^|[\\s\"'])([A-Z]{2})[0-9]{2}((\\s*[A-Z0-9]){4,26})\\s*((\\s*[A-Z0-9]){4})($|[\\s\"'])", "$$1$$2 **** $$5$$7")
 
 
 service:

@@ -266,6 +266,9 @@ func TestFilteringLogBody(t *testing.T) {
 		"iban29 LU280019400644750000",
 		"iban30 NO9386011117947",
 		"non-iban no4444 ds",
+		"quoted iban spaces 'ES91 2100 0418 4502 0005 1332' here",
+		"quoted iban \"PL61 1090 1014 0000 0712 1981 2874\" there",
+		"IT60 X054 2811 1010 0000 0123 456",
 	}
 
 	logsIbanFiltered := []string{
@@ -300,6 +303,9 @@ func TestFilteringLogBody(t *testing.T) {
 		"iban29 LU **** 0000",
 		"iban30 NO **** 7947",
 		"non-iban no4444 ds",
+		"quoted iban spaces 'ES **** 1332' here",
+		"quoted iban \"PL **** 2874\" there",
+		"IT **** 3 456",
 	}
 
 	creditCardTransformConfig := "masking_logbody.yaml"

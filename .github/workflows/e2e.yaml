@@ -104,48 +104,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "~1.22.6"
-          check-latest: true
-          cache: false
-
-      - name: Cache tools
-        id: cache-tools
-        uses: actions/cache@v4
-        with:
-          path: .tools
-          key: e2e-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
-
-      - name: Install tools
-        if: steps.cache-tools.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p .tools
-          touch .tools/*
-          make install-tools
-
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.10.0
-        with:
-          node_image: "kindest/node:v1.27.11"
-          kubectl_version: "v1.27.11"
-          cluster_name: kind
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dynatrace-otel-collector-image
-          path: /tmp
-
-      - name: Load Docker image
-        run: |
-          docker load --input /tmp/dynatrace-otel-collector.tar
-
-      - name: Load Image into Kind
-        shell: bash
-        run: |
-          kind load docker-image dynatrace-otel-collector:e2e-test --name kind
+      - name: Setup cluster
+        uses: ./.github/actions/create-cluster
 
       - name: Run e2e tests
         run: |
@@ -160,48 +120,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "~1.22.6"
-          check-latest: true
-          cache: false
-
-      - name: Cache tools
-        id: cache-tools
-        uses: actions/cache@v4
-        with:
-          path: .tools
-          key: e2e-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
-
-      - name: Install tools
-        if: steps.cache-tools.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p .tools
-          touch .tools/*
-          make install-tools
-
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.10.0
-        with:
-          node_image: "kindest/node:v1.27.11"
-          kubectl_version: "v1.27.11"
-          cluster_name: kind
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dynatrace-otel-collector-image
-          path: /tmp
-
-      - name: Load Docker image
-        run: |
-          docker load --input /tmp/dynatrace-otel-collector.tar
-
-      - name: Load Image into Kind
-        shell: bash
-        run: |
-          kind load docker-image dynatrace-otel-collector:e2e-test --name kind
+      - name: Setup cluster
+        uses: ./.github/actions/create-cluster
 
       - name: Run e2e tests
         run: |

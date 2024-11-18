@@ -10,17 +10,38 @@ inputs:
     required: false
     description: "Kubernetes version that should be used"
     # renovate: datasource=github-releases depName=kubernetes/kubernetes
-    default: "v1.27.3"
+    default: "v1.27.11"
   runtime_tag:
     description: "Tag for the runner image"
     required: true
   cluster-name:
     required: false
     description: "Name of the kind cluster"
-    default: "test-cluster"
+    default: "kind"
 runs:
   using: "composite"
   steps:
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: "~1.22.6"
+        check-latest: true
+        cache: false
+
+    - name: Cache tools
+      id: cache-tools
+      uses: actions/cache@v4
+      with:
+        path: .tools
+        key: e2e-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+
+    - name: Install tools
+      if: steps.cache-tools.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p .tools
+        touch .tools/*
+        make install-tools
 
     - name: "Create single kind Cluster"
       uses: helm/kind-action@v1.10.0
@@ -29,3 +50,14 @@ runs:
         version: ${{ inputs.kind-version }}
         node_image: "kindest/node:${{ inputs.k8s-version }}"
         kubectl_version: ${{ inputs.k8s-version }}
+    
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dynatrace-otel-collector-image
+        path: /tmp
+
+    - name: Load Image into Kind
+      shell: bash
+      run: |
+        kind load image-archive /tmp/dynatrace-otel-collector.tar -n ${{ inputs.cluster-name }}

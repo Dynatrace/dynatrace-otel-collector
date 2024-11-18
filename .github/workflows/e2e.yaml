@@ -122,8 +122,6 @@ jobs:
 
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
-        with:
-          runtime_tag: 
 
       - name: Run e2e tests
         run: |

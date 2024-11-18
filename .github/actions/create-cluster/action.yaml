@@ -11,9 +11,6 @@ inputs:
     description: "Kubernetes version that should be used"
     # renovate: datasource=github-releases depName=kubernetes/kubernetes
     default: "v1.27.11"
-  runtime_tag:
-    description: "Tag for the runner image"
-    required: true
   cluster-name:
     required: false
     description: "Name of the kind cluster"

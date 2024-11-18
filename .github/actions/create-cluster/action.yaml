@@ -38,6 +38,7 @@ runs:
 
     - name: Install tools
       if: steps.cache-tools.outputs.cache-hit != 'true'
+      shell: bash
       run: |
         mkdir -p .tools
         touch .tools/*

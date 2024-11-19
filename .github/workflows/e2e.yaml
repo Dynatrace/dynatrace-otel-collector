@@ -129,7 +129,7 @@ jobs:
           go test -v --tags=e2e
 
   helm-install-test:
-    # Sif: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

@@ -128,6 +128,24 @@ jobs:
           cd internal/testbed/integration/combinedload
           go test -v --tags=e2e
 
+  helm-install-test:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    needs: docker-build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup cluster
+        uses: ./.github/actions/create-cluster
+
+      - name: Run helm installation
+        env:
+          REPOSITORY: "dynatrace-otel-collector"
+          TAG: "e2e-test"
+        run: |
+          ./internal/testbed/scripts/install_dt_collector_helm.sh || exit 1;
+
   eec-confmap-provider:
     runs-on: ubuntu-latest
     needs: docker-build

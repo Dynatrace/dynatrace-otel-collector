@@ -33,7 +33,7 @@ alternateConfig:
         Authorization: "Api-Token ${env:DT_API_TOKEN}"
   extensions:
     health_check:
-      endpoint: "0.0.0.0:13133"
+      endpoint: "${env:MY_POD_IP}:13133"
   service:
     extensions: [health_check]
     pipelines:

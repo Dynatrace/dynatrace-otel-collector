@@ -129,7 +129,7 @@ jobs:
           go test -v --tags=e2e
 
   helm-install-test:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Sif: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:
@@ -140,8 +140,11 @@ jobs:
         uses: ./.github/actions/create-cluster
 
       - name: Run helm installation
+        env:
+          REPOSITORY: "dynatrace-otel-collector"
+          TAG: "e2e-test"
         run: |
-          REPOSITORY="dynatrace-otel-collector" TAG="e2e-test" ./internal/testbed/scripts/install_dt_collector_helm.sh || exit 1;
+          ./internal/testbed/scripts/install_dt_collector_helm.sh || exit 1;
 
   eec-confmap-provider:
     runs-on: ubuntu-latest

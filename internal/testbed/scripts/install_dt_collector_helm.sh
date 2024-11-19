@@ -7,8 +7,6 @@ kubectl create secret generic dynatrace-otelcol-dt-api-credentials --from-litera
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 helm repo update
 
-export TAG=$TAG
-export REPOSITORY=$REPOSITORY
 envsubst < config_examples/collector-helm-values.yaml > tmp.yaml
 
 echo "Using config:"

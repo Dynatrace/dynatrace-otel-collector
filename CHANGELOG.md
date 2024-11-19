@@ -4,6 +4,45 @@
 
 <!-- next version -->
 
+## v0.19.0
+
+This release includes version 0.114.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.114.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.114.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.114.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `exporter`: Remove deprecated funcs Create[*]Exporter and [*]ExporterStability (https://github.com/open-telemetry/opentelemetry-collector/pull/11662)
+- `extension`: Remove deprecated funcs CreateExtension and ExtensionStability (https://github.com/open-telemetry/opentelemetry-collector/pull/11663)
+- `pkg/stanza`: Changed signature of `emit.Callback` function in `pkg/stanza/fileconsumer/emit` package by introducing `emit.Token` struct that encapsulates the token's body and attributes. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36260)
+
+### 💡 Enhancements 💡
+
+- `cmd/builder`: Allow for replacing of local Providers and Converters when building custom collector with ocb. (https://github.com/open-telemetry/opentelemetry-collector/pull/11649)
+- `cmd/builder`: Allow configuring `confmap.Converter` components in ocb. (https://github.com/open-telemetry/opentelemetry-collector/pull/11582)
+- `all`: shorten time period before removing an unmaintained component from 6 months to 3 months (https://github.com/open-telemetry/opentelemetry-collector/pull/11664)
+
+- `k8sattributesprocessor`: Add support for profiles signal (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35983)
+- `resourcedetectionprocessor`: Introduce support for Profiles signal type. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35980)
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/stanza`: Ensure that time parsing happens before entry is sent to downstream operators (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36213)
+- `pkg/stanza`: Synchronous handling of entries passed from the log emitter to the receiver adapter (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35453)
+- `processor/k8sattributes`: Block when starting until the metadata have been synced, to fix that some data couldn't be associated with metadata when the agent was just started. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/32556)
+- `pkg/ottl`: Respect the depth option when flattening slices using flatten (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36161)
+The depth option is also now required to be at least 1.
+
+</details>
+
 ## v0.18.0
 
 This release includes version 0.113.0 of the upstream Collector components.

@@ -1,0 +1,51 @@
+mode: deployment
+image:
+  repository: $REPOSITORY
+  tag: $TAG
+command:
+  name: dynatrace-otel-collector
+extraEnvs:
+- name: DT_API_TOKEN
+  valueFrom:
+    secretKeyRef:
+      name: dynatrace-otelcol-dt-api-credentials
+      key: DT_API_TOKEN
+- name: DT_ENDPOINT
+  valueFrom:
+    secretKeyRef:
+      name: dynatrace-otelcol-dt-api-credentials
+      key: DT_ENDPOINT
+resources:
+  limits:
+    memory: 512Mi
+alternateConfig:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: ${env:MY_POD_IP}:4317
+        http:
+          endpoint: ${env:MY_POD_IP}:4318
+  exporters:
+    otlphttp:
+      endpoint: "${env:DT_ENDPOINT}"
+      headers:
+        Authorization: "Api-Token ${env:DT_API_TOKEN}"
+  extensions:
+    health_check:
+      endpoint: "0.0.0.0:13133"
+  service:
+    extensions: [ health_check ]
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: []
+        exporters: [otlphttp]
+      metrics:
+        receivers: [otlp]
+        processors: []
+        exporters: [otlphttp]
+      logs:
+        receivers: [otlp]
+        processors: []
+        exporters: [otlphttp]

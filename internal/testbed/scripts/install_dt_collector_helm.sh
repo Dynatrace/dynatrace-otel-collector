@@ -2,17 +2,25 @@
 echo "Installing Dynatrace Collector using helm"
 helm version
 
-kubectl create namespace otel-collector
-kubectl -n otel-collector create secret generic dynatrace-otelcol-dt-api-credentials --from-literal=DT_API_ENDPOINT=$DT_API_ENDPOINT/api/v2/otlp --from-literal=DT_API_TOKEN=$DT_API_TOKEN
+kubectl create secret generic dynatrace-otelcol-dt-api-credentials --from-literal=DT_ENDPOINT="endpoint" --from-literal=DT_API_TOKEN="token"
 
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 helm repo update
 
-cd .github/actions/deploy-collector
-helm upgrade -i --wait dynatrace open-telemetry/opentelemetry-collector \
-    -f collector-helm-values.yaml \
-    -n otel-collector \
+export TAG=$TAG
+export REPOSITORY=$REPOSITORY
+envsubst < config_examples/collector-helm-values.yaml > tmp.yaml
+
+echo "Using config:"
+echo "-------------------------"
+cat tmp.yaml
+echo "-------------------------"
+
+helm upgrade -i --wait dynatrace-collector open-telemetry/opentelemetry-collector \
+    -f tmp.yaml \
     --timeout 5m
 
 # show the collector logs
-kubectl -n otel-collector logs -l app.kubernetes.io/name=opentelemetry-collector
+kubectl logs -l app.kubernetes.io/name=opentelemetry-collector | grep "Everything is ready. Begin running and processing data." || exit 1
+
+rm tmp.yaml

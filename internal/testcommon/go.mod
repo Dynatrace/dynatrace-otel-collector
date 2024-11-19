@@ -6,7 +6,6 @@ require (
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.114.0
 	github.com/stretchr/testify v1.9.0
-	go.opentelemetry.io/collector/component v0.114.0
 	go.opentelemetry.io/collector/component/componenttest v0.114.0
 	go.opentelemetry.io/collector/consumer/consumertest v0.114.0
 	go.opentelemetry.io/collector/featuregate v1.20.0
@@ -136,6 +135,7 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/collector v0.114.0 // indirect
 	go.opentelemetry.io/collector/client v1.20.0 // indirect
+	go.opentelemetry.io/collector/component v0.114.0 // indirect
 	go.opentelemetry.io/collector/component/componentstatus v0.114.0 // indirect
 	go.opentelemetry.io/collector/config/configauth v0.114.0 // indirect
 	go.opentelemetry.io/collector/config/configcompression v1.20.0 // indirect

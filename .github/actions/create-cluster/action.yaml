@@ -16,7 +16,7 @@ inputs:
     description: "Name of the kind cluster"
     default: "kind"
 env:
-  # renovate: datasource=github-releases depName=actions/go-versions
+  # renovate: datasource=github-tags depName=golang/go
   GO_VERSION: "1.22.6"
 runs:
   using: "composite"

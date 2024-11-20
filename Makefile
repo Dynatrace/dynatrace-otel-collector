@@ -18,7 +18,7 @@ SOURCES := $(shell find internal/confmap -type f | sort )
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
 
-# renovate: datasource=github-releases depName=github.com/jstemmer/go-junit-report
+# renovate: datasource=github-releases depName=jstemmer/go-junit-report
 GO_JUNIT_REPORT_VERSION?=v2.1.0
 
 # Files to be copied directly from the project root

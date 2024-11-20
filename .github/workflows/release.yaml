@@ -6,6 +6,9 @@ on:
     tags:
       - 'v*'
 
+env:
+  GO_VERSION: "~1.22"
+
 jobs:
   build:
     name: Release
@@ -28,7 +31,7 @@ jobs:
           grep "version: ${VERSION}" manifest.yaml || (echo "value of 'dist.version' in manifest.yaml does not match tag version ${VERSION}, please update it" && exit 1)
       - uses: actions/setup-go@v5
         with:
-          go-version: "~1.22.6"
+          go-version: ${{ env.GO_VERSION }}
       - uses: docker/setup-qemu-action@v3
         with:
           platforms: arm64

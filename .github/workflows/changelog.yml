@@ -10,6 +10,11 @@ on:
     branches:
       - main
 
+env:
+  GO_VERSION: "~1.22"
+  # renovate: datasource=github-releases depName=tcort/markdown-link-check
+  MARKDOWN_LINK_CHECK_VERSION: "v3.12.2"
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
@@ -33,7 +38,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: ~1.22.6
+          go-version: ${{ env.GO_VERSION }}
       - name: Cache Go
         id: go-cache
         uses: actions/cache@v4
@@ -82,7 +87,7 @@ jobs:
         run: cat changelog_preview.md
 
       - name: Install markdown-link-check
-        run: npm install -g markdown-link-check@3.12.2
+        run: npm install -g markdown-link-check@${{ env.MARKDOWN_LINK_CHECK_VERSION }}
 
       - name: Run markdown-link-check
         run: |

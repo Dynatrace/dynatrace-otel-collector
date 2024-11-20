@@ -11,6 +11,7 @@ defaults:
     shell: bash
 env:
   KUBECONFIG: /tmp/kube-config-collector-e2e-testing
+  GO_VERSION: "~1.22"
 
 jobs:
   docker-build:
@@ -22,7 +23,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "~1.22.6"
+          go-version: ${{ env.GO_VERSION }}
           check-latest: true
           cache: false
 
@@ -98,7 +99,7 @@ jobs:
           - zipkin
           - statsd
           - redaction
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: docker-build
     steps:
       - name: Check out code
@@ -147,7 +148,7 @@ jobs:
           ./internal/testbed/scripts/install_dt_collector_helm.sh || exit 1;
 
   eec-confmap-provider:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: docker-build
     steps:
       - name: Check out code
@@ -156,7 +157,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "~1.22.6"
+          go-version: ${{ env.GO_VERSION }}
           check-latest: true
           cache: false
 

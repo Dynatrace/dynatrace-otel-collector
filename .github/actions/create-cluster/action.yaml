@@ -15,6 +15,8 @@ inputs:
     required: false
     description: "Name of the kind cluster"
     default: "kind"
+env:
+  GO_VERSION: "~1.22"
 runs:
   using: "composite"
   steps:
@@ -22,7 +24,7 @@ runs:
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
-        go-version: "~1.22.6"
+        go-version: ${{ env.GO_VERSION }}
         check-latest: true
         cache: false
 

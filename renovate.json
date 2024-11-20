@@ -3,7 +3,9 @@
   "extends": [
     "config:base",
     "config:recommended",
-    "schedule:nonOfficeHours"
+    "schedule:nonOfficeHours",
+    "customManagers:githubActionsVersions",
+    "customManagers:makefileVersions"
   ],
   "labels": ["dependencies"],
   "prConcurrentLimit": 25,
@@ -18,21 +20,6 @@
     {
       "matchPackagePatterns": ["^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)"],
       "groupName": "OpenTelemetry Collector"
-    }
-  ],
-  "customManagers": [
-    {
-      "customType": "regex",
-      "fileMatch": [
-        "(^|\\/)Makefile$",
-        "(^|\\/)Dockerfile",
-        "(^|\\/).*\\.ya?ml$",
-        "(^|\\/).*\\.toml$",
-        "(^|\\/).*\\.sh$"
-      ],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\s.*(:|=|\\?=|:=|\\+=) ?\\\"?(?<currentValue>.+?)?\\\"?\\s"
-      ]
     }
   ],
   "regexManagers": [

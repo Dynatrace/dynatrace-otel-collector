@@ -6,7 +6,7 @@ on:
 
 env:
   # renovate: datasource=github-releases depName=actions/go-versions
-  GO_VERSION: "1.22"
+  GO_VERSION: "1.22.6"
 
 jobs:
   build:

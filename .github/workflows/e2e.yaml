@@ -12,7 +12,7 @@ defaults:
 env:
   KUBECONFIG: /tmp/kube-config-collector-e2e-testing
   # renovate: datasource=github-releases depName=actions/go-versions
-  GO_VERSION: "1.22"
+  GO_VERSION: "1.22.6"
 
 jobs:
   docker-build:

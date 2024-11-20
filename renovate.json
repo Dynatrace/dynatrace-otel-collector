@@ -21,6 +21,21 @@
       "groupName": "OpenTelemetry Collector"
     }
   ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|\\/)Makefile$",
+        "(^|\\/)Dockerfile",
+        "(^|\\/).*\\.ya?ml$",
+        "(^|\\/).*\\.toml$",
+        "(^|\\/).*\\.sh$"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\s.*(:|=|\\?=|:=|\\+=) ?\\\"?(?<currentValue>.+?)?\\\"?\\s"
+      ]
+    }
+  ],
   "regexManagers": [
       {
         "fileMatch": ["^manifest.yaml$"],

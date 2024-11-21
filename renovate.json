@@ -19,6 +19,10 @@
     {
       "matchPackagePatterns": ["^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)"],
       "groupName": "OpenTelemetry Collector"
+    },
+    {
+      "matchDatasources": ["golang-version"],
+      "rangeStrategy": "bump"
     }
   ],
   "customManagers": [

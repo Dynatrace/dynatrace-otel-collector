@@ -6,7 +6,7 @@ on:
 
 env:
   # renovate: datasource=golang-version depName=golang/go
-  GO_VERSION: "v1.22"
+  GO_VERSION: "1.22"
 
 jobs:
   build:

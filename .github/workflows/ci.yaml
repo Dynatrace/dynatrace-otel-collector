@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  # renovate: datasource=github-tags depName=golang/go
+  # renovate: datasource=golang-version depName=golang/go
   GO_VERSION: "1.22.6"
 
 jobs:

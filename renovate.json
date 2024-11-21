@@ -19,12 +19,6 @@
     {
       "matchPackagePatterns": ["^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)"],
       "groupName": "OpenTelemetry Collector"
-    },
-    {
-      "description": "Update Go version in GitHub Actions",
-      "matchManagers": ["regex"],
-      "datasource": "golang-version",
-      "enabled": true
     }
   ],
   "customManagers": [

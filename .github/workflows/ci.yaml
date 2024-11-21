@@ -7,6 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  # renovate: datasource=golang-version depName=go
+  GO_VERSION: "1.22.6"
+
 jobs:
   build:
     name: Build and Test
@@ -20,7 +24,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "~1.22.6"
+          go-version: ${{ env.GO_VERSION }}
           check-latest: true
           cache: false
       

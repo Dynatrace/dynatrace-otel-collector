@@ -5,7 +5,7 @@ go 1.22.6
 require (
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.114.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component/componenttest v0.114.0
 	go.opentelemetry.io/collector/consumer/consumertest v0.114.0
 	go.opentelemetry.io/collector/featuregate v1.20.0

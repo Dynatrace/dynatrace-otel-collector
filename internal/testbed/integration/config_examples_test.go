@@ -21,8 +21,6 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 )
 
-const ConfigExamplesDir = "../../../config_examples"
-
 func TestConfigTailSampling(t *testing.T) {
 	// arrange
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(testutil.CollectorTestsExecPath))

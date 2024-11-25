@@ -5,7 +5,7 @@ go 1.22.6
 require (
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.114.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component/componenttest v0.114.0
 	go.opentelemetry.io/collector/consumer/consumertest v0.114.0
 	go.opentelemetry.io/collector/featuregate v1.20.0
@@ -13,10 +13,10 @@ require (
 	go.opentelemetry.io/collector/receiver/otlpreceiver v0.114.0
 	go.opentelemetry.io/collector/receiver/receivertest v0.114.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.31.2
-	k8s.io/apimachinery v0.31.2
-	k8s.io/client-go v0.31.2
-	k8s.io/metrics v0.31.2
+	k8s.io/api v0.31.3
+	k8s.io/apimachinery v0.31.3
+	k8s.io/client-go v0.31.3
+	k8s.io/metrics v0.31.3
 )
 
 require (

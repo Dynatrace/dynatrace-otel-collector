@@ -14,7 +14,7 @@ env:
   # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.23.3"
   # renovate: datasource=github-releases depName=tcort/markdown-link-check
-  MARKDOWN_LINK_CHECK_VERSION: "v3.13.6"
+  MARKDOWN_LINK_CHECK_VERSION: "v3.12.2"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}

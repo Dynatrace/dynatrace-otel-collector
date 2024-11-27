@@ -5,6 +5,7 @@ package statsd
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"testing"
 
@@ -22,6 +23,7 @@ import (
 // See: https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/use-cases/statsd
 func TestE2E_StatsdReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
+	configExamplesDir := "../../../../config_examples"
 
 	k8sClient, err := k8stest.NewK8sClient()
 	require.NoError(t, err)
@@ -48,7 +50,16 @@ func TestE2E_StatsdReceiver(t *testing.T) {
 
 	// create collector
 	testID := uuid.NewString()[:8]
-	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"))
+	collectorObjs := k8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID,
+		filepath.Join(testDir, "collector"),
+		path.Join(
+			configExamplesDir,
+			"statsd.yaml",
+		),
+	)
 
 	// create job
 	jobFile := filepath.Join(testDir, "statsd", "job.yaml")
@@ -81,7 +92,7 @@ func assertExpectedMetrics(sm pmetric.MetricSlice) error {
 	expectedGaugeName := "test.metric"
 	expectedGaugeVal := 42.0
 	expectedGaugeAttrKey := "myKey"
-	expectedgaugeAttrVal := "myVal"
+	expectedGaugeAttrVal := "myVal"
 	expectedTimerName := "timerMetric"
 	expectedTimerCount := uint64(10)
 	expectedTimerSum := 3200.0
@@ -99,8 +110,8 @@ func assertExpectedMetrics(sm pmetric.MetricSlice) error {
 			if !ok {
 				return fmt.Errorf("Expected metric attribute not found")
 			}
-			if val.Str() != expectedgaugeAttrVal {
-				return fmt.Errorf("Expected metric attribute value %s not found, got %s", expectedgaugeAttrVal, val.Str())
+			if val.Str() != expectedGaugeAttrVal {
+				return fmt.Errorf("Expected metric attribute value %s not found, got %s", expectedGaugeAttrVal, val.Str())
 			}
 		} else if sm.At(i).Name() == expectedTimerName {
 			datapoint := sm.At(i).ExponentialHistogram().DataPoints().At(0)
@@ -116,6 +127,13 @@ func assertExpectedMetrics(sm pmetric.MetricSlice) error {
 			if datapoint.Sum() != expectedTimerSum {
 				return fmt.Errorf("Expected timer metric sum %f, received %f", expectedTimerSum, datapoint.Sum())
 			}
+			if datapoint.Positive().BucketCounts().Len() != 1 {
+				return fmt.Errorf("Expected timer metric to contain a bucket")
+			}
+			if datapoint.Positive().BucketCounts().At(0) != expectedTimerCount {
+				return fmt.Errorf("Expected timer metric bucket to contain %d items", expectedTimerCount)
+			}
+
 			val, ok := datapoint.Attributes().Get(expectedTimerAttrKey)
 			if !ok {
 				return fmt.Errorf("Expected timer metric attribute not found")

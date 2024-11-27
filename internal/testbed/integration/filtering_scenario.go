@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const ConfigExamplesDir = "../../../config_examples"
+
 type SenderFunc func(host string, port int) testbed.DataSender
 type ReceiverFunc func(port int) *testbed.BaseOTLPDataReceiver
 

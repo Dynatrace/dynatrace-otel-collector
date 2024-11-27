@@ -6,8 +6,10 @@ package k8stest // import "github.com/open-telemetry/opentelemetry-collector-con
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"text/template"
 	"time"
@@ -20,7 +22,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, manifestsDir string) []*unstructured.Unstructured {
+func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, manifestsDir string, collectorConfigPath string) []*unstructured.Unstructured {
 	if manifestsDir == "" {
 		manifestsDir = filepath.Join(".", "testdata", "e2e", "collector")
 	}
@@ -31,6 +33,10 @@ func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, mani
 	var podLabels map[string]any
 	createdObjs := make([]*unstructured.Unstructured, 0, len(manifestFiles))
 	t.Log("Creating Collector objects...")
+
+	collectorConfig, err := getCollectorConfig(collectorConfigPath, host)
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+
 	for _, manifestFile := range manifestFiles {
 		tmpl := template.Must(template.New(manifestFile.Name()).ParseFiles(filepath.Join(manifestsDir, manifestFile.Name())))
 		manifest := &bytes.Buffer{}
@@ -39,6 +45,7 @@ func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, mani
 			"HostEndpoint":      host,
 			"TestID":            testID,
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfig,
 		}))
 		obj, err := CreateObject(client, manifest.Bytes())
 		require.NoErrorf(t, err, "failed to create collector object from manifest %s", manifestFile.Name())
@@ -54,6 +61,34 @@ func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, mani
 	WaitForCollectorToStart(t, client, podNamespace, podLabels)
 
 	return createdObjs
+}
+
+func getCollectorConfig(path, host string) (string, error) {
+	if path == "" {
+		return "", nil
+	}
+	cfg, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+
+	parsedConfig := string(cfg)
+
+	r := strings.NewReplacer(
+		"${env:DT_ENDPOINT}",
+		fmt.Sprintf("http://%s:4318", host),
+		"${env:DT_API_TOKEN}",
+		"",
+	)
+	parsedConfig = r.Replace(parsedConfig)
+
+	res := ""
+	// prepend two tabs to each line to enable embedding the content in a k8s ConfigMap
+	for _, line := range strings.Split(strings.TrimSuffix(parsedConfig, "\n"), "\n") {
+		res += fmt.Sprintf("    %s\n", line)
+	}
+
+	return res, nil
 }
 
 func WaitForCollectorToStart(t *testing.T, client *K8sClient, podNamespace string, podLabels map[string]any) {

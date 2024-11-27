@@ -20,8 +20,6 @@ receivers:
         histogram:
           max_size: 100
 
-processors:
-
 exporters:
   otlphttp:
     endpoint: ${env:DT_ENDPOINT}
@@ -34,5 +32,4 @@ service:
   pipelines:
     metrics:
       receivers: [statsd]
-      processors: []
       exporters: [otlphttp]

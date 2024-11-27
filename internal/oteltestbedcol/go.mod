@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/oteltestbedcol
 
-go 1.22.6
+go 1.23.3
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension v0.114.0

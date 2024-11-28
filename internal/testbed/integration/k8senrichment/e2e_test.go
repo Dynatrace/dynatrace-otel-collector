@@ -65,7 +65,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 		filepath.Join(testDir, "collector"),
 		path.Join(
 			configExamplesDir,
-			"k8s-enrichment.yaml",
+			"k8s_enrichment.yaml",
 		),
 	)
 	createTeleOpts := &k8stest.TelemetrygenCreateOpts{

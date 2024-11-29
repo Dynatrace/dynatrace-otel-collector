@@ -1,11 +1,11 @@
 extensions:
   health_check:
     endpoint: 0.0.0.0:13133
-  receivers:
-    otlp:
-      protocols:
-        grpc:
-          endpoint: ${env:MY_POD_IP}:4317
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: ${env:MY_POD_IP}:4317
 processors:
   k8sattributes:
     extract:

@@ -5,4 +5,4 @@ metadata:
   namespace: e2ek8senrichment
 data:
   relay: |
-  {{ .CollectorConfig }}
+{{ .CollectorConfig }}

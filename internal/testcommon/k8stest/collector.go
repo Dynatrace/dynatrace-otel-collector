@@ -79,6 +79,8 @@ func getCollectorConfig(path, host string) (string, error) {
 		fmt.Sprintf("http://%s:4318", host),
 		"${env:DT_API_TOKEN}",
 		"",
+		"${env:API_TOKEN}",
+		"",
 	)
 	parsedConfig = r.Replace(parsedConfig)
 

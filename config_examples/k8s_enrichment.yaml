@@ -62,4 +62,4 @@ service:
         - k8sattributes
         - transform
       exporters:
-        - otlp
+        - otlphttp

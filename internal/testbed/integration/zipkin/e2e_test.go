@@ -19,6 +19,7 @@ import (
 // See: https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/use-cases/zipkin
 func TestE2E_ZipkinReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
+	configExamplesDir := "../../../../config_examples"
 
 	k8sClient, err := k8stest.NewK8sClient()
 	require.NoError(t, err)
@@ -44,7 +45,13 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), "")
+	collectorObjs := k8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID,
+		filepath.Join(testDir, "collector"),
+		filepath.Join(configExamplesDir, "zipkin.yaml"),
+	)
 	createZipkinOpts := &k8stest.ZipkinAppCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "zipkin"),
 		TestID:       testID,

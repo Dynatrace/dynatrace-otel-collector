@@ -5,24 +5,4 @@ metadata:
   namespace: e2ezipkin
 data:
   relay: |
-    extensions:
-      health_check:
-        endpoint: 0.0.0.0:13133
-    receivers:
-      zipkin:
-        endpoint: 0.0.0.0:9411
-
-    exporters:
-      otlp:
-        endpoint: {{ .HostEndpoint }}:4317
-        tls:
-          insecure: true
-    service:
-      extensions:
-      - health_check
-      pipelines:
-        traces:
-          receivers:
-          - zipkin
-          exporters:
-          - otlp
+{{ .CollectorConfig }}

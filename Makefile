@@ -40,6 +40,9 @@ ARCH ?= ""
 
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
+# renovate: datasource=github-releases depName=open-telemetry/opentelemetry-collector-contrib
+OTEL_UPSTREAM_VERSION=v0.114.0
+
 .PHONY: build generate test package-test clean clean-all components install-tools snapshot release
 build: $(BIN)
 build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
@@ -113,8 +116,14 @@ ifeq ($(GOOS),windows)
 endif
 
 .PHONY: oteltestbedcol
-oteltestbedcol:
-	cd ./internal/oteltestbedcol && GO111MODULE=on CGO_ENABLED=0 go build -trimpath -o ../../bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) .
+oteltestbedcol: genoteltestbedcol
+	cd ./cmd/oteltestbedcol && GO111MODULE=on CGO_ENABLED=0 go build -trimpath -o ../../bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) .
+
+.PHONY: genoteltestbedcol
+genoteltestbedcol: $(BUILDER)
+	awk '{gsub(/\.\.\/internal\/confmap\/provider\/eecprovider/, "../../internal/confmap/provider/eecprovider"); print}' manifest.yaml > cmd/oteltestbedcol/manifest.yaml
+	awk '/healthcheckextension $(OTEL_UPSTREAM_VERSION)/ {print; print "  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension $(OTEL_UPSTREAM_VERSION)"; next}1' cmd/oteltestbedcol/manifest.yaml > cmd/oteltestbedcol/manifest-dev.yaml
+	$(BUILDER) --skip-compilation --config cmd/oteltestbedcol/manifest-dev.yaml --output-path cmd/oteltestbedcol
 
 GOJUNIT = .tools/go-junit-report
 

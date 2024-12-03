@@ -119,6 +119,9 @@ endif
 oteltestbedcol: genoteltestbedcol
 	cd ./cmd/oteltestbedcol && GO111MODULE=on CGO_ENABLED=0 go build -trimpath -o ../../bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) .
 
+# 1. Copy and modify the manifest -> change local path to eecprovider -> move the modified file to the cmd/oteltestbedcol directory
+# 2. Add pprofextension used for load tests to the test manifest in cmd/oteltestbedcol directory
+# 3. Generae code
 .PHONY: genoteltestbedcol
 genoteltestbedcol: $(BUILDER)
 	awk '{gsub(/\.\.\/internal\/confmap\/provider\/eecprovider/, "../../internal/confmap/provider/eecprovider"); print}' manifest.yaml > cmd/oteltestbedcol/manifest.yaml

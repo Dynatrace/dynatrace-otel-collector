@@ -4,3 +4,5 @@ dist/
 lib/
 .tools
 .idea
+cmd/oteltestbedcol/*
+!cmd/oteltestbedcol/.gitkeep

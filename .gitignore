@@ -4,3 +4,4 @@ dist/
 lib/
 .tools
 .idea
+cmd/oteltestbedcol/

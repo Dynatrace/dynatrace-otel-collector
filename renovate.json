@@ -44,8 +44,8 @@
   "regexManagers": [
       {
         "fileMatch": ["^manifest.yaml$"],
-        "matchStrings": ["- gomod: (?<depName>(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib|github\\.com/dynatrace/dynatrace-otel-collector)/([A-Za-z0-9]+/)*[A-Za-z0-9]+) (?<currentValue>v\\d+\\.\\d+\\.\\d+)\\n"],
-        "datasourceTemplate": "go"
+        "matchStrings": ["- gomod: (?<depName>(go\\.opentelemetry\\.io\/collector|github\\.com\/open-telemetry\/opentelemetry-collector-contrib|github\\.com\/dynatrace\/dynatrace-otel-collector)\/([A-Za-z0-9]+\/)*[A-Za-z0-9]+) (?<currentValue>v\\d+\\.\\d+\\.\\d+)\\n"],
+        "datasourceTemplate": "github-releases"
       }
   ]
 }

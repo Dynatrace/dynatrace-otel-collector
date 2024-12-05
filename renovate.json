@@ -18,6 +18,7 @@
   "packageRules": [
     {
       "matchPackagePatterns": ["^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)"],
+      "matchPackageNames": ["open-telemetry/opentelemetry-collector-contrib"],
       "groupName": "OpenTelemetry Collector"
     },
     {

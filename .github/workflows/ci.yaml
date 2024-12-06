@@ -9,7 +9,7 @@ on:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.23.4"
+  GO_VERSION: "1.23.3"
 
 jobs:
   build:
@@ -64,7 +64,6 @@ jobs:
 
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/golang@master
-        if: github.ref == 'refs/heads/main'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -74,7 +73,7 @@ jobs:
   notify-slack:
     runs-on: ubuntu-24.04
     needs: [build]
-    if: failure() && github.event_name == 'push'
+    if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2.3.2

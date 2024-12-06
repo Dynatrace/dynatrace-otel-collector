@@ -6,7 +6,9 @@
     "customManagers:githubActionsVersions",
     "customManagers:makefileVersions"
   ],
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "prConcurrentLimit": 25,
   "minimumReleaseAge": "3 days",
   "timezone": "Europe/Vienna",
@@ -17,12 +19,16 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": ["^(go\\.opentelemetry\\.io\/collector|github\\.com\/open-telemetry\/opentelemetry-collector-contrib)\/"],
-      "matchPackageNames": ["open-telemetry/opentelemetry-collector-contrib"],
+      "matchPackageNames": [
+        "open-telemetry/opentelemetry-collector-contrib",
+        "/^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)//"
+      ],
       "groupName": "OpenTelemetry Collector"
     },
     {
-      "matchDatasources": ["golang-version"],
+      "matchDatasources": [
+        "golang-version"
+      ],
       "rangeStrategy": "bump"
     }
   ],
@@ -47,7 +53,7 @@
       ],
       "datasourceTemplate": "go",
       "matchStrings": [
-        "- gomod: (?<depName>(go\\.opentelemetry\\.io\/collector|github\\.com\/open-telemetry\/opentelemetry-collector-contrib|github\\.com\/dynatrace\/dynatrace-otel-collector)\/([A-Za-z0-9]+\/)*[A-Za-z0-9]+) (?<currentValue>v\\d+\\.\\d+\\.\\d+)\\n"
+        "- gomod: (?<depName>(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib|github\\.com/dynatrace/dynatrace-otel-collector)/([A-Za-z0-9]+/)*[A-Za-z0-9]+) (?<currentValue>v\\d+\\.\\d+\\.\\d+)\\n"
       ]
     }
   ]

@@ -20,6 +20,7 @@ import (
 // See: https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-prometheus
 func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	testDir := filepath.Join("testdata")
+	configExamplesDir := "../../../../config_examples"
 
 	k8sClient, err := k8stest.NewK8sClient()
 	require.NoError(t, err)
@@ -49,7 +50,13 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), "")
+	collectorObjs := k8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID,
+		filepath.Join(testDir, "collector"),
+		filepath.Join(configExamplesDir, "prometheus.yaml"),
+	)
 	defer func() {
 		for _, obj := range collectorObjs {
 			require.NoErrorf(t, k8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())

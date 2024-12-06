@@ -64,7 +64,6 @@ jobs:
 
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/golang@master
-        if: github.ref == 'refs/heads/main'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:

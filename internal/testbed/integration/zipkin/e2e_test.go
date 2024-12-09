@@ -11,6 +11,7 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
+	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/k8stest"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 )
@@ -21,19 +22,19 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
-	k8sClient, err := k8stest.NewK8sClient()
+	k8sClient, err := otelk8stest.NewK8sClient(k8stest.TestKubeConfig)
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test
 	nsFile := filepath.Join(testDir, "namespace.yaml")
 	buf, err := os.ReadFile(nsFile)
 	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := k8stest.CreateObject(k8sClient, buf)
+	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
 	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
 
 	testNs := nsObj.GetName()
 	defer func() {
-		require.NoErrorf(t, k8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
+		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
 
 	tracesConsumer := new(consumertest.TracesSink)
@@ -61,7 +62,7 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	zipkinObjs, zipkinObjInfos := k8stest.CreateZipkinAppObjects(t, k8sClient, createZipkinOpts)
 	defer func() {
 		for _, obj := range append(collectorObjs, zipkinObjs...) {
-			require.NoErrorf(t, k8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
 

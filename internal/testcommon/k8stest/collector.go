@@ -5,36 +5,31 @@ package k8stest // import "github.com/open-telemetry/opentelemetry-collector-con
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 	"text/template"
-	"time"
 
+	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/k8stest"
 	"github.com/stretchr/testify/require"
-	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, manifestsDir string, collectorConfigPath string) []*unstructured.Unstructured {
+func CreateCollectorObjects(t *testing.T, client *otelk8stest.K8sClient, testID string, manifestsDir string, collectorConfigPath string) []*unstructured.Unstructured {
 	if manifestsDir == "" {
 		manifestsDir = filepath.Join(".", "testdata", "e2e", "collector")
 	}
 	manifestFiles, err := os.ReadDir(manifestsDir)
 	require.NoErrorf(t, err, "failed to read collector manifests directory %s", manifestsDir)
-	host := HostEndpoint(t)
+	host := otelk8stest.HostEndpoint(t)
 	var podNamespace string
 	var podLabels map[string]any
 	createdObjs := make([]*unstructured.Unstructured, 0, len(manifestFiles))
 	t.Log("Creating Collector objects...")
 
-	collectorConfig, err := getCollectorConfig(collectorConfigPath, host)
+	collectorConfig, err := GetCollectorConfig(collectorConfigPath, host)
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 
 	for _, manifestFile := range manifestFiles {
@@ -47,7 +42,7 @@ func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, mani
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 			"CollectorConfig":   collectorConfig,
 		}))
-		obj, err := CreateObject(client, manifest.Bytes())
+		obj, err := otelk8stest.CreateObject(client, manifest.Bytes())
 		require.NoErrorf(t, err, "failed to create collector object from manifest %s", manifestFile.Name())
 		objKind := obj.GetKind()
 		if objKind == "Deployment" || objKind == "DaemonSet" {
@@ -58,12 +53,13 @@ func CreateCollectorObjects(t *testing.T, client *K8sClient, testID string, mani
 		createdObjs = append(createdObjs, obj)
 	}
 
-	WaitForCollectorToStart(t, client, podNamespace, podLabels)
+	otelk8stest.WaitForCollectorToStart(t, client, podNamespace, podLabels)
 
 	return createdObjs
 }
 
-func getCollectorConfig(path, host string) (string, error) {
+// collectorConfig, err := getCollectorConfig(collectorConfigPath, host)
+func GetCollectorConfig(path, host string) (string, error) {
 	if path == "" {
 		return "", nil
 	}
@@ -91,55 +87,4 @@ func getCollectorConfig(path, host string) (string, error) {
 	}
 
 	return res, nil
-}
-
-func WaitForCollectorToStart(t *testing.T, client *K8sClient, podNamespace string, podLabels map[string]any) {
-	podGVR := schema.GroupVersionResource{Version: "v1", Resource: "pods"}
-	listOptions := metav1.ListOptions{LabelSelector: SelectorFromMap(podLabels).String()}
-	podTimeoutMinutes := 3
-	t.Logf("waiting for collector pods to be ready")
-	require.Eventuallyf(t, func() bool {
-		list, err := client.DynamicClient.Resource(podGVR).Namespace(podNamespace).List(context.Background(), listOptions)
-		require.NoError(t, err, "failed to list collector pods")
-		podsNotReady := len(list.Items)
-		if podsNotReady == 0 {
-			t.Log("did not find collector pods")
-			return false
-		}
-
-		var pods v1.PodList
-		err = runtime.DefaultUnstructuredConverter.FromUnstructured(list.UnstructuredContent(), &pods)
-		require.NoError(t, err, "failed to convert unstructured to podList")
-
-		for _, pod := range pods.Items {
-			podReady := false
-			if pod.Status.Phase != v1.PodRunning {
-				t.Logf("pod %v is not running, current phase: %v", pod.Name, pod.Status.Phase)
-				continue
-			}
-			for _, cond := range pod.Status.Conditions {
-				if cond.Type == v1.PodReady && cond.Status == v1.ConditionTrue {
-					podsNotReady--
-					podReady = true
-				}
-			}
-			// Add some debug logs for crashing pods
-			if !podReady {
-				for _, cs := range pod.Status.ContainerStatuses {
-					restartCount := cs.RestartCount
-					if restartCount > 0 && cs.LastTerminationState.Terminated != nil {
-						t.Logf("restart count = %d for container %s in pod %s, last terminated reason: %s", restartCount, cs.Name, pod.Name, cs.LastTerminationState.Terminated.Reason)
-						t.Logf("termination message: %s", cs.LastTerminationState.Terminated.Message)
-					}
-				}
-			}
-		}
-		if podsNotReady == 0 {
-			t.Log("Collector deployed successfully")
-			return true
-		}
-		return false
-
-	}, time.Duration(podTimeoutMinutes)*time.Minute, 2*time.Second,
-		"collector pods were not ready within %d minutes", podTimeoutMinutes)
 }

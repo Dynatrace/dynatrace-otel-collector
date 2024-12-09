@@ -5,6 +5,8 @@ go 1.23.4
 require (
 	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0
 	github.com/google/uuid v1.6.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/idutils v0.0.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/k8stest v0.0.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.115.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.115.0
 	github.com/stretchr/testify v1.10.0
@@ -255,3 +257,7 @@ require (
 replace cloud.google.com/go => cloud.google.com/go v0.116.0
 
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon
+
+replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/k8stest => github.com/odubajdt/opentelemetry-collector-contrib/pkg/k8stest v0.0.0-20241204065521-e8229166c49e
+
+replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/idutils => github.com/odubajdt/opentelemetry-collector-contrib/pkg/core/idutils v0.0.0-20241209065856-0d90d3626d49

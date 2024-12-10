@@ -5,6 +5,7 @@ package redaction
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"testing"
 
@@ -44,12 +45,20 @@ func TestE2E_RedactionProcessor(t *testing.T) {
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := k8stest.CreateCollectorObjects(
+	collectorConfigPath := path.Join(configExamplesDir, "k8s_attribute_redaction.yaml")
+	host := otelk8stest.HostEndpoint(t)
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
 		filepath.Join(testDir, "collector"),
-		filepath.Join(configExamplesDir, "k8s_attribute_redaction.yaml"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfig,
+		},
+		host,
 	)
 
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{

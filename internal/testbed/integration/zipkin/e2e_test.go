@@ -5,6 +5,7 @@ package zipkin
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"testing"
 
@@ -46,12 +47,20 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := k8stest.CreateCollectorObjects(
+	collectorConfigPath := path.Join(configExamplesDir, "zipkin.yaml")
+	host := otelk8stest.HostEndpoint(t)
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
 		filepath.Join(testDir, "collector"),
-		filepath.Join(configExamplesDir, "zipkin.yaml"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfig,
+		},
+		host,
 	)
 	createZipkinOpts := &k8stest.ZipkinAppCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "zipkin"),

@@ -6,9 +6,7 @@
     "customManagers:githubActionsVersions",
     "customManagers:makefileVersions"
   ],
-  "labels": [
-    "dependencies"
-  ],
+  "labels": ["dependencies"],
   "prConcurrentLimit": 25,
   "minimumReleaseAge": "3 days",
   "timezone": "Europe/Vienna",
@@ -26,9 +24,7 @@
       "groupName": "OpenTelemetry Collector"
     },
     {
-      "matchDatasources": [
-        "golang-version"
-      ],
+      "matchDatasources": ["golang-version"],
       "rangeStrategy": "bump"
     }
   ],

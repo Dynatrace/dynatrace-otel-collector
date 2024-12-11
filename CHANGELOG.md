@@ -18,12 +18,6 @@ v0.115.0:
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
----
-
-</details>
-
-#### Dynatrace distribution changelog:
-
 ### 🛑 Breaking changes 🛑
 
 - `otelcol`: Change all logged timestamps to ISO8601. ([#10543](https://github.com/open-telemetry/opentelemetry-collector/pull/10543))
@@ -42,6 +36,16 @@ Disable the k8sattr.fieldExtractConfigRegex.disallow feature gate to get the old
 
 - `service`: ensure OTLP emitted logs respect severity ([#11718](https://github.com/open-telemetry/opentelemetry-collector/pull/11718))
 - `processor/k8sattribute`: fixes parsing of k8s image names to support images with tags and digests. ([#36131](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36131))
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `statsdreceiver`: Adapt statsd receiver example config to remove filtering of histogram metrics (#385)
 
 
 ## v0.19.0

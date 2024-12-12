@@ -4,6 +4,50 @@
 
 <!-- next version -->
 
+## v0.20.0
+
+This release includes version 0.115.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.115.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.115.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.115.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `otelcol`: Change all logged timestamps to ISO8601. ([#10543](https://github.com/open-telemetry/opentelemetry-collector/pull/10543))
+This makes log timestamps human-readable (as opposed to epoch seconds in
+scientific notation), but may break users trying to parse logged lines in the
+old format.
+- `k8sattributesprocessor`: Move k8sattr.fieldExtractConfigRegex.disallow feature gate to Beta. ([#25128](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/25128))
+Disable the k8sattr.fieldExtractConfigRegex.disallow feature gate to get the old behavior.
+
+### 💡 Enhancements 💡
+
+- `statsdreceiver`: Adapt statsd receiver example config to remove filtering of histogram metrics (#385)
+- `tailsamplingprocessor`: Adds decision cache for non-sampled trace IDs ([#31583](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/31583))
+
+### 🧰 Bug fixes 🧰
+
+- `service`: ensure OTLP emitted logs respect severity ([#11718](https://github.com/open-telemetry/opentelemetry-collector/pull/11718))
+- `processor/k8sattribute`: fixes parsing of k8s image names to support images with tags and digests. ([#36131](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36131))
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `statsdreceiver`: Adapt statsd receiver example config to remove filtering of histogram metrics (#385)
+
+
 ## v0.19.0
 
 This release includes version 0.114.0 of the upstream Collector components.

@@ -17,8 +17,8 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	semconv "go.opentelemetry.io/collector/semconv/v1.18.0"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/idutils"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/idutils"
 )
 
 func TestConfigTailSampling(t *testing.T) {

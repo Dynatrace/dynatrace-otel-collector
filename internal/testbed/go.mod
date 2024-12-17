@@ -13,7 +13,7 @@ require (
 	go.opentelemetry.io/collector/consumer/consumertest v0.115.0
 	go.opentelemetry.io/collector/pdata v1.21.0
 	go.opentelemetry.io/collector/semconv v0.115.0
-	golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d
+	golang.org/x/exp v0.0.0-20241217172543-b2144cdd0a67
 	gopkg.in/yaml.v3 v3.0.1
 )
 

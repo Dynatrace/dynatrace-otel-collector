@@ -122,8 +122,6 @@ dockers:
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-ppc64le
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-ppc64le
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-ppc64le
-    extra_files:
-      - config.yaml
     build_flag_templates:
       - --pull
       - --platform=linux/ppc64le
@@ -142,8 +140,6 @@ dockers:
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-s390x
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-s390x
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-s390x
-    extra_files:
-      - config.yaml
     build_flag_templates:
       - --pull
       - --platform=linux/s390x

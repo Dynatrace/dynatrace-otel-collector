@@ -75,7 +75,7 @@ For help troubleshooting issues, please see the OpenTelemetry documentation on [
 
 ## Support
 
-This distribution is supported by the Dynatrace Support team, as described on the Dynatrace [support page].
+This distribution (specifically, only its ARM64 and x86-64 variants) is supported by the Dynatrace Support team, as described on the Dynatrace [support page].
 For issues reported via GitHub, support contracts and SLAs do not apply.
 Please reach out via our official support channels for full coverage.
 

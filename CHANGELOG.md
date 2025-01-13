@@ -4,6 +4,74 @@
 
 <!-- next version -->
 
+## v0.21.0
+
+This release includes version v0.117.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.117.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.117.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.117.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `otelcol`: Remove warnings when 0.0.0.0 is used (https://github.com/open-telemetry/opentelemetry-collector/pull/11713, https://github.com/open-telemetry/opentelemetry-collector/pull/8510)
+- `pkg/ottl`: removed the ability to reference entire parent objects. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36872)
+  Statements like `set(cache["resource"], resource)` in non-resource contexts will no longer work.
+
+### 💡 Enhancements 💡
+
+- `pkg/ottl`: Add a new ottl trim function that trims leading and trailing characters from a string (default- whitespace). (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34100)
+- `statsdreceiver`: Add UDS support to statsdreceiver (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/21385)
+- `tailsamplingprocessor`: Support hot sampling policy loading (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37014)
+
+### 🧰 Bug fixes 🧰
+
+- `internal/sharedcomponent`: Fixed bug where sharedcomponent would use too much memory remembering all the previously reported statuses (https://github.com/open-telemetry/opentelemetry-collector/pull/11826)
+- `pkg/ottl`: fix handling of nested maps within slices in the `flatten` function (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36162)
+
+---
+
+</details>
+
+v0.116.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.116.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.116.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `pdata/pprofile`: Remove deprecated `Profile.EndTime` and `Profile.SetEndTime` methods. (https://github.com/open-telemetry/opentelemetry-collector/pull/11796)
+- `processor/tailsampling`: Reverts https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33671, allowing for composite policies to specify inverted clauses in conjunction with other policies. This is a change bringing the previous state into place, breaking users who rely on what was introduced as part of https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33671. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34085)
+
+### 💡 Enhancements 💡
+
+- `xconfighttp`: Add WithOtelHTTPOptions to experimental module xconfighttp (https://github.com/open-telemetry/opentelemetry-collector/pull/11770)
+- `pkg/ottl`: GetXML Converter now supports selecting text, CDATA, and attribute (value) content. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36821)
+- `pkg/pdatatest`: Add support for Profiles signal comparison. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36232)
+- `testbed`: Add batcher performance tests (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36206)
+- `testbed`: add options for retry/storage for filelog sender (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36781)
+
+### 🧰 Bug fixes 🧰
+
+- `exporterhelper`: Fix memory leak at exporter shutdown (https://github.com/open-telemetry/opentelemetry-collector/pull/11401)
+- `sharedcomponent`: Remove race-condition and cleanup locking (https://github.com/open-telemetry/opentelemetry-collector/pull/11819)
+- `receiver/prometheusreceiver`: Metric adjuster no longer assumes that all metrics from a scrape come from the same resource (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36477)
+- `parseutils`: Handle escaped quotes when parsing pairs using SplitString. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36176)
+- `jaegerreceiver`: Remove ineffectual warning from jaegerreceiver (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35894)
+
+---
+
+</details>
+
 ## v0.20.0
 
 This release includes version 0.115.0 of the upstream Collector components.

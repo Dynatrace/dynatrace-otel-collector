@@ -51,9 +51,7 @@ jobs:
       - name: Cache Go modules
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
+          path: build
           key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 
       - name: List filesystem

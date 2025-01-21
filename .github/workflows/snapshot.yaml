@@ -54,30 +54,8 @@ jobs:
           path: build
           key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 
-      - name: List filesystem
-        run: |
-          echo "Listing filesystem contents:"
-          ls -alh /
-    
-      - name: Check disk space
-        run: |
-          echo "Checking disk space:"
-          df -h
-
       - name: Create Snapshot for Pull Request
         run: make snapshot
-
-      - name: List filesystem
-        if: always()
-        run: |
-          echo "Listing filesystem contents:"
-          ls -alh /
-    
-      - name: Check disk space
-        if: always()
-        run: |
-          echo "Checking disk space:"
-          df -h
 
       - name: Upload Pull Request Preview
         uses: actions/upload-artifact@v4

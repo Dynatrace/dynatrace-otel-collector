@@ -46,7 +46,7 @@ jobs:
         with:
           path: |
             ~/go/bin
-            ~/go/pkg/mod
+            ~/go/pkg/mod  
           key: changelog-${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
       - name: Ensure no changes to the CHANGELOG.md

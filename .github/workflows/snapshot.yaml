@@ -6,7 +6,7 @@ on:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.23.5"
+  GO_VERSION: "1.23.4"
 
 jobs:
   build:
@@ -51,13 +51,33 @@ jobs:
       - name: Cache Go modules
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
+          path: build
           key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
+
+      - name: List filesystem
+        run: |
+          echo "Listing filesystem contents:"
+          ls -alh /
+    
+      - name: Check disk space
+        run: |
+          echo "Checking disk space:"
+          df -h
 
       - name: Create Snapshot for Pull Request
         run: make snapshot
+
+      - name: List filesystem
+        if: always()
+        run: |
+          echo "Listing filesystem contents:"
+          ls -alh /
+    
+      - name: Check disk space
+        if: always()
+        run: |
+          echo "Checking disk space:"
+          df -h
 
       - name: Upload Pull Request Preview
         uses: actions/upload-artifact@v4

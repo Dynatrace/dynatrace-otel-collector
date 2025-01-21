@@ -53,6 +53,18 @@ jobs:
       - name: Create Snapshot for Pull Request
         run: make snapshot
 
+      - name: List filesystem
+        if: always()
+        run: |
+          echo "Listing filesystem contents:"
+          ls -alh /
+    
+      - name: Check disk space
+        if: always()
+        run: |
+          echo "Checking disk space:"
+          df -h
+
       - name: Upload Pull Request Preview
         uses: actions/upload-artifact@v4
         with:

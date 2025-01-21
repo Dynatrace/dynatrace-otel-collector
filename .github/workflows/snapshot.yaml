@@ -6,7 +6,7 @@ on:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.23.5"
+  GO_VERSION: "1.23.4"
 
 jobs:
   build:
@@ -31,7 +31,15 @@ jobs:
 
       - uses: anchore/sbom-action/download-syft@v0.17.9
 
+      - name: Cache tools
+        id: cache-tools
+        uses: actions/cache@v4
+        with:
+          path: .tools
+          key: snapshot-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+
       - name: Install tools
+        if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
           touch .tools/*
@@ -39,6 +47,14 @@ jobs:
 
       - name: Generate source files
         run: make generate
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 
       - name: List filesystem
         run: |

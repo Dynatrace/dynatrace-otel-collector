@@ -3,7 +3,7 @@ module testcommon
 go 1.23.5
 
 require (
-	github.com/docker/docker v27.4.1+incompatible
+	github.com/docker/docker v27.5.0+incompatible
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.117.0
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component/componenttest v0.117.0

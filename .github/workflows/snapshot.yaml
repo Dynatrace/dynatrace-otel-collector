@@ -56,6 +56,16 @@ jobs:
             ~/go/pkg/mod
           key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 
+      - name: List filesystem
+        run: |
+          echo "Listing filesystem contents:"
+          ls -alh /
+    
+      - name: Check disk space
+        run: |
+          echo "Checking disk space:"
+          df -h
+
       - name: Create Snapshot for Pull Request
         run: make snapshot
 

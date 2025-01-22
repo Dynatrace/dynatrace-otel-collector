@@ -23,6 +23,11 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: false
 
+      - name: debug info go cache
+        run: |
+          go env GOCACHE
+          go env GOMODCACHE
+
       - uses: docker/setup-qemu-action@v3
         with:
           platforms: arm64,ppc64le,s390x

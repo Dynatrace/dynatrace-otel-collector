@@ -38,19 +38,27 @@ jobs:
         if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
-          touch .tools/*
           make install-tools
 
+      - name: Cache collector source code
+        id: cache-collector-source
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: load-test-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
+
+      - name: Generate source files
+        if: steps.cache-collector-source.outputs.cache-hit != 'true'
+        run: make generate
+
       - name: Cache Go modules
-        id: go-cache
-        timeout-minutes: 5
         uses: actions/cache@v4
         with:
           path: |
             internal/oteltestbedcol
             ~/go/bin
             ~/go/pkg/mod
-          key: loadtest-mods-${{ runner.os }}-${{ hashFiles('internal/oteltestbedcol/go.sum') }}
+          key: load-test-mods-${{ runner.os }}-${{ hashFiles('internal/oteltestbedcol/go.sum') }}
 
       - run: make oteltestbedcol
 

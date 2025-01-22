@@ -53,6 +53,7 @@ jobs:
         with:
           path: |
             build
+            ~/go/bin
             ~/go/pkg/mod
           key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 

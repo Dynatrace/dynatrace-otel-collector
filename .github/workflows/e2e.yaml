@@ -50,6 +50,7 @@ jobs:
         with:
           path: |
             build
+            ~/go/bin
             ~/go/pkg/mod
           key: e2e-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 

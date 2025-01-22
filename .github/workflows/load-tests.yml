@@ -46,7 +46,10 @@ jobs:
         timeout-minutes: 5
         uses: actions/cache@v4
         with:
-          path: internal/oteltestbedcol
+          path: |
+            internal/oteltestbedcol
+            ~/go/bin
+            ~/go/pkg/mod
           key: loadtest-mods-${{ runner.os }}-${{ hashFiles('internal/oteltestbedcol/go.sum') }}
 
       - run: make oteltestbedcol

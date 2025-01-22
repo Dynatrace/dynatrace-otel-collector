@@ -48,7 +48,9 @@ jobs:
       - name: Cache Go modules
         uses: actions/cache@v4
         with:
-          path: build
+          path: |
+            build
+            ~/go/pkg/mod
           key: e2e-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 
       - name: Build collector artifact

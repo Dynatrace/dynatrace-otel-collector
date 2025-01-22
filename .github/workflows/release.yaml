@@ -46,7 +46,6 @@ jobs:
       - name: Touch tools
         run: |
           mkdir -p .tools
-          touch .tools/*
       - name: Login to GitHub Package Registry
         uses: docker/login-action@v3
         with:

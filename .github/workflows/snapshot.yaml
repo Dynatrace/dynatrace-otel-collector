@@ -6,7 +6,7 @@ on:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.23.4"
+  GO_VERSION: "1.23.5"
 
 jobs:
   build:
@@ -42,42 +42,29 @@ jobs:
         if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
-          touch .tools/*
           make install-tools
 
+      - name: Cache collector source code
+        id: cache-collector-source
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: snapshot-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
+
       - name: Generate source files
+        if: steps.cache-collector-source.outputs.cache-hit != 'true'
         run: make generate
 
       - name: Cache Go modules
         uses: actions/cache@v4
         with:
-          path: build
+          path: |
+            ~/go/bin
+            ~/go/pkg/mod
           key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
-
-      - name: List filesystem
-        run: |
-          echo "Listing filesystem contents:"
-          ls -alh /
-    
-      - name: Check disk space
-        run: |
-          echo "Checking disk space:"
-          df -h
 
       - name: Create Snapshot for Pull Request
         run: make snapshot
-
-      - name: List filesystem
-        if: always()
-        run: |
-          echo "Listing filesystem contents:"
-          ls -alh /
-    
-      - name: Check disk space
-        if: always()
-        run: |
-          echo "Checking disk space:"
-          df -h
 
       - name: Upload Pull Request Preview
         uses: actions/upload-artifact@v4

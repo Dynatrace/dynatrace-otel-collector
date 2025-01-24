@@ -39,17 +39,24 @@ jobs:
         if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
-          touch .tools/*
           make install-tools
 
+      - name: Cache collector source code
+        id: cache-collector-source
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: e2e-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
+
       - name: Generate source files
+        if: steps.cache-collector-source.outputs.cache-hit != 'true'
         run: make generate
 
       - name: Cache Go modules
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/go-build
+            ~/go/bin
             ~/go/pkg/mod
           key: e2e-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 

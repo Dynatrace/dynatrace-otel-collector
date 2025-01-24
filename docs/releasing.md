@@ -58,3 +58,7 @@ The tag name MUST be a semver-compliant version string with the letter "v" prepe
    ```
 
 Once you have completed the above steps, the [Build and Release](../.github/workflows/release.yaml) workflow will use [goreleaser](https://goreleaser.com) to create a new draft release on GitHub. When it completes, the release will be visible to users with the required permissions at [Releases](https://github.com/Dynatrace/dynatrace-otel-collector/releases). The changelog and title for the release is created automatically, but may be modified. When you are happy with the state of the release, publish the release and it will become publicly visible.
+
+**Note:**
+
+After the release is completed, please do not forget to merge the automated renovate version update PRs for `dynatrace-otel-collector` and `opentelemetry-operator` in the [dynatrace-docs](https://bitbucket.lab.dynatrace.org/projects/SUS/repos/dynatrace-docs/browse) repository. Please be aware that automatic creation of these PRs by renovate-bot might take a few hours.

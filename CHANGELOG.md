@@ -32,15 +32,15 @@ v0.118.0:
   This allows users to configure the compression levels for the confighttp client.
 - `exporterhelper`: Change the memory queue implementation to not pre-allocate capacity objects. (https://github.com/open-telemetry/opentelemetry-collector/pull/12070)
   This change improves memory usage of the collector under low utilization and is a prerequisite for supporting different other size limitations (number of items, bytes).
-- `pkg/ottl`: Add the `Nanosecond` converter to return the nanosecond component from the specified time.Time (#37042)
-- `pkg/ottl`: Add the `Second` converter to return the second component from the specified time.Time (#37042)
-- `pkg/ottl`: Enhanced error messages for invalid cache access and introduced options to configure their values within the OTTL contexts. (#29017)
-- `pkg/ottl`: Add the `FormatTime` function to convert `time.Time` values to human-readable strings (#36870)
-- `resourcedetectionprocessor`: This enhancement detects AWS EKS cloud account ID (#37179)
-- `resourcedetectionprocessor`: Introduce kubeadm detector to retrieve local cluster name. (#35116)
-- `k8sattributesprocessor`: For pods with only one container, the `container.id` and `k8s.container.name` are not longer required in the resource attributes to add the container attributes (#34189)
-- `tailsamplingprocessor`: Added debug logging to the sampling decision caches. (#37038)
-- `tailsamplingprocessor`: Improved not sampled decision cache usage and deleting traces from the internal map when they are in a decision cache. (#37189)
+- `pkg/ottl`: Add the `Nanosecond` converter to return the nanosecond component from the specified time.Time (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37042)
+- `pkg/ottl`: Add the `Second` converter to return the second component from the specified time.Time (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37042)
+- `pkg/ottl`: Enhanced error messages for invalid cache access and introduced options to configure their values within the OTTL contexts. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/29017)
+- `pkg/ottl`: Add the `FormatTime` function to convert `time.Time` values to human-readable strings (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36870)
+- `resourcedetectionprocessor`: This enhancement detects AWS EKS cloud account ID (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37179)
+- `resourcedetectionprocessor`: Introduce kubeadm detector to retrieve local cluster name. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35116)
+- `k8sattributesprocessor`: For pods with only one container, the `container.id` and `k8s.container.name` are not longer required in the resource attributes to add the container attributes (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34189)
+- `tailsamplingprocessor`: Added debug logging to the sampling decision caches. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37038)
+- `tailsamplingprocessor`: Improved not sampled decision cache usage and deleting traces from the internal map when they are in a decision cache. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37189)
 
 ### 🧰 Bug fixes 🧰
 

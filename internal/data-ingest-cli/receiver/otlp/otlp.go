@@ -3,6 +3,8 @@ package otlp
 import (
 	"context"
 	"fmt"
+	"go.opentelemetry.io/collector/pdata/plog"
+	"go.opentelemetry.io/collector/pdata/plog/plogotlp"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/pmetric/pmetricotlp"
 	"go.opentelemetry.io/collector/pdata/ptrace"
@@ -48,6 +50,11 @@ func (r *OTLPReceiver) Start() error {
 	})
 
 	pmetricotlp.RegisterGRPCServer(r.server, &metricsService{
+		receivedDataChan: r.receivedDataChan,
+		outputFile:       r.config.OutputFile,
+	})
+
+	plogotlp.RegisterGRPCServer(r.server, &logsService{
 		receivedDataChan: r.receivedDataChan,
 		outputFile:       r.config.OutputFile,
 	})
@@ -121,4 +128,26 @@ func (m *metricsService) Export(_ context.Context, req pmetricotlp.ExportRequest
 
 	m.receivedDataChan <- struct{}{}
 	return pmetricotlp.NewExportResponse(), nil
+}
+
+type logsService struct {
+	plogotlp.UnimplementedGRPCServer
+	outputFile       string
+	receivedDataChan chan struct{}
+}
+
+func (m *logsService) Export(_ context.Context, req plogotlp.ExportRequest) (plogotlp.ExportResponse, error) {
+	logsMarshaler := &plog.JSONMarshaler{}
+	metrics, err := logsMarshaler.MarshalLogs(req.Logs())
+	if err != nil {
+		log.Printf("Could not marshal metrics: %v\n", err)
+		return plogotlp.NewExportResponse(), nil
+	}
+
+	if err := os.WriteFile(m.outputFile, metrics, os.ModePerm); err != nil {
+		log.Printf("Could not write received data to file: %v\n", err)
+	}
+
+	m.receivedDataChan <- struct{}{}
+	return plogotlp.NewExportResponse(), nil
 }

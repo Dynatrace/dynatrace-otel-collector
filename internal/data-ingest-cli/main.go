@@ -54,8 +54,4 @@ func main() {
 	default:
 		log.Fatalf("Unknown input format: %s", *inputFormat)
 	}
-
-	if *outputFile != "" {
-		fmt.Println("Receiving OTLP data and storing it in file...")
-	}
 }

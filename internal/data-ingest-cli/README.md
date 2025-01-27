@@ -2,10 +2,12 @@
 
 ## Overview
 
-The primary purpose of this OTLP CLI Tool is to assist in reproducing support cases and troubleshooting issues within the OpenTelemetry collector pipeline.
+The primary purpose of this CLI Tool is to assist in reproducing support cases and troubleshooting issues within the OpenTelemetry collector pipeline.
 It allows users to accurately replicate conditions under which issues occur by reading data in different formats and sending it to the collector.
 Additionally, the tool can receive OTLP data via an endpoint and store it in a JSON file for detailed inspection and analysis,
 making it easier to diagnose and resolve problems related to OTLP data handling.
+
+*Note:* This is a developer tool used mainly for debugging, and not intended for being used within a production environment.
 
 ## Features
 
@@ -16,14 +18,6 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
   - Syslog
 
 - Receive OTLP data via an endpoint: The tool can receive OTLP data through an endpoint and store the received payload in a specified file in OTLP Json format.
-
-
-## Installation
-To install the tool, use the following command:
-
-```
-go install github.com/yourusername/otlptool@latest
-```
 
 ## Usage
 

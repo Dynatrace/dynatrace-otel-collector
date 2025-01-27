@@ -1,0 +1,1 @@
+{"resourceLogs":[{"resource":{},"scopeLogs":[{"scope":{},"logRecords":[{"timeUnixNano":"1737962987660456000","severityNumber":9,"severityText":"Info","body":{"stringValue":"the message"},"attributes":[{"key":"app","value":{"stringValue":"server"}}],"droppedAttributesCount":1,"traceId":"","spanId":""}]}]}]}

@@ -12,6 +12,7 @@ import (
 	coltracepb "go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
 )
 
 type Sender interface {
@@ -42,6 +43,7 @@ func New(url string) (*GRPCSender, error) {
 }
 
 func (s *GRPCSender) SendTraces(ctx context.Context, traces ptrace.Traces) error {
+	log.Printf("Sending traces to %s\n", s.client.Target())
 	exportRequest := ptraceotlp.NewExportRequestFromTraces(traces)
 	_, err := s.traceClient.Export(ctx, exportRequest)
 
@@ -49,6 +51,7 @@ func (s *GRPCSender) SendTraces(ctx context.Context, traces ptrace.Traces) error
 }
 
 func (s *GRPCSender) SendLogs(ctx context.Context, logs plog.Logs) error {
+	log.Printf("Sending logs to %s\n", s.client.Target())
 	req := plogotlp.NewExportRequestFromLogs(logs)
 	_, err := s.logClient.Export(ctx, req)
 
@@ -56,6 +59,7 @@ func (s *GRPCSender) SendLogs(ctx context.Context, logs plog.Logs) error {
 }
 
 func (s *GRPCSender) SendMetrics(ctx context.Context, metrics pmetric.Metrics) error {
+	log.Printf("Sending metrics to %s\n", s.client.Target())
 	req := colmetricpb.NewExportRequestFromMetrics(metrics)
 	_, err := s.metricClient.Export(ctx, req)
 

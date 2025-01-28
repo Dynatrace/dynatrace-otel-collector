@@ -95,6 +95,7 @@ type traceService struct {
 }
 
 func (t *traceService) Export(_ context.Context, req ptraceotlp.ExportRequest) (ptraceotlp.ExportResponse, error) {
+	log.Println("Received traces")
 	traceMarshaler := &ptrace.JSONMarshaler{}
 	traces, err := traceMarshaler.MarshalTraces(req.Traces())
 	if err != nil {
@@ -115,6 +116,7 @@ type metricsService struct {
 }
 
 func (m *metricsService) Export(_ context.Context, req pmetricotlp.ExportRequest) (pmetricotlp.ExportResponse, error) {
+	log.Println("Received metrics")
 	metricsMarshaler := &pmetric.JSONMarshaler{}
 	metrics, err := metricsMarshaler.MarshalMetrics(req.Metrics())
 	if err != nil {
@@ -135,6 +137,7 @@ type logsService struct {
 }
 
 func (l *logsService) Export(_ context.Context, req plogotlp.ExportRequest) (plogotlp.ExportResponse, error) {
+	log.Println("Received logs")
 	logsMarshaler := &plog.JSONMarshaler{}
 	logs, err := logsMarshaler.MarshalLogs(req.Logs())
 	if err != nil {
@@ -156,4 +159,5 @@ func writeToFile(dest string, raw []byte) {
 	if err := os.WriteFile(dest, prettyJSON.Bytes(), os.ModePerm); err != nil {
 		log.Printf("Could not write received data to file: %v\n", err)
 	}
+	log.Printf("Stored received data in %s\n", dest)
 }

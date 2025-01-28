@@ -69,7 +69,7 @@ func (c *Cmd) Do(ctx context.Context) error {
 	case "trace", "traces":
 		return c.sendTraces(ctx)
 	default:
-		return fmt.Errorf("unknown signal type '%s'", c.signalType)
+		return fmt.Errorf("unknown signal type '%s'. Must be one of [traces,logs,metrics]", c.signalType)
 	}
 }
 

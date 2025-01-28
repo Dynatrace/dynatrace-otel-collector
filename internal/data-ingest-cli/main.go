@@ -11,7 +11,7 @@ import (
 func main() {
 	// Define the CLI arguments
 	inputFile := flag.String("input-file", "", "Path to the input file containing input data")
-	collectorURL := flag.String("collector-url", "", "URL of the OpenTelemetry collector")
+	collectorURL := flag.String("collector-url", "localhost:4317", "URL of the OpenTelemetry collector")
 	outputFile := flag.String("output-file", "", "Path to the file where received OTLP data will be stored")
 	inputFormat := flag.String("input-format", "otlp-json", "Input format (options: 'otlp-json', 'syslog', 'systemd')")
 	otlpSignalType := flag.String("otlp-signal-type", "", "OTLP signal type (options: 'logs', 'traces', 'metrics')")

@@ -13,7 +13,7 @@ func main() {
 	inputFile := flag.String("input-file", "", "Path to the input file containing input data")
 	collectorURL := flag.String("collector-url", "localhost:4317", "URL of the OpenTelemetry collector")
 	outputFile := flag.String("output-file", "", "Path to the file where received OTLP data will be stored")
-	inputFormat := flag.String("input-format", "otlp-json", "Input format (options: 'otlp-json', 'syslog', 'systemd')")
+	inputFormat := flag.String("input-format", "otlp-json", "Input format (options: 'otlp-json', 'syslog', 'statsd')")
 	otlpSignalType := flag.String("otlp-signal-type", "", "OTLP signal type (options: 'logs', 'traces', 'metrics')")
 	receiverPort := flag.Int("receiver-port", 0, "OTLP Receiver port. If set, the tool will open a grpc server on the specified port to receive data and store it in an output file")
 
@@ -50,7 +50,7 @@ func main() {
 		// Handle reading from syslog and sending to collector
 		fmt.Println("Reading from syslog and sending to collector...")
 	case "statsd":
-		log.Println("Reading from systemd and sending to collector...")
+		log.Println("Reading from statsd and sending to collector...")
 	default:
 		log.Fatalf("Unknown input format: %s", *inputFormat)
 	}

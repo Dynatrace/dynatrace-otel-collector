@@ -49,7 +49,7 @@ func main() {
 	case "syslog":
 		// Handle reading from syslog and sending to collector
 		fmt.Println("Reading from syslog and sending to collector...")
-	case "systemd":
+	case "statsd":
 		log.Println("Reading from systemd and sending to collector...")
 	default:
 		log.Fatalf("Unknown input format: %s", *inputFormat)

@@ -14,7 +14,7 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
 - Read OTLP JSON data from a file: The tool can read OTLP data from a specified file containing data in different formats and send it to an OpenTelemetry collector.
  Supported formats are:
   - OTLP Json
-  - Systemd
+  - Statsd
   - Syslog
 
 - Receive OTLP data via an endpoint: The tool can receive OTLP data through an endpoint and store the received payload in a specified file in OTLP Json format.
@@ -33,7 +33,7 @@ go build -o data-ingest
 The tool accepts the following input parameters:
 
 - `--input-file`: The name of the input file to read data from.
-- `--input-format`: The input format of the ingested data (options: `otlpjson`, `syslog`, `systemd`). 
+- `--input-format`: The input format of the ingested data (options: `otlpjson`, `syslog`, `statsd`). 
 - `--collector-url`: The URL of the OpenTelemetry collector.
 - `--output-file`: The file in which to store the received data.
 - `--receiver-port`: The port of the OTLP receiver created to act as a sink for the collector.

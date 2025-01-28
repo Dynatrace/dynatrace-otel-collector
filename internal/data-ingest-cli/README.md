@@ -19,6 +19,14 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
 
 - Receive OTLP data via an endpoint: The tool can receive OTLP data through an endpoint and store the received payload in a specified file in OTLP Json format.
 
+## Building
+
+To build the CLI, execute the following command:
+
+```
+go build -o data-ingest
+```
+
 ## Usage
 
 The tool accepts the following input parameters:
@@ -34,5 +42,5 @@ The tool accepts the following input parameters:
 1. Send OTLP JSON data to a collector:
 
 ```
-otlp-data-ingest --input-file=data.json --input-format=otlpjson --collector-url=http://collector.example.com:4317 --output-file=received.json --receiver-port=4319
+./data-ingest --input-file=data.json --input-format=otlpjson --collector-url=http://collector.example.com:4317 --output-file=received.json --receiver-port=4319
 ```

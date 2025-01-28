@@ -19,6 +19,7 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
 
 - Receive OTLP data via an endpoint: The tool can receive OTLP data through an endpoint and store the received payload in a specified file in OTLP Json format.
 
+- Send the data read from the JSON file to an OTLP endpoint via gRPC.
 ## Building
 
 To build the CLI, execute the following command:

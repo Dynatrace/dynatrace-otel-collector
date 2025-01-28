@@ -27,11 +27,12 @@ The tool accepts the following input parameters:
 - `--input-format`: The input format of the ingested data (options: `otlpjson`, `syslog`, `systemd`). 
 - `--collector-url`: The URL of the OpenTelemetry collector.
 - `--output-file`: The file in which to store the received data.
+- `--receiver-port`: The port of the OTLP receiver created to act as a sink for the collector.
 
 ## Example Commands
 
 1. Send OTLP JSON data to a collector:
 
 ```
-otlp-data-ingest --input-file=data.json --input-format=otlpjson --collector-url=http://collector.example.com:4317 --output-file=received.json
+otlp-data-ingest --input-file=data.json --input-format=otlpjson --collector-url=http://collector.example.com:4317 --output-file=received.json --receiver-port=4319
 ```

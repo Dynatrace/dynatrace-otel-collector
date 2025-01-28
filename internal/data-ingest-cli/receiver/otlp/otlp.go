@@ -1,7 +1,9 @@
 package otlp
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/plog/plogotlp"
@@ -100,9 +102,7 @@ func (t *traceService) Export(_ context.Context, req ptraceotlp.ExportRequest) (
 		return ptraceotlp.NewExportResponse(), nil
 	}
 
-	if err := os.WriteFile(t.outputFile, traces, os.ModePerm); err != nil {
-		log.Printf("Could not write received data to file: %v\n", err)
-	}
+	writeToFile(t.outputFile, traces)
 
 	t.receivedDataChan <- struct{}{}
 	return ptraceotlp.NewExportResponse(), nil
@@ -122,9 +122,7 @@ func (m *metricsService) Export(_ context.Context, req pmetricotlp.ExportRequest
 		return pmetricotlp.NewExportResponse(), nil
 	}
 
-	if err := os.WriteFile(m.outputFile, metrics, os.ModePerm); err != nil {
-		log.Printf("Could not write received data to file: %v\n", err)
-	}
+	writeToFile(m.outputFile, metrics)
 
 	m.receivedDataChan <- struct{}{}
 	return pmetricotlp.NewExportResponse(), nil
@@ -136,18 +134,26 @@ type logsService struct {
 	receivedDataChan chan struct{}
 }
 
-func (m *logsService) Export(_ context.Context, req plogotlp.ExportRequest) (plogotlp.ExportResponse, error) {
+func (l *logsService) Export(_ context.Context, req plogotlp.ExportRequest) (plogotlp.ExportResponse, error) {
 	logsMarshaler := &plog.JSONMarshaler{}
-	metrics, err := logsMarshaler.MarshalLogs(req.Logs())
+	logs, err := logsMarshaler.MarshalLogs(req.Logs())
 	if err != nil {
 		log.Printf("Could not marshal metrics: %v\n", err)
 		return plogotlp.NewExportResponse(), nil
 	}
 
-	if err := os.WriteFile(m.outputFile, metrics, os.ModePerm); err != nil {
+	writeToFile(l.outputFile, logs)
+
+	l.receivedDataChan <- struct{}{}
+	return plogotlp.NewExportResponse(), nil
+}
+
+func writeToFile(dest string, raw []byte) {
+	var prettyJSON bytes.Buffer
+	if err := json.Indent(&prettyJSON, raw, "", "\t"); err != nil {
+		log.Printf("Could not format JSON string: %v\n", err)
+	}
+	if err := os.WriteFile(dest, prettyJSON.Bytes(), os.ModePerm); err != nil {
 		log.Printf("Could not write received data to file: %v\n", err)
 	}
-
-	m.receivedDataChan <- struct{}{}
-	return plogotlp.NewExportResponse(), nil
 }

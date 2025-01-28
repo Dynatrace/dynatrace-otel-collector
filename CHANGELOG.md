@@ -4,6 +4,61 @@
 
 <!-- next version -->
 
+## v0.22.0
+
+This release includes version 0.118.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.118.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.118.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.118.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/stanza`: Move `filelog.container.removeOriginalTimeField` feature gate to stable (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33389)
+- `pkg/ottl`: Support dynamic indexing of maps and slices. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36644)
+
+### 💡 Enhancements 💡
+
+- `exporterhelper`: Add blocking option to control queue behavior when full (https://github.com/open-telemetry/opentelemetry-collector/pull/12090)
+- `debugexporter`: Add EventName to debug exporter for Logs. EventName was added as top-level field in the LogRecord from 1.5.0 of proto definition. (https://github.com/open-telemetry/opentelemetry-collector/pull/11966)
+- `confighttp`: Added support for configuring compression levels. (https://github.com/open-telemetry/opentelemetry-collector/pull/10467)
+  A new configuration option called CompressionParams has been added to confighttp.
+  This allows users to configure the compression levels for the confighttp client.
+- `exporterhelper`: Change the memory queue implementation to not pre-allocate capacity objects. (https://github.com/open-telemetry/opentelemetry-collector/pull/12070)
+  This change improves memory usage of the collector under low utilization and is a prerequisite for supporting different other size limitations (number of items, bytes).
+- `pkg/ottl`: Add the `Nanosecond` converter to return the nanosecond component from the specified time.Time (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37042)
+- `pkg/ottl`: Add the `Second` converter to return the second component from the specified time.Time (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37042)
+- `pkg/ottl`: Enhanced error messages for invalid cache access and introduced options to configure their values within the OTTL contexts. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/29017)
+- `pkg/ottl`: Add the `FormatTime` function to convert `time.Time` values to human-readable strings (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36870)
+- `resourcedetectionprocessor`: This enhancement detects AWS EKS cloud account ID (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37179)
+- `resourcedetectionprocessor`: Introduce kubeadm detector to retrieve local cluster name. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35116)
+- `k8sattributesprocessor`: For pods with only one container, the `container.id` and `k8s.container.name` are not longer required in the resource attributes to add the container attributes (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34189)
+- `tailsamplingprocessor`: Added debug logging to the sampling decision caches. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37038)
+- `tailsamplingprocessor`: Improved not sampled decision cache usage and deleting traces from the internal map when they are in a decision cache. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37189)
+
+### 🧰 Bug fixes 🧰
+
+- `k8sattributesprocessor`: Ensure the pods gathered by the processor contain the information about their related replica sets and deployments after the initial sync (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37056)
+- `pkg/ottl`: Fix bug with `replace_all_matches` and `replace_all_patterns` that caused non-string values to be changed to empty string when matching against empty string. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37071)
+- `tailsamplingprocessor`: Fixed sampling policy evaluation debug logging batch metrics (e.g. sampled). (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37040)
+- `tailsamplingprocessor`: Late span age histogram should include sampled traces. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37180)
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `release`: Add builds for ppc64le and s390x architectures (#424)
+
 ## v0.21.0
 
 This release includes version v0.117.0 of the upstream Collector components.

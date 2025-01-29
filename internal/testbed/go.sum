@@ -2914,6 +2914,8 @@ github.com/open-telemetry/opentelemetry-collector-contrib/internal/splunk v0.118
 github.com/open-telemetry/opentelemetry-collector-contrib/internal/splunk v0.118.0/go.mod h1:uAVNa10cWbfJsWpf73NyVi93AIR9Kk/+ygXHKKXoWt8=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/batchperresourceattr v0.118.0 h1:jShgD4zzFxDAWXuk+5kiDuNxLc9222s4qUSISIybJo4=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/batchperresourceattr v0.118.0/go.mod h1:QV0JiEz23p+0jDeAA4IfmX9/nAhGPrn9ZEnFKqS8r7w=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.0.0-20250129085704-b4c7173fa7c1 h1:yJoinbmdMJrsejsDUUxDsYDySNOcCA46Iwu7BUSNNfk=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.0.0-20250129085704-b4c7173fa7c1/go.mod h1:Tt2VCmd4VFkCWKuri3S8Z8TIE8J+k5F1AhQpB3eJ/18=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata v0.118.0 h1:vuPvyNTWyqJVp4hJ/Gr1i5Gqd89lFaaOjXtsVlLUlfs=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata v0.118.0/go.mod h1:rv8ynKZtox4Lahm+1eG8zyyAsARoKiM0TZNqlMwDfE8=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.118.0 h1:Pho1MwH+cvosN6pOinGhunBwAJyyAwFnbIW5x7N/37A=
@@ -2938,6 +2940,8 @@ github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/signalf
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/signalfx v0.118.0/go.mod h1:U0toY8IlyiYci01k+ZgeG7Pb742Ral9MTvco9MPOJ3c=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.118.0 h1:Ef0H9eY8EtZ6yqZvbyEFiE5ElQNLiADYo2KVdR7a3jU=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.118.0/go.mod h1:VqUc4LGE97Qh8RddrA7+fkd4OAzhhkQ59/oE0q3TfqI=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.0.0-20250129085704-b4c7173fa7c1 h1:4LlxlpQAIq7VMBn7ipMrMIZY566I8np8nrHcGuCCU3I=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.0.0-20250129085704-b4c7173fa7c1/go.mod h1:qAg6wgkUiX8Ue6cLLsZS//d5TvRPmj8j7ieJbtnpHgY=
 github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jaegerreceiver v0.118.0 h1:ABsdtuXGh1YjOkiVr19ZsaHAAfM+c7QiccF0yinhb4s=
 github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jaegerreceiver v0.118.0/go.mod h1:bpfe1oPTuiP6ot4tkPvSVYPMkYshLGjNPrJvoDk1ZCg=
 github.com/open-telemetry/opentelemetry-collector-contrib/receiver/opencensusreceiver v0.118.0 h1:xBhG84x+FIlIuaeFFRa4GB6tEBpUsyXCdj00EFobjlc=
@@ -3205,8 +3209,8 @@ go.opentelemetry.io/collector/internal/sharedcomponent v0.118.0 h1:aCiwkzBL4VyPE
 go.opentelemetry.io/collector/internal/sharedcomponent v0.118.0/go.mod h1:drV6vD4acelEUOjM9cgxV5ILs8q2AYUh3EV+Pljdorg=
 go.opentelemetry.io/collector/otelcol v0.118.0 h1:uSD3wU0sO4vsw5VvWI2yUFLggLdq1BWN/nC1LJXIhMg=
 go.opentelemetry.io/collector/otelcol v0.118.0/go.mod h1:OdKz/AXj+ewCwXp/acZCBIoMIYiIxeNRNkbqUXvWi+o=
-go.opentelemetry.io/collector/pdata v1.24.0 h1:D6j92eAzmAbQgivNBUnt8r9juOl8ugb+ihYynoFZIEg=
-go.opentelemetry.io/collector/pdata v1.24.0/go.mod h1:cf3/W9E/uIvPS4MR26SnMFJhraUCattzzM6qusuONuc=
+go.opentelemetry.io/collector/pdata v1.24.1-0.20250123125445-24f88da7b583 h1:dXIRezA9B0F1c0enm5U0jzTu4BDbxankZHpRbTiKItc=
+go.opentelemetry.io/collector/pdata v1.24.1-0.20250123125445-24f88da7b583/go.mod h1:6lE9r5x41Z9GyvTSBetXSHRikhiZZK5ApmFtX35ZbXc=
 go.opentelemetry.io/collector/pdata/pprofile v0.118.0 h1:VK/fr65VFOwEhsSGRPj5c3lCv0yIK1Kt0sZxv9WZBb8=
 go.opentelemetry.io/collector/pdata/pprofile v0.118.0/go.mod h1:eJyP/vBm179EghV3dPSnamGAWQwLyd+4z/3yG54YFoQ=
 go.opentelemetry.io/collector/pdata/testdata v0.118.0 h1:5N0w1SX9KIRkwvtkrpzQgXy9eGk3vfNG0ds6mhEPMIM=

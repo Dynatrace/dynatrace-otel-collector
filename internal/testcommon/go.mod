@@ -3,7 +3,7 @@ module testcommon
 go 1.23.5
 
 require (
-	github.com/docker/docker v27.5.1+incompatible
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.0.0-20250129085704-b4c7173fa7c1
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.118.0
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component/componenttest v0.118.0
@@ -31,6 +31,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/distribution/reference v0.6.0 // indirect
+	github.com/docker/docker v27.5.1+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/ebitengine/purego v0.8.1 // indirect

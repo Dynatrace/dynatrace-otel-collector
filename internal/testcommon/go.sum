@@ -252,6 +252,8 @@ github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/opencen
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/opencensus v0.118.0/go.mod h1:MTO5isJUZBQ+h1WRaHnLJA2UZmAVjwG5U8CqohWPdyI=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.118.0 h1:Ef0H9eY8EtZ6yqZvbyEFiE5ElQNLiADYo2KVdR7a3jU=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.118.0/go.mod h1:VqUc4LGE97Qh8RddrA7+fkd4OAzhhkQ59/oE0q3TfqI=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.0.0-20250129085704-b4c7173fa7c1 h1:4LlxlpQAIq7VMBn7ipMrMIZY566I8np8nrHcGuCCU3I=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.0.0-20250129085704-b4c7173fa7c1/go.mod h1:qAg6wgkUiX8Ue6cLLsZS//d5TvRPmj8j7ieJbtnpHgY=
 github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jaegerreceiver v0.118.0 h1:ABsdtuXGh1YjOkiVr19ZsaHAAfM+c7QiccF0yinhb4s=
 github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jaegerreceiver v0.118.0/go.mod h1:bpfe1oPTuiP6ot4tkPvSVYPMkYshLGjNPrJvoDk1ZCg=
 github.com/open-telemetry/opentelemetry-collector-contrib/receiver/opencensusreceiver v0.118.0 h1:xBhG84x+FIlIuaeFFRa4GB6tEBpUsyXCdj00EFobjlc=

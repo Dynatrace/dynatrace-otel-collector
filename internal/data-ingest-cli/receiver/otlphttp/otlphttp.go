@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver"
@@ -22,7 +21,6 @@ type Config struct {
 type OTLPHTTPReceiver struct {
 	config           Config
 	receivedDataChan chan struct{}
-	wg               sync.WaitGroup
 }
 
 func NewOTLPHTTPReceiver(c Config) *OTLPHTTPReceiver {
@@ -41,9 +39,7 @@ func (r *OTLPHTTPReceiver) Start() error {
 		Addr: fmt.Sprintf(":%d", r.config.Port),
 	}
 
-	r.wg.Add(1)
 	go func() {
-		defer r.wg.Done()
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Could not listen on %d: %v\n", r.config.Port, err)
 		}
@@ -56,7 +52,6 @@ func (r *OTLPHTTPReceiver) Stop() {
 	case <-r.receivedDataChan:
 	case <-time.After(10 * time.Second):
 	}
-	r.wg.Wait()
 }
 
 func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request) {
@@ -76,8 +71,14 @@ func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request
 	unmarshaler := ptrace.ProtoUnmarshaler{}
 	traces, err := unmarshaler.UnmarshalTraces(body)
 	if err != nil {
-		http.Error(w, "Failed to unmarshal traces", http.StatusBadRequest)
-		return
+		log.Println("Failed to unmarshal traces to proto, checking JSON...")
+		unmarshaler := ptrace.JSONUnmarshaler{}
+		traces, err = unmarshaler.UnmarshalTraces(body)
+		if err != nil {
+			http.Error(w, "Failed to unmarshal traces", http.StatusBadRequest)
+			log.Println("Failed to unmarshal traces to JSON or proto")
+			return
+		}
 	}
 
 	tracesMarshaler := &ptrace.JSONMarshaler{}
@@ -110,9 +111,14 @@ func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Reques
 	unmarshaler := pmetric.ProtoUnmarshaler{}
 	metrics, err := unmarshaler.UnmarshalMetrics(body)
 	if err != nil {
-		http.Error(w, "Failed to unmarshal metrics", http.StatusBadRequest)
-		log.Println("Received metrics error ", err.Error())
-		return
+		log.Println("Failed to unmarshal metrics to proto, checking JSON...")
+		unmarshaler := pmetric.JSONUnmarshaler{}
+		metrics, err = unmarshaler.UnmarshalMetrics(body)
+		if err != nil {
+			http.Error(w, "Failed to unmarshal metrics", http.StatusBadRequest)
+			log.Println("Failed to unmarshal metrics to JSON or proto")
+			return
+		}
 	}
 
 	metricsMarshaler := &pmetric.JSONMarshaler{}
@@ -144,8 +150,14 @@ func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) 
 	unmarshaler := plog.ProtoUnmarshaler{}
 	logs, err := unmarshaler.UnmarshalLogs(body)
 	if err != nil {
-		http.Error(w, "Failed to unmarshal logs", http.StatusBadRequest)
-		return
+		log.Println("Failed to unmarshal logs to proto, checking JSON...")
+		unmarshaler := plog.JSONUnmarshaler{}
+		logs, err = unmarshaler.UnmarshalLogs(body)
+		if err != nil {
+			http.Error(w, "Failed to unmarshal logs", http.StatusBadRequest)
+			log.Println("Failed to unmarshal logs to JSON or proto")
+			return
+		}
 	}
 
 	logsMarshaler := &plog.JSONMarshaler{}

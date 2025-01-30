@@ -56,13 +56,17 @@ func (r *OTLPHTTPReceiver) Stop() {
 
 func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		err := fmt.Errorf("Invalid request method %s", req.Method)
+		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
+		log.Fatalln(err)
 		return
 	}
 
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
-		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		err := fmt.Errorf("Failed to read request body %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatalln(err)
 		return
 	}
 
@@ -76,7 +80,7 @@ func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request
 		traces, err = unmarshaler.UnmarshalTraces(body)
 		if err != nil {
 			http.Error(w, "Failed to unmarshal traces", http.StatusBadRequest)
-			log.Println("Failed to unmarshal traces to JSON or proto")
+			log.Fatalln("Failed to unmarshal traces to JSON and proto")
 			return
 		}
 	}
@@ -84,7 +88,9 @@ func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request
 	tracesMarshaler := &ptrace.JSONMarshaler{}
 	data, err := tracesMarshaler.MarshalTraces(traces)
 	if err != nil {
-		http.Error(w, "Failed to marshal traces", http.StatusInternalServerError)
+		err := fmt.Errorf("Failed to marshal traces to JSON %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatalln(err)
 		return
 	}
 
@@ -96,13 +102,17 @@ func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request
 func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Request) {
 	log.Println("Received metrics")
 	if req.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		err := fmt.Errorf("Invalid request method %s", req.Method)
+		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
+		log.Fatalln(err)
 		return
 	}
 
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
-		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		err := fmt.Errorf("Failed to read request body %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatalln(err)
 		return
 	}
 
@@ -116,7 +126,7 @@ func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Reques
 		metrics, err = unmarshaler.UnmarshalMetrics(body)
 		if err != nil {
 			http.Error(w, "Failed to unmarshal metrics", http.StatusBadRequest)
-			log.Println("Failed to unmarshal metrics to JSON or proto")
+			log.Fatalln("Failed to unmarshal metrics to JSON and proto")
 			return
 		}
 	}
@@ -124,7 +134,9 @@ func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Reques
 	metricsMarshaler := &pmetric.JSONMarshaler{}
 	data, err := metricsMarshaler.MarshalMetrics(metrics)
 	if err != nil {
-		http.Error(w, "Failed to marshal metrics", http.StatusInternalServerError)
+		err := fmt.Errorf("Failed to marshal metrics to JSON %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatalln(err)
 		return
 	}
 
@@ -135,13 +147,17 @@ func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Reques
 
 func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		err := fmt.Errorf("Invalid request method %s", req.Method)
+		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
+		log.Fatalln(err)
 		return
 	}
 
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
-		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		err := fmt.Errorf("Failed to read request body %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatalln(err)
 		return
 	}
 
@@ -155,7 +171,7 @@ func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) 
 		logs, err = unmarshaler.UnmarshalLogs(body)
 		if err != nil {
 			http.Error(w, "Failed to unmarshal logs", http.StatusBadRequest)
-			log.Println("Failed to unmarshal logs to JSON or proto")
+			log.Fatalln("Failed to unmarshal logs to JSON and proto")
 			return
 		}
 	}
@@ -163,7 +179,9 @@ func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) 
 	logsMarshaler := &plog.JSONMarshaler{}
 	data, err := logsMarshaler.MarshalLogs(logs)
 	if err != nil {
-		http.Error(w, "Failed to marshal logs", http.StatusInternalServerError)
+		err := fmt.Errorf("Failed to marshal logs to JSON %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatalln(err)
 		return
 	}
 

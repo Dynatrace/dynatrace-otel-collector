@@ -36,7 +36,7 @@ func New(url, protocol string) (*StatsdSender, error) {
 }
 
 func (s *StatsdSender) SendMetrics(ctx context.Context, metrics []byte) error {
-	log.Printf("Sending metrics to %s via \n", s.url)
+	log.Printf("Sending metrics to %s via %s\n", s.url, s.protocol)
 
 	switch s.protocol {
 	case UDP, UDP4, UDP6:
@@ -51,47 +51,20 @@ func (s *StatsdSender) SendMetrics(ctx context.Context, metrics []byte) error {
 }
 
 func (s *StatsdSender) sendUDPData(ctx context.Context, metrics []byte) error {
+	log.Printf("Using %s protocol\n", s.protocol)
+
 	// Resolve the UDP address
 	udpAddr, err := net.ResolveUDPAddr(s.protocol, s.url)
 	if err != nil {
-		log.Fatalf("Error resolving address: %v", err)
-		return err
+		return fmt.Errorf("Error resolving address: %v", err)
 	}
 
 	// Create a UDP connection
-	conn, err := net.DialUDP("udp4", nil, udpAddr)
+	conn, err := net.DialUDP(s.protocol, nil, udpAddr)
 	if err != nil {
-		log.Fatalf("Error creating UDP connection: %v", err)
-		return err
-	}
-	defer conn.Close()
-
-	// Set a write deadline
-	conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
-
-	// Send the data
-	_, err = conn.Write(metrics)
-	if err != nil {
-		log.Fatalf("Error sending data: %v", err)
+		return fmt.Errorf("Error creating UDP connection: %v", err)
 	}
 
-	return err
-}
-
-func (s *StatsdSender) sendTCPData(ctx context.Context, metrics []byte) error {
-	// Resolve the TCP address
-	tcpAddr, err := net.ResolveTCPAddr(s.protocol, s.url)
-	if err != nil {
-		log.Fatalf("Error resolving TCP address: %v", err)
-		return err
-	}
-
-	// Create a TCP connection
-	conn, err := net.DialTCP("tcp4", nil, tcpAddr)
-	if err != nil {
-		log.Fatalf("Error creating TCP connection: %v", err)
-		return err
-	}
 	defer conn.Close()
 
 	// Set a write deadline
@@ -100,33 +73,58 @@ func (s *StatsdSender) sendTCPData(ctx context.Context, metrics []byte) error {
 	// Send the data
 	_, err = conn.Write(metrics)
 	if err != nil {
-		log.Fatalf("Error sending data: %v", err)
+		return fmt.Errorf("Error sending data: %v", err)
 	}
 
-	return err
+	return nil
+}
+
+func (s *StatsdSender) sendTCPData(ctx context.Context, metrics []byte) error {
+	// Resolve the TCP address
+	tcpAddr, err := net.ResolveTCPAddr(s.protocol, s.url)
+	if err != nil {
+		return fmt.Errorf("Error resolving TCP address: %v", err)
+	}
+
+	// Create a TCP connection
+	conn, err := net.DialTCP(s.protocol, nil, tcpAddr)
+	if err != nil {
+		return fmt.Errorf("Error creating TCP connection: %v", err)
+	}
+
+	defer conn.Close()
+
+	// Set a write deadline
+	conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
+
+	// Send the data
+	_, err = conn.Write(metrics)
+	if err != nil {
+		return fmt.Errorf("Error sending data: %v", err)
+	}
+
+	return nil
 }
 
 func (s *StatsdSender) sendUnixData(ctx context.Context, metrics []byte) error {
 	// Resolve the Unixgram address
 	addr, err := net.ResolveUnixAddr(s.protocol, s.url)
 	if err != nil {
-		log.Fatalf("Error resolving Unix address: %v", err)
-		return err
+		return fmt.Errorf("Error resolving Unix address: %v", err)
 	}
 
 	// Create a Unixgram connection
 	conn, err := net.DialUnix(s.protocol, nil, addr)
 	if err != nil {
-		log.Fatalf("Error creating Unixgram connection: %v", err)
-		return err
+		return fmt.Errorf("Error creating Unixgram connection: %v", err)
 	}
 	defer conn.Close()
 
 	// Send the data
 	_, err = conn.Write(metrics)
 	if err != nil {
-		log.Fatalf("Error sending data: %v", err)
+		return fmt.Errorf("Error sending data: %v", err)
 	}
 
-	return err
+	return nil
 }

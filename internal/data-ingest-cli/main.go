@@ -19,6 +19,7 @@ func main() {
 	statsdProtocol := flag.String("statsd-protocol", "udp4", "Statsd protocol to send metrics (options: 'udp', 'udp4', 'udp6', 'tcp', 'tcp4', 'tcp6', 'unixgram')")
 	otlpSignalType := flag.String("otlp-signal-type", "", "OTLP signal type (options: 'logs', 'traces', 'metrics')")
 	receiverPort := flag.Int("receiver-port", 0, "OTLP Receiver port. If set, the tool will open a grpc server on the specified port to receive data and store it in an output file")
+	receiverType := flag.String("receiver-type", "http", "The type of receiver created to act as a sink for the collector (options: `http`, `grpc`)")
 
 	// Parse the CLI arguments
 	flag.Parse()
@@ -34,6 +35,7 @@ func main() {
 	fmt.Println("Input Format:", *inputFormat)
 	fmt.Println("OTLP Signal Type:", *otlpSignalType)
 	fmt.Println("Statsd protocol:", *statsdProtocol)
+	fmt.Println("Receiver type:", *receiverType)
 
 	switch *inputFormat {
 	case "otlp-json":
@@ -43,6 +45,7 @@ func main() {
 			SignalType:   *otlpSignalType,
 			OutputFile:   *outputFile,
 			ReceiverPort: *receiverPort,
+			ReceiverType: *receiverType,
 		})
 		if err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())
@@ -62,6 +65,7 @@ func main() {
 			OutputFile:   *outputFile,
 			ReceiverPort: *receiverPort,
 			Protocol:     *statsdProtocol,
+			ReceiverType: *receiverType,
 		})
 		if err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())

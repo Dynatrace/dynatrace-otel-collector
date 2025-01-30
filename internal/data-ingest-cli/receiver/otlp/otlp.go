@@ -1,10 +1,14 @@
 package otlp
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
+	"log"
+	"net"
+	"sync"
+	"time"
+
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/plog/plogotlp"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -13,11 +17,6 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
 	"google.golang.org/grpc"
 	_ "google.golang.org/grpc/encoding/gzip"
-	"log"
-	"net"
-	"os"
-	"sync"
-	"time"
 )
 
 type Config struct {
@@ -103,7 +102,7 @@ func (t *traceService) Export(_ context.Context, req ptraceotlp.ExportRequest) (
 		return ptraceotlp.NewExportResponse(), nil
 	}
 
-	writeToFile(t.outputFile, traces)
+	receiver.WriteToFile(t.outputFile, traces)
 
 	t.receivedDataChan <- struct{}{}
 	return ptraceotlp.NewExportResponse(), nil
@@ -124,7 +123,7 @@ func (m *metricsService) Export(_ context.Context, req pmetricotlp.ExportRequest
 		return pmetricotlp.NewExportResponse(), nil
 	}
 
-	writeToFile(m.outputFile, metrics)
+	receiver.WriteToFile(m.outputFile, metrics)
 
 	m.receivedDataChan <- struct{}{}
 	return pmetricotlp.NewExportResponse(), nil
@@ -145,19 +144,8 @@ func (l *logsService) Export(_ context.Context, req plogotlp.ExportRequest) (plo
 		return plogotlp.NewExportResponse(), nil
 	}
 
-	writeToFile(l.outputFile, logs)
+	receiver.WriteToFile(l.outputFile, logs)
 
 	l.receivedDataChan <- struct{}{}
 	return plogotlp.NewExportResponse(), nil
-}
-
-func writeToFile(dest string, raw []byte) {
-	var prettyJSON bytes.Buffer
-	if err := json.Indent(&prettyJSON, raw, "", "\t"); err != nil {
-		log.Printf("Could not format JSON string: %v\n", err)
-	}
-	if err := os.WriteFile(dest, prettyJSON.Bytes(), os.ModePerm); err != nil {
-		log.Printf("Could not write received data to file: %v\n", err)
-	}
-	log.Printf("Stored received data in %s\n", dest)
 }

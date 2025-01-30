@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"time"
 
+	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	appsv1 "k8s.io/api/apps/v1"
-	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
@@ -21,56 +21,17 @@ import (
 	"k8s.io/client-go/dynamic"
 )
 
-type OperationFunc func(client *K8sClient, manifest []byte) (*unstructured.Unstructured, error)
+type OperationFunc func(client *otelk8stest.K8sClient, manifest []byte) (*unstructured.Unstructured, error)
 
-func CreateObject(client *K8sClient, manifest []byte) (*unstructured.Unstructured, error) {
-	obj, gvk, err := ConvertBytesToUnstructured(manifest)
-	if err != nil {
-		return nil, err
-	}
-	gvr, err := client.Mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
-	if err != nil {
-		return nil, err
-	}
-	var resource dynamic.ResourceInterface
-	if gvr.Scope.Name() == meta.RESTScopeNameNamespace {
-		resource = client.DynamicClient.Resource(gvr.Resource).Namespace(obj.GetNamespace())
-	} else {
-		// cluster-scoped resources
-		resource = client.DynamicClient.Resource(gvr.Resource)
-	}
-
-	return resource.Create(context.Background(), obj, metav1.CreateOptions{})
-}
-
-func DeleteObject(client *K8sClient, obj *unstructured.Unstructured) error {
-	gvk := obj.GroupVersionKind()
-	gvr, err := client.Mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
-	if err != nil {
-		return err
-	}
-	var resource dynamic.ResourceInterface
-	if gvr.Scope.Name() == meta.RESTScopeNameNamespace {
-		resource = client.DynamicClient.Resource(gvr.Resource).Namespace(obj.GetNamespace())
-	} else {
-		// cluster-scoped resources
-		resource = client.DynamicClient.Resource(gvr.Resource)
-	}
-	deletePolicy := metav1.DeletePropagationForeground
-	return resource.Delete(context.Background(), obj.GetName(), metav1.DeleteOptions{
-		PropagationPolicy: &deletePolicy,
-	})
-}
-
-func DeleteObjectFromManifest(client *K8sClient, manifest []byte) (*unstructured.Unstructured, error) {
+func DeleteObjectFromManifest(client *otelk8stest.K8sClient, manifest []byte) (*unstructured.Unstructured, error) {
 	unstruct, _, err := ConvertBytesToUnstructured(manifest)
 	if err != nil {
 		return nil, err
 	}
-	return nil, DeleteObject(client, unstruct)
+	return nil, otelk8stest.DeleteObject(client, unstruct)
 }
 
-func PerformOperationOnYAMLFiles(client *K8sClient, dirPath string, operation OperationFunc) error {
+func PerformOperationOnYAMLFiles(client *otelk8stest.K8sClient, dirPath string, operation OperationFunc) error {
 	files, err := os.ReadDir(dirPath)
 	if err != nil {
 		return fmt.Errorf("error reading directory: %v", err)

@@ -7,8 +7,8 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	"github.com/stretchr/testify/require"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/idutils"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
@@ -61,10 +61,10 @@ func assertExpectedSpansAreInReceived(t *testing.T, expected, actual []ptrace.Tr
 					recdSpan := spans.At(k)
 					require.Contains(t,
 						expectedMap,
-						idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
+						traceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID()),
 						fmt.Sprintf("Span with ID: %q not found among expected spans", recdSpan.SpanID()))
 
-					err := ptracetest.CompareTraces(expectedMap[idutils.TraceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())],
+					err := ptracetest.CompareTraces(expectedMap[traceIDAndSpanIDToString(recdSpan.TraceID(), recdSpan.SpanID())],
 						td,
 						ptracetest.IgnoreSpansOrder(),
 						ptracetest.IgnoreEndTimestamp(),
@@ -98,10 +98,14 @@ func populateSpansMap(expectedMap map[string]ptrace.Traces, tds []ptrace.Traces)
 				spans := ilss.At(j).Spans()
 				for k := 0; k < spans.Len(); k++ {
 					span := spans.At(k)
-					key := idutils.TraceIDAndSpanIDToString(span.TraceID(), span.SpanID())
+					key := traceIDAndSpanIDToString(span.TraceID(), span.SpanID())
 					expectedMap[key] = td
 				}
 			}
 		}
 	}
+}
+
+func traceIDAndSpanIDToString(traceID pcommon.TraceID, spanID pcommon.SpanID) string {
+	return fmt.Sprintf("%s-%s", traceID.String(), spanID.String())
 }

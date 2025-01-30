@@ -89,7 +89,9 @@ func TestLoad_Combined(t *testing.T) {
 	require.NoError(t, err)
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := otelk8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), map[string]string{}, "")
+	collectorObjs := otelk8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), map[string]string{
+		"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+	}, "")
 
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),

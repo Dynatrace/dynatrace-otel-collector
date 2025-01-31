@@ -44,23 +44,19 @@ func New(p Config) (*Cmd, error) {
 	c.sender = sender
 
 	if p.ReceiverPort > 0 && p.OutputFile != "" {
-		if p.ReceiverType == "grpc" {
-			receiver, err := otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
+		switch p.ReceiverType {
+		case "grpc":
+			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
 				Port:       p.ReceiverPort,
 				OutputFile: p.OutputFile,
 			})
-			if err != nil {
-				return nil, err
-			}
-
-			c.receiver = receiver
-		} else {
-			receiver := otlphttp.NewOTLPHTTPReceiver(otlphttp.Config{
+		case "http":
+			c.receiver = otlphttp.NewOTLPHTTPReceiver(otlphttp.Config{
 				Port:       p.ReceiverPort,
 				OutputFile: p.OutputFile,
 			})
-
-			c.receiver = receiver
+		default:
+			return nil, fmt.Errorf("invalid receiver type %s", p.ReceiverType)
 		}
 	}
 

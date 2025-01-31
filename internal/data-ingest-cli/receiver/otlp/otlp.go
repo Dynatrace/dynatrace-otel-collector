@@ -33,15 +33,13 @@ type OTLPReceiver struct {
 	wg sync.WaitGroup
 }
 
-func NewOTLPReceiver(c Config) (*OTLPReceiver, error) {
-	grpcServer := grpc.NewServer()
-
+func NewOTLPReceiver(c Config) *OTLPReceiver {
 	return &OTLPReceiver{
-		server:           grpcServer,
+		server:           grpc.NewServer(),
 		config:           c,
 		wg:               sync.WaitGroup{},
 		receivedDataChan: make(chan struct{}),
-	}, nil
+	}
 }
 
 func (r *OTLPReceiver) Start() error {

@@ -40,7 +40,7 @@ The tool accepts the following input parameters:
 - `--collector-url`: The URL of the OpenTelemetry collector.
 - `--output-file`: The file in which to store the received data.
 - `--receiver-port`: The port of the OTLP receiver created to act as a sink for the collector.
-- `--receiver-type`: The type of receiver created to act as a sink for the collector (options: `http`, `grpc`).
+- `--receiver-type`: The type of receiver created to act as a sink for the collector (options: `http`, `grpc`). Please not, that when using the `http` option with Collector's `otlphttp exporter`, you need to disable the compression on the exporter, as no decompression is supported.
 - `--statsd-protocol`: Statsd protocol to send metrics (options: 'udp', 'udp4', 'udp6', 'tcp', 'tcp4', 'tcp6', 'unixgram').
 
 ## Example Commands

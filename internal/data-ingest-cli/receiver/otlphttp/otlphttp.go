@@ -55,22 +55,13 @@ func (r *OTLPHTTPReceiver) Stop() {
 }
 
 func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		err := fmt.Errorf("Invalid request method %s", req.Method)
-		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
-		log.Fatalln(err)
-		return
-	}
-
-	body, err := io.ReadAll(req.Body)
+	log.Println("Received metrics")
+	body, err, status := r.readRequest(w, req)
 	if err != nil {
-		err := fmt.Errorf("Failed to read request body %s", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), status)
 		log.Fatalln(err)
 		return
 	}
-
-	defer req.Body.Close()
 
 	unmarshaler := ptrace.ProtoUnmarshaler{}
 	traces, err := unmarshaler.UnmarshalTraces(body)
@@ -101,22 +92,12 @@ func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request
 
 func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Request) {
 	log.Println("Received metrics")
-	if req.Method != http.MethodPost {
-		err := fmt.Errorf("Invalid request method %s", req.Method)
-		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
-		log.Fatalln(err)
-		return
-	}
-
-	body, err := io.ReadAll(req.Body)
+	body, err, status := r.readRequest(w, req)
 	if err != nil {
-		err := fmt.Errorf("Failed to read request body %s", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), status)
 		log.Fatalln(err)
 		return
 	}
-
-	defer req.Body.Close()
 
 	unmarshaler := pmetric.ProtoUnmarshaler{}
 	metrics, err := unmarshaler.UnmarshalMetrics(body)
@@ -146,22 +127,13 @@ func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Reques
 }
 
 func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		err := fmt.Errorf("Invalid request method %s", req.Method)
-		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
-		log.Fatalln(err)
-		return
-	}
-
-	body, err := io.ReadAll(req.Body)
+	log.Println("Received metrics")
+	body, err, status := r.readRequest(w, req)
 	if err != nil {
-		err := fmt.Errorf("Failed to read request body %s", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), status)
 		log.Fatalln(err)
 		return
 	}
-
-	defer req.Body.Close()
 
 	unmarshaler := plog.ProtoUnmarshaler{}
 	logs, err := unmarshaler.UnmarshalLogs(body)
@@ -188,4 +160,21 @@ func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) 
 	receiver.WriteToFile(r.config.OutputFile, data)
 	r.receivedDataChan <- struct{}{}
 	w.WriteHeader(http.StatusOK)
+}
+
+func (r *OTLPHTTPReceiver) readRequest(w http.ResponseWriter, req *http.Request) ([]byte, error, int) {
+	if req.Method != http.MethodPost {
+		err := fmt.Errorf("Invalid request method %s", req.Method)
+		return nil, err, http.StatusMethodNotAllowed
+	}
+
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		err := fmt.Errorf("Failed to read request body %s", err.Error())
+		return nil, err, http.StatusMethodNotAllowed
+	}
+
+	defer req.Body.Close()
+
+	return body, nil, 0
 }

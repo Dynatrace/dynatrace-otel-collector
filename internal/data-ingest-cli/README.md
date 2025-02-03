@@ -11,7 +11,7 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
 
 ## Features
 
-- Read OTLP JSON data from a file: The tool can read OTLP data from a specified file containing data in different formats and send it to an OpenTelemetry collector.
+- Read data from a file: The tool can read data from a specified file containing data in different formats and send it to an OpenTelemetry collector.
  Supported formats are:
   - OTLP Json
   - Statsd
@@ -19,12 +19,15 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
 
 - Receive OTLP data via an endpoint: The tool can receive OTLP data through an endpoint and store the received payload in a specified file in OTLP Json format.
 
-- Send the data read from the JSON file to an OTLP endpoint via gRPC.
+- Send data read from the JSON file to an OTLP endpoint via gRPC.
+
+- Send statsd data read from a plain/text file and send it to the Collector endpoint via the chosen protocol.
+
 ## Building
 
 To build the CLI, execute the following command:
 
-```
+```shell
 go build -o data-ingest
 ```
 
@@ -33,15 +36,17 @@ go build -o data-ingest
 The tool accepts the following input parameters:
 
 - `--input-file`: The name of the input file to read data from.
-- `--input-format`: The input format of the ingested data (options: `otlpjson`, `syslog`, `statsd`). 
+- `--input-format`: The input format of the ingested data (options: `otlpjson`, `syslog`, `statsd`).
 - `--collector-url`: The URL of the OpenTelemetry collector.
 - `--output-file`: The file in which to store the received data.
 - `--receiver-port`: The port of the OTLP receiver created to act as a sink for the collector.
+- `--receiver-type`: The type of receiver created to act as a sink for the collector (options: `http`, `grpc`). Please not, that when using the `http` option with Collector's `otlphttp exporter`, you need to disable the compression on the exporter, as no decompression is supported.
+- `--statsd-protocol`: Statsd protocol to send metrics (options: 'udp', 'udp4', 'udp6', 'tcp', 'tcp4', 'tcp6', 'unixgram').
 
 ## Example Commands
 
 1. Send OTLP JSON data to a collector:
 
-```
+```shell
 ./data-ingest --input-file=data.json --input-format=otlpjson --collector-url=http://collector.example.com:4317 --output-file=received.json --receiver-port=4319
 ```

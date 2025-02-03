@@ -3,12 +3,15 @@ package otlpjson
 import (
 	"context"
 	"fmt"
+	"os"
+
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver"
 	otlpreceiver "github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver/otlp"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver/otlphttp"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/sender/otlp"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
-	"os"
 )
 
 type Config struct {
@@ -17,11 +20,12 @@ type Config struct {
 	SignalType   string
 	OutputFile   string
 	ReceiverPort int
+	ReceiverType string
 }
 
 type Cmd struct {
 	sender     otlp.Sender
-	receiver   *otlpreceiver.OTLPReceiver
+	receiver   receiver.Receiver
 	signalType string
 	inputFile  string
 }
@@ -40,15 +44,20 @@ func New(p Config) (*Cmd, error) {
 	c.sender = sender
 
 	if p.ReceiverPort > 0 && p.OutputFile != "" {
-		receiver, err := otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
-			Port:       p.ReceiverPort,
-			OutputFile: p.OutputFile,
-		})
-		if err != nil {
-			return nil, err
+		switch p.ReceiverType {
+		case "grpc":
+			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
+				Port:       p.ReceiverPort,
+				OutputFile: p.OutputFile,
+			})
+		case "http":
+			c.receiver = otlphttp.NewOTLPHTTPReceiver(otlphttp.Config{
+				Port:       p.ReceiverPort,
+				OutputFile: p.OutputFile,
+			})
+		default:
+			return nil, fmt.Errorf("invalid receiver type %s", p.ReceiverType)
 		}
-
-		c.receiver = receiver
 	}
 
 	return c, nil

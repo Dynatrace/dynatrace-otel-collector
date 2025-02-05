@@ -5,7 +5,7 @@ go 1.23.5
 require (
 	github.com/goreleaser/goreleaser/v2 v2.6.1
 	go.opentelemetry.io/build-tools/chloggen v0.17.0
-	go.opentelemetry.io/collector/cmd/builder v0.118.0
+	go.opentelemetry.io/collector/cmd/builder v0.119.0
 )
 
 require (

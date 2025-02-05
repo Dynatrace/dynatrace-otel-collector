@@ -17,6 +17,7 @@ func main() {
 	collectorURL := flag.String("collector-url", "localhost:4317", "URL of the OpenTelemetry collector")
 	outputFile := flag.String("output-file", "", "Path to the file where received OTLP data will be stored")
 	inputFormat := flag.String("input-format", "otlp-json", "Input format (options: 'otlp-json', 'syslog', 'statsd')")
+	statsdProtocol := flag.String("statsd-protocol", "udp4", "Statsd protocol to send metrics (options: 'udp', 'udp4', 'udp6', 'tcp', 'tcp4', 'tcp6', 'unixgram')")
 	otlpSignalType := flag.String("otlp-signal-type", "", "OTLP signal type (options: 'logs', 'traces', 'metrics')")
 	syslogTransport := flag.String("syslog-transport", "tcp", "Syslog network transport (options: 'udp', 'tcp')")
 	receiverPort := flag.Int("receiver-port", 0, "OTLP Receiver port. If set, the tool will open a grpc server on the specified port to receive data and store it in an output file")
@@ -35,6 +36,7 @@ func main() {
 	fmt.Println("Output File:", *outputFile)
 	fmt.Println("Input Format:", *inputFormat)
 	fmt.Println("OTLP Signal Type:", *otlpSignalType)
+	fmt.Println("Statsd protocol:", *statsdProtocol)
 	fmt.Println("Syslog transport:", *syslogTransport)
 	fmt.Println("Receiver type:", *receiverType)
 
@@ -78,6 +80,7 @@ func main() {
 			SignalType:   *otlpSignalType,
 			OutputFile:   *outputFile,
 			ReceiverPort: *receiverPort,
+			Protocol:     *statsdProtocol,
 			ReceiverType: *receiverType,
 		})
 		if err != nil {

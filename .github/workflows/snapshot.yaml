@@ -64,6 +64,7 @@ jobs:
           key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 
       - name: Create Snapshot for Pull Request
+        timeout-minutes: 30
         run: make snapshot
 
       - name: Upload Pull Request Preview

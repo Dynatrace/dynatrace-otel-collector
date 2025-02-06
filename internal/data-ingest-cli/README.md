@@ -52,6 +52,7 @@ The tool accepts the following input parameters:
 ```
 
 1. Send statsd data to a collector:
+
 ```shell
 ./data-ingest --input-file=./commands/statsd/testdata/metrics.txt --input-format=statsd --collector-url=localhost:8125 --output-file=received_metrics.json --receiver-port=4319 --statsd-protocol=udp --otlp-signal-type=metrics --receiver-type=http
 ```

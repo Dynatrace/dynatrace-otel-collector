@@ -36,7 +36,7 @@ go build -o data-ingest
 The tool accepts the following input parameters:
 
 - `--input-file`: The name of the input file to read data from.
-- `--input-format`: The input format of the ingested data (options: `otlpjson`, `syslog`, `statsd`).
+- `--input-format`: The input format of the ingested data (options: `otlp-json`, `syslog`, `statsd`).
 - `--collector-url`: The URL of the OpenTelemetry collector.
 - `--output-file`: The file in which to store the received data.
 - `--receiver-port`: The port of the OTLP receiver created to act as a sink for the collector.
@@ -48,5 +48,11 @@ The tool accepts the following input parameters:
 1. Send OTLP JSON data to a collector:
 
 ```shell
-./data-ingest --input-file=data.json --input-format=otlpjson --collector-url=http://collector.example.com:4317 --output-file=received.json --receiver-port=4319
+./data-ingest --input-file=./commands/otlpjson/testdata/traces.json --input-format=otlp-json --otlp-signal-type=traces --collector-url=localhost:4317 --output-file=received_traces.json --receiver-port=4319 --receiver-type=http
+```
+
+1. Send statsd data to a collector:
+
+```shell
+./data-ingest --input-file=./commands/statsd/testdata/metrics.txt --input-format=statsd --collector-url=localhost:8125 --output-file=received_metrics.json --receiver-port=4319 --statsd-protocol=udp --otlp-signal-type=metrics --receiver-type=http
 ```

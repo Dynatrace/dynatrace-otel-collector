@@ -16,9 +16,10 @@
 # limitations under the License.
 
 if command -v systemctl >/dev/null 2>&1; then
+    systemctl daemon-reload
     systemctl enable dynatrace-otel-collector.service
     if [ -f /etc/dynatrace-otel-collector/config.yaml ]; then
-        systemctl start dynatrace-otel-collector.service
+        systemctl restart dynatrace-otel-collector.service
     else
       echo "Collector installed, but no config.yaml was found, skipping startup..."
     fi

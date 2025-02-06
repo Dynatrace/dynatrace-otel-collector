@@ -9,8 +9,11 @@ import (
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver"
 	"go.opentelemetry.io/collector/pdata/plog"
+	"go.opentelemetry.io/collector/pdata/plog/plogotlp"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/pmetric/pmetricotlp"
 	"go.opentelemetry.io/collector/pdata/ptrace"
+	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
 )
 
 type Config struct {
@@ -63,6 +66,8 @@ func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request
 		return
 	}
 
+	req.Body.Close()
+
 	unmarshaler := ptrace.ProtoUnmarshaler{}
 	traces, err := unmarshaler.UnmarshalTraces(body)
 	if err != nil {
@@ -86,8 +91,20 @@ func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request
 	}
 
 	receiver.WriteToFile(r.config.OutputFile, data)
+
+	resp := ptraceotlp.NewExportResponse()
+	msg, err := resp.MarshalProto()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/x-protobuf")
+	if _, err := w.Write(msg); err != nil {
+		log.Fatalln(err)
+	}
+
+	w.(http.Flusher).Flush()
 	r.receivedDataChan <- struct{}{}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Request) {
@@ -98,6 +115,8 @@ func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Reques
 		log.Fatalln(err)
 		return
 	}
+
+	req.Body.Close()
 
 	unmarshaler := pmetric.ProtoUnmarshaler{}
 	metrics, err := unmarshaler.UnmarshalMetrics(body)
@@ -122,8 +141,20 @@ func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Reques
 	}
 
 	receiver.WriteToFile(r.config.OutputFile, data)
+
+	resp := pmetricotlp.NewExportResponse()
+	msg, err := resp.MarshalProto()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/x-protobuf")
+	if _, err := w.Write(msg); err != nil {
+		log.Fatalln(err)
+	}
+
+	w.(http.Flusher).Flush()
 	r.receivedDataChan <- struct{}{}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) {
@@ -134,6 +165,8 @@ func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) 
 		log.Fatalln(err)
 		return
 	}
+
+	req.Body.Close()
 
 	unmarshaler := plog.ProtoUnmarshaler{}
 	logs, err := unmarshaler.UnmarshalLogs(body)
@@ -158,8 +191,20 @@ func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) 
 	}
 
 	receiver.WriteToFile(r.config.OutputFile, data)
+
+	resp := plogotlp.NewExportResponse()
+	msg, err := resp.MarshalProto()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/x-protobuf")
+	if _, err := w.Write(msg); err != nil {
+		log.Fatalln(err)
+	}
+
+	w.(http.Flusher).Flush()
 	r.receivedDataChan <- struct{}{}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (r *OTLPHTTPReceiver) readRequest(w http.ResponseWriter, req *http.Request) ([]byte, error, int) {

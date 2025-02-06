@@ -58,7 +58,7 @@ The tool accepts the following input parameters:
 ./data-ingest --input-file=./commands/statsd/testdata/metrics.txt --input-format=statsd --collector-url=localhost:8125 --output-file=received_metrics.json --receiver-port=4319 --statsd-protocol=udp --otlp-signal-type=metrics --receiver-type=http
 ```
 
-2. Send Syslog data to a collector:
+1. Send Syslog data to a collector:
 
 ```shell
 ./data-ingest --input-format syslog --input-file $(pwd)/commands/syslog/testdata/rfc6587-non-transparent-framing --collector-url localhost:54526

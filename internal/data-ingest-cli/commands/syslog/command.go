@@ -55,6 +55,12 @@ func New(cfg Config) (*Cmd, error) {
 }
 
 func (c *Cmd) Do(ctx context.Context) error {
+	if c.receiver != nil {
+		if err := c.receiver.Start(); err != nil {
+			return err
+		}
+		defer c.receiver.Stop()
+	}
 	return c.sendLogs(ctx)
 }
 

@@ -18,6 +18,17 @@ v0.119.0:
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
+### 🛑 Breaking changes 🛑
+
+- `exporterhelper`: Change queue to embed the async consumers. ([#12242](https://github.com/open-telemetry/opentelemetry-collector/pull/12242))
+- `cmd/mdatagen`: Allow passing OTel Metric SDK options to the generated `SetupTelemetry` function. ([#12166](https://github.com/open-telemetry/opentelemetry-collector/pull/12166))
+- `exporterhelper`: Rename exporter span signal specific attributes (e.g. "sent_spans" / "send_failed_span") to "items.sent" / "items.failed". ([#12165](https://github.com/open-telemetry/opentelemetry-collector/pull/12165))
+- `cmd/mdatagen`: Remove dead field `telemetry::level` ([#12144](https://github.com/open-telemetry/opentelemetry-collector/pull/12144))
+- `exporterhelper`: Change exporter ID to be a Span level attribute instead on each event. ([#12164](https://github.com/open-telemetry/opentelemetry-collector/pull/12164))
+  This does not have an impact on the level of information emitted, but on the structure of the Span.
+- `cmd/mdatagen`: Remove `level` field from metrics definition ([#12145](https://github.com/open-telemetry/opentelemetry-collector/pull/12145))
+  This mechanism will be added back once a new views mechanism is implemented.
+
 ### 💡 Enhancements 💡
 
 - `configtls`: Allow users to mention their preferred curve types for ECDHE handshake ([#12174](https://github.com/open-telemetry/opentelemetry-collector/pull/12174))

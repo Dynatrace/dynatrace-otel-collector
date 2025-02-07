@@ -42,6 +42,7 @@ The tool accepts the following input parameters:
 - `--receiver-port`: The port of the OTLP receiver created to act as a sink for the collector.
 - `--receiver-type`: The type of receiver created to act as a sink for the collector (options: `http`, `grpc`). Please not, that when using the `http` option with Collector's `otlphttp exporter`, you need to disable the compression on the exporter, as no decompression is supported.
 - `--statsd-protocol`: Statsd protocol to send metrics (options: 'udp', 'udp4', 'udp6', 'tcp', 'tcp4', 'tcp6', 'unixgram').
+- `--syslog-transport`: Syslog network transport (options: 'udp', 'tcp')
 
 ## Example Commands
 
@@ -55,4 +56,10 @@ The tool accepts the following input parameters:
 
 ```shell
 ./data-ingest --input-file=./commands/statsd/testdata/metrics.txt --input-format=statsd --collector-url=localhost:8125 --output-file=received_metrics.json --receiver-port=4319 --statsd-protocol=udp --otlp-signal-type=metrics --receiver-type=http
+```
+
+1. Send Syslog data to a collector:
+
+```shell
+./data-ingest --input-format syslog --input-file $(pwd)/commands/syslog/testdata/rfc6587-non-transparent-framing --collector-url localhost:54526
 ```

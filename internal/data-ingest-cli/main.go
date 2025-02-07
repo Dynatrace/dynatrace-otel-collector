@@ -8,6 +8,7 @@ import (
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/otlpjson"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/statsd"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/syslog"
 )
 
 func main() {
@@ -18,6 +19,7 @@ func main() {
 	inputFormat := flag.String("input-format", "otlp-json", "Input format (options: 'otlp-json', 'syslog', 'statsd')")
 	statsdProtocol := flag.String("statsd-protocol", "udp4", "Statsd protocol to send metrics (options: 'udp', 'udp4', 'udp6', 'tcp', 'tcp4', 'tcp6', 'unixgram')")
 	otlpSignalType := flag.String("otlp-signal-type", "", "OTLP signal type (options: 'logs', 'traces', 'metrics')")
+	syslogTransport := flag.String("syslog-transport", "tcp", "Syslog network transport (options: 'udp', 'tcp')")
 	receiverPort := flag.Int("receiver-port", 0, "OTLP Receiver port. If set, the tool will open a grpc server on the specified port to receive data and store it in an output file")
 	receiverType := flag.String("receiver-type", "http", "The type of receiver created to act as a sink for the collector (options: `http`, `grpc`)")
 
@@ -35,6 +37,7 @@ func main() {
 	fmt.Println("Input Format:", *inputFormat)
 	fmt.Println("OTLP Signal Type:", *otlpSignalType)
 	fmt.Println("Statsd protocol:", *statsdProtocol)
+	fmt.Println("Syslog transport:", *syslogTransport)
 	fmt.Println("Receiver type:", *receiverType)
 
 	switch *inputFormat {
@@ -54,8 +57,21 @@ func main() {
 			log.Fatalf("could not execute command: %s", err.Error())
 		}
 	case "syslog":
-		// Handle reading from syslog and sending to collector
-		fmt.Println("Reading from syslog and sending to collector...")
+		fmt.Println("Reading syslog data and sending it to collector...")
+		cmd, err := syslog.New(syslog.Config{
+			InputFile:    *inputFile,
+			CollectorURL: *collectorURL,
+			Transport:    *syslogTransport,
+			OutputFile:   *outputFile,
+			ReceiverPort: *receiverPort,
+			ReceiverType: *receiverType,
+		})
+		if err != nil {
+			log.Fatalf("could not execute command: %s", err.Error())
+		}
+		if err := cmd.Do(context.Background()); err != nil {
+			log.Fatalf("could not execute command: %s", err.Error())
+		}
 	case "statsd":
 		log.Println("Reading from statsd and sending to collector...")
 		cmd, err := statsd.New(statsd.Config{

@@ -28,18 +28,18 @@ processors:
           tag_name: $$1
     pod_association:
       - sources:
-          - from: resource_attribute
-            name: k8s.pod.name
-          - from: resource_attribute
-            name: k8s.namespace.name
+        - from: resource_attribute
+          name: k8s.pod.name
+        - from: resource_attribute
+          name: k8s.namespace.name
       - sources:
-          - from: resource_attribute
-            name: k8s.pod.ip
+        - from: resource_attribute
+          name: k8s.pod.ip
       - sources:
-          - from: resource_attribute
-            name: k8s.pod.uid
+        - from: resource_attribute
+          name: k8s.pod.uid
       - sources:
-          - from: connection
+        - from: connection
   transform:
     error_mode: ignore
     trace_statements: &dynatrace_transformations
@@ -57,17 +57,14 @@ processors:
           - set(attributes["k8s.workload.name"], attributes["k8s.replicaset.name"]) where IsString(attributes["k8s.replicaset.name"])
           - set(attributes["k8s.workload.kind"], "deployment") where IsString(attributes["k8s.deployment.name"])
           - set(attributes["k8s.workload.name"], attributes["k8s.deployment.name"]) where IsString(attributes["k8s.deployment.name"])
-          - set(attributes["k8s.cluster.name"], "${env:K8S_CLUSTER_NAME}")
-          - set(attributes["k8s.cluster.uid"], "${env:K8S_CLUSTER_UID}") where attributes["k8s.cluster.uid"] == nil
           - set(attributes["dt.entity.kubernetes_cluster"], "${env:DT_ENTITY_KUBERNETES_CLUSTER}")
+          # remove the delete statements, if you want to preserve these attributes
           - delete_key(attributes, "k8s.deployment.name")
           - delete_key(attributes, "k8s.replicaset.name")
           - delete_key(attributes, "k8s.statefulset.name")
           - delete_key(attributes, "k8s.daemonset.name")
           - delete_key(attributes, "k8s.cronjob.name")
           - delete_key(attributes, "k8s.job.name")
-          - set(attributes["dt.kubernetes.workload.name"], attributes["k8s.workload.name"])
-          - set(attributes["dt.kubernetes.workload.kind"], attributes["k8s.workload.kind"])
     metric_statements: *dynatrace_transformations
     log_statements: *dynatrace_transformations
 exporters:

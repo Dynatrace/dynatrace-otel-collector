@@ -1,5 +1,3 @@
-//go:build e2e
-
 package k8senrichment
 
 import (
@@ -35,7 +33,12 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
-	k8sClient, err := otelk8stest.NewK8sClient(k8stest.TestKubeConfig)
+	kubeconfigPath := k8stest.TestKubeConfig
+	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
+		kubeconfigPath = kubeConfigFromEnv
+	}
+
+	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test
@@ -71,6 +74,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 		map[string]string{
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 			"CollectorConfig":   collectorConfig,
+			"K8sCluster":        testNs,
 		},
 		host,
 	)
@@ -103,58 +107,76 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 			name:    "traces-job",
 			service: "test-traces-job",
 			attrs: map[string]oteltest.ExpectedValue{
-				"k8s.pod.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-job-[a-z0-9]*"),
-				"k8s.pod.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-				"k8s.job.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-job"),
-				"k8s.namespace.name":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-				"k8s.node.name":            oteltest.NewExpectedValue(exist, ""),
-				"k8s.cluster.uid":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-				"dt.kubernetes.cluster.id": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.pod.name":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-job-[a-z0-9]*"),
+				"k8s.pod.uid":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.namespace.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.node.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+				"k8s.cluster.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.entity.kubernetes_cluster": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"dt.kubernetes.workload.kind":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "job"),
+				"dt.kubernetes.workload.name":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-job"),
+				"k8s.cluster.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.pod.ip":                   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
+				"k8s.workload.kind":            oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "job"),
+				"k8s.workload.name":            oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-job"),
+				oteltest.ServiceNameAttribute:  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-job"),
 			},
 		},
 		{
 			name:    "traces-statefulset",
 			service: "test-traces-statefulset",
 			attrs: map[string]oteltest.ExpectedValue{
-				"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset-0"),
-				"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-				"k8s.statefulset.name":        oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset"),
-				"dt.kubernetes.workload.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset"),
-				"dt.kubernetes.workload.kind": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "statefulset"),
-				"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-				"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-				"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-				"dt.kubernetes.cluster.id":    oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.namespace.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.node.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+				"k8s.cluster.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.entity.kubernetes_cluster": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.cluster.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.pod.ip":                   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
+				"k8s.workload.kind":            oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "statefulset"),
+				"k8s.workload.name":            oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset"),
+				oteltest.ServiceNameAttribute:  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-statefulset"),
+				"k8s.pod.name":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset-0"),
+				"k8s.pod.uid":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.kubernetes.workload.name":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset"),
+				"dt.kubernetes.workload.kind":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "statefulset"),
 			},
 		},
 		{
 			name:    "traces-deployment",
 			service: "test-traces-deployment",
 			attrs: map[string]oteltest.ExpectedValue{
-				"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
-				"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-				"k8s.deployment.name":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-deployment"),
-				"dt.kubernetes.workload.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-deployment"),
-				"dt.kubernetes.workload.kind": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "deployment"),
-				"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-				"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-				"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-				"dt.kubernetes.cluster.id":    oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.namespace.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.node.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+				"k8s.cluster.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.entity.kubernetes_cluster": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.cluster.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.pod.ip":                   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
+				"k8s.workload.kind":            oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "deployment"),
+				"k8s.workload.name":            oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-deployment"),
+				oteltest.ServiceNameAttribute:  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-deployment"),
+				"k8s.pod.name":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
+				"k8s.pod.uid":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.kubernetes.workload.name":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-deployment"),
+				"dt.kubernetes.workload.kind":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "deployment"),
 			},
 		},
 		{
 			name:    "traces-daemonset",
 			service: "test-traces-daemonset",
 			attrs: map[string]oteltest.ExpectedValue{
-				"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-daemonset-[a-z0-9]*"),
-				"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-				"k8s.daemonset.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-daemonset"),
-				"dt.kubernetes.workload.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-daemonset"),
-				"dt.kubernetes.workload.kind": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "daemonset"),
-				"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-				"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-				"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-				"dt.kubernetes.cluster.id":    oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.pod.name":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-daemonset-[a-z0-9]*"),
+				"k8s.namespace.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.node.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+				"k8s.cluster.uid":              oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.entity.kubernetes_cluster": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.cluster.name":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+				"k8s.pod.ip":                   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
+				"k8s.workload.kind":            oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "daemonset"),
+				"k8s.workload.name":            oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-daemonset"),
+				oteltest.ServiceNameAttribute:  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-daemonset"),
+				"k8s.pod.uid":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"dt.kubernetes.workload.name":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-daemonset"),
+				"dt.kubernetes.workload.kind":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "daemonset"),
 			},
 		},
 	}

@@ -28,6 +28,7 @@ const (
 	AttributeMatchTypeRegex
 	AttributeMatchTypeExist
 	UidRe = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+	IPRe  = "((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?){4}"
 
 	ServiceNameAttribute = "service.name"
 )

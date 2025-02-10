@@ -24,7 +24,12 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
-	k8sClient, err := otelk8stest.NewK8sClient(k8stest.TestKubeConfig)
+	kubeconfigPath := k8stest.TestKubeConfig
+	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
+		kubeconfigPath = kubeConfigFromEnv
+	}
+
+	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test

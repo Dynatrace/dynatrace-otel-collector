@@ -16,6 +16,7 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
   - OTLP Json
   - Statsd
   - Syslog
+  - Fluent
 
 - Receive OTLP data via an endpoint: The tool can receive OTLP data through an endpoint and store the received payload in a specified file in OTLP Json format.
 
@@ -36,7 +37,7 @@ go build -o data-ingest
 The tool accepts the following input parameters:
 
 - `--input-file`: The name of the input file to read data from.
-- `--input-format`: The input format of the ingested data (options: `otlp-json`, `syslog`, `statsd`).
+- `--input-format`: The input format of the ingested data (options: `otlp-json`, `syslog`, `statsd`, `fluent`).
 - `--collector-url`: The URL of the OpenTelemetry collector.
 - `--output-file`: The file in which to store the received data.
 - `--receiver-port`: The port of the OTLP receiver created to act as a sink for the collector.
@@ -62,4 +63,10 @@ The tool accepts the following input parameters:
 
 ```shell
 ./data-ingest --input-format syslog --input-file $(pwd)/commands/syslog/testdata/rfc6587-non-transparent-framing --collector-url localhost:54526
+```
+
+1. Send Fluent data to a collector:
+
+```shell
+./data-ingest --input-format fluent --input-file $(pwd)/commands/fluent/testdata/msg.json --collector-url localhost:8006
 ```

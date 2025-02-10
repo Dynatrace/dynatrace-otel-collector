@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/fluent"
 	"log"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/otlpjson"
@@ -81,6 +82,21 @@ func main() {
 			OutputFile:   *outputFile,
 			ReceiverPort: *receiverPort,
 			Protocol:     *statsdProtocol,
+			ReceiverType: *receiverType,
+		})
+		if err != nil {
+			log.Fatalf("could not execute command: %s", err.Error())
+		}
+		if err := cmd.Do(context.Background()); err != nil {
+			log.Fatalf("could not execute command: %s", err.Error())
+		}
+	case "fluent":
+		log.Println("Reading from fluent and sending to collector...")
+		cmd, err := fluent.New(fluent.Config{
+			InputFile:    *inputFile,
+			CollectorURL: *collectorURL,
+			OutputFile:   *outputFile,
+			ReceiverPort: *receiverPort,
 			ReceiverType: *receiverType,
 		})
 		if err != nil {

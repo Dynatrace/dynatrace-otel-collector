@@ -255,6 +255,6 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace cloud.google.com/go => cloud.google.com/go v0.118.1
+replace cloud.google.com/go => cloud.google.com/go v0.118.2
 
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon

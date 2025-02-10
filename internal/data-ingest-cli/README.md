@@ -17,6 +17,7 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
   - Statsd
   - Syslog
   - Fluent
+  - Zipkin
 
 - Receive OTLP data via an endpoint: The tool can receive OTLP data through an endpoint and store the received payload in a specified file in OTLP Json format.
 
@@ -44,19 +45,20 @@ The tool accepts the following input parameters:
 - `--receiver-type`: The type of receiver created to act as a sink for the collector (options: `http`, `grpc`). Please not, that when using the `http` option with Collector's `otlphttp exporter`, you need to disable the compression on the exporter, as no decompression is supported.
 - `--statsd-protocol`: Statsd protocol to send metrics (options: 'udp', 'udp4', 'udp6', 'tcp', 'tcp4', 'tcp6', 'unixgram').
 - `--syslog-transport`: Syslog network transport (options: 'udp', 'tcp')
+- `--zipkin-version`: The version of zipkin traces (options: `v1`, `v2`). Default `v2`.
 
 ## Example Commands
 
 1. Send OTLP JSON data to a collector:
 
 ```shell
-./data-ingest --input-file=./commands/otlpjson/testdata/traces.json --input-format=otlp-json --otlp-signal-type=traces --collector-url=localhost:4317 --output-file=received_traces.json --receiver-port=4319 --receiver-type=http
+./data-ingest --input-format otlp-json --input-file $(pwd)/commands/otlpjson/testdata/traces.json  --otlp-signal-type traces --collector-url localhost:4317 --output-file received_traces.json --receiver-port 4319 --receiver-type http
 ```
 
 1. Send statsd data to a collector:
 
 ```shell
-./data-ingest --input-file=./commands/statsd/testdata/metrics.txt --input-format=statsd --collector-url=localhost:8125 --output-file=received_metrics.json --receiver-port=4319 --statsd-protocol=udp --otlp-signal-type=metrics --receiver-type=http
+./data-ingest --input-format statsd --input-file $(pwd)/commands/statsd/testdata/metrics.txt --collector-url localhost:8125 --output-file received_metrics.json --receiver-port 4319 --statsd-protocol udp --otlp-signal-type metrics --receiver-type http
 ```
 
 1. Send Syslog data to a collector:
@@ -69,4 +71,10 @@ The tool accepts the following input parameters:
 
 ```shell
 ./data-ingest --input-format fluent --input-file $(pwd)/commands/fluent/testdata/msg.json --collector-url localhost:8006
+```
+
+1. Send Zipkin data to a collector:
+
+```shell
+./data-ingest --input-format zipkin --input-file $(pwd)/commands/zipkin/testdata/sample_v1.json  --otlp-signal-type traces --collector-url http://0.0.0.0:9411 --output-file received_traces.json --receiver-port 4319 --receiver-type http
 ```

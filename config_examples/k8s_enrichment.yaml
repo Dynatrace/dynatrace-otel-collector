@@ -57,8 +57,7 @@ processors:
           - set(attributes["k8s.workload.name"], attributes["k8s.replicaset.name"]) where IsString(attributes["k8s.replicaset.name"])
           - set(attributes["k8s.workload.kind"], "deployment") where IsString(attributes["k8s.deployment.name"])
           - set(attributes["k8s.workload.name"], attributes["k8s.deployment.name"]) where IsString(attributes["k8s.deployment.name"])
-          - set(attributes["dt.entity.kubernetes_cluster"], "${env:DT_ENTITY_KUBERNETES_CLUSTER}")
-          # remove the delete statements, if you want to preserve these attributes
+          # remove the delete statements if you want to preserve these attributes
           - delete_key(attributes, "k8s.deployment.name")
           - delete_key(attributes, "k8s.replicaset.name")
           - delete_key(attributes, "k8s.statefulset.name")

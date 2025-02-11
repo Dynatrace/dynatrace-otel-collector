@@ -76,5 +76,5 @@ The tool accepts the following input parameters:
 1. Send Zipkin data to a collector:
 
 ```shell
-./data-ingest --input-format zipkin --input-file $(pwd)/commands/zipkin/testdata/sample_v1.json  --otlp-signal-type traces --collector-url http://0.0.0.0:9411 --output-file received_traces.json --receiver-port 4319 --receiver-type http
+./data-ingest --input-format zipkin --input-file $(pwd)/commands/zipkin/testdata/sample_v2.json  --otlp-signal-type traces --collector-url http://0.0.0.0:9411 --output-file received_traces.json --receiver-port 4319 --receiver-type http
 ```

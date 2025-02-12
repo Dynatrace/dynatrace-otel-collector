@@ -69,7 +69,7 @@ install-tools: install-go-junit-report $(TOOLS_BIN_NAMES)
 snapshot: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --snapshot --clean --parallelism 2
 release: .goreleaser.yaml $(GORELEASER)
-	$(GORELEASER) release --clean
+	$(GORELEASER) release --clean --parallelism 2
 
 $(TOOLS_BIN_DIR):
 	mkdir -p $@

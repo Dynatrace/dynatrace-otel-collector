@@ -27,6 +27,7 @@ receivers:
       network:
       processes:
       process:
+        mute_process_all_errors: true
         metrics:
           process.cpu.utilization:
             enabled: true
@@ -53,15 +54,14 @@ processors:
 
 exporters:
   debug:
-    verbosity: detailed
+#    verbosity: detailed
   otlphttp:
-    endpoint: ${env:DT_ENDPOINT}
-    headers:
-      Authorization: "Api-Token ${env:API_TOKEN}"
+    endpoint: "http://localhost:8000"
+    compression: none
 
 service:
   pipelines:
     metrics:
       receivers: [hostmetrics]
-      processors: [resourcedetection, cumulativetodelta, batch]
-      exporters: [otlphttp]
+      processors: [resourcedetection, cumulativetodelta]
+      exporters: [otlphttp, debug]

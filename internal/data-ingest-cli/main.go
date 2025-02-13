@@ -4,8 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/fluent"
 	"log"
+
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/fluent"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/otlpjson"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/statsd"
@@ -14,6 +15,8 @@ import (
 
 func main() {
 	// Define the CLI arguments
+	sendData := flag.Bool("send", false, "set to true to send data")
+	receiveData := flag.Bool("receive", false, "set to true to receive data")
 	inputFile := flag.String("input-file", "", "Path to the input file containing input data")
 	collectorURL := flag.String("collector-url", "localhost:4317", "URL of the OpenTelemetry collector")
 	outputFile := flag.String("output-file", "", "Path to the file where received OTLP data will be stored")
@@ -32,6 +35,8 @@ func main() {
 		log.Fatal("collector-url is required")
 	}
 
+	fmt.Println("Send data:", *sendData)
+	fmt.Println("Receive data:", *receiveData)
 	fmt.Println("Input File:", *inputFile)
 	fmt.Println("Collector URL:", *collectorURL)
 	fmt.Println("Output File:", *outputFile)
@@ -44,6 +49,8 @@ func main() {
 	switch *inputFormat {
 	case "otlp-json":
 		cmd, err := otlpjson.New(otlpjson.Config{
+			SendData:     *sendData,
+			ReceiveData:  *receiveData,
 			InputFile:    *inputFile,
 			CollectorURL: *collectorURL,
 			SignalType:   *otlpSignalType,
@@ -60,6 +67,8 @@ func main() {
 	case "syslog":
 		fmt.Println("Reading syslog data and sending it to collector...")
 		cmd, err := syslog.New(syslog.Config{
+			SendData:     *sendData,
+			ReceiveData:  *receiveData,
 			InputFile:    *inputFile,
 			CollectorURL: *collectorURL,
 			Transport:    *syslogTransport,
@@ -76,6 +85,8 @@ func main() {
 	case "statsd":
 		log.Println("Reading from statsd and sending to collector...")
 		cmd, err := statsd.New(statsd.Config{
+			SendData:     *sendData,
+			ReceiveData:  *receiveData,
 			InputFile:    *inputFile,
 			CollectorURL: *collectorURL,
 			SignalType:   *otlpSignalType,
@@ -93,6 +104,8 @@ func main() {
 	case "fluent":
 		log.Println("Reading from fluent and sending to collector...")
 		cmd, err := fluent.New(fluent.Config{
+			SendData:     *sendData,
+			ReceiveData:  *receiveData,
 			InputFile:    *inputFile,
 			CollectorURL: *collectorURL,
 			OutputFile:   *outputFile,

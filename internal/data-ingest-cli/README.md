@@ -37,6 +37,8 @@ go build -o data-ingest
 
 The tool accepts the following input parameters:
 
+- `--send`: Set to true to send data using the CLI.
+- `--receive`: Set to true to receive data using the CLI.
 - `--input-file`: The name of the input file to read data from.
 - `--input-format`: The input format of the ingested data (options: `otlp-json`, `syslog`, `statsd`, `fluent`).
 - `--collector-url`: The URL of the OpenTelemetry collector.
@@ -51,23 +53,23 @@ The tool accepts the following input parameters:
 1. Send OTLP JSON data to a collector:
 
 ```shell
-./data-ingest --input-file=./commands/otlpjson/testdata/traces.json --input-format=otlp-json --otlp-signal-type=traces --collector-url=localhost:4317 --output-file=received_traces.json --receiver-port=4319 --receiver-type=http
+./data-ingest --send --input-file=./commands/otlpjson/testdata/traces.json --input-format=otlp-json --otlp-signal-type=traces --collector-url=localhost:4317 --output-file=received_traces.json --receiver-port=4319 --receiver-type=http
 ```
 
 1. Send statsd data to a collector:
 
 ```shell
-./data-ingest --input-file=./commands/statsd/testdata/metrics.txt --input-format=statsd --collector-url=localhost:8125 --output-file=received_metrics.json --receiver-port=4319 --statsd-protocol=udp --otlp-signal-type=metrics --receiver-type=http
+./data-ingest --send --input-file=./commands/statsd/testdata/metrics.txt --input-format=statsd --collector-url=localhost:8125 --output-file=received_metrics.json --receiver-port=4319 --statsd-protocol=udp --otlp-signal-type=metrics --receiver-type=http
 ```
 
 1. Send Syslog data to a collector:
 
 ```shell
-./data-ingest --input-format syslog --input-file $(pwd)/commands/syslog/testdata/rfc6587-non-transparent-framing --collector-url localhost:54526
+./data-ingest --send --input-format syslog --input-file $(pwd)/commands/syslog/testdata/rfc6587-non-transparent-framing --collector-url localhost:54526
 ```
 
 1. Send Fluent data to a collector:
 
 ```shell
-./data-ingest --input-format fluent --input-file $(pwd)/commands/fluent/testdata/msg.json --collector-url localhost:8006
+./data-ingest --send --input-format fluent --input-file $(pwd)/commands/fluent/testdata/msg.json --collector-url localhost:8006
 ```

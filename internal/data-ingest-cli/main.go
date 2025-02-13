@@ -11,6 +11,7 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/otlpjson"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/statsd"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/syslog"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/zipkin"
 )
 
 func main() {
@@ -26,6 +27,7 @@ func main() {
 	syslogTransport := flag.String("syslog-transport", "tcp", "Syslog network transport (options: 'udp', 'tcp')")
 	receiverPort := flag.Int("receiver-port", 0, "OTLP Receiver port. If set, the tool will open a grpc server on the specified port to receive data and store it in an output file")
 	receiverType := flag.String("receiver-type", "http", "The type of receiver created to act as a sink for the collector (options: `http`, `grpc`)")
+	zipkinVersion := flag.String("zipkin-version", "v2", "The version of zipkin traces (options: `v1`, `v2`)")
 
 	// Parse the CLI arguments
 	flag.Parse()
@@ -48,6 +50,7 @@ func main() {
 
 	switch *inputFormat {
 	case "otlp-json":
+		fmt.Println("Reading otlpjson data and sending it to collector...")
 		cmd, err := otlpjson.New(otlpjson.Config{
 			SendData:     *sendData,
 			ReceiveData:  *receiveData,
@@ -59,7 +62,7 @@ func main() {
 			ReceiverType: *receiverType,
 		})
 		if err != nil {
-			log.Fatalf("could not execute command: %s", err.Error())
+			log.Fatalf("could not create otlp-json sender: %s", err.Error())
 		}
 		if err := cmd.Do(context.Background()); err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())
@@ -77,7 +80,7 @@ func main() {
 			ReceiverType: *receiverType,
 		})
 		if err != nil {
-			log.Fatalf("could not execute command: %s", err.Error())
+			log.Fatalf("could not create syslog sender: %s", err.Error())
 		}
 		if err := cmd.Do(context.Background()); err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())
@@ -96,7 +99,24 @@ func main() {
 			ReceiverType: *receiverType,
 		})
 		if err != nil {
+			log.Fatalf("could not create statsd sender: %s", err.Error())
+		}
+		if err := cmd.Do(context.Background()); err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())
+		}
+	case "zipkin":
+		log.Println("Reading from zipkin and sending to collector...")
+		cmd, err := zipkin.New(zipkin.Config{
+			InputFile:     *inputFile,
+			CollectorURL:  *collectorURL,
+			SignalType:    *otlpSignalType,
+			OutputFile:    *outputFile,
+			ReceiverPort:  *receiverPort,
+			ReceiverType:  *receiverType,
+			ZipkinVersion: *zipkinVersion,
+		})
+		if err != nil {
+			log.Fatalf("could not create zipkin sender: %s", err.Error())
 		}
 		if err := cmd.Do(context.Background()); err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())

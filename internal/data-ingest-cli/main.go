@@ -107,6 +107,8 @@ func main() {
 	case "zipkin":
 		log.Println("Reading from zipkin and sending to collector...")
 		cmd, err := zipkin.New(zipkin.Config{
+			SendData:      *sendData,
+			ReceiveData:   *receiveData,
 			InputFile:     *inputFile,
 			CollectorURL:  *collectorURL,
 			SignalType:    *otlpSignalType,

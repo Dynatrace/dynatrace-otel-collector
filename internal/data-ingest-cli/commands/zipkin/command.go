@@ -15,6 +15,8 @@ import (
 )
 
 type Config struct {
+	SendData      bool
+	ReceiveData   bool
 	InputFile     string
 	CollectorURL  string
 	SignalType    string
@@ -39,14 +41,15 @@ func New(p Config) (*Cmd, error) {
 		zipkinVersion: p.ZipkinVersion,
 	}
 
-	sender, err := zipkin.New(p.CollectorURL)
-	if err != nil {
-		return nil, err
+	if p.SendData {
+		sender, err := zipkin.New(p.CollectorURL)
+		if err != nil {
+			return nil, err
+		}
+		c.sender = sender
 	}
 
-	c.sender = sender
-
-	if p.ReceiverPort > 0 && p.OutputFile != "" {
+	if p.ReceiveData && p.ReceiverPort > 0 && p.OutputFile != "" {
 		switch p.ReceiverType {
 		case "grpc":
 			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
@@ -82,6 +85,9 @@ func (c *Cmd) Do(ctx context.Context) error {
 }
 
 func (c *Cmd) sendTraces(ctx context.Context) error {
+	if c.sender == nil {
+		return nil
+	}
 	fileContent, err := os.ReadFile(c.inputFile)
 	if err != nil {
 		return fmt.Errorf("could not read file content: %s", err.Error())

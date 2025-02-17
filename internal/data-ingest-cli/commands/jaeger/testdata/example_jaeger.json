@@ -1,0 +1,3885 @@
+{
+    "data": [
+      {
+        "traceID": "9844dc47a002f7391be78dab51e3a41c",
+        "spans": [
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "9eb5116f172f7359",
+            "operationName": "pre-check-entry-service-79335",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "3cd03768bb61e30f"
+              }
+            ],
+            "startTime": 1739772964010724,
+            "duration": 65068993,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.task.name",
+                "type": "string",
+                "value": "pre-check-entry-service-79335"
+              },
+              {
+                "key": "keptn.deployment.task.type",
+                "type": "string",
+                "value": "pre"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029079716,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "pre-check-entry-service-79335 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "d50e0b59eba468ce",
+            "operationName": "podtato-head-podtato-head-left-leg/WorkloadPostDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "bdc82a5b25843fc6"
+              }
+            ],
+            "startTime": 1739773039106880,
+            "duration": 2350,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773039109229,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "7cfc0abb4eafcbc0",
+            "operationName": "post-eval-my-prometheus-definition1-96127",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "d65660c5343ccc19"
+              }
+            ],
+            "startTime": 1739773054120375,
+            "duration": 31,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.evaluation.name",
+                "type": "string",
+                "value": "post-eval-my-prometheus-definition1-96127"
+              },
+              {
+                "key": "keptn.deployment.evaluation.type",
+                "type": "string",
+                "value": "post-eval"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-hat"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773054120404,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "post-eval-my-prometheus-definition1-96127 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "d65660c5343ccc19",
+            "operationName": "podtato-head-podtato-head-hat/WorkloadPostDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "7f48a70d192b7958"
+              }
+            ],
+            "startTime": 1739773049111676,
+            "duration": 5014472,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-hat"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773054126148,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "391aecfc2b0c1588",
+            "operationName": "podtato-head-podtato-head-right-arm-0.1.0",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "052d0116d4e8ce00"
+              }
+            ],
+            "startTime": 1739772964027100,
+            "duration": 85135029,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772964027102,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "WorkloadVersion Pre-Deployment Tasks started"
+                  }
+                ]
+              },
+              {
+                "timestamp": 1739773049162130,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "podtato-head-podtato-head-right-arm-0.1.0 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "5699c5429563c85a",
+            "operationName": "podtato-head-podtato-head-left-leg/WorkloadDeploy",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "bdc82a5b25843fc6"
+              }
+            ],
+            "startTime": 1739773029088079,
+            "duration": 10013268,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773039101346,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Deployment has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "0819aaa844052e72",
+            "operationName": "podtato-head-podtato-head-left-arm/WorkloadDeploy",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "ee1124a524627659"
+              }
+            ],
+            "startTime": 1739773029101196,
+            "duration": 15020281,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773044121477,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Deployment has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "0647df20758948b5",
+            "operationName": "podtato-head-podtato-head-entry/WorkloadPostDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "0e35bef7d3be339b"
+              }
+            ],
+            "startTime": 1739773024251021,
+            "duration": 3721,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-entry"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773024254742,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "0e35bef7d3be339b",
+            "operationName": "podtato-head-podtato-head-entry-0.1.0",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "052d0116d4e8ce00"
+              }
+            ],
+            "startTime": 1739772964056992,
+            "duration": 60203986,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-entry"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772964056995,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "WorkloadVersion Pre-Deployment Tasks started"
+                  }
+                ]
+              },
+              {
+                "timestamp": 1739773024260978,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "podtato-head-podtato-head-entry-0.1.0 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "e4f00bfbb7a4f1cd",
+            "operationName": "podtato-head-podtato-head-right-leg/WorkloadPreDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "cb78885cb9108d69"
+              }
+            ],
+            "startTime": 1739772964015245,
+            "duration": 65092026,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029107271,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "3cd03768bb61e30f",
+            "operationName": "podtato-head-podtato-head-left-leg/WorkloadPreDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "bdc82a5b25843fc6"
+              }
+            ],
+            "startTime": 1739772963986741,
+            "duration": 65095355,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029082096,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "d0ed5fce7ee1016d",
+            "operationName": "pre-eval-my-prometheus-definition1-34901",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "c6f4b6fe1c007976"
+              }
+            ],
+            "startTime": 1739773034080678,
+            "duration": 4,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.evaluation.name",
+                "type": "string",
+                "value": "pre-eval-my-prometheus-definition1-34901"
+              },
+              {
+                "key": "keptn.deployment.evaluation.type",
+                "type": "string",
+                "value": "pre-eval"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-hat"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773034080682,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "pre-eval-my-prometheus-definition1-34901 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "565cd73bddaa29db",
+            "operationName": "podtato-head-podtato-head-left-arm/WorkloadPreDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "ee1124a524627659"
+              }
+            ],
+            "startTime": 1739773029096254,
+            "duration": 2835,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029099089,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "c9ae02d03eee40e0",
+            "operationName": "podtato-head-podtato-head-hat/WorkloadPreDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "7f48a70d192b7958"
+              }
+            ],
+            "startTime": 1739772963976947,
+            "duration": 65088889,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-hat"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029065834,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "77873f87947a7272",
+            "operationName": "podtato-head-podtato-head-entry/WorkloadDeploy",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "0e35bef7d3be339b"
+              }
+            ],
+            "startTime": 1739772964064781,
+            "duration": 50166673,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-entry"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773014231454,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Deployment has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "3b863aaf582414f5",
+            "operationName": "podtato-head-podtato-head-right-arm/WorkloadPreDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "391aecfc2b0c1588"
+              }
+            ],
+            "startTime": 1739772964027123,
+            "duration": 65089001,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029116125,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "9d9222a14c3f0045",
+            "operationName": "podtato-head-podtato-head-right-arm/WorkloadPreDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "391aecfc2b0c1588"
+              }
+            ],
+            "startTime": 1739773029116146,
+            "duration": 2178,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029118324,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "b116c41e5f6e690e",
+            "operationName": "podtato-head-podtato-head-right-leg/WorkloadPreDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "cb78885cb9108d69"
+              }
+            ],
+            "startTime": 1739773029107292,
+            "duration": 1655,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029108947,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "d27732be7f6c0397",
+            "operationName": "podtato-head-podtato-head-right-leg/WorkloadPostDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "cb78885cb9108d69"
+              }
+            ],
+            "startTime": 1739773044138324,
+            "duration": 2339,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773044140663,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "3e654a3a63a4c2b1",
+            "operationName": "pre-check-entry-service-95560",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "c9ae02d03eee40e0"
+              }
+            ],
+            "startTime": 1739772963999340,
+            "duration": 65057138,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.task.name",
+                "type": "string",
+                "value": "pre-check-entry-service-95560"
+              },
+              {
+                "key": "keptn.deployment.task.type",
+                "type": "string",
+                "value": "pre"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-hat"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029056474,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "pre-check-entry-service-95560 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "bfbfd2df361f7720",
+            "operationName": "podtato-head-podtato-head-left-arm/WorkloadPostDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "ee1124a524627659"
+              }
+            ],
+            "startTime": 1739773044121510,
+            "duration": 2904,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773044124414,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "121e73e38e7cfa99",
+            "operationName": "podtato-head-podtato-head-right-leg/WorkloadDeploy",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "cb78885cb9108d69"
+              }
+            ],
+            "startTime": 1739773029110506,
+            "duration": 15023841,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773044134347,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Deployment has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "e3e8d5a5ce491939",
+            "operationName": "podtato-head-podtato-head-hat/WorkloadPostDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "7f48a70d192b7958"
+              }
+            ],
+            "startTime": 1739773049104987,
+            "duration": 4172,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-hat"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773049109159,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "04d006790ecd6f15",
+            "operationName": "AppPostDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "400aaf8f63409d2f"
+              }
+            ],
+            "startTime": 1739773058425728,
+            "duration": 10026452,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": "95a0b0ddca"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/appversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773068452179,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "App Post-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "19646465c30ac415",
+            "operationName": "pre-check-entry-service-68922",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "574938a5a2c61b17"
+              }
+            ],
+            "startTime": 1739772964021408,
+            "duration": 65072306,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.task.name",
+                "type": "string",
+                "value": "pre-check-entry-service-68922"
+              },
+              {
+                "key": "keptn.deployment.task.type",
+                "type": "string",
+                "value": "pre"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029093714,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "pre-check-entry-service-68922 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "c6f4b6fe1c007976",
+            "operationName": "podtato-head-podtato-head-hat/WorkloadPreDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "7f48a70d192b7958"
+              }
+            ],
+            "startTime": 1739773029065919,
+            "duration": 5017742,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-hat"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773034083661,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "bdc82a5b25843fc6",
+            "operationName": "podtato-head-podtato-head-left-leg-0.1.0",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "052d0116d4e8ce00"
+              }
+            ],
+            "startTime": 1739772963986724,
+            "duration": 75127450,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772963986726,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "WorkloadVersion Pre-Deployment Tasks started"
+                  }
+                ]
+              },
+              {
+                "timestamp": 1739773039114174,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "podtato-head-podtato-head-left-leg-0.1.0 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "373d6c59d4ef2148",
+            "operationName": "podtato-head-podtato-head-hat/WorkloadDeploy",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "7f48a70d192b7958"
+              }
+            ],
+            "startTime": 1739773034083706,
+            "duration": 15021175,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-hat"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773049104879,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Deployment has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "50dfa8ab245190ab",
+            "operationName": "podtato-head-podtato-head-right-arm/WorkloadDeploy",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "391aecfc2b0c1588"
+              }
+            ],
+            "startTime": 1739773029120024,
+            "duration": 20030883,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773049150907,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Deployment has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "7f48a70d192b7958",
+            "operationName": "podtato-head-podtato-head-hat-0.1.0",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "052d0116d4e8ce00"
+              }
+            ],
+            "startTime": 1739772963976912,
+            "duration": 90153952,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-hat"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772963976916,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "WorkloadVersion Pre-Deployment Tasks started"
+                  }
+                ]
+              },
+              {
+                "timestamp": 1739773054130864,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "podtato-head-podtato-head-hat-0.1.0 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "043fa36a73824056",
+            "operationName": "AppPostDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "400aaf8f63409d2f"
+              }
+            ],
+            "startTime": 1739773068452252,
+            "duration": 5016020,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": "95a0b0ddca"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/appversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773073468272,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "App Post-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "bac33dd74db18b97",
+            "operationName": "podtato-head-podtato-head-left-arm/WorkloadPostDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "ee1124a524627659"
+              }
+            ],
+            "startTime": 1739773044126324,
+            "duration": 1943,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773044128266,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "ee1124a524627659",
+            "operationName": "podtato-head-podtato-head-left-arm-0.1.0",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "052d0116d4e8ce00"
+              }
+            ],
+            "startTime": 1739772964003652,
+            "duration": 80128484,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772964003656,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "WorkloadVersion Pre-Deployment Tasks started"
+                  }
+                ]
+              },
+              {
+                "timestamp": 1739773044132136,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "podtato-head-podtato-head-left-arm-0.1.0 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "f80313443a46ec08",
+            "operationName": "podtato-head-podtato-head-right-arm/WorkloadPostDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "391aecfc2b0c1588"
+              }
+            ],
+            "startTime": 1739773049155525,
+            "duration": 2133,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773049157658,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "5d0d553f03a5b103",
+            "operationName": "podtato-head-podtato-head-right-arm/WorkloadPostDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "391aecfc2b0c1588"
+              }
+            ],
+            "startTime": 1739773049150943,
+            "duration": 2601,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773049153545,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "d99ef05e507ed3f2",
+            "operationName": "post-post-deployment-hello-54764",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "04d006790ecd6f15"
+              }
+            ],
+            "startTime": 1739773063438270,
+            "duration": 5007858,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": "95a0b0ddca"
+              },
+              {
+                "key": "keptn.deployment.task.name",
+                "type": "string",
+                "value": "post-post-deployment-hello-54764"
+              },
+              {
+                "key": "keptn.deployment.task.type",
+                "type": "string",
+                "value": "post"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/appversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773068446127,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "post-post-deployment-hello-54764 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "052d0116d4e8ce00",
+            "operationName": "AppDeploy",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "400aaf8f63409d2f"
+              }
+            ],
+            "startTime": 1739772958241697,
+            "duration": 100183990,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": "95a0b0ddca"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/appversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773058425686,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "App Deployment has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "400aaf8f63409d2f",
+            "operationName": "podtato-head-95a0b0ddca-6b86b273",
+            "references": [],
+            "startTime": 1739772953115089,
+            "duration": 120359814,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": "95a0b0ddca"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/appversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772953115108,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "App Version Pre-Deployment Tasks started"
+                  }
+                ]
+              },
+              {
+                "timestamp": 1739773073474902,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "podtato-head-95a0b0ddca-6b86b273 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "574938a5a2c61b17",
+            "operationName": "podtato-head-podtato-head-left-arm/WorkloadPreDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "ee1124a524627659"
+              }
+            ],
+            "startTime": 1739772964003682,
+            "duration": 65092521,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029096202,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "7c7767c196f27dcf",
+            "operationName": "podtato-head-podtato-head-right-leg/WorkloadPostDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "cb78885cb9108d69"
+              }
+            ],
+            "startTime": 1739773044134372,
+            "duration": 2124,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773044136497,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "ed4f707aa5c838ee",
+            "operationName": "AppPreDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "400aaf8f63409d2f"
+              }
+            ],
+            "startTime": 1739772953115126,
+            "duration": 5826,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": "95a0b0ddca"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/appversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772953120951,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "App Pre-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "9b4aecc18cddee6d",
+            "operationName": "podtato-head-podtato-head-entry/WorkloadPreDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "0e35bef7d3be339b"
+              }
+            ],
+            "startTime": 1739772964057024,
+            "duration": 2386,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-entry"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772964059410,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "3a59b566dc68f108",
+            "operationName": "podtato-head-podtato-head-left-leg/WorkloadPostDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "bdc82a5b25843fc6"
+              }
+            ],
+            "startTime": 1739773039101376,
+            "duration": 2961,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773039104326,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "cea4b1742e65d2d5",
+            "operationName": "podtato-head-podtato-head-entry/WorkloadPostDeployTasks",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "0e35bef7d3be339b"
+              }
+            ],
+            "startTime": 1739773014231493,
+            "duration": 10019476,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-entry"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773024250969,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Post-Deployment Tasks has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "466dc81f5b03910b",
+            "operationName": "pre-check-entry-service-37812",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "e4f00bfbb7a4f1cd"
+              }
+            ],
+            "startTime": 1739772964023234,
+            "duration": 65082189,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.task.name",
+                "type": "string",
+                "value": "pre-check-entry-service-37812"
+              },
+              {
+                "key": "keptn.deployment.task.type",
+                "type": "string",
+                "value": "pre"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029105422,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "pre-check-entry-service-37812 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "fef09bf27048d75b",
+            "operationName": "pre-check-entry-service-57055",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "3b863aaf582414f5"
+              }
+            ],
+            "startTime": 1739772964033009,
+            "duration": 65081178,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.task.name",
+                "type": "string",
+                "value": "pre-check-entry-service-57055"
+              },
+              {
+                "key": "keptn.deployment.task.type",
+                "type": "string",
+                "value": "pre"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-arm"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029114187,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "pre-check-entry-service-57055 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "cb78885cb9108d69",
+            "operationName": "podtato-head-podtato-head-right-leg-0.1.0",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "052d0116d4e8ce00"
+              }
+            ],
+            "startTime": 1739772964015213,
+            "duration": 80129462,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-right-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772964015216,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "WorkloadVersion Pre-Deployment Tasks started"
+                  }
+                ]
+              },
+              {
+                "timestamp": 1739773044144675,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "podtato-head-podtato-head-right-leg-0.1.0 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "3c3804ff2ee1e79a",
+            "operationName": "pre-eval-my-prometheus-definition1-53960",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "438db27ac2303413"
+              }
+            ],
+            "startTime": 1739772958234557,
+            "duration": 11,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": "95a0b0ddca"
+              },
+              {
+                "key": "keptn.deployment.evaluation.name",
+                "type": "string",
+                "value": "pre-eval-my-prometheus-definition1-53960"
+              },
+              {
+                "key": "keptn.deployment.evaluation.type",
+                "type": "string",
+                "value": "pre-eval"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/appversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772958234566,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "pre-eval-my-prometheus-definition1-53960 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "438db27ac2303413",
+            "operationName": "AppPreDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "400aaf8f63409d2f"
+              }
+            ],
+            "startTime": 1739772953123239,
+            "duration": 5118396,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": "95a0b0ddca"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/appversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772958241634,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "App Pre-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "ebcf6b539dc7565b",
+            "operationName": "podtato-head-podtato-head-entry/WorkloadPreDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "0e35bef7d3be339b"
+              }
+            ],
+            "startTime": 1739772964061274,
+            "duration": 1772,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-entry"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739772964063046,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "0b713fda9db0d280",
+            "operationName": "podtato-head-podtato-head-left-leg/WorkloadPreDeployEvaluations",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "bdc82a5b25843fc6"
+              }
+            ],
+            "startTime": 1739773029082129,
+            "duration": 3374,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-left-leg"
+              },
+              {
+                "key": "keptn.deployment.workload.namespace",
+                "type": "string",
+                "value": "podtato-kubectl"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773029085501,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "Workload Pre-Deployment Evaluations has succeeded"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "5b1171ca72353b9a",
+            "operationName": "post-post-deployment-hello-57533",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "cea4b1742e65d2d5"
+              }
+            ],
+            "startTime": 1739773019240224,
+            "duration": 5007208,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.task.name",
+                "type": "string",
+                "value": "post-post-deployment-hello-57533"
+              },
+              {
+                "key": "keptn.deployment.task.type",
+                "type": "string",
+                "value": "post"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": "podtato-head-podtato-head-entry"
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": "0.1.0"
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/workloadversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773024247431,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "post-post-deployment-hello-57533 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          },
+          {
+            "traceID": "9844dc47a002f7391be78dab51e3a41c",
+            "spanID": "86816731f9622e96",
+            "operationName": "post-eval-my-prometheus-definition2-27473",
+            "references": [
+              {
+                "refType": "CHILD_OF",
+                "traceID": "9844dc47a002f7391be78dab51e3a41c",
+                "spanID": "043fa36a73824056"
+              }
+            ],
+            "startTime": 1739773073460657,
+            "duration": 10,
+            "tags": [
+              {
+                "key": "internal.span.format",
+                "type": "string",
+                "value": "otlp"
+              },
+              {
+                "key": "keptn.deployment.app.name",
+                "type": "string",
+                "value": "podtato-head"
+              },
+              {
+                "key": "keptn.deployment.app.version",
+                "type": "string",
+                "value": "95a0b0ddca"
+              },
+              {
+                "key": "keptn.deployment.evaluation.name",
+                "type": "string",
+                "value": "post-eval-my-prometheus-definition2-27473"
+              },
+              {
+                "key": "keptn.deployment.evaluation.type",
+                "type": "string",
+                "value": "post-eval"
+              },
+              {
+                "key": "keptn.deployment.workload.name",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "keptn.deployment.workload.version",
+                "type": "string",
+                "value": ""
+              },
+              {
+                "key": "otel.scope.name",
+                "type": "string",
+                "value": "keptn/lifecycle-operator/appversion"
+              },
+              {
+                "key": "otel.status_code",
+                "type": "string",
+                "value": "OK"
+              },
+              {
+                "key": "span.kind",
+                "type": "string",
+                "value": "consumer"
+              }
+            ],
+            "logs": [
+              {
+                "timestamp": 1739773073460666,
+                "fields": [
+                  {
+                    "key": "event",
+                    "type": "string",
+                    "value": "post-eval-my-prometheus-definition2-27473 has finished"
+                  }
+                ]
+              }
+            ],
+            "processID": "p1",
+            "warnings": null
+          }
+        ],
+        "processes": {
+          "p1": {
+            "serviceName": "lifecycle-operator",
+            "tags": [
+              {
+                "key": "service.version",
+                "type": "string",
+                "value": "--"
+              },
+              {
+                "key": "telemetry.sdk.language",
+                "type": "string",
+                "value": "go"
+              }
+            ]
+          }
+        },
+        "warnings": null
+      }
+    ],
+    "total": 0,
+    "limit": 0,
+    "offset": 0,
+    "errors": null
+  }

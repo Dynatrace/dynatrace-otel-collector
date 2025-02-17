@@ -4,6 +4,8 @@ go 1.23.5
 
 require (
 	github.com/fluent/fluent-logger-golang v1.9.0
+	github.com/gogo/protobuf v1.3.2
+	github.com/jaegertracing/jaeger v1.65.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.119.0
 	github.com/openzipkin/zipkin-go v0.4.3
 	go.opentelemetry.io/collector/config/confignet v1.25.0
@@ -16,8 +18,7 @@ require (
 	github.com/apache/thrift v0.21.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/jaegertracing/jaeger v1.65.0 // indirect
+	github.com/gogo/googleapis v1.4.1 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -34,6 +35,6 @@ require (
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250102185135-69823020774d // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20241216192217-9240e9c98484 // indirect
 	google.golang.org/protobuf v1.36.4 // indirect
 )

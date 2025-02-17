@@ -4,8 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/fluent"
 	"log"
+
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/fluent"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/jaeger"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/otlpjson"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/statsd"
@@ -121,6 +123,22 @@ func main() {
 		})
 		if err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())
+		}
+		if err := cmd.Do(context.Background()); err != nil {
+			log.Fatalf("could not execute command: %s", err.Error())
+		}
+	case "jaeger":
+		log.Println("Reading from jaeger and sending to collector...")
+		cmd, err := jaeger.New(jaeger.Config{
+			InputFile:    *inputFile,
+			CollectorURL: *collectorURL,
+			SignalType:   *otlpSignalType,
+			OutputFile:   *outputFile,
+			ReceiverPort: *receiverPort,
+			ReceiverType: *receiverType,
+		})
+		if err != nil {
+			log.Fatalf("could not create jaeger sender: %s", err.Error())
 		}
 		if err := cmd.Do(context.Background()); err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())

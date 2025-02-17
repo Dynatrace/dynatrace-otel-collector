@@ -78,11 +78,7 @@ func (c *Cmd) Do(ctx context.Context) error {
 }
 
 type data struct {
-	Data dataItem `json:"spans,omitempty"`
-}
-
-type dataItem struct {
-	Batch model.Batch
+	Data []*model.Batch `json:",omitempty"`
 }
 
 func (c *Cmd) sendTraces(ctx context.Context) error {
@@ -92,68 +88,37 @@ func (c *Cmd) sendTraces(ctx context.Context) error {
 	}
 
 	content := data{}
-
 	if err := json.Unmarshal(fileContent, &content); err != nil {
-		return err
+		return fmt.Errorf("could not unmarshall data: %s", err.Error())
 	}
 
-	data := content.Data.Batch
+	// Assert that "data" is a slice of interfaces
+	// data, ok := content["data"].([]interface{})
+	// if !ok {
+	// 	return fmt.Errorf("error: data is not an array")
+	// }
 
-	bytes, err := content.Data.Batch.Marshal()
-	if err != nil {
-		return fmt.Errorf("could not marshal traces: %s", err.Error())
-	}
+	// // Access the first item in the "data" array
+	// if len(data) == 0 {
+	// 	return fmt.Errorf("error: data array is empty")
+	// }
 
-	//Unmarshal the file content into an array of raw messages
-	// var rawMessages []json.RawMessage
-	// err = json.Unmarshal(fileContent, &rawMessages)
+	// firstItem := data[0].(map[string]interface{})
+
+	// // Marshal the first item if needed
+	// firstItemJSON, err := json.Marshal(firstItem)
 	// if err != nil {
-	// 	return fmt.Errorf("could not unmarshal file content: %s", err.Error())
+	// 	return fmt.Errorf("could not marshal first item: %s", err.Error())
 	// }
 
-	//Iterate through the array and unmarshal each trace into a model.Batch
-	// var batches []*model.Batch
-	// for _, rawMessage := range rawMessages {
-	trace := &model.Batch{}
-	//err = jsonpb.Unmarshal(bytes.NewReader(fileContent), trace)
-	err = trace.Unmarshal([]byte(data))
-	if err != nil {
-		return fmt.Errorf("could not unmarshal traces: %s", err.Error())
-	}
-	// 	batches = append(batches, trace)
-	// }
-
-	//Unmarshal the file content into an array of raw messages
-	// var rawMessages []json.RawMessage
-	// err = json.Unmarshal(fileContent, &rawMessages)
+	// trace := &model.Batch{}
+	// err = trace.Unmarshal(firstItemJSON)
+	// //err = json.Unmarshal(firstItemJSON, trace)
 	// if err != nil {
-	// 	return fmt.Errorf("could not unmarshal file content: %s", err.Error())
-	//}
-
-	//Iterate through the array and unmarshal each trace into a model.Batch
-	// var batches []*model.Batch
-	// for _, rawMessage := range rawMessages {
-	// 	trace := &model.Batch{}
-	// 	err = json.Unmarshal(rawMessage, trace)
-	// 	//err = trace.Unmarshal(rawMessage)
-	// 	if err != nil {
-	// 		return fmt.Errorf("could not unmarshal trace: %s", err.Error())
-	// 	}
-	// 	batches = append(batches, trace)
+	// 	return fmt.Errorf("could not unmarshal traces: %s", err.Error())
 	// }
 
-	// span := &jaegerproto.Span{}
-	// err = jsonpb.Unmarshal(bytes.NewReader(fileContent), span)
-	// if err != nil {
-	// 	return fmt.Errorf("could not unmarshal trace: %s", err.Error())
-	// }
-
-	// tracestt, err := jaegerSpanToTraces(span)
-	// if err != nil {
-	// 	return fmt.Errorf("could not unmffffarshal trace: %s", err.Error())
-	// }
-
-	return c.sender.SendTraces(ctx, trace)
+	return c.sender.SendTraces(ctx, content.Data[0])
 }
 
 // func jaegerSpanToTraces(span *jaegerproto.Span) (ptrace.Traces, error) {

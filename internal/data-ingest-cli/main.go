@@ -146,11 +146,13 @@ func main() {
 			ReceiverPort: *receiverPort,
 			OutputFile:   *outputFile,
 		})
-		if err == nil {
+		if err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())
 		}
 		if err := cmd.Do(context.Background()); err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())
 		}
+	} else {
+		log.Println("Neither --send nor --receive have been set. Exiting.")
 	}
 }

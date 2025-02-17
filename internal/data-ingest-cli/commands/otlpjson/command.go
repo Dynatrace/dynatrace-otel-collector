@@ -15,7 +15,6 @@ import (
 )
 
 type Config struct {
-	SendData     bool
 	ReceiveData  bool
 	InputFile    string
 	CollectorURL string
@@ -38,13 +37,11 @@ func New(p Config) (*Cmd, error) {
 		inputFile:  p.InputFile,
 	}
 
-	if p.SendData {
-		sender, err := otlp.New(p.CollectorURL)
-		if err != nil {
-			return nil, err
-		}
-		c.sender = sender
+	sender, err := otlp.New(p.CollectorURL)
+	if err != nil {
+		return nil, err
 	}
+	c.sender = sender
 
 	if p.ReceiveData && p.ReceiverPort > 0 && p.OutputFile != "" {
 		switch p.ReceiverType {

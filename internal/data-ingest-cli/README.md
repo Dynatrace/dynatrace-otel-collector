@@ -25,6 +25,10 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
 - Send data read from the JSON file to an OTLP endpoint via gRPC.
 
 - Send statsd data read from a plain/text file and send it to the Collector endpoint via the chosen protocol.
+- 
+- Send syslog data read from a plain/text file and send it to the Collector endpoint via the chosen protocol.
+- 
+- Send zipkin data read from a plain/text file and send it to the Collector endpoint via the chosen zipkin version.
 
 ## Building
 
@@ -55,13 +59,13 @@ The tool accepts the following input parameters:
 1. Send OTLP JSON data to a collector:
 
 ```shell
-./data-ingest --send --input-format otlp-json --input-file $(pwd)/commands/otlpjson/testdata/traces.json  --otlp-signal-type traces --collector-url localhost:4317 --output-file received_traces.json --receiver-port 4319 --receiver-type http
+./data-ingest --send --input-format otlp-json --input-file $(pwd)/commands/otlpjson/testdata/traces.json  --otlp-signal-type traces --collector-url localhost:4317 --receive --output-file received_traces.json --receiver-port 4319 --receiver-type http
 ```
 
 1. Send statsd data to a collector:
 
 ```shell
-./data-ingest --send --input-format statsd --input-file $(pwd)/commands/statsd/testdata/metrics.txt --collector-url localhost:8125 --output-file received_metrics.json --receiver-port 4319 --statsd-protocol udp --otlp-signal-type metrics --receiver-type http
+./data-ingest --send --input-format statsd --input-file $(pwd)/commands/statsd/testdata/metrics.txt --collector-url localhost:8125 --output-file received_metrics.json --receive --receiver-port 4319 --statsd-protocol udp --otlp-signal-type metrics --receiver-type http
 ```
 
 1. Send Syslog data to a collector:
@@ -79,5 +83,11 @@ The tool accepts the following input parameters:
 1. Send Zipkin data to a collector:
 
 ```shell
-./data-ingest --input-format zipkin --input-file $(pwd)/commands/zipkin/testdata/sample_v2.json  --otlp-signal-type traces --collector-url http://0.0.0.0:9411 --output-file received_traces.json --receiver-port 4319 --receiver-type http
+./data-ingest --send --input-format zipkin --input-file $(pwd)/commands/zipkin/testdata/sample_v2.json  --otlp-signal-type traces --collector-url http://0.0.0.0:9411 --receive --output-file received_traces.json --receiver-port 4319 --receiver-type http
+```
+
+1. Only receive data:
+
+```shell
+./data-ingest --receive --output-file received.json --receiver-port 4319 --receiver-type http
 ```

@@ -12,7 +12,6 @@ import (
 )
 
 type Config struct {
-	SendData     bool
 	ReceiveData  bool
 	InputFile    string
 	CollectorURL string
@@ -37,16 +36,14 @@ func New(cfg Config) (*Cmd, error) {
 		cfg: cfg,
 	}
 
-	if cfg.SendData {
-		sender, err := syslog.Connect(context.Background(), &syslog.Config{
-			Endpoint:  c.cfg.CollectorURL,
-			Transport: c.cfg.Transport,
-		})
-		if err != nil {
-			return nil, err
-		}
-		c.sender = sender
+	sender, err := syslog.Connect(context.Background(), &syslog.Config{
+		Endpoint:  c.cfg.CollectorURL,
+		Transport: c.cfg.Transport,
+	})
+	if err != nil {
+		return nil, err
 	}
+	c.sender = sender
 
 	if cfg.ReceiveData && cfg.ReceiverPort > 0 && cfg.OutputFile != "" {
 		switch cfg.ReceiverType {

@@ -17,7 +17,6 @@ import (
 var errMissingFluentProperties = fmt.Errorf("test data must be a json object containing a 'tag' and 'message' property")
 
 type Config struct {
-	SendData     bool
 	ReceiveData  bool
 	InputFile    string
 	CollectorURL string
@@ -55,21 +54,19 @@ func New(cfg Config) (*Cmd, error) {
 		}
 	}
 
-	if cfg.SendData {
-		collectorURL, err := url.Parse(cfg.CollectorURL)
-		if err != nil {
-			return nil, err
-		}
-		port, err := strconv.Atoi(collectorURL.Port())
-		if err != nil {
-			return nil, err
-		}
-		sender, err := fluent.New(collectorURL.Hostname(), port)
-		if err != nil {
-			return nil, err
-		}
-		c.sender = sender
+	collectorURL, err := url.Parse(cfg.CollectorURL)
+	if err != nil {
+		return nil, err
 	}
+	port, err := strconv.Atoi(collectorURL.Port())
+	if err != nil {
+		return nil, err
+	}
+	sender, err := fluent.New(collectorURL.Hostname(), port)
+	if err != nil {
+		return nil, err
+	}
+	c.sender = sender
 
 	return c, nil
 }

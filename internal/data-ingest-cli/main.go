@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/receive"
 	"log"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/fluent"
@@ -48,99 +49,108 @@ func main() {
 	fmt.Println("Syslog transport:", *syslogTransport)
 	fmt.Println("Receiver type:", *receiverType)
 
-	switch *inputFormat {
-	case "otlp-json":
-		fmt.Println("Reading otlpjson data and sending it to collector...")
-		cmd, err := otlpjson.New(otlpjson.Config{
-			SendData:     *sendData,
-			ReceiveData:  *receiveData,
-			InputFile:    *inputFile,
-			CollectorURL: *collectorURL,
-			SignalType:   *otlpSignalType,
-			OutputFile:   *outputFile,
-			ReceiverPort: *receiverPort,
+	if *sendData {
+		switch *inputFormat {
+		case "otlp-json":
+			fmt.Println("Reading otlpjson data and sending it to collector...")
+			cmd, err := otlpjson.New(otlpjson.Config{
+				ReceiveData:  *receiveData,
+				InputFile:    *inputFile,
+				CollectorURL: *collectorURL,
+				SignalType:   *otlpSignalType,
+				OutputFile:   *outputFile,
+				ReceiverPort: *receiverPort,
+				ReceiverType: *receiverType,
+			})
+			if err != nil {
+				log.Fatalf("could not create otlp-json sender: %s", err.Error())
+			}
+			if err := cmd.Do(context.Background()); err != nil {
+				log.Fatalf("could not execute command: %s", err.Error())
+			}
+		case "syslog":
+			fmt.Println("Reading syslog data and sending it to collector...")
+			cmd, err := syslog.New(syslog.Config{
+				ReceiveData:  *receiveData,
+				InputFile:    *inputFile,
+				CollectorURL: *collectorURL,
+				Transport:    *syslogTransport,
+				OutputFile:   *outputFile,
+				ReceiverPort: *receiverPort,
+				ReceiverType: *receiverType,
+			})
+			if err != nil {
+				log.Fatalf("could not create syslog sender: %s", err.Error())
+			}
+			if err := cmd.Do(context.Background()); err != nil {
+				log.Fatalf("could not execute command: %s", err.Error())
+			}
+		case "statsd":
+			log.Println("Reading from statsd and sending to collector...")
+			cmd, err := statsd.New(statsd.Config{
+				ReceiveData:  *receiveData,
+				InputFile:    *inputFile,
+				CollectorURL: *collectorURL,
+				SignalType:   *otlpSignalType,
+				OutputFile:   *outputFile,
+				ReceiverPort: *receiverPort,
+				Protocol:     *statsdProtocol,
+				ReceiverType: *receiverType,
+			})
+			if err != nil {
+				log.Fatalf("could not create statsd sender: %s", err.Error())
+			}
+			if err := cmd.Do(context.Background()); err != nil {
+				log.Fatalf("could not execute command: %s", err.Error())
+			}
+		case "zipkin":
+			log.Println("Reading from zipkin and sending to collector...")
+			cmd, err := zipkin.New(zipkin.Config{
+				ReceiveData:   *receiveData,
+				InputFile:     *inputFile,
+				CollectorURL:  *collectorURL,
+				SignalType:    *otlpSignalType,
+				OutputFile:    *outputFile,
+				ReceiverPort:  *receiverPort,
+				ReceiverType:  *receiverType,
+				ZipkinVersion: *zipkinVersion,
+			})
+			if err != nil {
+				log.Fatalf("could not create zipkin sender: %s", err.Error())
+			}
+			if err := cmd.Do(context.Background()); err != nil {
+				log.Fatalf("could not execute command: %s", err.Error())
+			}
+		case "fluent":
+			log.Println("Reading from fluent and sending to collector...")
+			cmd, err := fluent.New(fluent.Config{
+				ReceiveData:  *receiveData,
+				InputFile:    *inputFile,
+				CollectorURL: *collectorURL,
+				OutputFile:   *outputFile,
+				ReceiverPort: *receiverPort,
+				ReceiverType: *receiverType,
+			})
+			if err != nil {
+				log.Fatalf("could not execute command: %s", err.Error())
+			}
+			if err := cmd.Do(context.Background()); err != nil {
+				log.Fatalf("could not execute command: %s", err.Error())
+			}
+		default:
+			log.Fatalf("Unknown input format: %s", *inputFormat)
+		}
+	} else if *receiveData {
+		cmd, err := receive.New(receive.Config{
 			ReceiverType: *receiverType,
-		})
-		if err != nil {
-			log.Fatalf("could not create otlp-json sender: %s", err.Error())
-		}
-		if err := cmd.Do(context.Background()); err != nil {
-			log.Fatalf("could not execute command: %s", err.Error())
-		}
-	case "syslog":
-		fmt.Println("Reading syslog data and sending it to collector...")
-		cmd, err := syslog.New(syslog.Config{
-			SendData:     *sendData,
-			ReceiveData:  *receiveData,
-			InputFile:    *inputFile,
-			CollectorURL: *collectorURL,
-			Transport:    *syslogTransport,
-			OutputFile:   *outputFile,
 			ReceiverPort: *receiverPort,
-			ReceiverType: *receiverType,
-		})
-		if err != nil {
-			log.Fatalf("could not create syslog sender: %s", err.Error())
-		}
-		if err := cmd.Do(context.Background()); err != nil {
-			log.Fatalf("could not execute command: %s", err.Error())
-		}
-	case "statsd":
-		log.Println("Reading from statsd and sending to collector...")
-		cmd, err := statsd.New(statsd.Config{
-			SendData:     *sendData,
-			ReceiveData:  *receiveData,
-			InputFile:    *inputFile,
-			CollectorURL: *collectorURL,
-			SignalType:   *otlpSignalType,
 			OutputFile:   *outputFile,
-			ReceiverPort: *receiverPort,
-			Protocol:     *statsdProtocol,
-			ReceiverType: *receiverType,
 		})
-		if err != nil {
-			log.Fatalf("could not create statsd sender: %s", err.Error())
-		}
-		if err := cmd.Do(context.Background()); err != nil {
-			log.Fatalf("could not execute command: %s", err.Error())
-		}
-	case "zipkin":
-		log.Println("Reading from zipkin and sending to collector...")
-		cmd, err := zipkin.New(zipkin.Config{
-			SendData:      *sendData,
-			ReceiveData:   *receiveData,
-			InputFile:     *inputFile,
-			CollectorURL:  *collectorURL,
-			SignalType:    *otlpSignalType,
-			OutputFile:    *outputFile,
-			ReceiverPort:  *receiverPort,
-			ReceiverType:  *receiverType,
-			ZipkinVersion: *zipkinVersion,
-		})
-		if err != nil {
-			log.Fatalf("could not create zipkin sender: %s", err.Error())
-		}
-		if err := cmd.Do(context.Background()); err != nil {
-			log.Fatalf("could not execute command: %s", err.Error())
-		}
-	case "fluent":
-		log.Println("Reading from fluent and sending to collector...")
-		cmd, err := fluent.New(fluent.Config{
-			SendData:     *sendData,
-			ReceiveData:  *receiveData,
-			InputFile:    *inputFile,
-			CollectorURL: *collectorURL,
-			OutputFile:   *outputFile,
-			ReceiverPort: *receiverPort,
-			ReceiverType: *receiverType,
-		})
-		if err != nil {
+		if err == nil {
 			log.Fatalf("could not execute command: %s", err.Error())
 		}
 		if err := cmd.Do(context.Background()); err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())
 		}
-	default:
-		log.Fatalf("Unknown input format: %s", *inputFormat)
 	}
 }

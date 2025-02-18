@@ -30,7 +30,7 @@ func main() {
 	receiverPort := flag.Int("receiver-port", 0, "OTLP Receiver port. If set, the tool will open a grpc server on the specified port to receive data and store it in an output file")
 	receiverType := flag.String("receiver-type", "http", "The type of receiver created to act as a sink for the collector (options: `http`, `grpc`)")
 	zipkinVersion := flag.String("zipkin-version", "v2", "The version of zipkin traces (options: `v1`, `v2`)")
-	receiverTimeout := flag.Int("receiver-timeout", 300, "OTLP Receiver timeout. It speficies the maximum amount of seconds which the tool waits for data from the collector")
+	receiverTimeout := flag.Int("receiver-timeout", 300, "OTLP Receiver timeout. It specifies the maximum duration (in seconds) the tool waits for data from the collector before terminating")
 
 	// Parse the CLI arguments
 	flag.Parse()

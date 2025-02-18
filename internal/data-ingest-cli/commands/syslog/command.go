@@ -12,6 +12,7 @@ import (
 )
 
 type Config struct {
+	ReceiveData  bool
 	InputFile    string
 	CollectorURL string
 	Transport    string
@@ -23,6 +24,7 @@ type Config struct {
 type Cmd struct {
 	cfg      Config
 	receiver receiver.Receiver
+	sender   *syslog.Sender
 }
 
 func New(cfg Config) (*Cmd, error) {
@@ -34,7 +36,16 @@ func New(cfg Config) (*Cmd, error) {
 		cfg: cfg,
 	}
 
-	if cfg.ReceiverPort > 0 && cfg.OutputFile != "" {
+	sender, err := syslog.Connect(context.Background(), &syslog.Config{
+		Endpoint:  c.cfg.CollectorURL,
+		Transport: c.cfg.Transport,
+	})
+	if err != nil {
+		return nil, err
+	}
+	c.sender = sender
+
+	if cfg.ReceiveData && cfg.ReceiverPort > 0 && cfg.OutputFile != "" {
 		switch cfg.ReceiverType {
 		case "grpc":
 			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
@@ -65,18 +76,13 @@ func (c *Cmd) Do(ctx context.Context) error {
 }
 
 func (c *Cmd) sendLogs(ctx context.Context) error {
+	if c.sender == nil {
+		return nil
+	}
 	fileContent, err := os.ReadFile(c.cfg.InputFile)
 	if err != nil {
 		return err
 	}
 
-	sender, err := syslog.Connect(ctx, &syslog.Config{
-		Endpoint:  c.cfg.CollectorURL,
-		Transport: c.cfg.Transport,
-	})
-	if err != nil {
-		return err
-	}
-
-	return sender.Write(ctx, string(fileContent))
+	return c.sender.Write(ctx, string(fileContent))
 }

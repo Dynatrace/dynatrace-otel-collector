@@ -4,18 +4,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"os"
+	"strconv"
+
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver"
 	otlpreceiver "github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver/otlp"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver/otlphttp"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/sender/fluent"
-	"net/url"
-	"os"
-	"strconv"
 )
 
 var errMissingFluentProperties = fmt.Errorf("test data must be a json object containing a 'tag' and 'message' property")
 
 type Config struct {
+	ReceiveData  bool
 	InputFile    string
 	CollectorURL string
 	Transport    string
@@ -35,7 +37,7 @@ func New(cfg Config) (*Cmd, error) {
 		cfg: cfg,
 	}
 
-	if cfg.ReceiverPort > 0 && cfg.OutputFile != "" {
+	if cfg.ReceiveData && cfg.ReceiverPort > 0 && cfg.OutputFile != "" {
 		switch cfg.ReceiverType {
 		case "grpc":
 			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
@@ -80,6 +82,9 @@ func (c *Cmd) Do(_ context.Context) error {
 }
 
 func (c *Cmd) sendLogs() error {
+	if c.sender == nil {
+		return nil
+	}
 	fileContent, err := os.ReadFile(c.cfg.InputFile)
 	if err != nil {
 		return err

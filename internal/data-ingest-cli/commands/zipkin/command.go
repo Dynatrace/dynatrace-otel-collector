@@ -15,6 +15,7 @@ import (
 )
 
 type Config struct {
+	ReceiveData   bool
 	InputFile     string
 	CollectorURL  string
 	SignalType    string
@@ -43,10 +44,9 @@ func New(p Config) (*Cmd, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	c.sender = sender
 
-	if p.ReceiverPort > 0 && p.OutputFile != "" {
+	if p.ReceiveData && p.ReceiverPort > 0 && p.OutputFile != "" {
 		switch p.ReceiverType {
 		case "grpc":
 			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
@@ -82,6 +82,9 @@ func (c *Cmd) Do(ctx context.Context) error {
 }
 
 func (c *Cmd) sendTraces(ctx context.Context) error {
+	if c.sender == nil {
+		return nil
+	}
 	fileContent, err := os.ReadFile(c.inputFile)
 	if err != nil {
 		return fmt.Errorf("could not read file content: %s", err.Error())

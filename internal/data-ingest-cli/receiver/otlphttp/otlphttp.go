@@ -53,7 +53,7 @@ func (r *OTLPHTTPReceiver) Start() error {
 func (r *OTLPHTTPReceiver) Stop() {
 	select {
 	case <-r.receivedDataChan:
-	case <-time.After(10 * time.Second):
+	case <-time.After(300 * time.Second):
 	}
 }
 

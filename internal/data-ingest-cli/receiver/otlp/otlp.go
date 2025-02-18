@@ -77,7 +77,7 @@ func (r *OTLPReceiver) Stop() {
 
 	select {
 	case <-r.receivedDataChan:
-	case <-time.After(10 * time.Second):
+	case <-time.After(300 * time.Second):
 	}
 	if r.server != nil {
 		r.server.GracefulStop()

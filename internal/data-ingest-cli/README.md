@@ -25,10 +25,14 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
 - Send data read from the JSON file to an OTLP endpoint via gRPC.
 
 - Send statsd data read from a plain/text file and send it to the Collector endpoint via the chosen protocol.
-- 
+
 - Send syslog data read from a plain/text file and send it to the Collector endpoint via the chosen protocol.
-- 
+
 - Send zipkin data read from a plain/text file and send it to the Collector endpoint via the chosen zipkin version.
+
+**Note:**
+
+Sending data to Jaeger receiver is not supported in this CLI tool. For more information about the reasoning for this and setting up a debug environmant for Jaeger receiver, please see [here](./commands/jaeger/README.md).
 
 ## Building
 

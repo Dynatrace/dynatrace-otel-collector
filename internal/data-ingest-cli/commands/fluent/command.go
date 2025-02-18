@@ -17,13 +17,14 @@ import (
 var errMissingFluentProperties = fmt.Errorf("test data must be a json object containing a 'tag' and 'message' property")
 
 type Config struct {
-	ReceiveData  bool
-	InputFile    string
-	CollectorURL string
-	Transport    string
-	OutputFile   string
-	ReceiverPort int
-	ReceiverType string
+	ReceiveData     bool
+	InputFile       string
+	CollectorURL    string
+	Transport       string
+	OutputFile      string
+	ReceiverPort    int
+	ReceiverType    string
+	ReceiverTimeout int
 }
 
 type Cmd struct {
@@ -43,11 +44,13 @@ func New(cfg Config) (*Cmd, error) {
 			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
 				Port:       cfg.ReceiverPort,
 				OutputFile: cfg.OutputFile,
+				Timeout:    cfg.ReceiverTimeout,
 			})
 		case "http":
 			c.receiver = otlphttp.NewOTLPHTTPReceiver(otlphttp.Config{
 				Port:       cfg.ReceiverPort,
 				OutputFile: cfg.OutputFile,
+				Timeout:    cfg.ReceiverTimeout,
 			})
 		default:
 			return nil, fmt.Errorf("invalid receiver type %s", cfg.ReceiverType)

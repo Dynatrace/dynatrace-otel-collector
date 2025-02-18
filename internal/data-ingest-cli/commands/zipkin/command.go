@@ -15,14 +15,15 @@ import (
 )
 
 type Config struct {
-	ReceiveData   bool
-	InputFile     string
-	CollectorURL  string
-	SignalType    string
-	OutputFile    string
-	ReceiverPort  int
-	ReceiverType  string
-	ZipkinVersion string
+	ReceiveData     bool
+	InputFile       string
+	CollectorURL    string
+	SignalType      string
+	OutputFile      string
+	ReceiverPort    int
+	ReceiverType    string
+	ReceiverTimeout int
+	ZipkinVersion   string
 }
 
 type Cmd struct {
@@ -52,11 +53,13 @@ func New(p Config) (*Cmd, error) {
 			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
 				Port:       p.ReceiverPort,
 				OutputFile: p.OutputFile,
+				Timeout:    p.ReceiverTimeout,
 			})
 		case "http":
 			c.receiver = otlphttp.NewOTLPHTTPReceiver(otlphttp.Config{
 				Port:       p.ReceiverPort,
 				OutputFile: p.OutputFile,
+				Timeout:    p.ReceiverTimeout,
 			})
 		default:
 			return nil, fmt.Errorf("invalid receiver type %s", p.ReceiverType)

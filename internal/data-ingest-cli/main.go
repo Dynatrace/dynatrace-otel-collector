@@ -4,8 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/receive"
 	"log"
+
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/receive"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/fluent"
 
@@ -29,6 +30,7 @@ func main() {
 	receiverPort := flag.Int("receiver-port", 0, "OTLP Receiver port. If set, the tool will open a grpc server on the specified port to receive data and store it in an output file")
 	receiverType := flag.String("receiver-type", "http", "The type of receiver created to act as a sink for the collector (options: `http`, `grpc`)")
 	zipkinVersion := flag.String("zipkin-version", "v2", "The version of zipkin traces (options: `v1`, `v2`)")
+	receiverTimeout := flag.Int("receiver-timeout", 300, "OTLP Receiver timeout. It speficies the maximum amount of seconds which the tool waits for data from the collector")
 
 	// Parse the CLI arguments
 	flag.Parse()
@@ -48,19 +50,21 @@ func main() {
 	fmt.Println("Statsd protocol:", *statsdProtocol)
 	fmt.Println("Syslog transport:", *syslogTransport)
 	fmt.Println("Receiver type:", *receiverType)
+	fmt.Println("Receiver timeout:", *receiverTimeout)
 
 	if *sendData {
 		switch *inputFormat {
 		case "otlp-json":
 			fmt.Println("Reading otlpjson data and sending it to collector...")
 			cmd, err := otlpjson.New(otlpjson.Config{
-				ReceiveData:  *receiveData,
-				InputFile:    *inputFile,
-				CollectorURL: *collectorURL,
-				SignalType:   *otlpSignalType,
-				OutputFile:   *outputFile,
-				ReceiverPort: *receiverPort,
-				ReceiverType: *receiverType,
+				ReceiveData:     *receiveData,
+				InputFile:       *inputFile,
+				CollectorURL:    *collectorURL,
+				SignalType:      *otlpSignalType,
+				OutputFile:      *outputFile,
+				ReceiverPort:    *receiverPort,
+				ReceiverType:    *receiverType,
+				ReceiverTimeout: *receiverTimeout,
 			})
 			if err != nil {
 				log.Fatalf("could not create otlp-json sender: %s", err.Error())
@@ -71,13 +75,14 @@ func main() {
 		case "syslog":
 			fmt.Println("Reading syslog data and sending it to collector...")
 			cmd, err := syslog.New(syslog.Config{
-				ReceiveData:  *receiveData,
-				InputFile:    *inputFile,
-				CollectorURL: *collectorURL,
-				Transport:    *syslogTransport,
-				OutputFile:   *outputFile,
-				ReceiverPort: *receiverPort,
-				ReceiverType: *receiverType,
+				ReceiveData:     *receiveData,
+				InputFile:       *inputFile,
+				CollectorURL:    *collectorURL,
+				Transport:       *syslogTransport,
+				OutputFile:      *outputFile,
+				ReceiverPort:    *receiverPort,
+				ReceiverType:    *receiverType,
+				ReceiverTimeout: *receiverTimeout,
 			})
 			if err != nil {
 				log.Fatalf("could not create syslog sender: %s", err.Error())
@@ -88,14 +93,15 @@ func main() {
 		case "statsd":
 			log.Println("Reading from statsd and sending to collector...")
 			cmd, err := statsd.New(statsd.Config{
-				ReceiveData:  *receiveData,
-				InputFile:    *inputFile,
-				CollectorURL: *collectorURL,
-				SignalType:   *otlpSignalType,
-				OutputFile:   *outputFile,
-				ReceiverPort: *receiverPort,
-				Protocol:     *statsdProtocol,
-				ReceiverType: *receiverType,
+				ReceiveData:     *receiveData,
+				InputFile:       *inputFile,
+				CollectorURL:    *collectorURL,
+				SignalType:      *otlpSignalType,
+				OutputFile:      *outputFile,
+				ReceiverPort:    *receiverPort,
+				Protocol:        *statsdProtocol,
+				ReceiverType:    *receiverType,
+				ReceiverTimeout: *receiverTimeout,
 			})
 			if err != nil {
 				log.Fatalf("could not create statsd sender: %s", err.Error())
@@ -106,14 +112,15 @@ func main() {
 		case "zipkin":
 			log.Println("Reading from zipkin and sending to collector...")
 			cmd, err := zipkin.New(zipkin.Config{
-				ReceiveData:   *receiveData,
-				InputFile:     *inputFile,
-				CollectorURL:  *collectorURL,
-				SignalType:    *otlpSignalType,
-				OutputFile:    *outputFile,
-				ReceiverPort:  *receiverPort,
-				ReceiverType:  *receiverType,
-				ZipkinVersion: *zipkinVersion,
+				ReceiveData:     *receiveData,
+				InputFile:       *inputFile,
+				CollectorURL:    *collectorURL,
+				SignalType:      *otlpSignalType,
+				OutputFile:      *outputFile,
+				ReceiverPort:    *receiverPort,
+				ReceiverType:    *receiverType,
+				ReceiverTimeout: *receiverTimeout,
+				ZipkinVersion:   *zipkinVersion,
 			})
 			if err != nil {
 				log.Fatalf("could not create zipkin sender: %s", err.Error())
@@ -124,12 +131,13 @@ func main() {
 		case "fluent":
 			log.Println("Reading from fluent and sending to collector...")
 			cmd, err := fluent.New(fluent.Config{
-				ReceiveData:  *receiveData,
-				InputFile:    *inputFile,
-				CollectorURL: *collectorURL,
-				OutputFile:   *outputFile,
-				ReceiverPort: *receiverPort,
-				ReceiverType: *receiverType,
+				ReceiveData:     *receiveData,
+				InputFile:       *inputFile,
+				CollectorURL:    *collectorURL,
+				OutputFile:      *outputFile,
+				ReceiverPort:    *receiverPort,
+				ReceiverType:    *receiverType,
+				ReceiverTimeout: *receiverTimeout,
 			})
 			if err != nil {
 				log.Fatalf("could not execute command: %s", err.Error())
@@ -142,9 +150,10 @@ func main() {
 		}
 	} else if *receiveData {
 		cmd, err := receive.New(receive.Config{
-			ReceiverType: *receiverType,
-			ReceiverPort: *receiverPort,
-			OutputFile:   *outputFile,
+			ReceiverType:    *receiverType,
+			ReceiverTimeout: *receiverTimeout,
+			ReceiverPort:    *receiverPort,
+			OutputFile:      *outputFile,
 		})
 		if err != nil {
 			log.Fatalf("could not execute command: %s", err.Error())

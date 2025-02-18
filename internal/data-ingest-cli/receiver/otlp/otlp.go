@@ -22,6 +22,7 @@ import (
 type Config struct {
 	Port       int
 	OutputFile string
+	Timeout    int
 }
 
 type OTLPReceiver struct {
@@ -77,7 +78,7 @@ func (r *OTLPReceiver) Stop() {
 
 	select {
 	case <-r.receivedDataChan:
-	case <-time.After(300 * time.Second):
+	case <-time.After(time.Duration(r.config.Timeout) * time.Second):
 	}
 	if r.server != nil {
 		r.server.GracefulStop()

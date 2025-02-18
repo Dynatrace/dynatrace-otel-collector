@@ -19,6 +19,7 @@ import (
 type Config struct {
 	Port       int
 	OutputFile string
+	Timeout    int
 }
 
 type OTLPHTTPReceiver struct {
@@ -53,7 +54,7 @@ func (r *OTLPHTTPReceiver) Start() error {
 func (r *OTLPHTTPReceiver) Stop() {
 	select {
 	case <-r.receivedDataChan:
-	case <-time.After(300 * time.Second):
+	case <-time.After(time.Duration(r.config.Timeout) * time.Second):
 	}
 }
 

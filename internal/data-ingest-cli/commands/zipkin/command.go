@@ -15,13 +15,15 @@ import (
 )
 
 type Config struct {
-	InputFile     string
-	CollectorURL  string
-	SignalType    string
-	OutputFile    string
-	ReceiverPort  int
-	ReceiverType  string
-	ZipkinVersion string
+	ReceiveData     bool
+	InputFile       string
+	CollectorURL    string
+	SignalType      string
+	OutputFile      string
+	ReceiverPort    int
+	ReceiverType    string
+	ReceiverTimeout int
+	ZipkinVersion   string
 }
 
 type Cmd struct {
@@ -43,20 +45,21 @@ func New(p Config) (*Cmd, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	c.sender = sender
 
-	if p.ReceiverPort > 0 && p.OutputFile != "" {
+	if p.ReceiveData && p.ReceiverPort > 0 && p.OutputFile != "" {
 		switch p.ReceiverType {
 		case "grpc":
 			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
 				Port:       p.ReceiverPort,
 				OutputFile: p.OutputFile,
+				Timeout:    p.ReceiverTimeout,
 			})
 		case "http":
 			c.receiver = otlphttp.NewOTLPHTTPReceiver(otlphttp.Config{
 				Port:       p.ReceiverPort,
 				OutputFile: p.OutputFile,
+				Timeout:    p.ReceiverTimeout,
 			})
 		default:
 			return nil, fmt.Errorf("invalid receiver type %s", p.ReceiverType)
@@ -82,6 +85,9 @@ func (c *Cmd) Do(ctx context.Context) error {
 }
 
 func (c *Cmd) sendTraces(ctx context.Context) error {
+	if c.sender == nil {
+		return nil
+	}
 	fileContent, err := os.ReadFile(c.inputFile)
 	if err != nil {
 		return fmt.Errorf("could not read file content: %s", err.Error())

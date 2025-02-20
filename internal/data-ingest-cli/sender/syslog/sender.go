@@ -30,7 +30,7 @@ type Config struct {
 	TLSSetting configtls.ClientConfig `mapstructure:"tls"`
 }
 
-type sender struct {
+type Sender struct {
 	transport string
 	addr      string
 
@@ -40,8 +40,8 @@ type sender struct {
 	conn      net.Conn
 }
 
-func Connect(ctx context.Context, cfg *Config) (*sender, error) {
-	s := &sender{
+func Connect(ctx context.Context, cfg *Config) (*Sender, error) {
+	s := &Sender{
 		transport: cfg.Transport,
 		addr:      cfg.Endpoint,
 	}
@@ -56,7 +56,7 @@ func Connect(ctx context.Context, cfg *Config) (*sender, error) {
 	return s, err
 }
 
-func (s *sender) dial(ctx context.Context) error {
+func (s *Sender) dial(ctx context.Context) error {
 	if s.conn != nil {
 		s.conn.Close()
 		s.conn = nil
@@ -72,7 +72,7 @@ func (s *sender) dial(ctx context.Context) error {
 	return err
 }
 
-func (s *sender) Write(ctx context.Context, msgStr string) error {
+func (s *Sender) Write(ctx context.Context, msgStr string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -88,7 +88,7 @@ func (s *sender) Write(ctx context.Context, msgStr string) error {
 	return s.write(msgStr)
 }
 
-func (s *sender) write(msg string) error {
+func (s *Sender) write(msg string) error {
 	// check if logs contains new line character at the end, if not add it
 	if !strings.HasSuffix(msg, "\n") {
 		msg = fmt.Sprintf("%s%s", msg, "\n")

@@ -232,6 +232,8 @@ func ScanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink, expectedS
 			resource := r.ResourceMetrics().At(i).Resource()
 			service, exist := resource.Attributes().Get(ServiceNameAttribute)
 			assert.Equal(t, true, exist, "resource does not have the 'service.name' attribute")
+			// TODO remove
+			t.Logf("metric resource service: %s", service.AsString())
 			if service.AsString() != expectedService {
 				continue
 			}
@@ -248,6 +250,8 @@ func assertExpectedMetrics(expectedMetrics []string, sm pmetric.MetricSlice) err
 	var actualMetrics []string
 	for i := 0; i < sm.Len(); i++ {
 		actualMetrics = append(actualMetrics, sm.At(i).Name())
+		//TODO remove
+		fmt.Println(sm.At(1).Name())
 	}
 
 	for _, m := range expectedMetrics {

@@ -58,7 +58,9 @@ func GenericScenario(
 		sender,
 		receiver,
 		agentProc,
-		&testbed.PerfTestValidator{},
+		&testbed.PerfTestValidator{
+			IncludeLimitsInReport: true,
+		},
 		resultsSummary,
 		testbed.WithResourceLimits(loadOptions.resourceSpec),
 	)
@@ -117,7 +119,9 @@ func PullBasedSenderScenario(
 		receiver,
 		agentProc,
 		&simpleTestcaseValidator{
-			perfTestValidator: &testbed.PerfTestValidator{},
+			perfTestValidator: &testbed.PerfTestValidator{
+				IncludeLimitsInReport: true,
+			},
 		},
 		resultsSummary,
 		testbed.WithResourceLimits(loadOptions.resourceSpec),

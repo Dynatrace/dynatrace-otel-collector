@@ -39,7 +39,7 @@ v0.120.0:
   either globally, or on a per-scrape basis:
 
   **Globally**:
-  ```json
+  ```yaml
   receivers:
     prometheus:
       metric_name_validation_scheme: legacy
@@ -49,7 +49,7 @@ v0.120.0:
   ```
 
   **Per Scrape**:
-  ```json
+  ```yaml
   receivers:
     prometheus:
       config:

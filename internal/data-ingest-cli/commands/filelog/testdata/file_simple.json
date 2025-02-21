@@ -1,0 +1,10 @@
+{
+    "timestamp": "2025-02-21T10:40:28Z",
+    "severity": "INFO",
+    "body": "User login successful",
+    "attributes": {
+        "user_id": "12345",
+        "ip_address": "192.168.1.1",
+        "session_id": "abcde12345"
+    }
+}

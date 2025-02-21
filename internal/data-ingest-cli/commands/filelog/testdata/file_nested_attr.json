@@ -1,0 +1,13 @@
+{
+    "timestamp": "2025-02-21T10:43:30Z",
+    "severity": "DEBUG",
+    "body": "API request received",
+    "attributes": {
+        "endpoint": "/api/v1/resource",
+        "method": "GET",
+        "headers": {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json"
+        }
+    }
+}

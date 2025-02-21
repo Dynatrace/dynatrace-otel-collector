@@ -19,6 +19,7 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
   - Fluent
   - Zipkin
   - Host metrics
+  - Filelog
 
 - Receive OTLP data via an endpoint: The tool can receive OTLP data through an endpoint and store the received payload in a specified file in OTLP Json format.
 
@@ -90,7 +91,7 @@ The tool accepts the following input parameters:
 ./data-ingest --send --input-format zipkin --input-file $(pwd)/commands/zipkin/testdata/sample_v2.json  --otlp-signal-type traces --collector-url http://0.0.0.0:9411 --receive --output-file received_traces.json --receiver-port 4319 --receiver-type http
 ```
 
-1. Only receive data:
+1. Only receive data (useful for debugging `hostmetrics`, `jaeger` or `filelog` receivers):
 
 ```shell
 ./data-ingest --receive --output-file received.json --receiver-port 4319 --receiver-type http

@@ -15,7 +15,7 @@ require (
 	go.opentelemetry.io/collector/consumer/consumertest v0.120.0
 	go.opentelemetry.io/collector/pdata v1.26.0
 	go.opentelemetry.io/collector/semconv v0.120.0
-	golang.org/x/exp v0.0.0-20250215185904-eff6e970281f
+	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa
 	gopkg.in/yaml.v3 v3.0.1
 )
 

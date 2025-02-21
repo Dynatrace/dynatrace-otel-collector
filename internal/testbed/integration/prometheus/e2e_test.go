@@ -84,7 +84,7 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	expectedColMetrics := []string{
 		"otelcol_process_memory_rss", "scrape_duration_seconds", "scrape_samples_post_metric_relabeling",
 	}
-	oteltest.ScanForServiceMetrics(t, metricsConsumer, "opentelemetry-collector", expectedColMetrics)
+	oteltest.ScanForServiceMetrics(t, metricsConsumer, "dynatrace-otel-collector", expectedColMetrics)
 
 	expectedPromMetrics := []string{
 		"node_procs_running", "node_memory_MemAvailable_bytes",

@@ -103,7 +103,7 @@ func TestE2E_ResourceDetectionProcessor(t *testing.T) {
 			name:    "traces-statefulset",
 			service: "test-traces-statefulset",
 			attrs: map[string]oteltest.ExpectedValue{
-				"dt.entity.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"dt.entity.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
 				"host.name":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
 			},
 		},

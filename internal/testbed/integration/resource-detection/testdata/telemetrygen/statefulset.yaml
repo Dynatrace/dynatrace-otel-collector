@@ -26,6 +26,7 @@ spec:
         - --rate=1
         - --otlp-attributes=service.name="test-{{ .DataType }}-statefulset"
         - --otlp-attributes=host.name="my-host-not-overridden"
+        - --otlp-attributes=dt.entity.host="my-host-not-overridden"
         image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
         name: telemetrygen
       restartPolicy: Always

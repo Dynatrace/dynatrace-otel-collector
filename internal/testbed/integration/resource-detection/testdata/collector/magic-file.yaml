@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-magic-file
+  namespace: e2eresourcedetection
+data:
+  dt_host_metadata.properties: |
+    dt.entity.host=my-host-from-properties
+    host.name=my-host-from-properties
+    dt.entity.host_group=my-host-group-from-properties
+    dt.foo=bar

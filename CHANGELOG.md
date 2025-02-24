@@ -31,7 +31,9 @@ v0.120.0:
 - `receiver/hostmetrics`: Remove receiver.hostmetrics.normalizeProcessCPUUtilization feature gate [#34763](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34763)
 - `tailsamplingprocessor`: Fix the decision timer metric to capture longer latencies beyond 50ms. [#37722](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37722)
   This changes the unit of the decision timer metric from microseconds to milliseconds.
-- `receiver/prometheus`: The Prometheus receiver now uses the UTF-8 validation scheme by default, which means that metric and label names
+- `receiver/prometheus`: Prometheus receiver now uses scrapers in Prometheus 3.0. (#36873)
+  There are a number of breaking changes in Prometheus 3.0. Learn more about those changes and migration guide on https://prometheus.io/docs/prometheus/latest/migration/.
+  The Prometheus receiver now uses the UTF-8 validation scheme by default, which means that metric and label names
   can change after upgrading to this release, as mentioned in the [Prometheus 3.0 migration guide](https://prometheus.io/docs/prometheus/latest/migration/#utf-8-names).
   This can have an effect on the OTel resources created by the Prometheus receiver in particular, if previously the `service_name` label
   has been present in the metrics returned by a Prometheus scrape target. Now, this label will be delivered as `service.name` and can thus override the

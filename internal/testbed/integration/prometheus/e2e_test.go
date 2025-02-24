@@ -24,7 +24,12 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
-	k8sClient, err := otelk8stest.NewK8sClient(k8stest.TestKubeConfig)
+	kubeconfigPath := k8stest.TestKubeConfig
+	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
+		kubeconfigPath = kubeConfigFromEnv
+	}
+
+	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test
@@ -79,7 +84,7 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	expectedColMetrics := []string{
 		"otelcol_process_memory_rss", "scrape_duration_seconds", "scrape_samples_post_metric_relabeling",
 	}
-	oteltest.ScanForServiceMetrics(t, metricsConsumer, "opentelemetry-collector", expectedColMetrics)
+	oteltest.ScanForServiceMetrics(t, metricsConsumer, "dynatrace-otel-collector", expectedColMetrics)
 
 	expectedPromMetrics := []string{
 		"node_procs_running", "node_memory_MemAvailable_bytes",

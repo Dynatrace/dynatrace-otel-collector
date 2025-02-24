@@ -27,6 +27,8 @@ spec:
               containerPort: 4317
               protocol: TCP
           env:
+            - name: DT_ENTITY_KUBERNETES_CLUSTER
+              value: {{ .K8sCluster }}
             - name: MY_POD_IP
               valueFrom:
                 fieldRef:

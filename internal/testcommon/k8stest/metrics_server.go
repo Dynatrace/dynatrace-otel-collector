@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	TestKubeConfig = "/tmp/kube-config-collector-e2e-testing"
+	TestKubeConfig   = "/tmp/kube-config-collector-e2e-testing"
+	KubeConfigEnvVar = "KUBECONFIG"
 )
 
 func NewMetricsClientSet() (*metricsv.Clientset, error) {

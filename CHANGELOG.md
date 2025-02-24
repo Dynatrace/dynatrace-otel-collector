@@ -135,9 +135,6 @@ v0.119.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.119.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.119.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
 ### 🛑 Breaking changes 🛑
 
 - `exporterhelper`: Change queue to embed the async consumers. ([#12242](https://github.com/open-telemetry/opentelemetry-collector/pull/12242))
@@ -148,6 +145,9 @@ v0.119.0:
   This does not have an impact on the level of information emitted, but on the structure of the Span.
 - `cmd/mdatagen`: Remove `level` field from metrics definition ([#12145](https://github.com/open-telemetry/opentelemetry-collector/pull/12145))
   This mechanism will be added back once a new views mechanism is implemented.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -230,13 +230,13 @@ v0.118.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.118.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.118.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
 ### 🛑 Breaking changes 🛑
 
 - `pkg/stanza`: Move `filelog.container.removeOriginalTimeField` feature gate to stable (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33389)
 - `pkg/ottl`: Support dynamic indexing of maps and slices. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36644)
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -285,14 +285,14 @@ v0.117.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.117.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.117.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
 ### 🛑 Breaking changes 🛑
 
 - `otelcol`: Remove warnings when 0.0.0.0 is used (https://github.com/open-telemetry/opentelemetry-collector/pull/11713, https://github.com/open-telemetry/opentelemetry-collector/pull/8510)
 - `pkg/ottl`: removed the ability to reference entire parent objects. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36872)
   Statements like `set(cache["resource"], resource)` in non-resource contexts will no longer work.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -314,13 +314,13 @@ v0.116.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.116.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.116.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
 ### 🛑 Breaking changes 🛑
 
 - `pdata/pprofile`: Remove deprecated `Profile.EndTime` and `Profile.SetEndTime` methods. (https://github.com/open-telemetry/opentelemetry-collector/pull/11796)
 - `processor/tailsampling`: Reverts https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33671, allowing for composite policies to specify inverted clauses in conjunction with other policies. This is a change bringing the previous state into place, breaking users who rely on what was introduced as part of https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33671. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34085)
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -353,17 +353,17 @@ v0.115.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.115.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.115.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
 ### 🛑 Breaking changes 🛑
 
 - `otelcol`: Change all logged timestamps to ISO8601. ([#10543](https://github.com/open-telemetry/opentelemetry-collector/pull/10543))
-This makes log timestamps human-readable (as opposed to epoch seconds in
-scientific notation), but may break users trying to parse logged lines in the
-old format.
+  This makes log timestamps human-readable (as opposed to epoch seconds in
+  scientific notation), but may break users trying to parse logged lines in the
+  old format.
 - `k8sattributesprocessor`: Move k8sattr.fieldExtractConfigRegex.disallow feature gate to Beta. ([#25128](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/25128))
-Disable the k8sattr.fieldExtractConfigRegex.disallow feature gate to get the old behavior.
+  Disable the k8sattr.fieldExtractConfigRegex.disallow feature gate to get the old behavior.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -397,14 +397,14 @@ v0.114.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.114.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.114.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
 ### 🛑 Breaking changes 🛑
 
 - `exporter`: Remove deprecated funcs Create[*]Exporter and [*]ExporterStability (https://github.com/open-telemetry/opentelemetry-collector/pull/11662)
 - `extension`: Remove deprecated funcs CreateExtension and ExtensionStability (https://github.com/open-telemetry/opentelemetry-collector/pull/11663)
 - `pkg/stanza`: Changed signature of `emit.Callback` function in `pkg/stanza/fileconsumer/emit` package by introducing `emit.Token` struct that encapsulates the token's body and attributes. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36260)
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 

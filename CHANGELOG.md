@@ -19,7 +19,7 @@ v0.120.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.120.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.120.0>
 
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `all`: Added support for go1.24, bumped minimum version to 1.23 [#12370](https://github.com/open-telemetry/opentelemetry-collector/pull/12370)
 - `mdatagen`: Removing deprecated generated funcs and a few test funcs as well. [#12304](https://github.com/open-telemetry/opentelemetry-collector/pull/12304)
@@ -135,7 +135,7 @@ v0.119.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.119.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.119.0>
 
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `exporterhelper`: Change queue to embed the async consumers. ([#12242](https://github.com/open-telemetry/opentelemetry-collector/pull/12242))
 - `cmd/mdatagen`: Allow passing OTel Metric SDK options to the generated `SetupTelemetry` function. ([#12166](https://github.com/open-telemetry/opentelemetry-collector/pull/12166))
@@ -230,7 +230,7 @@ v0.118.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.118.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.118.0>
 
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `pkg/stanza`: Move `filelog.container.removeOriginalTimeField` feature gate to stable (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33389)
 - `pkg/ottl`: Support dynamic indexing of maps and slices. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36644)
@@ -285,7 +285,7 @@ v0.117.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.117.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.117.0>
 
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `otelcol`: Remove warnings when 0.0.0.0 is used (https://github.com/open-telemetry/opentelemetry-collector/pull/11713, https://github.com/open-telemetry/opentelemetry-collector/pull/8510)
 - `pkg/ottl`: removed the ability to reference entire parent objects. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36872)
@@ -314,7 +314,7 @@ v0.116.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.116.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.116.0>
 
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `pdata/pprofile`: Remove deprecated `Profile.EndTime` and `Profile.SetEndTime` methods. (https://github.com/open-telemetry/opentelemetry-collector/pull/11796)
 - `processor/tailsampling`: Reverts https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33671, allowing for composite policies to specify inverted clauses in conjunction with other policies. This is a change bringing the previous state into place, breaking users who rely on what was introduced as part of https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33671. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34085)
@@ -353,7 +353,7 @@ v0.115.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.115.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.115.0>
 
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `otelcol`: Change all logged timestamps to ISO8601. ([#10543](https://github.com/open-telemetry/opentelemetry-collector/pull/10543))
   This makes log timestamps human-readable (as opposed to epoch seconds in
@@ -397,7 +397,7 @@ v0.114.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.114.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.114.0>
 
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `exporter`: Remove deprecated funcs Create[*]Exporter and [*]ExporterStability (https://github.com/open-telemetry/opentelemetry-collector/pull/11662)
 - `extension`: Remove deprecated funcs CreateExtension and ExtensionStability (https://github.com/open-telemetry/opentelemetry-collector/pull/11663)

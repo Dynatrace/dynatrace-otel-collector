@@ -4,6 +4,126 @@
 
 <!-- next version -->
 
+## v0.24.0
+
+This release includes version 0.120.0/0.120.1 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.120.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.120.1>
+
+v0.120.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.120.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.120.0>
+
+#### 🛑 Breaking changes 🛑
+
+- `all`: Added support for go1.24, bumped minimum version to 1.23 [#12370](https://github.com/open-telemetry/opentelemetry-collector/pull/12370)
+- `mdatagen`: Removing deprecated generated funcs and a few test funcs as well. [#12304](https://github.com/open-telemetry/opentelemetry-collector/pull/12304)
+- `service`: Align component logger attributes with those defined in RFC [#12217](https://github.com/open-telemetry/opentelemetry-collector/pull/12217)
+  See [Pipeline Component Telemetry RFC](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/rfcs/component-universal-telemetry.md#attributes)
+- `receiver/hostmetrics`: Remove receiver.hostmetrics.normalizeProcessCPUUtilization feature gate [#34763](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34763)
+- `tailsamplingprocessor`: Fix the decision timer metric to capture longer latencies beyond 50ms. [#37722](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37722)
+  This changes the unit of the decision timer metric from microseconds to milliseconds.
+- `receiver/prometheus`: Prometheus receiver now uses scrapers in Prometheus 3.0. (#36873)
+  There are a number of breaking changes in Prometheus 3.0. Learn more about those changes and migration guide on https://prometheus.io/docs/prometheus/latest/migration/.
+  The Prometheus receiver now uses the UTF-8 validation scheme by default, which means that metric and label names
+  can change after upgrading to this release, as mentioned in the [Prometheus 3.0 migration guide](https://prometheus.io/docs/prometheus/latest/migration/#utf-8-names).
+  This can have an effect on the OTel resources created by the Prometheus receiver in particular, if previously the `service_name` label
+  has been present in the metrics returned by a Prometheus scrape target. Now, this label will be delivered as `service.name` and can thus override the
+  value of the related OTel resource which has been determined by the `job` label. To keep the previous behavior, the `legacy` validation scheme can be set, in the prometheus config,
+  either globally, or on a per-scrape basis:
+
+  **Globally**:
+  ```yaml
+  receivers:
+    prometheus:
+      metric_name_validation_scheme: legacy
+      config:
+        scrape_configs:
+        - job_name: opentelemetry-collector
+  ```
+
+  **Per Scrape**:
+  ```yaml
+  receivers:
+    prometheus:
+      config:
+        scrape_configs:
+        - job_name: job1
+          metric_name_validation_scheme: utf8
+        - job_name: opentelemetry-collector
+          metric_name_validation_scheme: legacy
+  ```
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 💡 Enhancements 💡
+
+- `otlpreceiver`: Update stability for logs [#12335](https://github.com/open-telemetry/opentelemetry-collector/pull/12335)
+- `exporterhelper`: Implement sync disabled queue used when batching is enabled. [#12245](https://github.com/open-telemetry/opentelemetry-collector/pull/12245)
+- `exporterhelper`: Enable the new pull-based batcher in exporterhelper [#12291](https://github.com/open-telemetry/opentelemetry-collector/pull/12291)
+- `exporterhelper`: Update queue size after the element is done exported [#12399](https://github.com/open-telemetry/opentelemetry-collector/pull/12399)
+  After this change the active queue size will include elements in the process of being exported.
+- `otelcol`: Add featuregate command to display information about available features [#11998](https://github.com/open-telemetry/opentelemetry-collector/pull/11998)
+  The featuregate command allows users to view detailed information about feature gates
+  including their status, stage, and description.
+- `processor/transformprocessor`: Add support for global conditions and error mode overrides. [#29017](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/29017)
+  Global conditions are now available for context-inferred structured configurations, allowing the use of fully
+  qualified paths. Additionally, a new configuration key called `error_mode` has been added to the context statements group.
+  This key determines how the processor reacts to errors that occur while processing that specific group of statements.
+  When provided, it overrides the top-level error mode, offering more granular control over error handling.
+
+- `pkg/stanza`: Allow users to configure initial buffer size [#37786](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37786)
+- `k8sclusterreceiver`: Adds new descriptive attributes/metadata to the k8s.namespace and the container entity emitted from k8sclusterreceiver. [#37580](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37580)
+  - Adds the following attributes to k8s.namespace entity:
+    - k8s.namespace.phase: The phase of a namespace indicates where the namespace is in its lifecycle. E.g. 'active', 'terminating'
+    - k8s.namespace.creation_timestamp: The time when the namespace object was created.
+  - Adds the following attributes to container entity:
+    - container.creation_timestamp: The time when the container was started. Only available if container is either in 'running' or 'terminated' state.
+
+- `pkg/ottl`: Introduce ToLowerCase converter function [#32942](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/32942)
+- `pkg/ottl`: Introduce ToSnakeCase converter function [#32942](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/32942)
+- `pkg/ottl`: Introduce ToUpperCase converter function [#32942](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/32942)
+- `resourcedetectionprocessor`: add the Dynatrace detector to the resource detection processor [#37577](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37577)
+- `processor/redaction`: Introduce 'allowed_values' parameter for allowed values of attributes [#35840](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35840)
+- `syslogreceiver`: Support setting `on_error` config for syslog receiver. [#36906](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36906)
+- `processor/tailsampling`: Adds support for optionally recording the policy (and any composite policy) associated with an inclusive tail processor sampling decision.
+  This functionality is disabled by default, you can enable it by passing the following feature flag to the collector: `+processor.tailsamplingprocessor.recordpolicy`
+  [#35180](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35180)
+- `tailsamplingprocessor`: makes the `numeric_attribute` more flexible and allows to set only `min_value` or `max_value`, without the need to set both [#37328](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37328)
+  This is useful to have simple configurations like these:
+  ```
+  {
+    type: numeric_attribute,
+    numeric_attribute: {
+      key: http.status_code,
+      min_value: 400
+    }
+  }
+  ```
+- `receiver/zipkinreceiver`: Remove zipkinreceiver dependency on Jaeger [#37795](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37795)
+
+### 🧰 Bug fixes 🧰
+
+- `memorylimiter`: Logger no longer attributes to single signal, pipeline, or component. [#12217](https://github.com/open-telemetry/opentelemetry-collector/pull/12217)
+- `otlpreceiver`: Logger no longer attributes to random signal when receiving multiple signals. [#12217](https://github.com/open-telemetry/opentelemetry-collector/pull/12217)
+- `exporterhelper`: Fix undefined behavior access to request after send to next component. This causes random memory access. [#12281](https://github.com/open-telemetry/opentelemetry-collector/pull/12281)
+- `exporterhelper`: Fix default batcher to correctly call all done callbacks exactly once [#12247](https://github.com/open-telemetry/opentelemetry-collector/pull/12247)
+- `otlpreceiver`: Fix OTLP http receiver to correctly set Retry-After [#12367](https://github.com/open-telemetry/opentelemetry-collector/pull/12367)
+- `otlphttpexporter`: Fix parsing logic for Retry-After in OTLP http protocol. [#12366](https://github.com/open-telemetry/opentelemetry-collector/pull/12366)
+  The value of Retry-After field can be either an HTTP-date or delay-seconds and the current logic only parsed delay-seconds.
+- `cmd/builder`: Ensure unique aliases for modules with same suffix [#12201](https://github.com/open-telemetry/opentelemetry-collector/pull/12201)
+- `k8sattributes`: Fix bug where `Filters.Labels` failed with when the `exists` or `not-exists` operations were used. [#37913](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37913)
+- `prometheusreceiver`: Start time metric adjuster now handles reset points correctly [#37717](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37717)
+---
+
+</details>
+
 ## v0.23.0
 
 This release includes version 0.119.0 of the upstream Collector components.
@@ -15,10 +135,7 @@ v0.119.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.119.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.119.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `exporterhelper`: Change queue to embed the async consumers. ([#12242](https://github.com/open-telemetry/opentelemetry-collector/pull/12242))
 - `cmd/mdatagen`: Allow passing OTel Metric SDK options to the generated `SetupTelemetry` function. ([#12166](https://github.com/open-telemetry/opentelemetry-collector/pull/12166))
@@ -28,6 +145,9 @@ v0.119.0:
   This does not have an impact on the level of information emitted, but on the structure of the Span.
 - `cmd/mdatagen`: Remove `level` field from metrics definition ([#12145](https://github.com/open-telemetry/opentelemetry-collector/pull/12145))
   This mechanism will be added back once a new views mechanism is implemented.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -110,13 +230,13 @@ v0.118.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.118.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.118.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `pkg/stanza`: Move `filelog.container.removeOriginalTimeField` feature gate to stable (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33389)
 - `pkg/ottl`: Support dynamic indexing of maps and slices. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36644)
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -165,14 +285,14 @@ v0.117.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.117.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.117.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `otelcol`: Remove warnings when 0.0.0.0 is used (https://github.com/open-telemetry/opentelemetry-collector/pull/11713, https://github.com/open-telemetry/opentelemetry-collector/pull/8510)
 - `pkg/ottl`: removed the ability to reference entire parent objects. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36872)
   Statements like `set(cache["resource"], resource)` in non-resource contexts will no longer work.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -194,13 +314,13 @@ v0.116.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.116.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.116.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `pdata/pprofile`: Remove deprecated `Profile.EndTime` and `Profile.SetEndTime` methods. (https://github.com/open-telemetry/opentelemetry-collector/pull/11796)
 - `processor/tailsampling`: Reverts https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33671, allowing for composite policies to specify inverted clauses in conjunction with other policies. This is a change bringing the previous state into place, breaking users who rely on what was introduced as part of https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33671. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34085)
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -233,17 +353,17 @@ v0.115.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.115.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.115.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `otelcol`: Change all logged timestamps to ISO8601. ([#10543](https://github.com/open-telemetry/opentelemetry-collector/pull/10543))
-This makes log timestamps human-readable (as opposed to epoch seconds in
-scientific notation), but may break users trying to parse logged lines in the
-old format.
+  This makes log timestamps human-readable (as opposed to epoch seconds in
+  scientific notation), but may break users trying to parse logged lines in the
+  old format.
 - `k8sattributesprocessor`: Move k8sattr.fieldExtractConfigRegex.disallow feature gate to Beta. ([#25128](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/25128))
-Disable the k8sattr.fieldExtractConfigRegex.disallow feature gate to get the old behavior.
+  Disable the k8sattr.fieldExtractConfigRegex.disallow feature gate to get the old behavior.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 
@@ -277,14 +397,14 @@ v0.114.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.114.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.114.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
-### 🛑 Breaking changes 🛑
+#### 🛑 Breaking changes 🛑
 
 - `exporter`: Remove deprecated funcs Create[*]Exporter and [*]ExporterStability (https://github.com/open-telemetry/opentelemetry-collector/pull/11662)
 - `extension`: Remove deprecated funcs CreateExtension and ExtensionStability (https://github.com/open-telemetry/opentelemetry-collector/pull/11663)
 - `pkg/stanza`: Changed signature of `emit.Callback` function in `pkg/stanza/fileconsumer/emit` package by introducing `emit.Token` struct that encapsulates the token's body and attributes. (https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36260)
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 

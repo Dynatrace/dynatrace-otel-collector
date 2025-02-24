@@ -49,6 +49,8 @@ spec:
           volumeMounts:
             - mountPath: /conf
               name: opentelemetry-collector-configmap
+            - mountPath: /var/lib/dynatrace/enrichment
+              name: dynatrace-enrichment-file
       volumes:
         - name: opentelemetry-collector-configmap
           configMap:
@@ -56,3 +58,9 @@ spec:
             items:
               - key: relay
                 path: relay.yaml
+        - name: dynatrace-enrichment-file
+          configMap:
+            name: {{ .Name }}-enrichment-file
+            items:
+              - key: dt_host_metadata.properties
+                path: dt_host_metadata.properties

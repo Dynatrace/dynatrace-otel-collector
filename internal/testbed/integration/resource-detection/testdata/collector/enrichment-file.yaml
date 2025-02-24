@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Name }}-magic-file
+  name: {{ .Name }}-enrichment-file
   namespace: e2eresourcedetection
 data:
   dt_host_metadata.properties: |

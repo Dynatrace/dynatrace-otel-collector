@@ -19,9 +19,6 @@ v0.120.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.120.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.120.0>
 
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
 ### 🛑 Breaking changes 🛑
 
 - `all`: Added support for go1.24, bumped minimum version to 1.23 [#12370](https://github.com/open-telemetry/opentelemetry-collector/pull/12370)
@@ -61,6 +58,9 @@ v0.120.0:
         - job_name: opentelemetry-collector
           metric_name_validation_scheme: legacy
   ```
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
 
 ### 💡 Enhancements 💡
 

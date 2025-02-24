@@ -28,7 +28,7 @@ func TestLog10kDPS(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 30,
+					ExpectedMaxCPU: 20,
 					ExpectedMaxRAM: 120,
 				},
 				attrCount:       0,
@@ -79,7 +79,7 @@ func TestLogSyslog(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 130,
+					ExpectedMaxCPU: 20,
 					ExpectedMaxRAM: 130,
 				},
 				attrCount:       25,
@@ -98,7 +98,7 @@ func TestLogSyslog(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 130,
+					ExpectedMaxCPU: 20,
 					ExpectedMaxRAM: 120,
 				},
 				attrCount:       25,
@@ -121,7 +121,7 @@ func TestLogSyslog(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 130,
+					ExpectedMaxCPU: 100,
 					ExpectedMaxRAM: 120,
 				},
 				attrCount:       25,
@@ -140,7 +140,7 @@ func TestLogSyslog(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 130,
+					ExpectedMaxCPU: 80,
 					ExpectedMaxRAM: 120,
 				},
 				attrCount:       25,

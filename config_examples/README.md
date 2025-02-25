@@ -24,6 +24,7 @@ Dynatrace distribution of the OpenTelemetry Collector.
 - [Zipkin Receiver](zipkin.yaml)
 - [Redaction Processor](redaction.yaml)
 - [Host Metrics Receiver](host-metrics.yaml)
+- [Dynatrace Resource Detector](resource-detection.yaml)
 
 ## Sending data to Dynatrace
 

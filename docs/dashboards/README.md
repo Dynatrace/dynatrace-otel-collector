@@ -72,7 +72,8 @@ service:
                 temporality_preference: delta
                 endpoint: "${env:DT_ENDPOINT}/v1/metrics"
                 headers:
-                  Authorization: "Api-Token ${env:DT_API_TOKEN}"
+                  - name: Authorization
+                    value: "Api-Token ${env:DT_API_TOKEN}"
 ```
 
 Note that the OTel collector can automatically merge configuration files for you, so by assuming the above configuration is stored in a file called `selfmon-config.yaml`, it is possible to start the collector like this:

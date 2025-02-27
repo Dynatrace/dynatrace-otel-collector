@@ -3,6 +3,7 @@ package loadtest
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"path"
 	"path/filepath"
 	"strings"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/rand"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 )
@@ -58,7 +58,9 @@ func GenericScenario(
 		sender,
 		receiver,
 		agentProc,
-		&testbed.PerfTestValidator{},
+		&testbed.PerfTestValidator{
+			IncludeLimitsInReport: true,
+		},
 		resultsSummary,
 		testbed.WithResourceLimits(loadOptions.resourceSpec),
 	)
@@ -117,7 +119,9 @@ func PullBasedSenderScenario(
 		receiver,
 		agentProc,
 		&simpleTestcaseValidator{
-			perfTestValidator: &testbed.PerfTestValidator{},
+			perfTestValidator: &testbed.PerfTestValidator{
+				IncludeLimitsInReport: true,
+			},
 		},
 		resultsSummary,
 		testbed.WithResourceLimits(loadOptions.resourceSpec),

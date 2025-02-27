@@ -1,0 +1,63 @@
+[
+  {
+    "traceId": "4d1e00c0db9010db86154a4ba6e91385",
+    "id": "4d1e00c0db9010db",
+    "parentId": "86154a4ba6e91385",
+    "name": "get",
+    "timestamp": 1472470996199000,
+    "duration": 207000,
+    "annotations": [
+      {
+        "timestamp": 1472470996238000,
+        "value": "foo",
+        "endpoint": {
+          "ipv6": "7::0.128.128.127"
+        }
+      },
+      {
+        "timestamp": 1472470996403000,
+        "value": "bar",
+        "endpoint": {
+          "ipv6": "7::0.128.128.127"
+        }
+      }
+    ],
+    "binaryAnnotations": [
+      {
+        "key": "http.path",
+        "value": "/api",
+        "endpoint": {
+          "ipv6": "7::0.128.128.127"
+        }
+      },
+      {
+        "key": "clnt/finagle.version",
+        "value": "6.45.0",
+        "endpoint": {
+          "ipv6": "7::0.128.128.127"
+        }
+      },
+      {
+        "key": "error",
+        "value": "true",
+        "endpoint": {
+          "ipv6": "7::0.128.128.127"
+        }
+      },
+      {
+        "key": "remoteEndpoint.ipv4",
+        "value": "192.168.99.101",
+        "endpoint": {
+          "ipv6": "7::0.128.128.127"
+        }
+      },
+      {
+        "key": "remoteEndpoint.port",
+        "value": "9000",
+        "endpoint": {
+          "ipv6": "7::0.128.128.127"
+        }
+      }
+    ]
+  }
+]

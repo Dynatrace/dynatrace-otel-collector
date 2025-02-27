@@ -107,6 +107,7 @@ jobs:
           - zipkin
           - statsd
           - redaction
+          - resource-detection
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

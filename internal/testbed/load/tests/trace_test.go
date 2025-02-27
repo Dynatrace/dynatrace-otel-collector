@@ -26,8 +26,8 @@ func TestTrace10kSPS(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 30,
-					ExpectedMaxRAM: 150,
+					ExpectedMaxCPU: 25,
+					ExpectedMaxRAM: 140,
 				},
 				attrCount:       10,
 				attrSizeByte:    50,
@@ -46,8 +46,8 @@ func TestTrace10kSPS(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 30,
-					ExpectedMaxRAM: 150,
+					ExpectedMaxCPU: 25,
+					ExpectedMaxRAM: 125,
 				},
 				attrCount:       10,
 				attrSizeByte:    50,
@@ -92,7 +92,7 @@ func TestTrace100kSPS(t *testing.T) {
 				},
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 90,
-					ExpectedMaxRAM: 150,
+					ExpectedMaxRAM: 140,
 				},
 				attrCount:       10,
 				attrSizeByte:    50,
@@ -112,7 +112,7 @@ func TestTrace100kSPS(t *testing.T) {
 				},
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 110,
-					ExpectedMaxRAM: 150,
+					ExpectedMaxRAM: 140,
 				},
 				attrCount:       10,
 				attrSizeByte:    50,

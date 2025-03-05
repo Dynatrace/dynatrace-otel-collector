@@ -6,7 +6,6 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.121.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.121.0
 	github.com/stretchr/testify v1.10.0
-	go.opentelemetry.io/collector/component v1.27.0
 	go.opentelemetry.io/collector/component/componenttest v0.121.0
 	go.opentelemetry.io/collector/consumer/consumertest v0.121.0
 	go.opentelemetry.io/collector/featuregate v1.27.0
@@ -137,6 +136,7 @@ require (
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/collector v0.121.0 // indirect
 	go.opentelemetry.io/collector/client v1.27.0 // indirect
+	go.opentelemetry.io/collector/component v1.27.0 // indirect
 	go.opentelemetry.io/collector/component/componentstatus v0.121.0 // indirect
 	go.opentelemetry.io/collector/config/configauth v0.121.0 // indirect
 	go.opentelemetry.io/collector/config/configcompression v1.27.0 // indirect

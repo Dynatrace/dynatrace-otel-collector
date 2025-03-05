@@ -27,6 +27,11 @@ receivers:
       - type: add
         field: attributes.device.type
         value: "ubuntu-syslog"
+  syslog/udp:
+    udp:
+      listen_address: "0.0.0.0:54528"
+      add_attributes: true
+    protocol: rfc5424
 
 exporters:
   otlphttp:
@@ -37,5 +42,5 @@ exporters:
 service:
   pipelines:
     logs:
-      receivers: [syslog/f5, syslog/host]
+      receivers: [syslog/f5, syslog/host, syslog/udp]
       exporters: [otlphttp]

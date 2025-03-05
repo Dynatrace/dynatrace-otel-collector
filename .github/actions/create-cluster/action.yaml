@@ -5,7 +5,7 @@ inputs:
     required: false
     description: "Version of kind that should be used"
     # renovate: datasource=github-releases depName=kubernetes-sigs/kind
-    default: "v0.25.0"
+    default: "v0.27.0"
   k8s-version:
     required: false
     description: "Kubernetes version that should be used"
@@ -17,7 +17,7 @@ inputs:
     default: "kind"
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.23.3"
+  GO_VERSION: "1.23.6"
 runs:
   using: "composite"
   steps:
@@ -45,7 +45,7 @@ runs:
         make install-tools
 
     - name: "Create single kind Cluster"
-      uses: helm/kind-action@v1.10.0
+      uses: helm/kind-action@v1.12.0
       with:
         cluster_name: ${{ inputs.cluster-name }}
         version: ${{ inputs.kind-version }}

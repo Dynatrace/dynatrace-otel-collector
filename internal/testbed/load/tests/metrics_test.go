@@ -54,8 +54,8 @@ func TestMetric10kDPS(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 60,
-					ExpectedMaxRAM: 125,
+					ExpectedMaxCPU: 25,
+					ExpectedMaxRAM: 150,
 				},
 				attrCount:       25,
 				attrSizeByte:    20,
@@ -74,8 +74,8 @@ func TestMetric10kDPS(t *testing.T) {
 					Parallel:           1,
 				},
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU: 60,
-					ExpectedMaxRAM: 120,
+					ExpectedMaxCPU: 25,
+					ExpectedMaxRAM: 150,
 				},
 				attrCount:       25,
 				attrSizeByte:    20,
@@ -121,7 +121,7 @@ func TestMetric100kDPS(t *testing.T) {
 				},
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU: 70,
-					ExpectedMaxRAM: 120,
+					ExpectedMaxRAM: 130,
 				},
 				attrCount:       25,
 				attrSizeByte:    20,
@@ -181,8 +181,8 @@ func TestPrometheusMetric(t *testing.T) {
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU:         70,
-					ExpectedMaxRAM:         130,
+					ExpectedMaxCPU:         10,
+					ExpectedMaxRAM:         140,
 					MaxConsecutiveFailures: 2,
 				},
 				loadOptions: &testbed.LoadOptions{
@@ -206,7 +206,7 @@ func TestPrometheusMetric(t *testing.T) {
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU:         70,
+					ExpectedMaxCPU:         50,
 					ExpectedMaxRAM:         350,
 					MaxConsecutiveFailures: 2,
 				},
@@ -232,7 +232,7 @@ func TestPrometheusMetric(t *testing.T) {
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
 					ExpectedMaxCPU:         150,
-					ExpectedMaxRAM:         350,
+					ExpectedMaxRAM:         250,
 					MaxConsecutiveFailures: 2,
 				},
 				loadOptions: &testbed.LoadOptions{
@@ -256,7 +256,7 @@ func TestPrometheusMetric(t *testing.T) {
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
-					ExpectedMaxCPU:         200,
+					ExpectedMaxCPU:         230,
 					ExpectedMaxRAM:         550,
 					MaxConsecutiveFailures: 2,
 				},

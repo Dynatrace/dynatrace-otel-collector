@@ -1,0 +1,28 @@
+receivers:
+  filelog:
+    include: [ ./commands/filelog/testdata/file.log ]
+    start_at: beginning
+    operators:
+      - type: regex_parser
+        regex: '^(?P<time>\d{4}-\d{2}-\d{2}) (?P<sev>[A-Z]*) (?P<msg>.*)$'
+        timestamp:
+          parse_from: attributes.time
+          layout: '%Y-%m-%d'
+        severity:
+          parse_from: attributes.sev
+
+exporters:
+  otlphttp:
+    endpoint: http://0.0.0.0:4319
+    tls:
+      insecure: true
+    compression: none
+
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      exporters: [debug, otlphttp]

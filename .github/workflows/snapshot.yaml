@@ -6,7 +6,7 @@ on:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.23.3"
+  GO_VERSION: "1.23.6"
 
 jobs:
   build:
@@ -25,11 +25,11 @@ jobs:
 
       - uses: docker/setup-qemu-action@v3
         with:
-          platforms: arm64
+          platforms: arm64,ppc64le,s390x
 
       - uses: docker/setup-buildx-action@v3
 
-      - uses: anchore/sbom-action/download-syft@v0.17.8
+      - uses: anchore/sbom-action/download-syft@v0.18.0
 
       - name: Cache tools
         id: cache-tools
@@ -42,17 +42,24 @@ jobs:
         if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
-          touch .tools/*
           make install-tools
 
+      - name: Cache collector source code
+        id: cache-collector-source
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: snapshot-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
+
       - name: Generate source files
+        if: steps.cache-collector-source.outputs.cache-hit != 'true'
         run: make generate
 
       - name: Cache Go modules
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/go-build
+            ~/go/bin
             ~/go/pkg/mod
           key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
 
@@ -90,7 +97,7 @@ jobs:
 
       - uses: docker/setup-qemu-action@v3
         with:
-          platforms: arm64
+          platforms: arm64,ppc64le,s390x
 
       - uses: docker/setup-buildx-action@v3
 

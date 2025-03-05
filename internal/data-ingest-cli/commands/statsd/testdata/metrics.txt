@@ -1,0 +1,7 @@
+test.metric:42|c|#myKey:myVal
+test.metric:42|c|#myKey:myVal
+test.metric:42|c|#myKey:myVal
+test.metric:42|c|#myKey:myVal
+statsdTestMetric1:3000|c|#mykey:myvalue
+statsdTestMetric1:4000|c|#mykey:myvalue
+test.metric:42|g|#myKey:myVal

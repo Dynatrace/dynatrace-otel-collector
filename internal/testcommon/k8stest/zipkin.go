@@ -3,15 +3,17 @@ package k8stest
 import (
 	"bytes"
 	"context"
-	"github.com/stretchr/testify/require"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"os"
 	"path/filepath"
 	"testing"
 	"text/template"
 	"time"
+
+	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/stretchr/testify/require"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 type ZipkinAppObjInfo struct {
@@ -25,7 +27,7 @@ type ZipkinAppCreateOpts struct {
 	OtlpEndpoint string
 }
 
-func CreateZipkinAppObjects(t *testing.T, client *K8sClient, createOpts *ZipkinAppCreateOpts) ([]*unstructured.Unstructured, []*ZipkinAppObjInfo) {
+func CreateZipkinAppObjects(t *testing.T, client *otelk8stest.K8sClient, createOpts *ZipkinAppCreateOpts) ([]*unstructured.Unstructured, []*ZipkinAppObjInfo) {
 	telemetrygenObjInfos := make([]*ZipkinAppObjInfo, 0)
 	manifestFiles, err := os.ReadDir(createOpts.ManifestsDir)
 	require.NoErrorf(t, err, "failed to read telemetrygen manifests directory %s", createOpts.ManifestsDir)
@@ -38,7 +40,7 @@ func CreateZipkinAppObjects(t *testing.T, client *K8sClient, createOpts *ZipkinA
 			"OTLPEndpoint": createOpts.OtlpEndpoint,
 			"TestID":       createOpts.TestID,
 		}))
-		obj, err := CreateObject(client, manifest.Bytes())
+		obj, err := otelk8stest.CreateObject(client, manifest.Bytes())
 		require.NoErrorf(t, err, "failed to create zipkin object from manifest %s", manifestFile.Name())
 		selector := obj.Object["spec"].(map[string]any)["selector"]
 		telemetrygenObjInfos = append(telemetrygenObjInfos, &ZipkinAppObjInfo{
@@ -50,9 +52,9 @@ func CreateZipkinAppObjects(t *testing.T, client *K8sClient, createOpts *ZipkinA
 	return createdObjs, telemetrygenObjInfos
 }
 
-func WaitForZipkinAppToStart(t *testing.T, client *K8sClient, podNamespace string, podLabels map[string]any) {
+func WaitForZipkinAppToStart(t *testing.T, client *otelk8stest.K8sClient, podNamespace string, podLabels map[string]any) {
 	podGVR := schema.GroupVersionResource{Version: "v1", Resource: "pods"}
-	listOptions := metav1.ListOptions{LabelSelector: SelectorFromMap(podLabels).String()}
+	listOptions := metav1.ListOptions{LabelSelector: otelk8stest.SelectorFromMap(podLabels).String()}
 	podTimeoutMinutes := 3
 	var podPhase string
 	require.Eventually(t, func() bool {

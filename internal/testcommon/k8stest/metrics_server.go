@@ -3,7 +3,6 @@ package k8stest
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -11,12 +10,13 @@ import (
 	metricsv "k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
-func NewMetricsClientSet() (*metricsv.Clientset, error) {
-	kubeconfigPath := testKubeConfig
+const (
+	TestKubeConfig   = "/tmp/kube-config-collector-e2e-testing"
+	KubeConfigEnvVar = "KUBECONFIG"
+)
 
-	if kubeConfigFromEnv := os.Getenv(kubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
-	}
+func NewMetricsClientSet() (*metricsv.Clientset, error) {
+	kubeconfigPath := TestKubeConfig
 
 	if kubeconfigPath == "" {
 		return nil, fmt.Errorf("please provide file path to load kubeconfig")

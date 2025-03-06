@@ -19,6 +19,7 @@ v0.121.0:
 
 - `confighttp`: Make the client config options `max_idle_conns`, `max_idle_conns_per_host`, `max_conns_per_host`, and `idle_conn_timeout` integers ([#9478](https://github.com/open-telemetry/opentelemetry-collector/issues/9478))
   All four options can be set to `0` where they were previously set to `null`
+- `processor/k8sattributes`: Move k8sattr.fieldExtractConfigRegex.disallow feature gate to stable ([#25128](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/25128))
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
@@ -26,6 +27,8 @@ v0.121.0:
 ### 🚩 Deprecations 🚩
 
 - `exporterhelper`: Deprecate `min_size_items` and `max_size_items` in favor of `min_size` and `max_size`. ([#12486](https://github.com/open-telemetry/opentelemetry-collector/issues/12486))
+- `prometheusreceiver`: Deprecate metric start time adjustment in the prometheus receiver. It is being replaced by the metricstarttime processor. ([#37186](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37186))
+  Start time adjustment is still enabled by default. To disable it, enable the | receiver.prometheusreceiver.RemoveStartTimeAdjustment feature gate.
 
 ### 💡 Enhancements 💡
 
@@ -45,6 +48,22 @@ v0.121.0:
 
 - `exporterhelper`: Stabilize exporter.UsePullingBasedExporterQueueBatcher and remove old batch sender ([#12425](https://github.com/open-telemetry/opentelemetry-collector/issues/12425))
 - `mdatagen`: Update metadata schema with new fields without enforcing them ([#12359](https://github.com/open-telemetry/opentelemetry-collector/issues/12359))
+- `telemetrygen`: Support `--service` for all signal types, rather than just traces ([#38044](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38044))
+- `resourcedetectionprocessor`: Introduce retry logic for failed resource detection. ([#34761](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/34761))
+- `pkg/ottl`: Support dynamic indexing of math expressions in maps and slices ([#37644](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37644))
+- `pkg/stanza`: Add entry's timestamp and attributes to errors logs from log transformers processors ([#37285](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37285))
+  When a log transformer processor fails to process an log entry it will include entry's timestamp and attributes in its own logs.
+  With this information the user can more easily identify the log file and find the entry that's having issues.
+
+- `resourcedetectionprocessor`: Add k8s.cluster.uid to kubeadm detector ([#38207](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38207))
+- `telemetrygen`: Add support for `aggregation-temporality` flag in telemetrygen.  Supported values (delta or cumulative) ([#38073](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38073))
+- `pkg/ottl`: Add `event_index` to the available paths of the span event context ([#35778](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35778))
+- `pkg/ottl`: Introduce Weekday() converter function ([#38126](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38126))
+- `prometheusreceiver`: Make use of creation timestamp from prometheus ([#36473](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36473))
+- `redactionprocessor`: Introduce 'blocked_key_patterns' parameter ([#35830](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35830))
+- `resourcedetectionprocessor`: Add a feature flag to allow the processor (and collector) to fail if resource detection fails ([#37961](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37961))
+  This feature can be enabled via the following feature gate
+  `--feature-gates=processor.resourcedetection.propagateerrors`
 
 ### 🧰 Bug fixes 🧰
 
@@ -52,6 +71,8 @@ v0.121.0:
 - `service`: fix bug in parsing service::telemetry configuration ([#12437](https://github.com/open-telemetry/opentelemetry-collector/issues/12437))
 - `exporterhelper`: Fix bug where the error logged when conversion of data fails is always nil ([#12510](https://github.com/open-telemetry/opentelemetry-collector/issues/12510))
 - `mdatagen`: Adds back missing import for filter when emitting resource attributes ([#12455](https://github.com/open-telemetry/opentelemetry-collector/issues/12455))
+- `redactionprocessor`: Fix redaction processor to redact span event attributes ([#36633](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36633))
+- `pkg/ottl`: Change the `ottlmetric` context to properly display the `TransformContext` value in debug logs ([#38103](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38103))
 
 </details>
 

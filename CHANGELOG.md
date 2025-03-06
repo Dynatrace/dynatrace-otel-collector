@@ -4,6 +4,30 @@
 
 <!-- next version -->
 
+## 0.25.0
+
+This release includes version XX.YY.ZZ of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+vXX.YY.ZZ:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/vXX.YY.ZZ>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/vXX.YY.ZZ>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `resourcedetectionprocessor`: Added configuration example and integration test for the new Dynatrace Resource Detection processor component. (#475)
+
 ## v0.24.0
 
 This release includes version 0.120.0/0.120.1 of the upstream Collector components.

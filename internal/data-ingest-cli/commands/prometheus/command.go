@@ -15,6 +15,7 @@ type Config struct {
 	ReceiveData     bool
 	InputFile       string
 	OutputFile      string
+	ServerPort      int
 	ReceiverPort    int
 	ReceiverType    string
 	ReceiverTimeout int
@@ -23,29 +24,31 @@ type Config struct {
 type Cmd struct {
 	receiver  receiver.Receiver
 	inputFile string
+	port      int
 }
 
-func New(p Config) (*Cmd, error) {
+func New(cfg Config) (*Cmd, error) {
 	c := &Cmd{
-		inputFile: p.InputFile,
+		inputFile: cfg.InputFile,
+		port:      cfg.ServerPort,
 	}
 
-	if p.ReceiveData && p.ReceiverPort > 0 && p.OutputFile != "" {
-		switch p.ReceiverType {
+	if cfg.ReceiveData && cfg.ReceiverPort > 0 && cfg.OutputFile != "" {
+		switch cfg.ReceiverType {
 		case "grpc":
 			c.receiver = otlpreceiver.NewOTLPReceiver(otlpreceiver.Config{
-				Port:       p.ReceiverPort,
-				OutputFile: p.OutputFile,
-				Timeout:    p.ReceiverTimeout,
+				Port:       cfg.ReceiverPort,
+				OutputFile: cfg.OutputFile,
+				Timeout:    cfg.ReceiverTimeout,
 			})
 		case "http":
 			c.receiver = otlphttp.NewOTLPHTTPReceiver(otlphttp.Config{
-				Port:       p.ReceiverPort,
-				OutputFile: p.OutputFile,
-				Timeout:    p.ReceiverTimeout,
+				Port:       cfg.ReceiverPort,
+				OutputFile: cfg.OutputFile,
+				Timeout:    cfg.ReceiverTimeout,
 			})
 		default:
-			return nil, fmt.Errorf("invalid receiver type %s", p.ReceiverType)
+			return nil, fmt.Errorf("invalid receiver type %s", cfg.ReceiverType)
 		}
 	}
 
@@ -60,10 +63,11 @@ func (c *Cmd) Do(ctx context.Context) error {
 		defer c.receiver.Stop()
 	}
 
+	endpoint := fmt.Sprintf("localhost:%d", c.port)
 	dir := path.Dir(c.inputFile)
-	fmt.Println("Serving metrics at localhost:9100 from " + dir)
+	fmt.Printf("Serving metrics at %s from %s\n", endpoint, dir)
 	fmt.Println("Send an interrupt to stop")
-	_ = http.ListenAndServe("localhost:9100", http.FileServer(http.Dir(dir)))
+	_ = http.ListenAndServe(endpoint, http.FileServer(http.Dir(dir)))
 
 	return nil
 }

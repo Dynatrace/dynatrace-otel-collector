@@ -11,6 +11,7 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/fluent"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/otlpjson"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/prometheus"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/statsd"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/syslog"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/zipkin"
@@ -68,6 +69,21 @@ func main() {
 			})
 			if err != nil {
 				log.Fatalf("could not create otlp-json sender: %s", err.Error())
+			}
+			if err := cmd.Do(context.Background()); err != nil {
+				log.Fatalf("could not execute command: %s", err.Error())
+			}
+		case "prometheus":
+			cmd, err := prometheus.New(prometheus.Config{
+				ReceiveData:     *receiveData,
+				InputFile:       *inputFile,
+				OutputFile:      *outputFile,
+				ReceiverPort:    *receiverPort,
+				ReceiverType:    *receiverType,
+				ReceiverTimeout: *receiverTimeout,
+			})
+			if err != nil {
+				log.Fatalf("could not create Prometheus sender: %s", err.Error())
 			}
 			if err := cmd.Do(context.Background()); err != nil {
 				log.Fatalf("could not execute command: %s", err.Error())

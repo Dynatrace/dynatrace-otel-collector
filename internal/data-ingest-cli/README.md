@@ -85,6 +85,12 @@ The tool accepts the following input parameters:
 ./data-ingest --send --input-format fluent --input-file $(pwd)/commands/fluent/testdata/msg.json --collector-url localhost:8006
 ```
 
+1. Set up a Prometheus server for the Collector to scrape
+
+```shell
+./data-ingest --send --input-format prometheus --input-file $(pwd)/commands/prometheus/testdata/metrics
+```
+
 1. Send Zipkin data to a collector:
 
 ```shell

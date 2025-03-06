@@ -11,6 +11,7 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/fluent"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/otlpjson"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/prometheus"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/statsd"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/syslog"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/commands/zipkin"
@@ -31,6 +32,7 @@ func main() {
 	receiverType := flag.String("receiver-type", "http", "The type of receiver created to act as a sink for the collector (options: `http`, `grpc`)")
 	zipkinVersion := flag.String("zipkin-version", "v2", "The version of zipkin traces (options: `v1`, `v2`)")
 	receiverTimeout := flag.Int("receiver-timeout", 300, "OTLP Receiver timeout. It specifies the maximum duration (in seconds) the tool waits for data from the collector before terminating")
+	serverPort := flag.Int("server-port", 9100, "Server port for setting up servers for scraping receivers. Default is 9100.")
 
 	// Parse the CLI arguments
 	flag.Parse()
@@ -51,6 +53,7 @@ func main() {
 	fmt.Println("Syslog transport:", *syslogTransport)
 	fmt.Println("Receiver type:", *receiverType)
 	fmt.Println("Receiver timeout:", *receiverTimeout)
+	fmt.Println("Server port:", *serverPort)
 
 	if *sendData {
 		switch *inputFormat {
@@ -68,6 +71,22 @@ func main() {
 			})
 			if err != nil {
 				log.Fatalf("could not create otlp-json sender: %s", err.Error())
+			}
+			if err := cmd.Do(context.Background()); err != nil {
+				log.Fatalf("could not execute command: %s", err.Error())
+			}
+		case "prometheus":
+			cmd, err := prometheus.New(prometheus.Config{
+				ReceiveData:     *receiveData,
+				InputFile:       *inputFile,
+				OutputFile:      *outputFile,
+				ServerPort:      *serverPort,
+				ReceiverPort:    *receiverPort,
+				ReceiverType:    *receiverType,
+				ReceiverTimeout: *receiverTimeout,
+			})
+			if err != nil {
+				log.Fatalf("could not create Prometheus sender: %s", err.Error())
 			}
 			if err := cmd.Do(context.Background()); err != nil {
 				log.Fatalf("could not execute command: %s", err.Error())

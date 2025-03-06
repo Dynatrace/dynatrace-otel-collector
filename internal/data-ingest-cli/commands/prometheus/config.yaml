@@ -1,0 +1,21 @@
+receivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'localhost'
+          scrape_interval: 5s
+          static_configs:
+            - targets: ['localhost:9100']
+
+processors:
+  cumulativetodelta:
+
+exporters:
+  debug:
+
+service:
+  pipelines:
+    metrics:
+      receivers: [prometheus]
+      processors: [cumulativetodelta]
+      exporters: [debug]

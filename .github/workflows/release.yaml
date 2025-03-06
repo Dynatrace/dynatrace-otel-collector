@@ -64,7 +64,11 @@ jobs:
         with:
           registry-type: public
 
+      - name: Extract changelog
+        run: awk '/<!-- next version -->/,/<!-- previous-version -->/' CHANGELOG.md > ./release-notes.md
+
       - name: Create release for version tag
         run: make release
         env:
+          RELEASE_NOTES: "./release-notes.md"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nflow-generator-job
+  namespace: e2enetflow
+spec:
+  template:
+    spec:
+      containers:
+      - name: nflow-generator
+        image: networkstatic/nflow-generator
+        args: ["-c", "16", "-t", "otelcolsvc.e2enetflow.svc.cluster.local", "-p", "2055"]
+      restartPolicy: Never
+  backoffLimit: 4

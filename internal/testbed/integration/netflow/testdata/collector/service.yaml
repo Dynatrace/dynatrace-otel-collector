@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: otelcolsvc
+  namespace: e2enetflow
+spec:
+  type: ClusterIP
+  ports:
+    - name: otlp
+      port: 4317
+      targetPort: 4317
+      protocol: TCP
+      appProtocol: grpc
+    - name: netflow
+      port: 2055
+      targetPort: 2055
+      protocol: UDP
+  selector:
+    app.kubernetes.io/name: opentelemetry-collector
+    app.kubernetes.io/instance: {{ .Name }}

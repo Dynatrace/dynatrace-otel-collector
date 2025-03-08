@@ -119,7 +119,7 @@ func assertExpectedLogs(sm plog.LogRecordSlice) error {
 	for i := 0; i < sm.Len(); i++ {
 		attrs := sm.At(i).Attributes()
 		if attrs.Len() != 15 {
-			return fmt.Errorf("invalid lenght of attributes: %d", attrs.Len())
+			return fmt.Errorf("invalid length of attributes: %d", attrs.Len())
 		}
 		val, ok := attrs.Get("flow.type")
 		if !ok {

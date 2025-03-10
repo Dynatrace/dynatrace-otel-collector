@@ -1,4 +1,6 @@
 receivers:
+  netflow:
+    scheme: netflow
   statsd:
     endpoint: "localhost:8125"
   zipkin:

@@ -33,7 +33,7 @@ making it easier to diagnose and resolve problems related to OTLP data handling.
 
 **Note:**
 
-Sending data to Jaeger or Netflow receiver is not supported in this CLI tool. For more information about the reasoning for this and setting up a debug environmant for these receivers, please see [jaeger](./commands/jaeger/README.md) and [netflow](./commands/netflow/README.md) documentation.
+Sending data to Jaeger or Netflow receiver is not supported in this CLI tool. For more information about the reasoning for this and setting up a debug environment for these receivers, please see [jaeger](./commands/jaeger/README.md) and [netflow](./commands/netflow/README.md) documentation.
 
 ## Building
 

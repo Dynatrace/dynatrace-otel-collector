@@ -1,0 +1,22 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  netflow:
+    scheme: netflow
+    hostname: 0.0.0.0
+    port: 2055
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+service:
+  extensions: [health_check]
+  pipelines:
+    logs:
+      receivers: [netflow]
+      exporters: [otlphttp]

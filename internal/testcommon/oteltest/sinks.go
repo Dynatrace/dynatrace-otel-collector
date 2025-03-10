@@ -144,6 +144,15 @@ func WaitForTraces(t *testing.T, entriesNum int, tc *consumertest.TracesSink) {
 		len(tc.AllTraces()), timeoutMinutes)
 }
 
+func WaitForLogs(t *testing.T, entriesNum int, tc *consumertest.LogsSink) {
+	timeoutMinutes := 5
+	require.Eventuallyf(t, func() bool {
+		return len(tc.AllLogs()) > entriesNum
+	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
+		"failed to receive %d entries,  received %d logs in %d minutes", entriesNum,
+		len(tc.AllLogs()), timeoutMinutes)
+}
+
 func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expectedService string, kvs map[string]ExpectedValue, scopeSpanAttrs []map[string]ExpectedValue) {
 	for i := 0; i < len(ts.AllTraces()); i++ {
 		traces := ts.AllTraces()[i]

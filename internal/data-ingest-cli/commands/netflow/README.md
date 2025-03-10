@@ -4,10 +4,6 @@ The primary purpose of setting up a debug environment with the NetFlow receiver 
 
 A known limitation of the `nflow-generator` tool is that it can only send `netFlow v5` data and hence misses the `netflow v9`, `netflow IPFIX` and `sflow v5` formats, which are currently supported by the [OTel Netflow receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/netflowreceiver).
 
-Creating a NetFlow receiver sender is possible by using the standardized model, which is also used in the `OTel NetFlow receiver`. However, due to the availability of a simple tool to generate `netFlow v5` data and send it to the collector, the team agreed not to proceed with the implementation of the `NetFlow sender` for other formats.
-
-The potential implementation of the `NetFlow sender` would use a `UDP` connection sender (similar to what `nflow-generator` uses [here](https://github.com/nerdalert/nflow-generator/blob/master/nflow-generator.go#L63)) and the [netflow library](https://pkg.go.dev/github.com/netsampler/goflow2/v2) containing the models for all formats. However, it is missing [encoding functions](https://github.com/netsampler/goflow2/blob/main/utils/pipe.go#L144), which is why the team decided not to proceed with the implementation until there is a need to do so.
-
 ## Prerequisities
 
 - Podman v5

@@ -20,7 +20,7 @@ On macOS or Linux, you can display your network interfaces via:
 ifconfig
 ```
 
-You should search for `en0` (MacOS) or `eth0` (Linux), but it can differ on every system.
+You should search for `en0` (macOS) or `enp0` (Linux), but it can differ on every system.
 
 Afterwards, store your IP address in an environment variable:
 

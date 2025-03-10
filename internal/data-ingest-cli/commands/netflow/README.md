@@ -10,7 +10,7 @@ A known limitation of the `nflow-generator` tool is that it can only send `netFl
 
 ## Set up
 
-1. Retrieve you local IP address
+1. Retrieve your local IP address
 
 Depending on your OS, you should retrieve your local IP address so Netflow generator running in a Podman container can send data to your collector running locally. This is convenient because you can run your collector via an IDE and therefore have more debug options available.
 

@@ -13,8 +13,6 @@ on:
 env:
   # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.23.6"
-  # renovate: datasource=github-releases depName=tcort/markdown-link-check
-  MARKDOWN_LINK_CHECK_VERSION: "v3.12.2"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -86,6 +84,12 @@ jobs:
 
       - name: Print changelog preview
         run: cat changelog_preview.md
+
+      - name: Run Lychee
+        uses: lycheeverse/lychee-action@v2.3.0
+        with:
+          args: "--verbose --no-progress ./changelog_preview.md --config .github/lychee.toml"
+          failIfEmpty: false
 
       - name: Install markdown-link-check
         run: npm install -g markdown-link-check@${{ env.MARKDOWN_LINK_CHECK_VERSION }}

@@ -90,13 +90,3 @@ jobs:
         with:
           args: "--verbose --no-progress ./changelog_preview.md"
           failIfEmpty: false
-
-      - name: Install markdown-link-check
-        run: npm install -g markdown-link-check@${{ env.MARKDOWN_LINK_CHECK_VERSION }}
-
-      - name: Run markdown-link-check
-        run: |
-          markdown-link-check \
-            --verbose \
-            --config .markdown_link_check_config.json \
-            changelog_preview.md

@@ -1,0 +1,13 @@
+include-fragments = true
+
+accept = ["200", "429"]
+
+exclude  = [
+    "http(s)?://localhost",
+    "http(s)?://example.com",
+    "https://github.com/open-telemetry/opentelemetry-collector(-contrib)?/releases/tag/vXX.YY.ZZ",
+    "http(s)?://\\d+\\.\\d+\\.\\d+\\.\\d+"
+]
+
+# better to be safe and avoid failures
+max-retries = 6

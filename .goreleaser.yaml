@@ -207,6 +207,7 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
 dockerhub:
   - images:
       - dynatrace/dynatrace-otel-collector

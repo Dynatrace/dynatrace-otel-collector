@@ -21,6 +21,7 @@ Container images for the Dynatrace distribution of the OpenTelemetry Collector a
 
 - [GitHub Container Registry (GHCR)](https://github.com/Dynatrace/dynatrace-otel-collector/pkgs/container/dynatrace-otel-collector%2Fdynatrace-otel-collector)
 - [Amazon Elastic Container Registry (Amazon ECR)](https://gallery.ecr.aws/dynatrace/dynatrace-otel-collector)
+- [DockerHub Container Registry](https://hub.docker.com/repository/docker/dynatrace/dynatrace-otel-collector)
 
 ## Troubleshooting
 

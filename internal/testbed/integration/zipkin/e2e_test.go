@@ -18,7 +18,7 @@ import (
 )
 
 // TestE2E_ZipkinReceiver tests the "Ingest data from Zipkin" use case
-// See: https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/use-cases/zipkin
+// See: https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-zipkin
 func TestE2E_ZipkinReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"

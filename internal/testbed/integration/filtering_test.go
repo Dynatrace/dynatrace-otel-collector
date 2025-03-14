@@ -357,7 +357,7 @@ func TestFilteringDTAPITokenRedactionProcessor(t *testing.T) {
 
 	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
 
-	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
+	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/shortlink/api-authentication
 	sampleToken := "G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM573RZM"
 
 	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, sampleToken))
@@ -451,7 +451,7 @@ func TestFilteringDTAPITokenTransformProcessor(t *testing.T) {
 
 	publicTokenIdentifier := "ST2EY72KQINMH574WMNVI7YN"
 
-	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/dynatrace-api/basics/dynatrace-api-authentication
+	// NOTE: the sample token below is NOT an actual token, but an example taken from the DT docs: https://docs.dynatrace.com/docs/shortlink/api-authentication
 	sampleToken := "G3DFPBEJYMODIDAEX454M7YWBUVEFOWKPRVMWFASS64NFH52PX6BNDVFFM573RZM"
 
 	ingestedAttrs.PutStr("t1", fmt.Sprintf("dt0s01.%s.%s", publicTokenIdentifier, sampleToken))

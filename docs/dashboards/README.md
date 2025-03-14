@@ -5,7 +5,7 @@
 > They are provided as-is, with no support guarantees. 
 > Newer versions of these dashboards could look significantly different from earlier versions and add or remove certain metrics.
 
-This folder contains dashboards that can be used to monitor the health of deployed OpenTelemetry collectors. The dashboards are in JSON format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/observe-and-explore/dashboards-and-notebooks/dashboards-new/get-started/dashboards-manage#dashboards-upload).
+This folder contains dashboards that can be used to monitor the health of deployed OpenTelemetry collectors. The dashboards are in JSON format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/shortlink/dashboards-use#dashboards-upload).
 
 ![A screenshot of the dashboard providing an overview of running collectors. Some are running (green), some have recently stopped sending data (yellow), and some have not sent data in a longer time (red)](img/dashboard_overview_1.png)
 
@@ -49,7 +49,7 @@ Every OpenTelemetry collector has self-monitoring capabilities, but they need to
 Self-monitoring data can be exported from the collector via the OTLP protocol.
 The configuration below assumes the environment variables `DT_ENDPOINT` and `DT_API_TOKEN` to be set.
 In order to send data to Dynatrace via OTLP, you will need to supply a Dynatrace endpoint and an ingest token with the `metrics.ingest` scope set.
-See the [Dynatrace docs](https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/getting-started/otlp-export) for more information.
+See the [Dynatrace docs](https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport) for more information.
 The `DT_ENDPOINT` environment variable should contain the base URL and the base `/api/v2/otlp` (e.g. `https://{your-environment-id}.live.dynatrace.com/api/v2/otlp`).
 
 To send self-monitoring data to Dynatrace, use the following configuration:
@@ -183,7 +183,7 @@ linkStyle 2,10,12,13 stroke:#C2C2C2,stroke-width:2px
 In this approach, collectors are configured to send their internal telemetry to one dedicated collector, which enriches the incoming telemetry with k8s attributes using the `k8sattributesprocessor`.
 The `k8sattributesprocessor` retrieves this data from the k8s API, and attaches it to the telemetry passing through it.
 One limitation of this approach is that the automatic enrichment will not work for the telemetry that that one collector instance (the "gateway" collector instance) exports itself.
-[Learn how to set up the gateway collector with the k8sattributesprocessor in the Dynatrace docs](https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/use-cases/kubernetes/k8s-enrich#kubernetes).
+[Learn how to set up the gateway collector with the k8sattributesprocessor in the Dynatrace docs](https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-k8s-enrich).
 
 ### Read attributes from the container environment
 

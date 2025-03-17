@@ -17,12 +17,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v5.3.0
         with:
           go-version: ${{ env.GO_VERSION }}
           check-latest: true
@@ -30,7 +30,7 @@ jobs:
 
       - name: Cache tools
         id: cache-tools
-        uses: actions/cache@v4
+        uses: actions/cache@v4.2.2
         with:
           path: .tools
           key: ci-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
@@ -43,7 +43,7 @@ jobs:
 
       - name: Cache collector source code
         id: cache-collector-source
-        uses: actions/cache@v4
+        uses: actions/cache@v4.2.2
         with:
           path: build
           key: ci-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
@@ -53,7 +53,7 @@ jobs:
         run: make generate
 
       - name: Cache Go modules
-        uses: actions/cache@v4
+        uses: actions/cache@v4.2.2
         with:
           path: |
             ~/go/bin

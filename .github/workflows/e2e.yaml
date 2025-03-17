@@ -67,19 +67,19 @@ jobs:
           make build
 
       - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.1
         with:
           name: dynatrace-otel-collector-bin
           path: bin/dynatrace-otel-collector
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v3.6.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3.10.0
 
       - name: Build and push to local registry
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v6.15.0
         with:
           context: ./bin
           file: Dockerfile
@@ -92,7 +92,7 @@ jobs:
           docker save dynatrace-otel-collector:e2e-test > /tmp/dynatrace-otel-collector.tar
 
       - name: Upload container image artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.1
         with:
           name: dynatrace-otel-collector-image
           path: /tmp/dynatrace-otel-collector.tar
@@ -171,7 +171,7 @@ jobs:
           cache: false
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.9
         with:
           name: dynatrace-otel-collector-bin
           path: bin

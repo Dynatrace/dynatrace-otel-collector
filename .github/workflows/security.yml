@@ -1,9 +1,7 @@
-name: Continuous Integration
+name: Security check
 
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -13,7 +11,7 @@ env:
 
 jobs:
   build:
-    name: Build and Test
+    name: Check for security vulnerabilities
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -28,19 +26,6 @@ jobs:
           check-latest: true
           cache: false
 
-      - name: Cache tools
-        id: cache-tools
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
-        with:
-          path: .tools
-          key: ci-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
-
-      - name: Install tools
-        if: steps.cache-tools.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p .tools
-          make install-tools
-
       - name: Cache collector source code
         id: cache-collector-source
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
@@ -52,33 +37,24 @@ jobs:
         if: steps.cache-collector-source.outputs.cache-hit != 'true'
         run: make generate
 
-      - name: Cache Go modules
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
+      - name: Run Snyk
+        uses: snyk/actions/golang@b98d498629f1c368650224d6d212bf7dfa89e4bf # 0.4.0
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          path: |
-            ~/go/bin
-            ~/go/pkg/mod
-          key: ci-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
-
-      - name: Build
-        run: make build
-
-      - name: Print components
-        run: make components
-
-      - name: Verify
-        run: make test
+          command: monitor
+          args: --file=build/go.mod
 
   notify-slack:
     runs-on: ubuntu-24.04
     needs: [build]
-    if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: failure()
     steps:
-      - name: Slack Notification
+      - name: Slack Notification - security vulnerabilities
         uses: rtCamp/action-slack-notify@c33737706dea87cd7784c687dadc9adf1be59990 # v2.3.2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_TITLE: "DT OTel Collector Distro - CI Failure"
+          SLACK_TITLE: "DT OTel Collector Distro - Security check Failure"
           SLACK_COLOR: "failure"
           SLACK_USERNAME: "GitHub Actions Notifier"
           SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"

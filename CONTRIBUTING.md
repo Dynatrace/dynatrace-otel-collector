@@ -29,7 +29,6 @@ The following section describes how setup your environment and build the collect
 
 You will need the `make` command which usually comes with some package such as `build-essential`.
 You will also need to install an appropriate version of `go`.
-Look at the current [`go.mod`](./go.mod) file to see the minimum `go` version.
 All other required tools are installed automatically by `make`.
 
 ### Installing build tools

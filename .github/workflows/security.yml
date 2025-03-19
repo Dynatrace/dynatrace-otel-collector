@@ -3,8 +3,6 @@ name: Security check
 on:
   push:
     branches: [main]
-  pull_request: # just for testing, will be enabled only on push to main
-    branches: [main]
   workflow_dispatch:
 
 env:

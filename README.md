@@ -8,11 +8,12 @@ components that have been verified to work well for common Dynatrace use cases.
 
 ## Installation
 
-For deployment instructions, please see [Dynatrace's documentation].
+For deployment instructions, please see the [Collector deployment page in the Dynatrace documentation].
 
-For configuration examples, please see [`config_examples`].
+Configuration suggestions can be found under [Collector use cases in the Dynatrace documentation] and in the [`config_examples`] folder.
 
-[Dynatrace's documentation]: https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/deployment
+[Collector deployment page in the Dynatrace documentation]: https://docs.dynatrace.com/docs/shortlink/otel-collector-deploy
+[Collector use cases in the Dynatrace documentation]: https://docs.dynatrace.com/docs/ingest-from/opentelemetry/collector/use-cases
 [`config_examples`]: ./config_examples/README.md
 
 ### Container images
@@ -21,6 +22,7 @@ Container images for the Dynatrace distribution of the OpenTelemetry Collector a
 
 - [GitHub Container Registry (GHCR)](https://github.com/Dynatrace/dynatrace-otel-collector/pkgs/container/dynatrace-otel-collector%2Fdynatrace-otel-collector)
 - [Amazon Elastic Container Registry (Amazon ECR)](https://gallery.ecr.aws/dynatrace/dynatrace-otel-collector)
+- [DockerHub Container Registry](https://hub.docker.com/repository/docker/dynatrace/dynatrace-otel-collector)
 
 ## Troubleshooting
 
@@ -29,6 +31,8 @@ For help troubleshooting issues, please see the OpenTelemetry documentation on [
 [troubleshooting the Collector]: https://opentelemetry.io/docs/collector/troubleshooting/
 
 ## Components
+
+The following components are included in the distribution:
 
 ### Receivers
 

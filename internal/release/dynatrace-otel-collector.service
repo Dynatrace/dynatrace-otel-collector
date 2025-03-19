@@ -1,7 +1,7 @@
 [Unit]
 Description=Dynatrace OpenTelemetry Collector
 After=network.target
-Documentation=https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector
+Documentation=https://docs.dynatrace.com/docs/shortlink/otel-collector
 
 [Service]
 EnvironmentFile=/etc/dynatrace-otel-collector/dynatrace-otel-collector.conf

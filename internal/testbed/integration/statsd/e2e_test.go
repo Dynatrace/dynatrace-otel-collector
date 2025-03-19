@@ -21,7 +21,7 @@ import (
 )
 
 // TestE2E_StatsdReceiver tests the "Ingest data from Statsd" use case
-// See: https://docs.dynatrace.com/docs/extend-dynatrace/opentelemetry/collector/use-cases/statsd
+// See: https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-statsd
 func TestE2E_StatsdReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"

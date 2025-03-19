@@ -6,7 +6,8 @@ exclude  = [
     "http(s)?://localhost",
     "http(s)?://example.com",
     "https://github.com/open-telemetry/opentelemetry-collector(-contrib)?/releases/tag/vXX.YY.ZZ",
-    "http(s)?://\\d+\\.\\d+\\.\\d+\\.\\d+"
+    "http(s)?://\\d+\\.\\d+\\.\\d+\\.\\d+",
+    "https://hub.docker.com/repository/docker/dynatrace/dynatrace-otel-collector"
 ]
 
 # better to be safe and avoid failures

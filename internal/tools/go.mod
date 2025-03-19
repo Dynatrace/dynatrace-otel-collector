@@ -5,7 +5,7 @@ go 1.24.1
 require (
 	github.com/goreleaser/goreleaser/v2 v2.7.0
 	go.opentelemetry.io/build-tools/chloggen v0.20.0
-	go.opentelemetry.io/collector/cmd/builder v0.121.0
+	go.opentelemetry.io/collector/cmd/builder v0.122.1
 )
 
 require (
@@ -305,7 +305,7 @@ require (
 	gocloud.dev v0.40.0 // indirect
 	golang.org/x/crypto v0.35.0 // indirect
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c // indirect
-	golang.org/x/mod v0.23.0 // indirect
+	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.36.0 // indirect
 	golang.org/x/oauth2 v0.26.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect

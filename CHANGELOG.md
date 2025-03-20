@@ -42,8 +42,31 @@ v0.122.0:
   - `otelcol_deltatocumulative.streams.evicted`
   - `otelcol_deltatocumulative.gaps.length`
 
+- `auth, authtest`: Remove deprecated modules extension/auth and extension/auth/authtest ([#12543](https://github.com/open-telemetry/opentelemetry-collector/issues/12543))
+  Use extension/extensionauth and extension/extensionauth/extensionauthtest instead.
+
+- `extensionauth`: Remove deprecated methods from the `Func` types. ([#12547](https://github.com/open-telemetry/opentelemetry-collector/issues/12547))
+- `exporterhelper`: Remove the Request.Export function in favor of an equivalent request consume func in the New[Traces|Metrics|Logs|Profiles]Request ([#12637](https://github.com/open-telemetry/opentelemetry-collector/issues/12637))
+
+- `pkg/ottl`: Add support for parsing OTTL conditions to the `ottl.ParserCollection`. ([#37904](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37904))
+  The `ottl.WithParserCollectionContext` option now requires the converters to be configured using the `ottl.WithStatementConverter` and `ottl.WithConditionConverter` options.
+
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
+
+### 🚩 Deprecations 🚩
+
+- `exporterhelper`: Deprecate per signal converter in favor of generic version ([#12631](https://github.com/open-telemetry/opentelemetry-collector/issues/12631))
+- `extensionauth`: Deprecate `extensionauth.NewClient` and `extensionauth.NewServer`. ([#12574](https://github.com/open-telemetry/opentelemetry-collector/issues/12574))
+  - Manually implement the interfaces instead.
+
+- `configauth`: Deprecate `configauth.Authenticator.GetClientAuthenticator`. ([#12574](https://github.com/open-telemetry/opentelemetry-collector/issues/12574))
+  - Use the per-protocol methods instead.
+
+
+### 🚀 New components 🚀
+
+- `receiverhelper`: Split `receiverhelper` into a separate module ([#28328](https://github.com/open-telemetry/opentelemetry-collector/issues/28328))
 
 ### 💡 Enhancements 💡
 
@@ -70,6 +93,16 @@ v0.122.0:
 - `pkg/stanza`: Prevent data loss in Stanza-based receivers on ungraceful shutdown of the collector ([#35456](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35456))
   Enable the `stanza.synchronousLogEmitter` feature gate to unlock this feature.
   See the [documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/stanza/README.md) for more information.
+- `cmd/mdatagen`: Add `supportsSignal` func for `Metadata` type in `mdatagen`. ([#12640](https://github.com/open-telemetry/opentelemetry-collector/issues/12640))
+- `receiver`: Mark module as stable ([#12513](https://github.com/open-telemetry/opentelemetry-collector/issues/12513))
+- `pdata/pcommon`: Introduce `Equal()` method for comparison equality to `Value`, `ByteSlice`, `Float64Slice`, `Int32Slice`, `Int64Slice`, `StringSlice`, `Uint64Slice`, `Map` and `Slice` ([#12594](https://github.com/open-telemetry/opentelemetry-collector/issues/12594))
+- `pdata`: Add iterator All method to pdata slices and map types. ([#11982](https://github.com/open-telemetry/opentelemetry-collector/issues/11982))
+- `pdata/pprofile`: Introduce AddAttribute helper method to modify the content of attributable records ([#12206](https://github.com/open-telemetry/opentelemetry-collector/issues/12206))
+- `dbstorageextension`: Optimize dbstorage.Batch() performance for single-type Operations set call ([#38026](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38026))
+- `bearertokenauthextension`: Add the ability to configure multiple bearer tokens for the same endpoint. ([#38148](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38148))
+- `pkg/pdatatest`: Add ValidateProfile() function to validate pprofile.Profile. ([#38452](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38452))
+- `receiver/prometheus`: Adds the Prometheus API server to more easily debug the Prometheus config, service discovery, and targets. ([#32646](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32646))
+- `pkg/pdatatest`: Simplify generating profiles for testing by transforming Go structs to profiles. ([#38430](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38430))
 
 ### 🧰 Bug fixes 🧰
 

@@ -37,7 +37,7 @@ jobs:
 
       - name: Cache tools
         id: cache-tools
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: .tools
           key: snapshot-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
@@ -50,7 +50,7 @@ jobs:
 
       - name: Cache collector source code
         id: cache-collector-source
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: build
           key: snapshot-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
@@ -60,7 +60,7 @@ jobs:
         run: make generate
 
       - name: Cache Go modules
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: |
             ~/go/bin
@@ -107,7 +107,7 @@ jobs:
 
       - name: Download linux service packages
 
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           name: linux-packages
           path: linux-packages

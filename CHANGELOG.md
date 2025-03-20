@@ -66,7 +66,7 @@ v0.122.0:
 
 ### 🚀 New components 🚀
 
-- `receiverhelper`: Split `receiverhelper` into a separate module ([#28328](https://github.com/open-telemetry/opentelemetry-collector/issues/28328))
+- `receiverhelper`: Split `receiverhelper` into a separate module ([#12514](https://github.com/open-telemetry/opentelemetry-collector/issues/12514))
 
 ### 💡 Enhancements 💡
 
@@ -89,7 +89,7 @@ v0.122.0:
 - `processor/redaction`: Support hashing instead of masking values via 'hash_function' parameter ([#35830](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35830))
 - `pkg/stanza`: Add 'regex_replace' operator ([#37443](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37443))
 - `jaegerreceiver`: Remove dependency on jaeger/cmd/agent ([#38655](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38655))
-- `resourceprocessor`: Add support for profile signal type ([#359979](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/359979))
+- `resourceprocessor`: Add support for profile signal type ([#35979](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35979))
 - `pkg/stanza`: Prevent data loss in Stanza-based receivers on ungraceful shutdown of the collector ([#35456](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35456))
   Enable the `stanza.synchronousLogEmitter` feature gate to unlock this feature.
   See the [documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/stanza/README.md) for more information.

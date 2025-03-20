@@ -4,6 +4,125 @@
 
 <!-- next version -->
 
+## v0.26.0
+
+This release includes version v0.122.1/v0.122.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.122.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.122.1>
+
+v0.122.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.122.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.122.0>
+
+### 🛑 Breaking changes 🛑
+
+- `service`: Batch processor telemetry is no longer emitted at "basic" verbosity level ([#7890](https://github.com/open-telemetry/opentelemetry-collector/issues/7890))
+  According to the guidelines, basic-level telemetry should be reserved for core Collector APIs.
+  Components such as the batch processor should emit telemetry starting from the "normal" level
+  (which is also the default level).
+
+  Migration: If your Collector telemetry was set to `level: basic` and you want to keep seeing
+  batch processor-related metrics, consider switching to `level: normal` instead.
+
+- `deltatocumulative`: removes legacy and clean up existing metrics ([#38079](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38079))
+  renamed:
+  - `otelcol_deltatocumulative.datapoints.processed` to `otelcol_deltatocumulative_datapoints`
+  - `otelcol_deltatocumulative.datapoints.dropped` to `otelcol_deltatocumulative_datapoints{error="..."}`
+  - `otelcol_deltatocumulative.max_stale` to `otelcol_deltatocumulative_max_stale`
+  - `otelcol_deltatocumulative.streams.limit` to `otelcol_deltatocumulative_streams_limit`
+  - `otelcol_deltatocumulative.streams.tracked` to `otelcol_deltatocumulative_streams_tracked`
+    removed (already unused):
+  - `otelcol_deltatocumulative.datapoints.linear`
+  - `otelcol_deltatocumulative.streams.tracked.linear`
+  - `otelcol_deltatocumulative.streams.evicted`
+  - `otelcol_deltatocumulative.gaps.length`
+
+- `auth, authtest`: Remove deprecated modules extension/auth and extension/auth/authtest ([#12543](https://github.com/open-telemetry/opentelemetry-collector/issues/12543))
+  Use extension/extensionauth and extension/extensionauth/extensionauthtest instead.
+
+- `extensionauth`: Remove deprecated methods from the `Func` types. ([#12547](https://github.com/open-telemetry/opentelemetry-collector/issues/12547))
+- `exporterhelper`: Remove the Request.Export function in favor of an equivalent request consume func in the New[Traces|Metrics|Logs|Profiles]Request ([#12637](https://github.com/open-telemetry/opentelemetry-collector/issues/12637))
+
+- `pkg/ottl`: Add support for parsing OTTL conditions to the `ottl.ParserCollection`. ([#37904](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37904))
+  The `ottl.WithParserCollectionContext` option now requires the converters to be configured using the `ottl.WithStatementConverter` and `ottl.WithConditionConverter` options.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🚩 Deprecations 🚩
+
+- `exporterhelper`: Deprecate per signal converter in favor of generic version ([#12631](https://github.com/open-telemetry/opentelemetry-collector/issues/12631))
+- `extensionauth`: Deprecate `extensionauth.NewClient` and `extensionauth.NewServer`. ([#12574](https://github.com/open-telemetry/opentelemetry-collector/issues/12574))
+  - Manually implement the interfaces instead.
+
+- `configauth`: Deprecate `configauth.Authenticator.GetClientAuthenticator`. ([#12574](https://github.com/open-telemetry/opentelemetry-collector/issues/12574))
+  - Use the per-protocol methods instead.
+
+
+### 🚀 New components 🚀
+
+- `receiverhelper`: Split `receiverhelper` into a separate module ([#12514](https://github.com/open-telemetry/opentelemetry-collector/issues/12514))
+
+### 💡 Enhancements 💡
+
+- `service`: Add `service.AllowNoPipelines` feature gate to allow starting the Collector without pipelines. ([#12613](https://github.com/open-telemetry/opentelemetry-collector/issues/12613))
+  This can be used to start with only extensions.
+- `mdatagen`: Delete generated_status.go if the component type doesn't require it. ([#12346](https://github.com/open-telemetry/opentelemetry-collector/issues/12346))
+- `service`: include component id/type in start error ([#10426](https://github.com/open-telemetry/opentelemetry-collector/issues/10426))
+- `mdatagen`: Add deprecation date and migration guide fields as part of component metadata ([#12359](https://github.com/open-telemetry/opentelemetry-collector/issues/12359))
+- `confmap`: Introduce a new feature flag to allow for merging lists instead of discarding the existing ones. ([#8394](https://github.com/open-telemetry/opentelemetry-collector/issues/8394), [#8754](https://github.com/open-telemetry/opentelemetry-collector/issues/8754), [#10370](https://github.com/open-telemetry/opentelemetry-collector/issues/10370))
+  You can enable this option via the command line by running following command:
+  otelcol --config=main.yaml --config=extra_config.yaml --feature-gates=-confmap.enableMergeAppendOption
+
+- `zpagesextension`: Add expvar handler to zpages extension. ([#11081](https://github.com/open-telemetry/opentelemetry-collector/issues/11081))
+- `hostmetricsreceiver`: Added the `system.linux.memory.dirty` and `system.memory.page_size` metrics. ([#38672](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38672))
+- `pkg/ottl`: Enhance flatten() editor to resolve attribute key conflicts by adding a number suffix to the conflicting keys. ([#35793](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35793))
+- `pkg/ottl`: Add `IsValidLuhn()` checksum verification function ([#37880](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37880))
+- `pkg/ottl`: Add ability to compare maps in Boolean Expressions ([#38611](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38611))
+- `pkg/ottl`: Add `Murmur3Hash`and `Murmur3Hash128` functions to convert the `target` string to Murmur3 hash in hexadecimal string format ([#34077](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/34077))
+- `receiver/prometheus`: Adds the Prometheus API server to more easily debug the Prometheus config, service discovery, and targets. ([#32646](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32646))
+- `processor/redaction`: Support hashing instead of masking values via 'hash_function' parameter ([#35830](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35830))
+- `pkg/stanza`: Add 'regex_replace' operator ([#37443](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37443))
+- `jaegerreceiver`: Remove dependency on jaeger/cmd/agent ([#38655](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38655))
+- `resourceprocessor`: Add support for profile signal type ([#35979](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35979))
+- `pkg/stanza`: Prevent data loss in Stanza-based receivers on ungraceful shutdown of the collector ([#35456](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35456))
+  Enable the `stanza.synchronousLogEmitter` feature gate to unlock this feature.
+  See the [documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/stanza/README.md) for more information.
+- `cmd/mdatagen`: Add `supportsSignal` func for `Metadata` type in `mdatagen`. ([#12640](https://github.com/open-telemetry/opentelemetry-collector/issues/12640))
+- `receiver`: Mark module as stable ([#12513](https://github.com/open-telemetry/opentelemetry-collector/issues/12513))
+- `pdata/pcommon`: Introduce `Equal()` method for comparison equality to `Value`, `ByteSlice`, `Float64Slice`, `Int32Slice`, `Int64Slice`, `StringSlice`, `Uint64Slice`, `Map` and `Slice` ([#12594](https://github.com/open-telemetry/opentelemetry-collector/issues/12594))
+- `pdata`: Add iterator All method to pdata slices and map types. ([#11982](https://github.com/open-telemetry/opentelemetry-collector/issues/11982))
+- `receiver/prometheus`: Adds the Prometheus API server to more easily debug the Prometheus config, service discovery, and targets. ([#32646](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32646))
+
+### 🧰 Bug fixes 🧰
+
+- `confmap`: Ensure slices with defaults containing struct values are correctly set. ([#12661](https://github.com/open-telemetry/opentelemetry-collector/issues/12661))
+  This reverts the changes made in https://github.com/open-telemetry/opentelemetry-collector/pull/11882.
+- `confmap`: Maintain nil values when marshaling or unmarshaling nil slices ([#11882](https://github.com/open-telemetry/opentelemetry-collector/issues/11882))
+  Previously, nil slices were converted to empty lists, which are semantically different
+  than a nil slice. This change makes this conversion more consistent when encoding
+  or decoding config, and these values are now maintained.
+- `service`: do not attempt to register process metrics if they are disabled ([#12098](https://github.com/open-telemetry/opentelemetry-collector/issues/12098))
+
+- `filelogreceiver`: Extend container parser log file path pattern to include rotated files. ([#35137](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35137))
+- `attributesprocessor`: Validate metrics configuration parameters before processing ([#36077](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36077))
+- `pkg/ottl`: Fix limitation of map literals within slice literals not being handled correctly ([#37405](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37405))
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 🚀 New components 🚀
+
+- `receiver/netflow`: Include the netflow receiver in the distribution (#489)
+
+<!-- previous-version -->
+
 ## 0.25.0
 
 This release includes version 0.121.0 of the upstream Collector components.

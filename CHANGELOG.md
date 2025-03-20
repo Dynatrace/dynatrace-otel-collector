@@ -4,6 +4,36 @@
 
 <!-- next version -->
 
+## v0.26.0
+
+This release includes version v0.122.1/v0.122.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.122.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.122.1>
+
+v0.122.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.122.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.122.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 🚀 New components 🚀
+
+- `receiver/netflow`: Include the netflow receiver in the distribution (#489)
+
+<!-- previous-version -->
+
 ## 0.25.0
 
 This release includes version 0.121.0 of the upstream Collector components.

@@ -97,12 +97,7 @@ v0.122.0:
 - `receiver`: Mark module as stable ([#12513](https://github.com/open-telemetry/opentelemetry-collector/issues/12513))
 - `pdata/pcommon`: Introduce `Equal()` method for comparison equality to `Value`, `ByteSlice`, `Float64Slice`, `Int32Slice`, `Int64Slice`, `StringSlice`, `Uint64Slice`, `Map` and `Slice` ([#12594](https://github.com/open-telemetry/opentelemetry-collector/issues/12594))
 - `pdata`: Add iterator All method to pdata slices and map types. ([#11982](https://github.com/open-telemetry/opentelemetry-collector/issues/11982))
-- `pdata/pprofile`: Introduce AddAttribute helper method to modify the content of attributable records ([#12206](https://github.com/open-telemetry/opentelemetry-collector/issues/12206))
-- `dbstorageextension`: Optimize dbstorage.Batch() performance for single-type Operations set call ([#38026](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38026))
-- `bearertokenauthextension`: Add the ability to configure multiple bearer tokens for the same endpoint. ([#38148](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38148))
-- `pkg/pdatatest`: Add ValidateProfile() function to validate pprofile.Profile. ([#38452](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38452))
 - `receiver/prometheus`: Adds the Prometheus API server to more easily debug the Prometheus config, service discovery, and targets. ([#32646](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32646))
-- `pkg/pdatatest`: Simplify generating profiles for testing by transforming Go structs to profiles. ([#38430](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38430))
 
 ### 🧰 Bug fixes 🧰
 

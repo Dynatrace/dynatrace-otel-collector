@@ -121,6 +121,10 @@ v0.122.0:
 
 - `receiver/netflow`: Include the netflow receiver in the distribution (#489)
 
+### 🧰 Bug fixes 🧰
+
+- `linux packages`: Ensure Linux package scripts work in chrooted environments without Systemd running
+
 <!-- previous-version -->
 
 ## 0.25.0

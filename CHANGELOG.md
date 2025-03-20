@@ -19,10 +19,43 @@ v0.122.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.122.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.122.0>
 
+### 🛑 Breaking changes 🛑
+
+- `service`: Batch processor telemetry is no longer emitted at "basic" verbosity level ([#7890](https://github.com/open-telemetry/opentelemetry-collector/issues/7890))
+  According to the guidelines, basic-level telemetry should be reserved for core Collector APIs.
+  Components such as the batch processor should emit telemetry starting from the "normal" level
+  (which is also the default level).
+
+  Migration: If your Collector telemetry was set to `level: basic` and you want to keep seeing
+  batch processor-related metrics, consider switching to `level: normal` instead.
+
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
----
+### 💡 Enhancements 💡
+
+- `service`: Add `service.AllowNoPipelines` feature gate to allow starting the Collector without pipelines. ([#12613](https://github.com/open-telemetry/opentelemetry-collector/issues/12613))
+  This can be used to start with only extensions.
+- `mdatagen`: Delete generated_status.go if the component type doesn't require it. ([#12346](https://github.com/open-telemetry/opentelemetry-collector/issues/12346))
+- `componenttest`: Improve config struct mapstructure field tag checks ([#12590](https://github.com/open-telemetry/opentelemetry-collector/issues/12590))
+  `remain` tags and `omitempty` tags without a custom field name will now pass validation.
+- `service`: include component id/type in start error ([#10426](https://github.com/open-telemetry/opentelemetry-collector/issues/10426))
+- `mdatagen`: Add deprecation date and migration guide fields as part of component metadata ([#12359](https://github.com/open-telemetry/opentelemetry-collector/issues/12359))
+- `confmap`: Introduce a new feature flag to allow for merging lists instead of discarding the existing ones. ([#8394](https://github.com/open-telemetry/opentelemetry-collector/issues/8394), [#8754](https://github.com/open-telemetry/opentelemetry-collector/issues/8754), [#10370](https://github.com/open-telemetry/opentelemetry-collector/issues/10370))
+  You can enable this option via the command line by running following command:
+  otelcol --config=main.yaml --config=extra_config.yaml --feature-gates=-confmap.enableMergeAppendOption
+
+- `zpagesextension`: Add expvar handler to zpages extension. ([#11081](https://github.com/open-telemetry/opentelemetry-collector/issues/11081))
+
+### 🧰 Bug fixes 🧰
+
+- `confmap`: Ensure slices with defaults containing struct values are correctly set. ([#12661](https://github.com/open-telemetry/opentelemetry-collector/issues/12661))
+  This reverts the changes made in https://github.com/open-telemetry/opentelemetry-collector/pull/11882.
+- `confmap`: Maintain nil values when marshaling or unmarshaling nil slices ([#11882](https://github.com/open-telemetry/opentelemetry-collector/issues/11882))
+  Previously, nil slices were converted to empty lists, which are semantically different
+  than a nil slice. This change makes this conversion more consistent when encoding
+  or decoding config, and these values are now maintained.
+- `service`: do not attempt to register process metrics if they are disabled ([#12098](https://github.com/open-telemetry/opentelemetry-collector/issues/12098))
 
 </details>
 

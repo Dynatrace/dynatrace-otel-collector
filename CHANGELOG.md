@@ -29,7 +29,7 @@ v0.122.0:
   Migration: If your Collector telemetry was set to `level: basic` and you want to keep seeing
   batch processor-related metrics, consider switching to `level: normal` instead.
 
-- `deltatocumulative`: removes legacy and clean up existing metrics ([#38079](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38079))
+- `deltatocumulative`: remove legacy and clean up existing collector self-monitoring metrics ([#38079](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38079))
   renamed:
   - `otelcol_deltatocumulative.datapoints.processed` to `otelcol_deltatocumulative_datapoints`
   - `otelcol_deltatocumulative.datapoints.dropped` to `otelcol_deltatocumulative_datapoints{error="..."}`
@@ -46,7 +46,6 @@ v0.122.0:
   Use extension/extensionauth and extension/extensionauth/extensionauthtest instead.
 
 - `extensionauth`: Remove deprecated methods from the `Func` types. ([#12547](https://github.com/open-telemetry/opentelemetry-collector/issues/12547))
-- `exporterhelper`: Remove the Request.Export function in favor of an equivalent request consume func in the New[Traces|Metrics|Logs|Profiles]Request ([#12637](https://github.com/open-telemetry/opentelemetry-collector/issues/12637))
 
 - `pkg/ottl`: Add support for parsing OTTL conditions to the `ottl.ParserCollection`. ([#37904](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37904))
   The `ottl.WithParserCollectionContext` option now requires the converters to be configured using the `ottl.WithStatementConverter` and `ottl.WithConditionConverter` options.

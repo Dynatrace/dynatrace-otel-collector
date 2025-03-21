@@ -6,3 +6,4 @@ lib/
 .idea
 cmd/oteltestbedcol/*
 !cmd/oteltestbedcol/.gitkeep
+release-notes.md

@@ -46,7 +46,6 @@ v0.122.0:
   Use extension/extensionauth and extension/extensionauth/extensionauthtest instead.
 
 - `extensionauth`: Remove deprecated methods from the `Func` types. ([#12547](https://github.com/open-telemetry/opentelemetry-collector/issues/12547))
-- `exporterhelper`: Remove the Request.Export function in favor of an equivalent request consume func in the New[Traces|Metrics|Logs|Profiles]Request ([#12637](https://github.com/open-telemetry/opentelemetry-collector/issues/12637))
 
 - `pkg/ottl`: Add support for parsing OTTL conditions to the `ottl.ParserCollection`. ([#37904](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37904))
   The `ottl.WithParserCollectionContext` option now requires the converters to be configured using the `ottl.WithStatementConverter` and `ottl.WithConditionConverter` options.

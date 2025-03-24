@@ -5,65 +5,67 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: localhost:4317
-processors:
-  k8sattributes:
-    extract:
-      metadata:
-        - k8s.pod.name
-        - k8s.pod.uid
-        - k8s.pod.ip
-        - k8s.deployment.name
-        - k8s.replicaset.name
-        - k8s.statefulset.name
-        - k8s.daemonset.name
-        - k8s.job.name
-        - k8s.cronjob.name
-        - k8s.namespace.name
-        - k8s.node.name
-        - k8s.cluster.uid
-      annotations:
-        - from: pod
-          key_regex: metadata.dynatrace.com/(.*)
-          tag_name: $$1
-    pod_association:
-      - sources:
-        - from: resource_attribute
-          name: k8s.pod.name
-        - from: resource_attribute
-          name: k8s.namespace.name
-      - sources:
-        - from: resource_attribute
-          name: k8s.pod.ip
-      - sources:
-        - from: resource_attribute
-          name: k8s.pod.uid
-      - sources:
-        - from: connection
-  transform:
-    error_mode: ignore
-    metric_statements:
-      - context: resource
-        statements:
-          - set(attributes["k8s.workload.kind"], "job") where IsString(attributes["k8s.job.name"])
-          - set(attributes["k8s.workload.name"], attributes["k8s.job.name"]) where IsString(attributes["k8s.job.name"])
-          - set(attributes["k8s.workload.kind"], "cronjob") where IsString(attributes["k8s.cronjob.name"])
-          - set(attributes["k8s.workload.name"], attributes["k8s.cronjob.name"]) where IsString(attributes["k8s.cronjob.name"])
-          - set(attributes["k8s.workload.kind"], "daemonset") where IsString(attributes["k8s.daemonset.name"])
-          - set(attributes["k8s.workload.name"], attributes["k8s.daemonset.name"]) where IsString(attributes["k8s.daemonset.name"])
-          - set(attributes["k8s.workload.kind"], "statefulset") where IsString(attributes["k8s.statefulset.name"])
-          - set(attributes["k8s.workload.name"], attributes["k8s.statefulset.name"]) where IsString(attributes["k8s.statefulset.name"])
-          - set(attributes["k8s.workload.kind"], "replicaset") where IsString(attributes["k8s.replicaset.name"])
-          - set(attributes["k8s.workload.name"], attributes["k8s.replicaset.name"]) where IsString(attributes["k8s.replicaset.name"])
-          - set(attributes["k8s.workload.kind"], "deployment") where IsString(attributes["k8s.deployment.name"])
-          - set(attributes["k8s.workload.name"], attributes["k8s.deployment.name"]) where IsString(attributes["k8s.deployment.name"])
-          # remove the delete statements if you want to preserve these attributes
-          - delete_key(attributes, "k8s.deployment.name")
-          - delete_key(attributes, "k8s.replicaset.name")
-          - delete_key(attributes, "k8s.statefulset.name")
-          - delete_key(attributes, "k8s.daemonset.name")
-          - delete_key(attributes, "k8s.cronjob.name")
-          - delete_key(attributes, "k8s.job.name")
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+# processors:
+#   k8sattributes:
+#     extract:
+#       metadata:
+#         - k8s.pod.name
+#         - k8s.pod.uid
+#         - k8s.pod.ip
+#         - k8s.deployment.name
+#         - k8s.replicaset.name
+#         - k8s.statefulset.name
+#         - k8s.daemonset.name
+#         - k8s.job.name
+#         - k8s.cronjob.name
+#         - k8s.namespace.name
+#         - k8s.node.name
+#         - k8s.cluster.uid
+#       # annotations:
+#       #   - from: pod
+#       #     key_regex: metadata.dynatrace.com/(.*)
+#       #     tag_name: $$1
+#     pod_association:
+#       - sources:
+#         - from: resource_attribute
+#           name: k8s.pod.name
+#         - from: resource_attribute
+#           name: k8s.namespace.name
+#       - sources:
+#         - from: resource_attribute
+#           name: k8s.pod.ip
+#       - sources:
+#         - from: resource_attribute
+#           name: k8s.pod.uid
+#       - sources:
+#         - from: connection
+#   transform:
+#     error_mode: ignore
+#     metric_statements:
+#       - context: resource
+#         statements:
+#           - set(attributes["k8s.workload.kind"], "job") where IsString(attributes["k8s.job.name"])
+#           - set(attributes["k8s.workload.name"], attributes["k8s.job.name"]) where IsString(attributes["k8s.job.name"])
+#           - set(attributes["k8s.workload.kind"], "cronjob") where IsString(attributes["k8s.cronjob.name"])
+#           - set(attributes["k8s.workload.name"], attributes["k8s.cronjob.name"]) where IsString(attributes["k8s.cronjob.name"])
+#           - set(attributes["k8s.workload.kind"], "daemonset") where IsString(attributes["k8s.daemonset.name"])
+#           - set(attributes["k8s.workload.name"], attributes["k8s.daemonset.name"]) where IsString(attributes["k8s.daemonset.name"])
+#           - set(attributes["k8s.workload.kind"], "statefulset") where IsString(attributes["k8s.statefulset.name"])
+#           - set(attributes["k8s.workload.name"], attributes["k8s.statefulset.name"]) where IsString(attributes["k8s.statefulset.name"])
+#           - set(attributes["k8s.workload.kind"], "replicaset") where IsString(attributes["k8s.replicaset.name"])
+#           - set(attributes["k8s.workload.name"], attributes["k8s.replicaset.name"]) where IsString(attributes["k8s.replicaset.name"])
+#           - set(attributes["k8s.workload.kind"], "deployment") where IsString(attributes["k8s.deployment.name"])
+#           - set(attributes["k8s.workload.name"], attributes["k8s.deployment.name"]) where IsString(attributes["k8s.deployment.name"])
+#           # remove the delete statements if you want to preserve these attributes
+#           - delete_key(attributes, "k8s.deployment.name")
+#           - delete_key(attributes, "k8s.replicaset.name")
+#           - delete_key(attributes, "k8s.statefulset.name")
+#           - delete_key(attributes, "k8s.daemonset.name")
+#           - delete_key(attributes, "k8s.cronjob.name")
+#           - delete_key(attributes, "k8s.job.name")
 exporters:
   otlphttp:
     endpoint: ${env:DT_ENDPOINT}
@@ -78,24 +80,31 @@ service:
     metrics:
       receivers:
         - otlp
-      processors:
-        - k8sattributes
-        - transform
+      # processors:
+      #   - k8sattributes
+      #   - transform
       exporters:
         - otlphttp
         - debug
   # turn on self-monitoring
   telemetry:
+    resource:
+      # This section reads the previously injected environment variables
+      # and attaches them to the telemetry the Collector generates about itself.
+      k8s.namespace.name: "${env:MY_POD_NAMESPACE}"
+      k8s.pod.name: "${env:MY_POD_NAME}"
+      k8s.node.name: "${env:MY_NODE_NAME}"
     metrics:
       # metrics verbosity level. Higher verbosity means more metrics.
       # The dashboard relies on metrics at level detailed.
       level: detailed
       readers:
         - periodic:
-            interval: 1000
+            interval: 10000
+            timeout: 5000
             exporter:
               otlp:
-                protocol: grpc
+                protocol: http/protobuf
                 temporality_preference: delta
-                endpoint: localhost:4317
+                endpoint: localhost:4318/v1/metrics
 

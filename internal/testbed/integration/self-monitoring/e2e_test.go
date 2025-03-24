@@ -5,7 +5,6 @@ import (
 	"path"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
@@ -83,10 +82,10 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	// 	otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	// }
 
-	wantEntries := 100 // Minimal number of metrics to wait for.
+	wantEntries := 5 // Minimal number of metrics to wait for.
 	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
 
-	time.Sleep(5 * time.Second)
+	//time.Sleep(5 * time.Minute)
 
 	// tcs := []struct {
 	// 	name    string

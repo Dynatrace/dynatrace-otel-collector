@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Name }}-config
-  namespace: e2eselfmonitoring
+  namespace: {{ .Namespace }}
 data:
   relay: |
 {{ .CollectorConfig }}

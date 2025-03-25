@@ -3,23 +3,21 @@
 package selfmonitoring
 
 import (
-	"go.opentelemetry.io/collector/pdata/pmetric"
-	"os"
-	"path"
-	"path/filepath"
-	"testing"
-
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pmetric"
+	"os"
+	"path"
+	"path/filepath"
+	"testing"
 )
 
-const testNs = "e2eselfmonitoring"
-
 func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
+	testNs := "e2eselfmonitoringk8senrich"
 	expectedk8sEnrichResourceAttributes := map[string]oteltest.ExpectedValue{
 		"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "otelcol-.*"),
 		"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
@@ -33,10 +31,11 @@ func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
 		"service.instance.id":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
 		"service.version":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
 	}
-	selfMonitoring_general(t, "self-monitoring-k8s-enrich.yaml", expectedk8sEnrichResourceAttributes)
+	selfMonitoring_general(t, "self-monitoring-k8s-enrich.yaml", expectedk8sEnrichResourceAttributes, testNs)
 }
 
-func Test_Selfmonitoring_withoutK8sEnrichment(t *testing.T) {
+func Test_Selfmonitoring(t *testing.T) {
+	testNs := "e2eselfmonitoring"
 	expectedResourceAttributes := map[string]oteltest.ExpectedValue{
 		"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "otelcol-.*"),
 		"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
@@ -45,10 +44,10 @@ func Test_Selfmonitoring_withoutK8sEnrichment(t *testing.T) {
 		"service.instance.id":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
 		"service.version":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
 	}
-	selfMonitoring_general(t, "self-monitoring.yaml", expectedResourceAttributes)
+	selfMonitoring_general(t, "self-monitoring.yaml", expectedResourceAttributes, testNs)
 }
 
-func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes map[string]oteltest.ExpectedValue) {
+func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes map[string]oteltest.ExpectedValue, testNs string) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
@@ -60,15 +59,25 @@ func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes 
 	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
 	require.NoError(t, err)
 
+	testID := uuid.NewString()[:8]
+	host := otelk8stest.HostEndpoint(t)
+
 	// Create the namespace specific for the test
-	nsFile := filepath.Join(testDir, "namespace.yaml")
-	buf, err := os.ReadFile(nsFile)
-	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
+	nsObjs := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID,
+		filepath.Join(testDir, "namespace"),
+		map[string]string{
+			"Namespace": testNs,
+		},
+		host,
+	)
 
 	defer func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
+		for _, obj := range nsObjs {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
 	}()
 
 	metricsConsumer := new(consumertest.MetricsSink)
@@ -79,9 +88,7 @@ func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes 
 	})
 	defer shutdownSinks()
 
-	testID := uuid.NewString()[:8]
 	collectorConfigPath := path.Join(configExamplesDir, configPath)
-	host := otelk8stest.HostEndpoint(t)
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
@@ -93,6 +100,7 @@ func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes 
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 			"CollectorConfig":   collectorConfig,
 			"K8sCluster":        "cluster-" + testNs,
+			"Namespace":         testNs,
 		},
 		host,
 	)

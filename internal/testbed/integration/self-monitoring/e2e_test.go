@@ -1,6 +1,7 @@
 package selfmonitoring
 
 import (
+	"go.opentelemetry.io/collector/pdata/pmetric"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,9 +15,38 @@ import (
 	"go.opentelemetry.io/collector/consumer/consumertest"
 )
 
-// TestE2E_ClusterRBAC tests the "Enrich from Kubernetes" use case
-// See: https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-k8s-enrich
-func TestE2E_ClusterRBAC(t *testing.T) {
+const testNs = "e2eselfmonitoring"
+
+func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
+	expectedk8sEnrichResourceAttributes := map[string]oteltest.ExpectedValue{
+		"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "otelcol-.*"),
+		"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+		"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+		"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+		"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+		"k8s.pod.ip":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
+		"k8s.workload.kind":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "deployment"),
+		"k8s.workload.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "otelcol-.*"),
+		oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "dynatrace-otel-collector"),
+		"service.instance.id":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+		"service.version":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+	}
+	selfMonitoring_general(t, "self-monitoring-k8s-enrich.yaml", expectedk8sEnrichResourceAttributes)
+}
+
+func Test_Selfmonitoring_withoutK8sEnrichment(t *testing.T) {
+	expectedResourceAttributes := map[string]oteltest.ExpectedValue{
+		"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "otelcol-.*"),
+		"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
+		"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+		oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "dynatrace-otel-collector"),
+		"service.instance.id":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+		"service.version":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+	}
+	selfMonitoring_general(t, "self-monitoring.yaml", expectedResourceAttributes)
+}
+
+func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes map[string]oteltest.ExpectedValue) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
@@ -35,7 +65,6 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
 	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
 
-	testNs := nsObj.GetName()
 	defer func() {
 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
@@ -49,7 +78,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	defer shutdownSinks()
 
 	testID := uuid.NewString()[:8]
-	collectorConfigPath := path.Join(configExamplesDir, "self-monitoring.yaml")
+	collectorConfigPath := path.Join(configExamplesDir, configPath)
 	host := otelk8stest.HostEndpoint(t)
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
@@ -65,96 +94,55 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 		},
 		host,
 	)
-	// createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
-	// 	ManifestsDir: filepath.Join(testDir, "telemetrygen"),
-	// 	TestID:       testID,
-	// 	OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
-	// 	DataTypes:    []string{"metrics"},
-	// }
-	//telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
+
 	defer func() {
-		for _, obj := range collectorObjs { //append(collectorObjs, telemetryGenObjs...) {
+		for _, obj := range collectorObjs {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
 
-	// for _, info := range telemetryGenObjInfos {
-	// 	otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
-	// }
-
-	wantEntries := 5 // Minimal number of metrics to wait for.
+	wantEntries := 1 // Minimal number of metrics to wait for.
 	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
 
-	//time.Sleep(5 * time.Minute)
+	metrics := pmetric.NewMetrics()
+	resource := metrics.ResourceMetrics().AppendEmpty()
 
-	// tcs := []struct {
-	// 	name    string
-	// 	service string
-	// 	attrs   map[string]oteltest.ExpectedValue
-	// }{
-	// 	{
-	// 		name:    "traces-job",
-	// 		service: "test-traces-job",
-	// 		attrs: map[string]oteltest.ExpectedValue{
-	// 			"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-job-[a-z0-9]*"),
-	// 			"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-	// 			"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-	// 			"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-	// 			"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-	// 			"k8s.pod.ip":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
-	// 			"k8s.workload.kind":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "job"),
-	// 			"k8s.workload.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-job"),
-	// 			oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-job"),
-	// 		},
-	// 	},
-	// 	{
-	// 		name:    "traces-statefulset",
-	// 		service: "test-traces-statefulset",
-	// 		attrs: map[string]oteltest.ExpectedValue{
-	// 			"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-	// 			"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-	// 			"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-	// 			"k8s.pod.ip":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
-	// 			"k8s.workload.kind":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "statefulset"),
-	// 			"k8s.workload.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset"),
-	// 			oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-statefulset"),
-	// 			"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset-0"),
-	// 			"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-	// 		},
-	// 	},
-	// 	{
-	// 		name:    "traces-deployment",
-	// 		service: "test-traces-deployment",
-	// 		attrs: map[string]oteltest.ExpectedValue{
-	// 			"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-	// 			"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-	// 			"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-	// 			"k8s.pod.ip":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
-	// 			"k8s.workload.kind":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "deployment"),
-	// 			"k8s.workload.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-deployment"),
-	// 			oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-deployment"),
-	// 			"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
-	// 			"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-	// 		},
-	// 	},
-	// 	{
-	// 		name:    "traces-daemonset",
-	// 		service: "test-traces-daemonset",
-	// 		attrs: map[string]oteltest.ExpectedValue{
-	// 			"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-daemonset-[a-z0-9]*"),
-	// 			"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-	// 			"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-	// 			"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-	// 			"k8s.pod.ip":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
-	// 			"k8s.workload.kind":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "daemonset"),
-	// 			"k8s.workload.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-daemonset"),
-	// 			oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-daemonset"),
-	// 			"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-	// 		},
-	// 	},
-	// }
+	scope1 := resource.ScopeMetrics().AppendEmpty()
+	scope1.Scope().SetName("go.opentelemetry.io/collector/exporter/exporterhelper")
+	scope1.Metrics().AppendEmpty().SetName("otelcol_exporter_queue_capacity")
+	scope1.Metrics().AppendEmpty().SetName("otelcol_exporter_queue_size")
 
-	// for _, tc := range tcs {
-	// 	oteltest.ScanForServiceMetrics(t, metricsConsumer, tc.service, tc.attrs)
-	// }
+	scope2 := resource.ScopeMetrics().AppendEmpty()
+	scope2.Scope().SetName("go.opentelemetry.io/collector/service")
+	scope2.Metrics().AppendEmpty().SetName("otelcol_process_cpu_seconds")
+	scope2.Metrics().AppendEmpty().SetName("otelcol_process_memory_rss")
+	scope2.Metrics().AppendEmpty().SetName("otelcol_process_runtime_heap_alloc_bytes")
+	scope2.Metrics().AppendEmpty().SetName("otelcol_process_runtime_total_alloc_bytes")
+	scope2.Metrics().AppendEmpty().SetName("otelcol_process_runtime_total_sys_memory_bytes")
+	scope2.Metrics().AppendEmpty().SetName("otelcol_process_uptime")
+
+	m := metricsConsumer.AllMetrics()[0]
+	require.NoError(t, oteltest.AssertExpectedAttributes(m.ResourceMetrics().At(0).Resource().Attributes(), expectedAttributes))
+
+	for i := 0; i < m.ResourceMetrics().At(0).ScopeMetrics().Len(); i++ {
+		s := m.ResourceMetrics().At(0).ScopeMetrics().At(0)
+		var expectedScope pmetric.ScopeMetrics
+		if s.Scope().Name() == scope1.Scope().Name() {
+			expectedScope = scope1
+		} else if s.Scope().Name() == scope2.Scope().Name() {
+			expectedScope = scope2
+		}
+		for j := 0; j < s.Metrics().Len(); j++ {
+			require.True(t, isMetricPresent(s.Metrics().At(j), expectedScope.Metrics()), "metric with name %s not found in expected output", s.Metrics().At(j).Name())
+		}
+	}
+}
+
+func isMetricPresent(m pmetric.Metric, expected pmetric.MetricSlice) bool {
+	for j := 0; j < expected.Len(); j++ {
+		if m.Name() == expected.At(j).Name() {
+			return true
+		}
+	}
+	return false
 }

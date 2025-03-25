@@ -1,5 +1,3 @@
-//go:build e2e
-
 package selfmonitoring
 
 import (
@@ -127,15 +125,15 @@ func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes 
 	require.NoError(t, oteltest.AssertExpectedAttributes(m.ResourceMetrics().At(0).Resource().Attributes(), expectedAttributes))
 
 	for i := 0; i < m.ResourceMetrics().At(0).ScopeMetrics().Len(); i++ {
-		s := m.ResourceMetrics().At(0).ScopeMetrics().At(0)
-		var expectedScope pmetric.ScopeMetrics
+		s := m.ResourceMetrics().At(0).ScopeMetrics().At(i)
 		if s.Scope().Name() == scope1.Scope().Name() {
-			expectedScope = scope1
+			for j := 0; j < s.Metrics().Len(); j++ {
+				require.True(t, isMetricPresent(s.Metrics().At(j), scope1.Metrics()), "metric with name %s not found in expected output", s.Metrics().At(j).Name())
+			}
 		} else if s.Scope().Name() == scope2.Scope().Name() {
-			expectedScope = scope2
-		}
-		for j := 0; j < s.Metrics().Len(); j++ {
-			require.True(t, isMetricPresent(s.Metrics().At(j), expectedScope.Metrics()), "metric with name %s not found in expected output", s.Metrics().At(j).Name())
+			for j := 0; j < s.Metrics().Len(); j++ {
+				require.True(t, isMetricPresent(s.Metrics().At(j), scope2.Metrics()), "metric with name %s not found in expected output", s.Metrics().At(j).Name())
+			}
 		}
 	}
 }

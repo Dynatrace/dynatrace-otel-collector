@@ -95,5 +95,5 @@ service:
               otlp:
                 protocol: http/protobuf
                 temporality_preference: delta
-                endpoint: ${env:MY_POD_IP}:4318/v1/metrics
+                endpoint: ${env:MY_POD_IP}:4318
 

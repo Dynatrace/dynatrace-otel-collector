@@ -1,3 +1,4 @@
+# follows https://docs.dynatrace.com/docs/shortlink/otel-collector-self-monitoring#read-attributes-from-the-container-environment
 extensions:
   health_check:
     endpoint: 0.0.0.0:13133

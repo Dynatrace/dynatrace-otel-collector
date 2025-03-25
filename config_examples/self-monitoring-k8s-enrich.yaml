@@ -1,3 +1,4 @@
+# follows https://docs.dynatrace.com/docs/shortlink/otel-collector-self-monitoring#enrich-data-using-the-k8sattributes-processor
 extensions:
   health_check:
     endpoint: 0.0.0.0:13133

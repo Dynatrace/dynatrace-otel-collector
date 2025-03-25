@@ -108,6 +108,8 @@ jobs:
           - statsd
           - redaction
           - resource-detection
+          - netflow
+          - self-monitoring
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

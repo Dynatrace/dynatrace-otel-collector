@@ -24,7 +24,7 @@ spec:
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
           ports:
             - name: otlp
-              containerPort: 4317
+              containerPort: 4318
               protocol: TCP
           env:
             - name: DT_ENTITY_KUBERNETES_CLUSTER

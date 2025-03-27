@@ -1,5 +1,5 @@
 {
-    "version": 15,
+    "version": 16,
     "variables": [
         {
             "key": "CollectorServiceNames",
@@ -13,25 +13,28 @@
                 "otelcontribcol",
                 "otelcol",
                 "otelcol-contrib"
-            ]
+            ],
+            "version": 1
         },
         {
             "key": "ServiceInstanceId",
-            "type": "query",
             "visible": true,
+            "type": "query",
+            "version": 1,
+            "editable": true,
             "input": "timeseries count(otelcol_process_uptime), by: {service.instance.id}\n| fieldsKeep service.instance.id",
             "multiple": false
         }
     ],
     "tiles": {
         "11": {
-            "type": "markdown",
             "title": "",
+            "type": "markdown",
             "content": "### Memory and CPU time"
         },
         "39": {
-            "type": "data",
             "title": "Request count",
+            "type": "data",
             "query": "timeseries { sum(http.server.duration, rollup:count) },\n  by: { http.status_code },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -104,23 +107,23 @@
                 },
                 "unitsOverrides": []
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "42": {
-            "type": "markdown",
             "title": "",
+            "type": "markdown",
             "content": "### Telemetry data passing through the collector"
         },
         "44": {
-            "type": "data",
             "title": "Span totals",
+            "type": "data",
             "query": "timeseries { accepted=sum(otelcol_receiver_accepted_spans) },\n  by: {receiver},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"accepted\", type=\"receiver\", component=receiver, value=arraySum(accepted)\n  | fieldsKeep name, type, component, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_spans) }, \n  by: {receiver},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"refused\", type=\"receiver\", component=receiver, value=arraySum(refused)\n  | fieldsKeep name, type, component, value\n] | append [\n  timeseries { filtered=sum(otelcol_processor_filter_spans.filtered) },\n  by: {filter},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }    \n  | fieldsAdd name=\"filtered\", type=\"processor\", component=filter, value=arraySum(filtered)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"sent\", type=\"exporter\", component=exporter, value=arraySum(sent)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans) }, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"failed\", type=\"exporter\", component=exporter, value=arraySum(failed)\n  | fieldsKeep name, type, component, value\n]\n| fields name, type, component, value=toLong(value)",
             "visualization": "table",
             "visualizationSettings": {
@@ -193,25 +196,19 @@
                     ]
                 }
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "75": {
-            "type": "data",
             "title": "Span totals",
+            "type": "data",
             "query": "timeseries {accepted=sum(otelcol_receiver_accepted_spans)}, \nfilter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\nby: {receiver}\n| fieldsAdd type=\"receiver\"\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_spans)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {receiver}\n  | fieldsAdd type=\"receiver\"\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_spans.filtered)},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {filter}\n  | fieldsAdd type=\"processor\"\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_spans)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {exporter}\n  | fieldsAdd type=\"exporter\"\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_spans)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: { exporter }\n  | fieldsAdd type=\"exporter\"\n]\n  // todo name for filter column\n| fields timeframe, interval, type, accepted, refused, sent, failed, filtered, receiver, exporter",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
             "visualization": "lineChart",
             "visualizationSettings": {
                 "thresholds": [],
@@ -292,18 +289,18 @@
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
             }
         },
         "76": {
-            "type": "data",
             "title": "Metric datapoint totals",
+            "type": "data",
             "query": "timeseries {accepted=sum(otelcol_receiver_accepted_metric_points)},\nfilter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\nby: {receiver}\n| fieldsAdd type=\"receiver\"\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_metric_points)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {receiver}\n| fieldsAdd type=\"receiver\"\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_datapoints.filtered)},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {filter}\n  | fieldsAdd type=\"processor\"\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {exporter}\n  | fieldsAdd type=\"exporter\"\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {exporter}\n  | fieldsAdd type=\"exporter\"\n] \n| fields timeframe, interval, type, accepted, refused, sent, failed, filtered, receiver, exporter",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
             "visualization": "lineChart",
             "visualizationSettings": {
                 "thresholds": [],
@@ -387,18 +384,18 @@
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
             }
         },
         "77": {
-            "type": "data",
             "title": "Log totals",
+            "type": "data",
             "query": "timeseries {accepted=sum(otelcol_receiver_accepted_log_records)}, \nfilter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\nby: {receiver}\n| fieldsAdd type=\"receiver\"\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_log_records)}, \nfilter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\nby: {receiver}\n| fieldsAdd type=\"receiver\"\n] | append [\n  timeseries {filtered=sum(otelcol_processor_filter_logs.filtered)},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {filter}\n  | fieldsAdd type=\"processor\"\n] | append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {exporter}\n  | fieldsAdd type=\"exporter\"\n] | append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records)}, \n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId },\n  by: {exporter}\n  | fieldsAdd type=\"exporter\"\n]\n| fields timeframe, interval, type, accepted, refused, sent, failed, filtered, receiver, exporter",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
             "visualization": "lineChart",
             "visualizationSettings": {
                 "thresholds": [],
@@ -482,11 +479,17 @@
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
             }
         },
         "79": {
-            "type": "data",
             "title": "Metric datapoint totals",
+            "type": "data",
             "query": "timeseries { accepted=sum(otelcol_receiver_accepted_metric_points) }, \n  by: { receiver },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"accepted\", type=\"receiver\", component=receiver, value=arraySum(accepted)\n  | fieldsKeep name, type, component, value\n| append [\n  timeseries { refused=sum(otelcol_receiver_refused_metric_points) }, \n  by: { receiver },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"refused\", type=\"receiver\", component=receiver, value=arraySum(refused)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries { filtered=sum(otelcol_processor_filter_datapoints.filtered) }, \n  by: {filter},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }    \n  | fieldsAdd name=\"filtered\", type=\"processor\", component=filter, value=arraySum(filtered)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_metric_points)}, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"sent\", type=\"exporter\", component=exporter, value=arraySum(sent)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_metric_points) }, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"failed\", type=\"exporter\", component=exporter, value=arraySum(failed)\n  | fieldsKeep name, type, component, value\n]\n| fields name, type, component, value=toLong(value)",
             "visualization": "table",
             "visualizationSettings": {
@@ -559,18 +562,18 @@
                     ]
                 }
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "80": {
-            "type": "data",
             "title": "Log record totals",
+            "type": "data",
             "query": "timeseries { accepted=sum(otelcol_receiver_accepted_log_records) }, \n  by: { receiver },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"accepted\", type=\"receiver\", component=receiver, value=arraySum(accepted)\n  | fieldsKeep name, type, component, value\n| append [\n  timeseries {refused=sum(otelcol_receiver_refused_log_records) },\n  by: { receiver },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n  | fieldsAdd name=\"refused\", type=\"receiver\", component=receiver, value=arraySum(refused)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {filtered=sum(otelcol_processor_filter_logs.filtered)},\n  by: {filter},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }    \n  | fieldsAdd name=\"filtered\", type=\"processor\", component=filter, value=arraySum(filtered)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {sent=sum(otelcol_exporter_sent_log_records)}, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"sent\", type=\"exporter\", component=exporter, value=arraySum(sent)\n  | fieldsKeep name, type, component, value\n]\n| append [\n  timeseries {failed=sum(otelcol_exporter_send_failed_log_records) }, \n  by: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }  \n  | fieldsAdd name=\"failed\", type=\"exporter\", component=exporter, value=arraySum(failed)\n  | fieldsKeep name, type, component, value\n]\n| fields name, type, component, value=toLong(value)",
             "visualization": "table",
             "visualizationSettings": {
@@ -643,18 +646,18 @@
                     ]
                 }
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "88": {
-            "type": "data",
             "title": "Request size",
+            "type": "data",
             "query": "timeseries {avg=avg(http.server.request.size), max=max(http.server.request.size)},\n  by: {http.status_code},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -754,18 +757,18 @@
                     }
                 ]
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "89": {
-            "type": "data",
             "title": "Request duration",
+            "type": "data",
             "query": "timeseries {avg=avg(http.server.duration), max=max(http.server.duration)},\n  by: {http.status_code},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -855,106 +858,23 @@
                     }
                 ]
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "90": {
+            "title": "",
             "type": "markdown",
-            "title": "",
-            "content": "#### HTTP incoming"
-        },
-        "98": {
-            "type": "data",
-            "title": "",
-            "query": "timeseries { count=count(otelcol_process_uptime) }, \n  by: { service.name, service.instance.id } \n| summarize count=count(), by:{ is_null=isNull(service.instance.id) }\n| append [\n  data record(is_null=false, count=1)\n]\n| sort is_null desc\n| limit 1\n| fieldsAdd message=if(is_null, \"❌ service.instance.id is missing\", else: \"✅ service.instance.id is available\")",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
-            "visualization": "singleValue",
-            "visualizationSettings": {
-                "thresholds": [],
-                "chartSettings": {
-                    "gapPolicy": "connect",
-                    "circleChartSettings": {
-                        "groupingThresholdType": "relative",
-                        "groupingThresholdValue": 0,
-                        "valueType": "relative"
-                    },
-                    "categoryOverrides": {},
-                    "categoricalBarChartSettings": {
-                        "categoryAxis": "message",
-                        "valueAxis": "count",
-                        "categoryAxisLabel": "message",
-                        "valueAxisLabel": "count",
-                        "tooltipVariant": "single"
-                    },
-                    "truncationMode": "middle"
-                },
-                "singleValue": {
-                    "showLabel": false,
-                    "label": "",
-                    "prefixIcon": "",
-                    "recordField": "message",
-                    "autoscale": true,
-                    "alignment": "center",
-                    "colorThresholdTarget": "value"
-                },
-                "table": {
-                    "rowDensity": "condensed",
-                    "enableSparklines": false,
-                    "hiddenColumns": [],
-                    "lineWrapIds": [],
-                    "columnWidths": {}
-                },
-                "honeycomb": {
-                    "shape": "hexagon",
-                    "legend": {
-                        "hidden": false,
-                        "position": "auto"
-                    },
-                    "colorMode": "color-palette",
-                    "colorPalette": "blue",
-                    "dataMappings": {
-                        "value": "count"
-                    },
-                    "displayedFields": [
-                        "message"
-                    ]
-                },
-                "histogram": {
-                    "dataMappings": [
-                        {
-                            "valueAxis": "count",
-                            "rangeAxis": ""
-                        }
-                    ]
-                }
-            },
-            "querySettings": {
-                "maxResultRecords": 1000,
-                "defaultScanLimitGbytes": 500,
-                "maxResultMegaBytes": 1,
-                "defaultSamplingRatio": 10,
-                "enableSampling": false
-            }
-        },
-        "99": {
-            "type": "markdown",
-            "title": "",
-            "content": "[Find out how to set up this dashboard](https://github.com/Dynatrace/dynatrace-otel-collector/tree/main/docs/dashboards/README.md#adding-serviceinstanceid-to-the-allow-list)."
+            "content": "##### HTTP incoming"
         },
         "101": {
-            "type": "data",
             "title": "Total physical memory (resident set size)",
+            "type": "data",
             "query": "timeseries { avg(otelcol_process_memory_rss)},\n  by: { service.instance.id },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -1045,18 +965,18 @@
                     }
                 ]
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "102": {
-            "type": "data",
             "title": "Total CPU user and system time",
+            "type": "data",
             "query": "timeseries average=avg(otelcol_process_cpu_seconds),\n  by: { service.instance.id },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -1144,23 +1064,23 @@
                     }
                 ]
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "105": {
-            "type": "markdown",
             "title": "",
-            "content": "### Queue size metrics"
+            "type": "markdown",
+            "content": "##### Queue size metrics"
         },
         "106": {
+            "title": "Exporter current queue size",
             "type": "data",
-            "title": "exporter current queue size",
             "query": "timeseries {max(otelcol_exporter_queue_size)}, \nby: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -1196,7 +1116,10 @@
                         ],
                         "tooltipVariant": "single"
                     },
-                    "truncationMode": "middle"
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -1212,7 +1135,16 @@
                     "enableSparklines": false,
                     "hiddenColumns": [],
                     "lineWrapIds": [],
-                    "columnWidths": {}
+                    "columnWidths": {},
+                    "columnTypeOverrides": [
+                        {
+                            "fields": [
+                                "max(otelcol_exporter_queue_size)"
+                            ],
+                            "value": "sparkline",
+                            "id": 1742547291526
+                        }
+                    ]
                 },
                 "honeycomb": {
                     "shape": "hexagon",
@@ -1233,20 +1165,24 @@
                             "rangeAxis": ""
                         }
                     ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
                 }
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "107": {
+            "title": "Exporter queue capacity",
             "type": "data",
-            "title": "exporter queue capacity",
             "query": "timeseries {max(otelcol_exporter_queue_capacity)}, \nby: { exporter },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -1282,7 +1218,10 @@
                         ],
                         "tooltipVariant": "single"
                     },
-                    "truncationMode": "middle"
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
                 },
                 "singleValue": {
                     "showLabel": true,
@@ -1298,7 +1237,16 @@
                     "enableSparklines": false,
                     "hiddenColumns": [],
                     "lineWrapIds": [],
-                    "columnWidths": {}
+                    "columnWidths": {},
+                    "columnTypeOverrides": [
+                        {
+                            "fields": [
+                                "max(otelcol_exporter_queue_capacity)"
+                            ],
+                            "value": "sparkline",
+                            "id": 1742547291489
+                        }
+                    ]
                 },
                 "honeycomb": {
                     "shape": "hexagon",
@@ -1319,32 +1267,31 @@
                             "rangeAxis": ""
                         }
                     ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
                 }
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "108": {
-            "type": "markdown",
             "title": "",
+            "type": "markdown",
             "content": "### Batch metrics\nThese are metrics reported by the [batchprocessor](https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/batchprocessor/README.md), if used. They can be used to understand batching behavior."
         },
         "109": {
+            "title": "Batch size (items)",
             "type": "data",
-            "title": "batch size (items)",
             "query": "timeseries {max=max(otelcol_processor_batch_batch_send_size), avg=avg(otelcol_processor_batch_batch_send_size)}, \n  by: {processor},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
+            "visualization": "lineChart",
             "visualizationSettings": {
                 "thresholds": [],
                 "chartSettings": {
@@ -1379,8 +1326,14 @@
                     "truncationMode": "middle",
                     "bandChartSettings": {
                         "lower": "avg",
-                        "upper": "max",
-                        "time": "timeframe"
+                        "upper": "max"
+                    },
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute",
+                    "leftYAxisSettings": {
+                        "isLabelVisible": true,
+                        "label": "otelcol_processor_batch_batch_send_size"
                     }
                 },
                 "singleValue": {
@@ -1397,7 +1350,17 @@
                     "enableSparklines": false,
                     "hiddenColumns": [],
                     "lineWrapIds": [],
-                    "columnWidths": {}
+                    "columnWidths": {},
+                    "columnTypeOverrides": [
+                        {
+                            "fields": [
+                                "max",
+                                "avg"
+                            ],
+                            "value": "sparkline",
+                            "id": 1742547291320
+                        }
+                    ]
                 },
                 "honeycomb": {
                     "shape": "hexagon",
@@ -1418,6 +1381,10 @@
                             "rangeAxis": ""
                         }
                     ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
                 }
             },
             "querySettings": {
@@ -1427,16 +1394,21 @@
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
             },
-            "visualization": "lineChart"
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
         },
         "117": {
-            "type": "markdown",
             "title": "",
-            "content": "#### HTTP outgoing"
+            "type": "markdown",
+            "content": "##### HTTP outgoing"
         },
         "118": {
-            "type": "data",
             "title": "Request count",
+            "type": "data",
             "query": "timeseries { sum(http.client.duration, rollup:count) },\n  by: { http.status_code },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -1509,18 +1481,18 @@
                 },
                 "unitsOverrides": []
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "119": {
-            "type": "data",
             "title": "Request size",
+            "type": "data",
             "query": "timeseries {avg=avg(http.client.request.size), max=max(http.client.request.size)},\n  by: {http.status_code},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -1599,18 +1571,18 @@
                 },
                 "unitsOverrides": []
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "120": {
-            "type": "data",
             "title": "Request duration",
+            "type": "data",
             "query": "timeseries {avg=avg(http.client.duration), max=max(http.client.duration)},\n  by: {http.status_code},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -1700,23 +1672,23 @@
                     }
                 ]
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "121": {
-            "type": "markdown",
             "title": "",
-            "content": "#### RPC incoming"
+            "type": "markdown",
+            "content": "##### RPC incoming"
         },
         "122": {
-            "type": "data",
             "title": "Request count",
+            "type": "data",
             "query": "timeseries { sum(rpc.server.duration, rollup:count) },\n  by: { rpc.grpc.status_code },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -1789,18 +1761,18 @@
                 },
                 "unitsOverrides": []
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "123": {
-            "type": "data",
             "title": "Request size",
+            "type": "data",
             "query": "timeseries {avg=avg(rpc.server.request.size), max=max(rpc.server.request.size)},\n  // by: { rpc.grpc.status_code },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -1894,7 +1866,6 @@
                     }
                 ]
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
@@ -1902,17 +1873,18 @@
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
             },
+            "davis": {},
             "timeframe": {
-                "tileTimeframeEnabled": false,
                 "tileTimeframe": {
                     "from": "now()-2h",
                     "to": "now()"
-                }
+                },
+                "tileTimeframeEnabled": false
             }
         },
         "124": {
-            "type": "data",
             "title": "Request duration",
+            "type": "data",
             "query": "timeseries {avg=avg(rpc.server.duration), max=max(rpc.server.duration)},\n  by: { rpc.grpc.status_code },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -2002,23 +1974,23 @@
                     }
                 ]
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "125": {
-            "type": "markdown",
             "title": "",
-            "content": "#### RPC outgoing"
+            "type": "markdown",
+            "content": "##### RPC outgoing"
         },
         "126": {
-            "type": "data",
             "title": "Request count",
+            "type": "data",
             "query": "timeseries { sum(rpc.client.duration, rollup:count) },\n  by: { rpc.grpc.status_code },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -2091,18 +2063,18 @@
                 },
                 "unitsOverrides": []
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "127": {
-            "type": "data",
             "title": "Request duration",
+            "type": "data",
             "query": "timeseries {avg=avg(rpc.client.duration), max=max(rpc.client.duration)},\n  by: { rpc.grpc.status_code },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -2192,18 +2164,18 @@
                     }
                 ]
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "128": {
-            "type": "data",
             "title": "Request size",
+            "type": "data",
             "query": "timeseries {avg=avg(rpc.client.request.size), max=max(rpc.client.request.size)},\n  // by: { rpc.grpc.status_code },\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
             "visualization": "lineChart",
             "visualizationSettings": {
@@ -2287,25 +2259,20 @@
                     }
                 ]
             },
-            "davis": {},
             "querySettings": {
                 "maxResultRecords": 1000,
                 "defaultScanLimitGbytes": 500,
                 "maxResultMegaBytes": 1,
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
-            }
+            },
+            "davis": {}
         },
         "129": {
-            "type": "data",
             "title": "Batch size (bytes)",
+            "type": "data",
             "query": "timeseries {max=max(otelcol_processor_batch_batch_send_size_bytes), avg=avg(otelcol_processor_batch_batch_send_size_bytes)}, \n  by: {processor},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }",
-            "davis": {
-                "enabled": false,
-                "davisVisualization": {
-                    "isAvailable": true
-                }
-            },
+            "visualization": "lineChart",
             "visualizationSettings": {
                 "thresholds": [],
                 "chartSettings": {
@@ -2388,18 +2355,18 @@
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
             },
-            "visualization": "lineChart"
-        },
-        "130": {
-            "type": "data",
-            "title": "Batch processor send trigger",
-            "query": "timeseries {`Batch size`=sum(otelcol_processor_batch_batch_size_trigger_send, rollup:count)}, \n  by: {processor},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n| append [\n  timeseries {`Timeout`=sum(otelcol_processor_batch_timeout_trigger_send, rollup:count)}, \n  by: {processor},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n]",
             "davis": {
                 "enabled": false,
                 "davisVisualization": {
                     "isAvailable": true
                 }
-            },
+            }
+        },
+        "130": {
+            "title": "Batch processor send trigger",
+            "type": "data",
+            "query": "timeseries {`Batch size`=sum(otelcol_processor_batch_batch_size_trigger_send, rollup:count)}, \n  by: {processor},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n| append [\n  timeseries {`Timeout`=sum(otelcol_processor_batch_timeout_trigger_send, rollup:count)}, \n  by: {processor},\n  filter: { in(service.name, $CollectorServiceNames) and service.instance.id==$ServiceInstanceId }\n]",
+            "visualization": "lineChart",
             "visualizationSettings": {
                 "thresholds": [],
                 "chartSettings": {
@@ -2477,231 +2444,236 @@
                 "defaultSamplingRatio": 10,
                 "enableSampling": false
             },
-            "visualization": "lineChart"
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
         },
         "131": {
-            "type": "markdown",
             "title": "",
+            "type": "markdown",
             "content": "### Network traffic"
+        },
+        "132": {
+            "title": "",
+            "type": "markdown",
+            "content": "### OpenTelemetry Collector overview\nThis dashboard is designed to monitor the health and performance of a single OpenTelemetry Collector instance. [Find out how to set up this dashboard](https://docs.dynatrace.com/docs/shortlink/otel-collector-self-monitoring)."
         }
     },
     "layouts": {
         "11": {
             "x": 0,
-            "y": 28,
+            "y": 30,
             "w": 24,
             "h": 1
         },
         "39": {
             "x": 0,
-            "y": 13,
+            "y": 15,
             "w": 8,
             "h": 3
         },
         "42": {
             "x": 0,
-            "y": 0,
-            "w": 16,
+            "y": 2,
+            "w": 24,
             "h": 1
         },
         "44": {
             "x": 0,
-            "y": 7,
+            "y": 9,
             "w": 8,
             "h": 4
         },
         "75": {
             "x": 0,
-            "y": 1,
+            "y": 3,
             "w": 8,
             "h": 6
         },
         "76": {
             "x": 8,
-            "y": 1,
+            "y": 3,
             "w": 8,
             "h": 6
         },
         "77": {
             "x": 16,
-            "y": 1,
+            "y": 3,
             "w": 8,
             "h": 6
         },
         "79": {
             "x": 8,
-            "y": 7,
+            "y": 9,
             "w": 8,
             "h": 4
         },
         "80": {
             "x": 16,
-            "y": 7,
+            "y": 9,
             "w": 8,
             "h": 4
         },
         "88": {
             "x": 8,
-            "y": 13,
+            "y": 15,
             "w": 8,
             "h": 3
         },
         "89": {
             "x": 16,
-            "y": 13,
+            "y": 15,
             "w": 8,
             "h": 3
         },
         "90": {
             "x": 0,
-            "y": 12,
+            "y": 14,
             "w": 24,
-            "h": 1
-        },
-        "98": {
-            "x": 16,
-            "y": 0,
-            "w": 4,
-            "h": 1
-        },
-        "99": {
-            "x": 20,
-            "y": 0,
-            "w": 4,
             "h": 1
         },
         "101": {
             "x": 0,
-            "y": 29,
+            "y": 31,
             "w": 12,
             "h": 6
         },
         "102": {
             "x": 12,
-            "y": 29,
+            "y": 31,
             "w": 12,
             "h": 6
         },
         "105": {
             "x": 0,
-            "y": 43,
+            "y": 45,
             "w": 24,
             "h": 1
         },
         "106": {
             "x": 0,
-            "y": 44,
+            "y": 46,
             "w": 12,
             "h": 6
         },
         "107": {
             "x": 12,
-            "y": 44,
+            "y": 46,
             "w": 12,
             "h": 6
         },
         "108": {
             "x": 0,
-            "y": 35,
+            "y": 37,
             "w": 24,
             "h": 2
         },
         "109": {
             "x": 0,
-            "y": 37,
+            "y": 39,
             "w": 8,
             "h": 6
         },
         "117": {
             "x": 0,
-            "y": 16,
+            "y": 18,
             "w": 24,
             "h": 1
         },
         "118": {
             "x": 0,
-            "y": 17,
+            "y": 19,
             "w": 8,
             "h": 3
         },
         "119": {
             "x": 8,
-            "y": 17,
+            "y": 19,
             "w": 8,
             "h": 3
         },
         "120": {
             "x": 16,
-            "y": 17,
+            "y": 19,
             "w": 8,
             "h": 3
         },
         "121": {
             "x": 0,
-            "y": 20,
+            "y": 22,
             "w": 24,
             "h": 1
         },
         "122": {
             "x": 0,
-            "y": 21,
+            "y": 23,
             "w": 8,
             "h": 3
         },
         "123": {
             "x": 8,
-            "y": 21,
+            "y": 23,
             "w": 8,
             "h": 3
         },
         "124": {
             "x": 16,
-            "y": 21,
+            "y": 23,
             "w": 8,
             "h": 3
         },
         "125": {
             "x": 0,
-            "y": 24,
+            "y": 26,
             "w": 24,
             "h": 1
         },
         "126": {
             "x": 0,
-            "y": 25,
+            "y": 27,
             "w": 8,
             "h": 3
         },
         "127": {
             "x": 16,
-            "y": 25,
+            "y": 27,
             "w": 8,
             "h": 3
         },
         "128": {
             "x": 8,
-            "y": 25,
+            "y": 27,
             "w": 8,
             "h": 3
         },
         "129": {
             "x": 8,
-            "y": 37,
+            "y": 39,
             "w": 8,
             "h": 6
         },
         "130": {
             "x": 16,
-            "y": 37,
+            "y": 39,
             "w": 8,
             "h": 6
         },
         "131": {
             "x": 0,
-            "y": 11,
+            "y": 13,
             "w": 24,
             "h": 1
+        },
+        "132": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 2
         }
     },
-    "importedWithCode": false
+    "importedWithCode": false,
+    "settings": {}
 }

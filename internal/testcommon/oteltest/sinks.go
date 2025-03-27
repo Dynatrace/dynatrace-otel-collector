@@ -163,7 +163,7 @@ func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 			if service.AsString() != expectedService {
 				continue
 			}
-			assert.NoError(t, assertExpectedAttributes(resource.Attributes(), kvs))
+			assert.NoError(t, AssertExpectedAttributes(resource.Attributes(), kvs))
 
 			if len(scopeSpanAttrs) == 0 {
 				return
@@ -178,7 +178,7 @@ func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 			for _, spanAttrs := range scopeSpanAttrs {
 				var err error
 				for j := 0; j < scopeSpan.Spans().Len(); j++ {
-					err = assertExpectedAttributes(scopeSpan.Spans().At(j).Attributes(), spanAttrs)
+					err = AssertExpectedAttributes(scopeSpan.Spans().At(j).Attributes(), spanAttrs)
 					if err == nil {
 						break
 					}
@@ -192,7 +192,7 @@ func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 	t.Fatalf("no spans found for service %s", expectedService)
 }
 
-func assertExpectedAttributes(attrs pcommon.Map, kvs map[string]ExpectedValue) error {
+func AssertExpectedAttributes(attrs pcommon.Map, kvs map[string]ExpectedValue) error {
 	foundAttrs := make(map[string]bool)
 	for k := range kvs {
 		foundAttrs[k] = false

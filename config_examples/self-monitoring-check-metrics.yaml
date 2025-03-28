@@ -1,0 +1,78 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: ${env:MY_POD_IP}:4317
+exporters:
+  debug:
+    verbosity: detailed
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+processors:
+  batch:
+    send_batch_size: 5
+    timeout: 5s
+  filter:
+    error_mode: ignore
+    traces:
+      span:
+        - 'name == "app_3"'
+    metrics:
+      metric:
+          - 'name == "my.metric" and resource.attributes["my_label"] == "abc123"'
+    logs:
+      log_record:
+        - 'IsMatch(body, ".*password.*")'
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - otlp
+      processors:
+        - filter
+        - batch
+      exporters:
+        - debug
+    logs:
+      receivers:
+        - otlp
+      processors:
+        - filter
+        - batch
+      exporters:
+        - debug
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - filter
+        - batch
+      exporters:
+        - debug
+        - otlphttp
+  # turn on self-monitoring
+  telemetry:
+    resource:
+      # This section reads the previously injected environment variables
+      # and attaches them to the telemetry the Collector generates about itself.
+       k8s.namespace.name: "${env:MY_POD_NAMESPACE}"
+       k8s.pod.name: "${env:MY_POD_NAME}"
+       k8s.node.name: "${env:MY_NODE_NAME}"
+    metrics:
+      level: detailed
+      readers:
+        - periodic:
+            interval: 10000
+            timeout: 5000
+            exporter:
+              otlp:
+                protocol: http/protobuf
+                temporality_preference: delta
+                endpoint: ${env:DT_ENDPOINT}

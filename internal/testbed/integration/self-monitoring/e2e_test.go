@@ -1,11 +1,11 @@
-//go:build e2e
-
 package selfmonitoring
 
 import (
+	"fmt"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
@@ -155,4 +155,88 @@ func isMetricPresent(m pmetric.Metric, expected pmetric.MetricSlice) bool {
 		}
 	}
 	return false
+}
+
+func Test_Selfmonitoring_checkMetrics(t *testing.T) {
+	testNs := "e2eselfmonitoringcheckmetrics"
+	testDir := filepath.Join("testdata")
+	configExamplesDir := "../../../../config_examples"
+
+	kubeconfigPath := k8stest.TestKubeConfig
+	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
+		kubeconfigPath = kubeConfigFromEnv
+	}
+
+	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
+	require.NoError(t, err)
+
+	testID := uuid.NewString()[:8]
+	host := otelk8stest.HostEndpoint(t)
+
+	// Create the namespace specific for the test
+	nsObjs := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID,
+		filepath.Join(testDir, "namespace"),
+		map[string]string{
+			"Namespace": testNs,
+		},
+		host,
+	)
+
+	defer func() {
+		for _, obj := range nsObjs {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
+	metricsConsumer := new(consumertest.MetricsSink)
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Metrics: &oteltest.MetricSinkConfig{
+			Consumer: metricsConsumer,
+		},
+	})
+	defer shutdownSinks()
+
+	collectorConfigPath := path.Join(configExamplesDir, "self-monitoring-check-metrics.yaml")
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+	collectorObjs := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID,
+		filepath.Join(testDir, "collector"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfig,
+			"K8sCluster":        "cluster-" + testNs,
+			"Namespace":         testNs,
+		},
+		host,
+	)
+
+	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
+		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
+		TestID:       testID,
+		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
+		DataTypes:    []string{"traces", "metrics", "logs"},
+	}
+	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
+
+	defer func() {
+		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
+	for _, info := range telemetryGenObjInfos {
+		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
+	}
+
+	wantEntries := 5 // Minimal number of metrics to wait for.
+	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	require.Nil(t, golden.WriteMetrics(t, "./testdata/e2e/expected-check.yaml", metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 }

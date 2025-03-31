@@ -7,3 +7,4 @@ lib/
 cmd/oteltestbedcol/*
 !cmd/oteltestbedcol/.gitkeep
 release-notes.md
+.DS_Store

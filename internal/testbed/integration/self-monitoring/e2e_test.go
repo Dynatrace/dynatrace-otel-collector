@@ -6,7 +6,9 @@ import (
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -14,6 +16,7 @@ import (
 	"path"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
@@ -159,6 +162,7 @@ func isMetricPresent(m pmetric.Metric, expected pmetric.MetricSlice) bool {
 
 func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	testNs := "e2eselfmonitoringcheckmetrics"
+	expectedFile := "./testdata/e2e/expected-check.yaml"
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
@@ -238,5 +242,65 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	require.Nil(t, golden.WriteMetrics(t, "./testdata/e2e/expected-check.yaml", metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+
+	var expected pmetric.Metrics
+	expected, err = golden.ReadMetrics(expectedFile)
+	require.NoError(t, err)
+
+	defaultOptions := []pmetrictest.CompareMetricsOption{
+		pmetrictest.IgnoreTimestamp(),
+		pmetrictest.IgnoreStartTimestamp(),
+		pmetrictest.IgnoreMetricValues(
+			"otelcol_processor_filter_datapoints.filtered",
+			"otelcol_processor_filter_logs.filtered",
+			"otelcol_processor_filter_spans.filtered",
+			"otelcol_receiver_accepted_log_records",
+			"otelcol_receiver_accepted_metric_points",
+			"otelcol_receiver_accepted_spans",
+			"otelcol_receiver_refused_log_records",
+			"otelcol_receiver_refused_metric_points",
+			"otelcol_receiver_refused_spans",
+			"otelcol_process_cpu_seconds",
+			"otelcol_process_memory_rss",
+			"otelcol_process_runtime_heap_alloc_bytes",
+			"otelcol_process_runtime_total_alloc_bytes",
+			"otelcol_process_runtime_total_sys_memory_bytes",
+			"otelcol_process_uptime",
+			"http.client.request.size",
+			"http.client.response.size",
+			"http.client.duration",
+			"otelcol_processor_batch_batch_send_size",
+			"otelcol_processor_batch_batch_send_size_bytes",
+			"otelcol_processor_batch_batch_size_trigger_send",
+			"otelcol_processor_batch_metadata_cardinality",
+			"otelcol_processor_batch_timeout_trigger_send",
+			"otelcol_processor_incoming_items",
+			"otelcol_processor_outgoing_items",
+			"rpc.server.duration",
+			"rpc.server.request.size",
+			"rpc.server.response.size",
+			"rpc.server.requests_per_rpc",
+			"rpc.server.responses_per_rpc",
+			"otelcol_exporter_queue_capacity",
+			"otelcol_exporter_queue_size",
+			"otelcol_exporter_send_failed_log_records",
+			"otelcol_exporter_send_failed_metric_points",
+			"otelcol_exporter_send_failed_spans",
+			"otelcol_exporter_sent_log_records",
+			"otelcol_exporter_sent_metric_points",
+			"otelcol_exporter_sent_spans"),
+		pmetrictest.IgnoreScopeVersion(),
+		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreMetricsOrder(),
+		pmetrictest.IgnoreScopeMetricsOrder(),
+		pmetrictest.IgnoreMetricDataPointsOrder(),
+	}
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1],
+			defaultOptions...,
+		),
+		)
+	}, 3*time.Minute, 1*time.Second)
 }

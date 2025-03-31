@@ -17,7 +17,9 @@ Earlier versions ignore the `temporality_preference` flag and would, therefore, 
 It is possible to do this conversion in a collector, but it would make the setup more complicated, so it is initially omitted in this document.
 
 
-### Collector Configuration
+## Collector Configuration
+
+Add the following receiver and processor configuration to your OpenTelemetry collector configuration file to enable the collection of host metrics with the required attributes, resource detection, and cumulative to delta conversion. Make sure to also add the receivers and processors to your collector pipeline.
 
 ```
 receivers:
@@ -66,16 +68,22 @@ processors:
           enabled: true
         host.ip:
           enabled: true
+
+service:
+  pipelines:
+    metrics:
+      receivers: [hostmetrics]
+      processors: [resourcedetection, cumulativetodelta]
 ```
 
 ### Adding additional attributes to the allow list
 
-The following attributes are not included in the default allow list of resource attributes in Dynatrace:
+The following attributes are not included in the default allow list of resource attributes in Dynatrace:s
 - `host.arch`
 - `host.ip`
 - `host.mac`
 - `host.name`
-- `os.description``
+- `os.description`
 - `os.type`
 - `process.command_line`
 - `process.executable.name`
@@ -84,5 +92,5 @@ The following attributes are not included in the default allow list of resource 
 - `device`
 - `state`
 
-To add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add `service.instance.id` (case-sensitive) to the list.
+To add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add the obove listed attributes (case-sensitive) to the list.
 This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace.

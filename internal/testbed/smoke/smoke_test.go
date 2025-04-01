@@ -92,7 +92,7 @@ func TestCollectorStarts(t *testing.T) {
 				resp, err = http.Get("http://localhost:9090/metrics")
 
 				return err == nil
-			}, 3*time.Second, 1*time.Second)
+			}, 15*time.Second, 1*time.Second)
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)

@@ -78,7 +78,7 @@ service:
 
 ### Adding additional attributes to the allow list
 
-The following attributes are not included in the default allow list of resource attributes in Dynatrace:s
+The following attributes are not included in the default allow list of resource attributes in Dynatrace:
 - `host.arch`
 - `host.ip`
 - `host.name`

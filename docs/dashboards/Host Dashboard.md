@@ -5,9 +5,9 @@
 > They are provided as-is, with no support guarantees. 
 > Newer versions of these dashboards could look significantly different from earlier versions and add or remove certain metrics.
 
-This folder contains dashboards that can be used to monitor the health of deployed OpenTelemetry collectors. The dashboards are in JSON format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/shortlink/dashboards-use#dashboards-upload).
+This folder contains a dashboards that can be used to monitor visualize Hosts based of metrics ingested via the OpenTelemetry collectors using the `hostmetrics` recevier and `resourcedetection` processor. The dashboard is in JSON format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/shortlink/dashboards-use#dashboards-upload).
 
-![A screenshot of the host dashboard providing an overview of the system resources](img/host-dashboard_1.png)
+![A screenshot of the host dashboard providing an overview of used system resources](img/host-dashboard_1.png)
 
 ## Prerequisites
 
@@ -81,16 +81,13 @@ service:
 The following attributes are not included in the default allow list of resource attributes in Dynatrace:s
 - `host.arch`
 - `host.ip`
-- `host.mac`
 - `host.name`
-- `os.description`
 - `os.type`
 - `process.command_line`
-- `process.executable.name`
 - `process.name`
 - `mountpoint`
 - `device`
 - `state`
 
-To add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add the obove listed attributes (case-sensitive) to the list.
+Follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add the obove listed attributes (case-sensitive) to the allow list.
 This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace.

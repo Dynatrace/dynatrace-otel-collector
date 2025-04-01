@@ -21,7 +21,7 @@ It is possible to do this conversion in a collector, but it would make the setup
 
 Add the following receiver and processor configuration to your OpenTelemetry collector configuration file to enable the collection of host metrics with the required attributes, resource detection, and cumulative to delta conversion. Make sure to also add the receivers and processors to your collector pipeline.
 
-```
+```yaml
 receivers:
   hostmetrics:
     collection_interval: 10s 

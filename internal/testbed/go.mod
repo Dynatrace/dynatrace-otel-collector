@@ -267,4 +267,4 @@ replace cloud.google.com/go => cloud.google.com/go v0.120.0
 
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon
 
-replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest => github.com/odubajdt/opentelemetry-collector-contrib/pkg/pdatatest v0.0.0-20250331072527-4e4b5aeebbe3
+replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest => github.com/odubajdt/opentelemetry-collector-contrib/pkg/pdatatest v0.0.0-20250401060347-491fc8b61128

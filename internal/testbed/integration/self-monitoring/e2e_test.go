@@ -297,7 +297,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreExemplars(),
+		pmetrictest.IgnoreExemplarSlice(),
 		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("service.instance.id", substituteWithStar),

@@ -6,6 +6,7 @@ require (
 	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0
 	github.com/google/uuid v1.6.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.122.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.122.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.122.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.122.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.122.0
@@ -13,7 +14,7 @@ require (
 	go.opentelemetry.io/collector/component v1.28.1
 	go.opentelemetry.io/collector/consumer v1.28.1
 	go.opentelemetry.io/collector/consumer/consumertest v0.122.1
-	go.opentelemetry.io/collector/pdata v1.28.1
+	go.opentelemetry.io/collector/pdata v1.28.2-0.20250319144947-41a9ea7f7402
 	go.opentelemetry.io/collector/semconv v0.122.1
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -107,7 +108,6 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/splunk v0.122.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/batchperresourceattr v0.122.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata v0.122.0 // indirect
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.122.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.122.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.122.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry v0.122.0 // indirect
@@ -192,7 +192,7 @@ require (
 	go.opentelemetry.io/collector/internal/sharedcomponent v0.122.1 // indirect
 	go.opentelemetry.io/collector/internal/telemetry v0.122.1 // indirect
 	go.opentelemetry.io/collector/otelcol v0.122.0 // indirect
-	go.opentelemetry.io/collector/pdata/pprofile v0.122.1 // indirect
+	go.opentelemetry.io/collector/pdata/pprofile v0.122.2-0.20250319144947-41a9ea7f7402 // indirect
 	go.opentelemetry.io/collector/pdata/testdata v0.122.1 // indirect
 	go.opentelemetry.io/collector/pipeline v0.122.1 // indirect
 	go.opentelemetry.io/collector/pipeline/xpipeline v0.122.0 // indirect
@@ -266,3 +266,5 @@ require (
 replace cloud.google.com/go => cloud.google.com/go v0.120.0
 
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon
+
+replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest => github.com/odubajdt/opentelemetry-collector-contrib/pkg/pdatatest v0.0.0-20250331072527-4e4b5aeebbe3

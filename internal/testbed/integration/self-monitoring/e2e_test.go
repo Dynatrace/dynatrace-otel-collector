@@ -295,6 +295,11 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
+		pmetrictest.IgnoreExemplars(),
+		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("service.instance.id", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("service.version", substituteWithStar),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
@@ -304,3 +309,5 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		)
 	}, 3*time.Minute, 1*time.Second)
 }
+
+func substituteWithStar(_ string) string { return "*" }

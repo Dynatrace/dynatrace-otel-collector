@@ -3117,6 +3117,8 @@ github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f h1:KUppIJq7/+SVif2QVs3tOP0zanoHgBEVAwHxUSIzRqU=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
+github.com/odubajdt/opentelemetry-collector-contrib/pkg/pdatatest v0.0.0-20250331072527-4e4b5aeebbe3 h1:STNi5frGsSI43p3hF6z4/aiFIWKcGmCYfRa9XpNfkE4=
+github.com/odubajdt/opentelemetry-collector-contrib/pkg/pdatatest v0.0.0-20250331072527-4e4b5aeebbe3/go.mod h1:QsCWgk40g+hMeM2WhMTrhWu9cW0MiGD8BEkR9UPxAFM=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
 github.com/oklog/ulid v1.3.1/go.mod h1:CirwcVhetQ6Lv90oh/F+FBtV6XMibvdAFo93nm5qn4U=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
@@ -3164,8 +3166,6 @@ github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.122.0 h1
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.122.0/go.mod h1:NCTg91wpuqau3/FNY6GMNELTPLYPMQjrhmjQkuyYqQ0=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.122.0 h1:BNgNIgB2vsWi0GHC8zvevaAwPVuF3AK4pf85136Z4UA=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.122.0/go.mod h1:kf7jFzuiqJwn2NOIm/sC57lK23bXsXbC4AY2Y8eWsNs=
-github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.122.0 h1:P6lq+OWqsSdO+o+uTrqu/lko96/MnS+Zc4SqMo3bdvs=
-github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.122.0/go.mod h1:45Di232vetvGjROIPxlBlyBMBAgA95szYP8du09shDE=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.122.0 h1:Jsn9I74nG85Iw7wWET6g0eQ9tbwVndgNHbzHqdlZVqI=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.122.0/go.mod h1:BpcyQo7MedcfxlBmIgRB5DxdLlEa0wHRJ/Nhe8jjnW4=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry v0.122.0 h1:m3yOJ1aHF2qOGW3c7qhnjzccTmfNwxgTck8avStxYo0=
@@ -3454,10 +3454,10 @@ go.opentelemetry.io/collector/internal/telemetry v0.122.1 h1:bB5yb/JECih7Nqrfu9+
 go.opentelemetry.io/collector/internal/telemetry v0.122.1/go.mod h1:Qor+QXnQN+UYUdD2qtglBdH3y0xoXlcONnx2FnvjAL0=
 go.opentelemetry.io/collector/otelcol v0.122.0 h1:Uq8MKHHAAdgPs1VhHtoAYC6Wuxom1Dd8TaoOnIc7vWQ=
 go.opentelemetry.io/collector/otelcol v0.122.0/go.mod h1:/HAitWFSlD8dVwc9qekh+FcUfMyn/hT5p7+f3BfEqa8=
-go.opentelemetry.io/collector/pdata v1.28.1 h1:ORl5WLpQJvjzBVpHu12lqKMdcf/qDBwRXMcUubhybiQ=
-go.opentelemetry.io/collector/pdata v1.28.1/go.mod h1:asKE8MD/4SOKz1mCrGdAz4VO2U2HUNg8A6094uK7pq0=
-go.opentelemetry.io/collector/pdata/pprofile v0.122.1 h1:25Fs0eL/J/M2ZEaVplesbI1H7pYx462zUUVxVOszpOg=
-go.opentelemetry.io/collector/pdata/pprofile v0.122.1/go.mod h1:+jSjgb4zRnNmr1R/zgVLVyTVSm9irfGrvGTrk3lDxSE=
+go.opentelemetry.io/collector/pdata v1.28.2-0.20250319144947-41a9ea7f7402 h1:J8wF6DoU9t0cwWUnca1vtyom5FsaX/YUpFUDqDZgGis=
+go.opentelemetry.io/collector/pdata v1.28.2-0.20250319144947-41a9ea7f7402/go.mod h1:asKE8MD/4SOKz1mCrGdAz4VO2U2HUNg8A6094uK7pq0=
+go.opentelemetry.io/collector/pdata/pprofile v0.122.2-0.20250319144947-41a9ea7f7402 h1:e1Se11aatyJgkKwyUwlZihAW1RbYglaV7wav0qaxdss=
+go.opentelemetry.io/collector/pdata/pprofile v0.122.2-0.20250319144947-41a9ea7f7402/go.mod h1:+jSjgb4zRnNmr1R/zgVLVyTVSm9irfGrvGTrk3lDxSE=
 go.opentelemetry.io/collector/pdata/testdata v0.122.1 h1:9DO8nUUnPAGYMKmrep6wLAfOHprvKY4w/7LpE4jldPQ=
 go.opentelemetry.io/collector/pdata/testdata v0.122.1/go.mod h1:hYdNrn8KxFwq1nf44YYRgNhDjJTBzoyEr/Qa26pN0t4=
 go.opentelemetry.io/collector/pipeline v0.122.1 h1:f0uuiDmanVyKwfYo6cWveJsGbLXidV7i+Z7u8QJwWxI=

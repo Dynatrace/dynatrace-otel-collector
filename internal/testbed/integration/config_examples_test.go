@@ -37,7 +37,7 @@ func TestConfigTailSampling(t *testing.T) {
 	// replaces the sampling decision wait so the test doesn't timeout
 	parsedConfig = strings.Replace(parsedConfig, "decision_wait: 30s", "decision_wait: 10ms", 1)
 
-	configCleanup, err := col.PrepareConfig(parsedConfig)
+	configCleanup, err := col.PrepareConfig(t, parsedConfig)
 	require.NoError(t, err)
 	t.Cleanup(configCleanup)
 
@@ -147,7 +147,7 @@ func TestConfigJaegerGrpc(t *testing.T) {
 	parsedConfig = testutil.ReplaceJaegerGrpcReceiverPort(parsedConfig, grpcReceiverPort)
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
-	configCleanup, err := col.PrepareConfig(parsedConfig)
+	configCleanup, err := col.PrepareConfig(t, parsedConfig)
 	require.NoError(t, err)
 	t.Cleanup(configCleanup)
 
@@ -240,7 +240,7 @@ func TestConfigZipkin(t *testing.T) {
 	parsedConfig = testutil.ReplaceZipkinReceiverPort(parsedConfig, zipkinReceiverPort)
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
-	configCleanup, err := col.PrepareConfig(parsedConfig)
+	configCleanup, err := col.PrepareConfig(t, parsedConfig)
 	require.NoError(t, err)
 	t.Cleanup(configCleanup)
 
@@ -335,7 +335,7 @@ func TestConfigHistogramTransform(t *testing.T) {
 	parsedConfig = testutil.ReplaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
-	configCleanup, err := col.PrepareConfig(parsedConfig)
+	configCleanup, err := col.PrepareConfig(t, parsedConfig)
 	require.NoError(t, err)
 	t.Cleanup(configCleanup)
 
@@ -452,7 +452,7 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	// replaces the metrics flush interval so the test doesn't timeout
 	parsedConfig = strings.Replace(parsedConfig, "metrics_flush_interval: 15s", "metrics_flush_interval: 15ms", 1)
 
-	configCleanup, err := col.PrepareConfig(parsedConfig)
+	configCleanup, err := col.PrepareConfig(t, parsedConfig)
 	require.NoError(t, err)
 	t.Cleanup(configCleanup)
 
@@ -583,7 +583,7 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 	parsedConfig = strings.Replace(parsedConfig, "receivers: [syslog/f5, syslog/host]", "receivers: [syslog/f5]", 1)
 
-	configCleanup, err := col.PrepareConfig(parsedConfig)
+	configCleanup, err := col.PrepareConfig(t, parsedConfig)
 	require.NoError(t, err)
 	t.Cleanup(configCleanup)
 
@@ -671,7 +671,7 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 	parsedConfig = strings.Replace(parsedConfig, "receivers: [syslog/f5, syslog/host]", "receivers: [syslog/host]", 1)
 
-	configCleanup, err := col.PrepareConfig(parsedConfig)
+	configCleanup, err := col.PrepareConfig(t, parsedConfig)
 	require.NoError(t, err)
 	t.Cleanup(configCleanup)
 

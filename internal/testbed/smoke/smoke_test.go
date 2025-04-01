@@ -79,7 +79,7 @@ func TestCollectorStarts(t *testing.T) {
 			cfg, err := os.ReadFile("../testdata/" + tt.configFile)
 			require.NoError(t, err)
 
-			col.PrepareConfig(string(cfg))
+			col.PrepareConfig(t, string(cfg))
 
 			err = col.Start(testbed.StartParams{
 				Name:        "dynatrace-otel-collector",

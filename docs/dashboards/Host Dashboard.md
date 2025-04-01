@@ -90,4 +90,4 @@ The following attributes are not included in the default allow list of resource 
 - `state`
 
 Follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add the obove listed attributes (case-sensitive) to the allow list.
-This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace.
+This will ensure that these resource attributes are stored as dimensions on the metrics in Dynatrace.

@@ -298,6 +298,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreExemplarSlice(),
+		pmetrictest.ChangeDatapointAttributeValue("net.peer.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("service.instance.id", substituteWithStar),

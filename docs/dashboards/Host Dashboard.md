@@ -24,7 +24,7 @@ Add the following receiver and processor configuration to your OpenTelemetry col
 ```yaml
 receivers:
   hostmetrics:
-    collection_interval: 10s 
+    collection_interval: 10s
     scrapers:
       paging:
         metrics:

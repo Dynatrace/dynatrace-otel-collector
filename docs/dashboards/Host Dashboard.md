@@ -2,7 +2,7 @@
 
 > [!WARNING]
 > The dashboards shared in this repository are in an alpha state and can change significantly.
-> They are provided as-is, with no support guarantees. 
+> They are provided as-is, with no support guarantees.
 > Newer versions of these dashboards could look significantly different from earlier versions and add or remove certain metrics.
 
 This folder contains a dashboards that can be used to monitor visualize Hosts based of metrics ingested via the OpenTelemetry collectors using the `hostmetrics` recevier and `resourcedetection` processor. The dashboard is in JSON format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/shortlink/dashboards-use#dashboards-upload).

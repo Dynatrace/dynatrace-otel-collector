@@ -11,7 +11,7 @@ This folder contains a dashboards that can be used to monitor visualize Hosts ba
 
 ## Prerequisites
 
-Dynatrace accepts metrics data with Delta temporality via OTLP/HTTP.
+Dynatrace accepts metrics data with delta temporality via OTLP/HTTP.
 Collector and Collector Contrib versions 0.107.0 and above as well as Dynatrace collector versions 0.12.0 and above support exporting metrics data in that format.
 Earlier versions ignore the `temporality_preference` flag and would, therefore, require additional processing (cumulative to delta conversion) before ingestion.
 It is possible to do this conversion in a collector, but it would make the setup more complicated, so it is initially omitted in this document.

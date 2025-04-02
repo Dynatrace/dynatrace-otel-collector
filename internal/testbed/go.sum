@@ -3117,8 +3117,6 @@ github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f h1:KUppIJq7/+SVif2QVs3tOP0zanoHgBEVAwHxUSIzRqU=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
-github.com/odubajdt/opentelemetry-collector-contrib/pkg/pdatatest v0.0.0-20250401064040-c27145d6534c h1:t0ixVufpzY7m8FvdMGCE6I2Q3DYwQcQGuST4GdAKgt0=
-github.com/odubajdt/opentelemetry-collector-contrib/pkg/pdatatest v0.0.0-20250401064040-c27145d6534c/go.mod h1:yv3tSTQdVXHvNT+OZ95Drnwb5ntWdlhTthKAi/sB5QY=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
 github.com/oklog/ulid v1.3.1/go.mod h1:CirwcVhetQ6Lv90oh/F+FBtV6XMibvdAFo93nm5qn4U=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
@@ -3166,6 +3164,8 @@ github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.123.0 h1
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.123.0/go.mod h1:EAzpBsYIXoXQbyVTkvfOksaiq+jctnoxnPevB+/xsqw=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.122.0 h1:BNgNIgB2vsWi0GHC8zvevaAwPVuF3AK4pf85136Z4UA=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.122.0/go.mod h1:kf7jFzuiqJwn2NOIm/sC57lK23bXsXbC4AY2Y8eWsNs=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.123.1-0.20250401173246-e29d2f6912df h1:q+H3SFC2979K0gEhsmsyEHtC7q6HTESl0jM+xIH0iH8=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.123.1-0.20250401173246-e29d2f6912df/go.mod h1:yv3tSTQdVXHvNT+OZ95Drnwb5ntWdlhTthKAi/sB5QY=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.123.0 h1:dFNC9MEqpyVfnfu29Yxw69+Na1OkEXg/NaW9mo/fbP4=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.123.0/go.mod h1:hXC2pbybf1KcGnXB5RvHhR++/QMgS1HP0iFf/DSXBFg=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry v0.122.0 h1:m3yOJ1aHF2qOGW3c7qhnjzccTmfNwxgTck8avStxYo0=

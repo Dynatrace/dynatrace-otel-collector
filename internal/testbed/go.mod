@@ -7,7 +7,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.122.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.123.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.122.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.123.1-0.20250401173246-e29d2f6912df
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.122.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.122.0
 	github.com/stretchr/testify v1.10.0
@@ -266,5 +266,3 @@ require (
 replace cloud.google.com/go => cloud.google.com/go v0.120.0
 
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon
-
-replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest => github.com/odubajdt/opentelemetry-collector-contrib/pkg/pdatatest v0.0.0-20250401064040-c27145d6534c

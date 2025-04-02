@@ -36,7 +36,7 @@ func FilteringScenario(
 	parsedConfig = testutil.ReplaceOtlpGrpcReceiverPort(parsedConfig, receiverPort)
 	parsedConfig = testutil.ReplaceDynatraceExporterEndpoint(parsedConfig, exporterPort)
 
-	configCleanup, err := agentProc.PrepareConfig(parsedConfig)
+	configCleanup, err := agentProc.PrepareConfig(t, parsedConfig)
 	require.NoError(t, err)
 	t.Cleanup(configCleanup)
 

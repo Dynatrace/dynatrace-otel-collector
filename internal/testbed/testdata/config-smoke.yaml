@@ -16,4 +16,9 @@ service:
   telemetry:
     metrics:
       level: normal
-      address: localhost:9090
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: '0.0.0.0'
+                port: 9090

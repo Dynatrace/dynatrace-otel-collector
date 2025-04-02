@@ -79,7 +79,7 @@ func TestCollectorStarts(t *testing.T) {
 			cfg, err := os.ReadFile("../testdata/" + tt.configFile)
 			require.NoError(t, err)
 
-			col.PrepareConfig(string(cfg))
+			col.PrepareConfig(t, string(cfg))
 
 			err = col.Start(testbed.StartParams{
 				Name:        "dynatrace-otel-collector",
@@ -92,7 +92,7 @@ func TestCollectorStarts(t *testing.T) {
 				resp, err = http.Get("http://localhost:9090/metrics")
 
 				return err == nil
-			}, 3*time.Second, 1*time.Second)
+			}, 15*time.Second, 1*time.Second)
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)

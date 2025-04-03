@@ -13,7 +13,7 @@ The individual upstream Collector changelogs can be found here:
 v0.123.0:
 
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.123.0>
-- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.123.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.123.0>
 
 ### 🛑 Breaking changes 🛑
 

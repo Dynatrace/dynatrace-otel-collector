@@ -6,7 +6,7 @@
 
 ## v0.27.0
 
-This release includes version /v0.123.0 the upstream Collector components.
+This release includes version v0.123.0 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 

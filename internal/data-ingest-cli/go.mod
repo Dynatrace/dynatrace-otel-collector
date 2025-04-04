@@ -9,7 +9,7 @@ require (
 	go.opentelemetry.io/collector/config/confignet v1.29.0
 	go.opentelemetry.io/collector/config/configtls v1.29.0
 	go.opentelemetry.io/collector/pdata v1.29.0
-	google.golang.org/grpc v1.71.0
+	google.golang.org/grpc v1.71.1
 )
 
 require (

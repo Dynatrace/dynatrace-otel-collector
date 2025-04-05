@@ -3166,8 +3166,8 @@ github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.123.0 h1
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.123.0/go.mod h1:EAzpBsYIXoXQbyVTkvfOksaiq+jctnoxnPevB+/xsqw=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.123.0 h1:J7V/20Zq6QzSfQgOpwWszUSH3WJXbVEzr51RfuSwXLc=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.123.0/go.mod h1:64L9EDVzKuXcxCt5kNwO0qxpDlJGLLB6S9NqjmJgdJM=
-github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.123.1-0.20250401173246-e29d2f6912df h1:q+H3SFC2979K0gEhsmsyEHtC7q6HTESl0jM+xIH0iH8=
-github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.123.1-0.20250401173246-e29d2f6912df/go.mod h1:yv3tSTQdVXHvNT+OZ95Drnwb5ntWdlhTthKAi/sB5QY=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.123.1-0.20250405040347-06ae39f17741 h1:37uWsUVfJjsEsUtZ3sLu+13rl9GrDQhlarES3csaJAY=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.123.1-0.20250405040347-06ae39f17741/go.mod h1:A/YIgQOdsKjkjhV7fK6RAJ4pWtoaEAOe2jp2XN6ZUbg=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.123.0 h1:dFNC9MEqpyVfnfu29Yxw69+Na1OkEXg/NaW9mo/fbP4=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.123.0/go.mod h1:hXC2pbybf1KcGnXB5RvHhR++/QMgS1HP0iFf/DSXBFg=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry v0.123.0 h1:vVdwGEZhIiKpNF5lT6SGQtJuhtgZ51QF/71iVhu55Ic=
@@ -3456,10 +3456,10 @@ go.opentelemetry.io/collector/internal/telemetry v0.123.0 h1:K6UMv22ulxcv/G8Bkwy
 go.opentelemetry.io/collector/internal/telemetry v0.123.0/go.mod h1:Qwh5XcqAlAT9NorjaaSaNcilDgaecs8S+OKljJ9hFno=
 go.opentelemetry.io/collector/otelcol v0.123.0 h1:bXgctNwXCz8Xyj5Akp8l7mr4J2v5FGAwNhyNzysGEtY=
 go.opentelemetry.io/collector/otelcol v0.123.0/go.mod h1:V4B2sk0yvYHGMQo4MCvlosuHpxs8VW432LeaYwmKIEY=
-go.opentelemetry.io/collector/pdata v1.29.0 h1:ZXSZ2fROdAEbv4JKKiCspBpjIjYZ5XaNt71LNH4RpQw=
-go.opentelemetry.io/collector/pdata v1.29.0/go.mod h1:9kb3zMtLFXBPA6WGWkBHbkFwlwwYL/OHk1m0ASWZpeY=
-go.opentelemetry.io/collector/pdata/pprofile v0.123.0 h1:NjwE1btsQbzOWsIFYt7vfgrqDNCROO3hWiZwT1/KaZU=
-go.opentelemetry.io/collector/pdata/pprofile v0.123.0/go.mod h1:af2WDdbCc+JA+FokOnsW3l+agsnW5ed8LkLn6CfneII=
+go.opentelemetry.io/collector/pdata v1.29.1-0.20250402200755-cb5c3f4fb9dc h1:IeajBNCBnEwLw8rk193Of5GYAHAThTi+9AW4TAgBknw=
+go.opentelemetry.io/collector/pdata v1.29.1-0.20250402200755-cb5c3f4fb9dc/go.mod h1:0Bxu1ktuj4wE7PIASNSvd0SdBscQ1PLtYasymJ13/Cs=
+go.opentelemetry.io/collector/pdata/pprofile v0.123.1-0.20250402200755-cb5c3f4fb9dc h1:ylgQonauVJoO82bK13SDqmRTPKUbhOAFn/zk7+0CQH0=
+go.opentelemetry.io/collector/pdata/pprofile v0.123.1-0.20250402200755-cb5c3f4fb9dc/go.mod h1:HQJgKF7ZAPKVOa3cldM+75O1CUzfICURG30fwXj5hzM=
 go.opentelemetry.io/collector/pdata/testdata v0.123.0 h1:daMcuywv7L/O0pJMCKzlgsm/En8o7SeMSPWUZsPt+JM=
 go.opentelemetry.io/collector/pdata/testdata v0.123.0/go.mod h1:lyARYT+2evYj7EdB0LLuo81lb48P7/yKKT86lRCEsmA=
 go.opentelemetry.io/collector/pipeline v0.123.0 h1:LDcuCrwhCTx2yROJZqhNmq2v0CFkCkUEvxvvcRW0+2c=
@@ -4579,8 +4579,9 @@ google.golang.org/grpc v1.68.1/go.mod h1:+q1XYFJjShcqn0QZHvCyeR4CXPA+llXIeUIfIe0
 google.golang.org/grpc v1.69.2/go.mod h1:vyjdE6jLBI76dgpDojsFGNaHlxdjXN9ghpnd2o7JGZ4=
 google.golang.org/grpc v1.69.4/go.mod h1:vyjdE6jLBI76dgpDojsFGNaHlxdjXN9ghpnd2o7JGZ4=
 google.golang.org/grpc v1.70.0/go.mod h1:ofIJqVKDXx/JiXrwr2IG4/zwdH9txy3IlF40RmcJSQw=
-google.golang.org/grpc v1.71.0 h1:kF77BGdPTQ4/JZWMlb9VpJ5pa25aqvVqogsxNHHdeBg=
 google.golang.org/grpc v1.71.0/go.mod h1:H0GRtasmQOh9LkFoCPDu3ZrwUtD1YGE+b2vYBYd/8Ec=
+google.golang.org/grpc v1.71.1 h1:ffsFWr7ygTUscGPI0KKK6TLrGz0476KUvvsbqWK0rPI=
+google.golang.org/grpc v1.71.1/go.mod h1:H0GRtasmQOh9LkFoCPDu3ZrwUtD1YGE+b2vYBYd/8Ec=
 google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0/go.mod h1:6Kw0yEErY5E/yWrBtf03jp27GLLJujG4z/JK95pnjjw=
 google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0/go.mod h1:Dk1tviKTvMCz5tvh7t+fh94dhmQVHuCt2OzJB3CTW9Y=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=

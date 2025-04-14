@@ -43,7 +43,7 @@
         "(^|\\/).*\\.sh$"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\s.*(:|=|\\?=|:=|\\+=) ?\\\"?(?<currentValue>.+?)?\\\"?\\s"
+        "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\s.*(:|=|\\?=|:=|\\+=|@) ?\\\"?(?<currentValue>.+?)?\\\"?\\s"
       ]
     },
     {
@@ -54,16 +54,6 @@
       "datasourceTemplate": "go",
       "matchStrings": [
         "- gomod: (?<depName>(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib|github\\.com/dynatrace/dynatrace-otel-collector)/([A-Za-z0-9]+/)*[A-Za-z0-9]+) (?<currentValue>v\\d+\\.\\d+\\.\\d+)\\n"
-      ]
-    },
-    {
-      "customType": "regex",
-      "fileMatch": [
-        "^\\.github/workflows/.*\\.yaml$"
-      ],
-      "datasourceTemplate": "go",
-      "matchStrings": [
-        "run: go install (?<packageName>github\\.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod)@(?<currentValue>v\\d+\\.\\d+\\.\\d+)\\n"
       ]
     }
   ]

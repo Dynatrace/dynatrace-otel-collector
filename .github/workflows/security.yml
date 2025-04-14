@@ -51,7 +51,7 @@ jobs:
     if: failure()
     steps:
       - name: Slack Notification - security vulnerabilities
-        uses: rtCamp/action-slack-notify@c33737706dea87cd7784c687dadc9adf1be59990 # v2.3.2
+        uses: rtCamp/action-slack-notify@e31e87e03dd19038e411e38ae27cbad084a90661 # v2.3.3
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_TITLE: "DT OTel Collector Distro - Security check Failure"

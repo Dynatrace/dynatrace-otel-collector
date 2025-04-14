@@ -1,6 +1,6 @@
 module testcommon
 
-go 1.24.1
+go 1.24.2
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.123.0

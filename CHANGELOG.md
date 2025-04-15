@@ -4,6 +4,57 @@
 
 <!-- next version -->
 
+## v0.28.0
+
+This release includes version v0.124.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.124.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.124.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.124.0>
+
+### 🛑 Breaking changes 🛑
+
+- `processor/transform`: Fix Basic Config style to properly handle `cache` access. ([#38926](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/38926))
+  The Transform processor now requires only one configuration style per processor's configuration, which means Advanced Config and Basic Config cannot be used together anymore.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 💡 Enhancements 💡
+
+- `exporterhelper`: Add support for bytes-based batching for profiles in the exporterhelper package. ([#3262](https://github.com/open-telemetry/opentelemetry-collector/pull/3262))
+- `otelcol`: Enhance config validation using <validate> command to capture all validation errors that prevents the collector from starting. ([#8721](https://github.com/open-telemetry/opentelemetry-collector/pull/8721))
+- `exporterhelper`: Link batcher context to all batched request's span contexts. ([#12212](https://github.com/open-telemetry/opentelemetry-collector/pull/12212), [#8122](https://github.com/open-telemetry/opentelemetry-collector/pull/8122))
+- `k8sattributesprocessor`: Add option to configure automatic resource attributes - with annotation prefix ([#38825](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/38825))
+  Implements [Specify resource attributes using Kubernetes annotations](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/non-normative/k8s-attributes.md#specify-resource-attributes-using-kubernetes-annotations).
+  
+  If you are using the file log receiver, you can now create the same resource attributes as traces (via OTLP) received
+  from an application instrumented with the OpenTelemetry Operator -
+  simply by adding the `extract: { otel_annotations: true }` configuration to the `k8sattributesprocessor` processor.
+  See the [documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#config-example) for more details.
+- `ottlprofile`: Add OTTL support for profiles. ([#36104](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36104))
+- `pkg/stanza`: Use buffer pool for the read buffers to limit allocations" ([#39373](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39373))
+- `spanmetricsconnector`: Initialise new calls_total metrics at 0 ([#38537](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/38537))
+- `pkg/stanza`: Remove unnecessary slice allocation to track errors (even nil) ([#39367](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39367))
+
+### 🧰 Bug fixes 🧰
+
+- `confighttp`: Ensure http authentication server failures are handled by the provided error handler ([#12666](https://github.com/open-telemetry/opentelemetry-collector/pull/12666))
+- `pkg/ottl`: Fix OTTL context inference order to prioritize the `scope` context over `resource`. ([#39155](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39155))
+- `pkg/ottl`: Fix so replace_all_patterns can replace keys using optional function ([#32896](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/32896))
+  When using the `replace_all_patterns` with `key` and `optional` function on the replacement, the value was being replaced with the key. This change fixes that and now the key is replaced as intended.
+- `connector/spanmetrics`: This change proposes moving the start timestamp (and last seen timestamp) from the resourceMetrics level to the individual metrics level. This will ensure that each metric has its own accurate start and last seen timestamps, regardless of its relationship to other spans. ([#35994](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35994))
+- `receiver/kubeletstats`: support user defined CA path for service account using the configtls option `ca_file` ([#39291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39291))
+
+---
+
+</details>
+
+<!-- previous-version -->
+
 ## v0.27.0
 
 This release includes version v0.123.0 of the upstream Collector components.

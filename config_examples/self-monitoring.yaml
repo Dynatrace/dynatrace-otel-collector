@@ -1,0 +1,44 @@
+# follows https://docs.dynatrace.com/docs/shortlink/otel-collector-self-monitoring#read-attributes-from-the-container-environment
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: ${env:MY_POD_IP}:4318
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - otlp
+      exporters:
+        - otlphttp
+  # turn on self-monitoring
+  telemetry:
+    resource:
+      # This section reads the previously injected environment variables
+      # and attaches them to the telemetry the Collector generates about itself.
+       k8s.namespace.name: "${env:MY_POD_NAMESPACE}"
+       k8s.pod.name: "${env:MY_POD_NAME}"
+       k8s.node.name: "${env:MY_NODE_NAME}"
+    metrics:
+      # metrics verbosity level. Higher verbosity means more metrics.
+      # The dashboard relies on metrics at level detailed.
+      level: detailed
+      readers:
+        - periodic:
+            interval: 10000
+            timeout: 5000
+            exporter:
+              otlp:
+                protocol: http/protobuf
+                temporality_preference: delta
+                endpoint: ${env:DT_ENDPOINT}

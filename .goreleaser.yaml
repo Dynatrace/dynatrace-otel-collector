@@ -33,7 +33,21 @@ builds:
     dir: build
 
 sboms:
-  - artifacts: archive
+  - cmd: cyclonedx-gomod
+    args: ["app", "-licenses", "-assert-licenses", "-std", "-json", "-main", "./", "-output", "$document", "../build/"]
+    artifacts: binary
+    env:
+      - GOARCH={{ .Arch }}
+      - GOOS={{ .Os }}
+    documents:
+      - >-
+        {{ .ProjectName }}_
+        {{- .Version }}_
+        {{- title .Os }}_
+        {{- if eq .Arch "amd64" }}x86_64
+        {{- else if eq .Arch "386" }}i386
+        {{- else }}{{ .Arch }}{{- end }}
+        {{- if .Arm }}v{{ .Arm }}{{ end }}-sbom.cdx.json
 
 archives:
   - formats: [ 'tar.gz' ]

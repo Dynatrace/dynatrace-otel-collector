@@ -4,9 +4,9 @@
 
 <!-- next version -->
 
-## v0.28.0
+## v0.28.1
 
-This release includes version v0.124.0 of the upstream Collector components.
+This release includes versions v0.124.0 and v0.124.1 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
@@ -14,6 +14,10 @@ v0.124.0:
 
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.124.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.124.0>
+
+v0.124.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.124.1>
 
 ### 🛑 Breaking changes 🛑
 
@@ -48,6 +52,7 @@ v0.124.0:
   When using the `replace_all_patterns` with `key` and `optional` function on the replacement, the value was being replaced with the key. This change fixes that and now the key is replaced as intended.
 - `connector/spanmetrics`: This change proposes moving the start timestamp (and last seen timestamp) from the resourceMetrics level to the individual metrics level. This will ensure that each metric has its own accurate start and last seen timestamps, regardless of its relationship to other spans. ([#35994](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35994))
 - `receiver/kubeletstats`: support user defined CA path for service account using the configtls option `ca_file` ([#39291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39291))
+- `receiver/filelog`: Remove printing to console the names of files which are read by File Log receiver ([#39414](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39414))
 
 ---
 

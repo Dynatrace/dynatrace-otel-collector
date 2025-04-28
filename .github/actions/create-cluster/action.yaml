@@ -10,7 +10,7 @@ inputs:
     required: false
     description: "Kubernetes version that should be used"
     # renovate: datasource=github-releases depName=kubernetes/kubernetes
-    default: "v1.32.3"
+    default: "v1.33.0"
   cluster-name:
     required: false
     description: "Name of the kind cluster"

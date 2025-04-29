@@ -7,7 +7,7 @@
 
 This folder contains dashboards that can be used to monitor the health of deployed OpenTelemetry collectors. The dashboards are in JSON format and can be uploaded to your Dynatrace tenant by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/shortlink/dashboards-use#dashboards-upload).
 
-![A screenshot of the dashboard providing an overview of running collectors. Some are running (green), some have recently stopped sending data (yellow), and some have not sent data in a longer time (red)](../img/dashboard_overview_1.png)
+![A screenshot of the dashboard providing an overview of running collectors. Some are running (green), some have recently stopped sending data (yellow), and some have not sent data in a longer time (red)](img/dashboard_overview_1.png)
 
 There are two dashboards:
 - [OTel Collector self-monitoring (all collectors)](./OTel%20Collector%20self-monitoring%20(all%20collectors).json) - shows an overview of all detected OpenTelemetry collectors
@@ -42,7 +42,7 @@ To add it, follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics
 This will ensure that this resource attribute is stored as a dimension on the metrics in Dynatrace.
 The dashboard will indicate that `service.instance.id` is not set up correctly at the top of the dashboard:
 
-![A screenshot of how a missing service.instance.id would look in the dashboard](../img/sid-missing.png)
+![A screenshot of how a missing service.instance.id would look in the dashboard](img/sid-missing.png)
 
 ## Sending internal telemetry (self-monitoring data) to Dynatrace
 Every OpenTelemetry collector has self-monitoring capabilities, but they need to be activated.
@@ -245,11 +245,11 @@ service:
 
 ### Dashboard containing all collectors
 
-![A screenshot of a dashboard showing total numbers for incoming and outgoing telemetry for OpenTelemetry collectors](../img/dashboard_overview_2.png)
-![A screenshot of a dashboard showing memory and CPU usage metrics for OpenTelemetry collectors](../img/dashboard_overview_3.png)
+![A screenshot of a dashboard showing total numbers for incoming and outgoing telemetry for OpenTelemetry collectors](img/dashboard_overview_2.png)
+![A screenshot of a dashboard showing memory and CPU usage metrics for OpenTelemetry collectors](img/dashboard_overview_3.png)
 
 ### Single-collector dashboard
 
-![A screenshot of the single-collector dashboard, showing telemetry passing through the collector.](../img/dashboard_single_1.png)
-![A screenshot of the single-collector dashboard, showing metrics about incoming HTTP and RPC requests.](../img/dashboard_single_2.png)
-![A screenshot of the single-collector dashboard, showing memory, CPU, and batch processor metrics.](../img/dashboard_single_3.png)
+![A screenshot of the single-collector dashboard, showing telemetry passing through the collector.](img/dashboard_single_1.png)
+![A screenshot of the single-collector dashboard, showing metrics about incoming HTTP and RPC requests.](img/dashboard_single_2.png)
+![A screenshot of the single-collector dashboard, showing memory, CPU, and batch processor metrics.](img/dashboard_single_3.png)

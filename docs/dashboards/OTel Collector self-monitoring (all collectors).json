@@ -1357,7 +1357,7 @@
             "content": "### Network traffic"
         },
         "91": {
-            "title": "Incoming HTTP requests by collecor instance",
+            "title": "Incoming HTTP requests by collector instance",
             "type": "data",
             "query": "timeseries {count=sum(http.server.duration, rollup:count)}, \n  by: {service.name, service.instance.id}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep service.name, service.instance.id, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
             "visualization": "table",
@@ -1503,7 +1503,7 @@
             "davis": {}
         },
         "94": {
-            "title": "Incoming RPC requests by collecor instance",
+            "title": "Incoming RPC requests by collector instance",
             "type": "data",
             "query": "timeseries {count=sum(rpc.server.duration, rollup:count)},\n  by: {service.name, service.instance.id}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep service.name, service.instance.id, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
             "visualization": "table",

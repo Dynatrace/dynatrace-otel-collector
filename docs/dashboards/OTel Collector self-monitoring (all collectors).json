@@ -1000,7 +1000,7 @@
                             "violatingSamples": 3,
                             "slidingWindow": 5,
                             "dealertingSamples": 5,
-                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") AND in(service.instance.id, \"passthrough-collector\",\"passthrough-collector-b9f9334c4b-c4c39\",\"selfmon-collector\",\"selfmon-collector-f9554b9c4b-cvc43\",\"sink-collector\",\"sink-collector-554b9c67f9-c5c4c\") }\n| limit 20"
+                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") }\n| limit 20"
                         }
                     },
                     "analyzerHints": {
@@ -1118,7 +1118,7 @@
                             "violatingSamples": 3,
                             "slidingWindow": 5,
                             "dealertingSamples": 5,
-                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") AND in(service.instance.id, \"passthrough-collector\",\"passthrough-collector-b9f9334c4b-c4c39\",\"selfmon-collector\",\"selfmon-collector-f9554b9c4b-cvc43\",\"sink-collector\",\"sink-collector-554b9c67f9-c5c4c\") }\n| limit 20"
+                            "query": "timeseries max(process_memory_rss), by: { service.name, service.instance.id }, filter: { in(service.name, \"dynatrace-otel-collector\") }\n| limit 20"
                         }
                     },
                     "analyzerHints": {
@@ -1357,7 +1357,7 @@
             "content": "### Network traffic"
         },
         "91": {
-            "title": "Incoming HTTP requests by collecor instance",
+            "title": "Incoming HTTP requests by collector instance",
             "type": "data",
             "query": "timeseries {count=sum(http.server.duration, rollup:count)}, \n  by: {service.name, service.instance.id}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep service.name, service.instance.id, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
             "visualization": "table",
@@ -1503,7 +1503,7 @@
             "davis": {}
         },
         "94": {
-            "title": "Incoming RPC requests by collecor instance",
+            "title": "Incoming RPC requests by collector instance",
             "type": "data",
             "query": "timeseries {count=sum(rpc.server.duration, rollup:count)},\n  by: {service.name, service.instance.id}, \n  filter: { in(service.name, $CollectorServiceNames) }\n| fieldsAdd totalRequests=toLong(arraySum(count))\n| fieldsKeep service.name, service.instance.id, totalRequests\n| filter totalRequests > 0\n| sort totalRequests desc",
             "visualization": "table",

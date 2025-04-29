@@ -10,7 +10,9 @@ concurrency:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.24.1"
+  GO_VERSION: "1.24.2"
+  # renovate: datasource=go depName=github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod
+  CYCLONEDX_VERSION: "v1.9.0"
 
 jobs:
   build:
@@ -33,7 +35,8 @@ jobs:
 
       - uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
 
-      - uses: anchore/sbom-action/download-syft@f325610c9f50a54015d37c8d16cb3b0e2c8f4de0 # v0.18.0
+      - name: Install cyclonedx-gomod
+        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@${{ env.CYCLONEDX_VERSION }}
 
       - name: Cache tools
         id: cache-tools
@@ -107,7 +110,7 @@ jobs:
 
       - name: Download linux service packages
 
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: linux-packages
           path: linux-packages

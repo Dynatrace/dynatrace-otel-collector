@@ -11,6 +11,11 @@ spec:
       targetPort: 4318
       protocol: TCP
       appProtocol: grpc
+    - name: otlpgrpc
+      port: 4317
+      targetPort: 4317
+      protocol: TCP
+      appProtocol: grpc
   selector:
     app.kubernetes.io/name: opentelemetry-collector
     app.kubernetes.io/instance: {{ .Name }}

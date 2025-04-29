@@ -26,6 +26,9 @@ spec:
             - name: otlp
               containerPort: 4318
               protocol: TCP
+            - name: otlpgrpc
+              containerPort: 4317
+              protocol: TCP
           env:
             - name: DT_ENTITY_KUBERNETES_CLUSTER
               value: {{ .K8sCluster }}

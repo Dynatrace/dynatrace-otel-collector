@@ -119,10 +119,10 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 func setupReceiverPorts(cfg *otlpreceiver.Config, ports *ReceiverPorts) {
 	if ports != nil {
 		cfg.GRPC.NetAddr.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Grpc)
-		cfg.HTTP.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Http)
+		cfg.HTTP.ServerConfig.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Http)
 	} else {
 		cfg.GRPC.NetAddr.Endpoint = "0.0.0.0:4317"
-		cfg.HTTP.Endpoint = "0.0.0.0:4318"
+		cfg.HTTP.ServerConfig.Endpoint = "0.0.0.0:4318"
 	}
 }
 

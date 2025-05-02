@@ -1,4 +1,15 @@
 receivers:
+  k8sobjects:
+    objects:
+    - name: pods
+      mode: pull
+      interval: 1h
+      field_selector: status.phase=Running
+    - name: events
+      mode: watch
+      group: events.k8s.io
+      namespaces: [default]
+      exclude_watch_type: [DELETED]
   netflow:
     scheme: netflow
   statsd:

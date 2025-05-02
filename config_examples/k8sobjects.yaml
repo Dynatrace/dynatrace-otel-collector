@@ -1,0 +1,61 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  k8sobjects:
+    objects:
+      - name: namespaces
+        mode: pull
+        interval: 10s
+      - name: nodes
+        mode: pull
+        interval: 10s
+      - name: events
+        mode: watch
+        namespaces: [e2ek8sobjects]
+      - name: pods
+        mode: watch
+        namespaces: [e2ek8sobjects]
+        label_selector: app in (busybox)
+      - name: deployments
+        mode: watch
+        namespaces: [e2ek8sobjects]
+        label_selector: app in (busybox)
+
+processors:
+  transform:
+    error_mode: ignore
+    log_statements:
+      - context: log #pull
+        conditions:
+          - IsMap(log.body) and log.body["object"] == nil
+        statements:
+          - flatten(log.body, resolveConflicts=true)
+      - context: log #watch
+        conditions:
+          - IsMap(log.body) and log.body["object"] != nil
+        statements:
+          - set(log.body, log.body["object"])
+          - flatten(log.body, resolveConflicts=true)
+      - context: log
+        conditions:
+          - IsMap(log.body) and log.body["message"] == nil
+        statements:
+          - set(log.body["message"], Concat(["Kind - ", log.body["kind"], "; Name - ", log.body["metadata.name"], "; Namespace - ", log.body["metadata.namespace"]], ""))
+        
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+  debug:
+    verbosity: detailed
+
+service:
+  extensions: [health_check]
+  pipelines:
+    logs:
+      receivers: [k8sobjects]
+      processors: [transform]
+      exporters: [otlphttp, debug]

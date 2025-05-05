@@ -83,9 +83,6 @@ func TestE2E_K8sobjectsReceiver(t *testing.T) {
 		}
 	}()
 
-	// time.Sleep(5 * time.Minute)
-	// return
-
 	expected := map[string]bool{
 		"Deployment": false,
 		"Node":       false,
@@ -102,7 +99,9 @@ func TestE2E_K8sobjectsReceiver(t *testing.T) {
 			for j := 0; j < sm.Len(); j++ {
 				bodyMap := sm.At(j).Body().Map()
 				if kind, ok := bodyMap.Get("kind"); ok {
-					expected[kind.Str()] = true
+					if _, ok := bodyMap.Get("message"); ok {
+						expected[kind.Str()] = true
+					}
 				}
 			}
 		}

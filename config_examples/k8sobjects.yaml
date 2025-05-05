@@ -7,38 +7,36 @@ receivers:
     objects:
       - name: namespaces
         mode: pull
-        interval: 10s
       - name: nodes
         mode: pull
-        interval: 10s
       - name: events
         mode: watch
-        namespaces: [e2ek8sobjects]
+        namespaces: [${env:NAMESPACE}]
       - name: pods
         mode: watch
-        namespaces: [e2ek8sobjects]
+        namespaces: [${env:NAMESPACE}]
         label_selector: app in (busybox)
       - name: deployments
         mode: watch
-        namespaces: [e2ek8sobjects]
+        namespaces: [${env:NAMESPACE}]
         label_selector: app in (busybox)
 
 processors:
   transform:
     error_mode: ignore
     log_statements:
-      - context: log #pull
+      - context: log # pulled objects
         conditions:
           - IsMap(log.body) and log.body["object"] == nil
         statements:
           - flatten(log.body, resolveConflicts=true)
-      - context: log #watch
+      - context: log # watched objects
         conditions:
           - IsMap(log.body) and log.body["object"] != nil
         statements:
           - set(log.body, log.body["object"])
           - flatten(log.body, resolveConflicts=true)
-      - context: log
+      - context: log # creating message attribute in log body for objects that do not have it
         conditions:
           - IsMap(log.body) and log.body["message"] == nil
         statements:
@@ -58,4 +56,4 @@ service:
     logs:
       receivers: [k8sobjects]
       processors: [transform]
-      exporters: [otlphttp, debug]
+      exporters: [otlphttp]

@@ -51,7 +51,10 @@ func TestE2E_K8sobjectsReceiver(t *testing.T) {
 	testID := uuid.NewString()[:8]
 	collectorConfigPath := path.Join(configExamplesDir, "k8sobjects.yaml")
 	host := otelk8stest.HostEndpoint(t)
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
+		Host:      host,
+		Namespace: testNs,
+	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,
@@ -78,10 +81,38 @@ func TestE2E_K8sobjectsReceiver(t *testing.T) {
 		}
 	}()
 
-	oteltest.WaitForLogs(t, 2, logsConsumer)
+	// time.Sleep(5 * time.Minute)
+	// return
 
-	for _, _ = range logsConsumer.AllLogs() {
-
+	expected := map[string]bool{
+		"Deployment": false,
+		"Node":       false,
+		"Namespace":  false,
+		"Pod":        false,
+		"Event":      false,
 	}
 
+	oteltest.WaitForLogs(t, 5, logsConsumer)
+
+	for _, r := range logsConsumer.AllLogs() {
+		for i := 0; i < r.ResourceLogs().Len(); i++ {
+			sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
+			for j := 0; j < sm.Len(); j++ {
+				bodyMap := sm.At(j).Body().Map()
+				if kind, ok := bodyMap.Get("kind"); ok {
+					expected[kind.Str()] = true
+				}
+			}
+		}
+	}
+
+	checkMatched(t, expected)
+}
+
+func checkMatched(t *testing.T, e map[string]bool) {
+	for _, ok := range e {
+		if !ok {
+			require.True(t, ok, "Some resources were not found: %w", e)
+		}
+	}
 }

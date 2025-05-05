@@ -9,7 +9,12 @@ import (
 	"strings"
 )
 
-func GetCollectorConfig(path, host string) (string, error) {
+type ConfigTemplate struct {
+	Host      string
+	Namespace string
+}
+
+func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 	if path == "" {
 		return "", nil
 	}
@@ -22,11 +27,13 @@ func GetCollectorConfig(path, host string) (string, error) {
 
 	r := strings.NewReplacer(
 		"${env:DT_ENDPOINT}",
-		fmt.Sprintf("http://%s:4318", host),
+		fmt.Sprintf("http://%s:4318", template.Host),
 		"${env:DT_API_TOKEN}",
 		"",
 		"${env:API_TOKEN}",
 		"",
+		"${env:NAMESPACE}",
+		template.Namespace,
 	)
 	parsedConfig = r.Replace(parsedConfig)
 

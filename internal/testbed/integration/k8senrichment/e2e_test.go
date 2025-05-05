@@ -66,7 +66,9 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 	testID := uuid.NewString()[:8]
 	collectorConfigPath := path.Join(configExamplesDir, "k8s_enrichment.yaml")
 	host := otelk8stest.HostEndpoint(t)
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
+		Host: host,
+	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,

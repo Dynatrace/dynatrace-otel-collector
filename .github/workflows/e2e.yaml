@@ -111,6 +111,7 @@ jobs:
           - netflow
           - self-monitoring
           - k8sobjects
+          - kubeletstats
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

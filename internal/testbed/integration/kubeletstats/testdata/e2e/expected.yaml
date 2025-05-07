@@ -170,7 +170,7 @@ resourceMetrics:
             stringValue: e2ekubeletstats
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-55a112bf-fhmzz
+            stringValue: otelcol-55a112bfds-fhmzz
         - key: k8s.pod.uid
           value:
             stringValue: 1b2f0b5d-0431-4e18-ac4b-a337a9f06ca5
@@ -3424,7 +3424,7 @@ resourceMetrics:
             stringValue: e2ekubeletstats
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-55a112bf-fhmzz
+            stringValue: otelcol-55a112bfds-fhmzz
         - key: k8s.pod.uid
           value:
             stringValue: 1b2f0b5d-0431-4e18-ac4b-a337a9f06ca5
@@ -3588,7 +3588,7 @@ resourceMetrics:
             stringValue: e2ekubeletstats
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-55a112bf-fhmzz
+            stringValue: otelcol-55a112bfds-fhmzz
         - key: k8s.pod.uid
           value:
             stringValue: 1b2f0b5d-0431-4e18-ac4b-a337a9f06ca5
@@ -3647,7 +3647,7 @@ resourceMetrics:
             stringValue: e2ekubeletstats
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-55a112bf-fhmzz
+            stringValue: otelcol-55a112bfds-fhmzz
         - key: k8s.pod.uid
           value:
             stringValue: 1b2f0b5d-0431-4e18-ac4b-a337a9f06ca5

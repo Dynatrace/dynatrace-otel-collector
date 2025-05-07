@@ -4,10 +4,10 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
@@ -15,6 +15,7 @@ import (
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
@@ -54,7 +55,8 @@ func TestE2E_KubeletstatsReceiver(t *testing.T) {
 	defer shutdownSinks()
 
 	// create collector
-	testID := uuid.NewString()[:8]
+	testID, err := testutil.GenerateRandomString(10)
+	require.NoError(t, err)
 	collectorConfigPath := path.Join(configExamplesDir, "kubeletstats.yaml")
 	host := otelk8stest.HostEndpoint(t)
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
@@ -77,9 +79,6 @@ func TestE2E_KubeletstatsReceiver(t *testing.T) {
 		}
 	}()
 
-	// time.Sleep(5 * time.Minute)
-	// return
-
 	oteltest.WaitForMetrics(t, 10, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
@@ -93,55 +92,73 @@ func TestE2E_KubeletstatsReceiver(t *testing.T) {
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreMetricValues(
-			"otelcol_processor_filter_datapoints.filtered",
-			"otelcol_processor_filter_logs.filtered",
-			"otelcol_processor_filter_spans.filtered",
-			"otelcol_receiver_accepted_log_records",
-			"otelcol_receiver_accepted_metric_points",
-			"otelcol_receiver_accepted_spans",
-			"otelcol_receiver_refused_log_records",
-			"otelcol_receiver_refused_metric_points",
-			"otelcol_receiver_refused_spans",
-			"otelcol_process_cpu_seconds",
-			"otelcol_process_memory_rss",
-			"otelcol_process_runtime_heap_alloc_bytes",
-			"otelcol_process_runtime_total_alloc_bytes",
-			"otelcol_process_runtime_total_sys_memory_bytes",
-			"otelcol_process_uptime",
-			"http.client.request.size",
-			"http.client.response.size",
-			"http.client.duration",
-			"otelcol_processor_batch_batch_send_size",
-			"otelcol_processor_batch_batch_send_size_bytes",
-			"otelcol_processor_batch_batch_size_trigger_send",
-			"otelcol_processor_batch_metadata_cardinality",
-			"otelcol_processor_batch_timeout_trigger_send",
-			"otelcol_processor_incoming_items",
-			"otelcol_processor_outgoing_items",
-			"rpc.server.duration",
-			"rpc.server.request.size",
-			"rpc.server.response.size",
-			"rpc.server.requests_per_rpc",
-			"rpc.server.responses_per_rpc",
-			"otelcol_exporter_queue_capacity",
-			"otelcol_exporter_queue_size",
-			"otelcol_exporter_send_failed_log_records",
-			"otelcol_exporter_send_failed_metric_points",
-			"otelcol_exporter_send_failed_spans",
-			"otelcol_exporter_sent_log_records",
-			"otelcol_exporter_sent_metric_points",
-			"otelcol_exporter_sent_spans"),
+			"container.cpu.usage",
+			"container.uptime",
+			"k8s.container.cpu.node.utilization",
+			"k8s.container.cpu_limit_utilization",
+			"k8s.container.cpu_request_utilization",
+			"k8s.container.memory.node.utilization",
+			"k8s.container.memory_limit_utilization",
+			"k8s.container.memory_request_utilization",
+			"k8s.node.cpu.usage",
+			"k8s.node.uptime",
+			"k8s.pod.cpu.node.utilization",
+			"k8s.pod.cpu.usage",
+			"k8s.pod.cpu_limit_utilization",
+			"k8s.pod.cpu_request_utilization",
+			"k8s.pod.memory.node.utilization",
+			"k8s.pod.memory_limit_utilization",
+			"k8s.pod.memory_request_utilization",
+			"k8s.pod.uptime",
+			"k8s.volume.available",
+			"k8s.volume.capacity",
+			"k8s.volume.inodes.used",
+			"k8s.volume.inodes",
+			"k8s.volume.inodes.free",
+			"container.cpu.time",
+			"container.filesystem.available",
+			"container.filesystem.capacity",
+			"container.filesystem.usage",
+			"container.memory.available",
+			"container.memory.major_page_faults",
+			"container.memory.page_faults",
+			"container.memory.rss",
+			"container.memory.usage",
+			"container.memory.working_set",
+			"k8s.node.cpu.time",
+			"k8s.node.filesystem.available",
+			"k8s.node.filesystem.capacity",
+			"k8s.node.filesystem.usage",
+			"k8s.node.memory.available",
+			"k8s.node.memory.major_page_faults",
+			"k8s.node.memory.page_faults",
+			"k8s.node.memory.rss",
+			"k8s.node.memory.usage",
+			"k8s.node.memory.working_set",
+			"k8s.node.network.errors",
+			"k8s.node.network.io",
+			"k8s.pod.cpu.time",
+			"k8s.pod.filesystem.available",
+			"k8s.pod.filesystem.capacity",
+			"k8s.pod.filesystem.usage",
+			"k8s.pod.memory.available",
+			"k8s.pod.memory.major_page_faults",
+			"k8s.pod.memory.page_faults",
+			"k8s.pod.memory.rss",
+			"k8s.pod.memory.usage",
+			"k8s.pod.memory.working_set",
+			"k8s.pod.network.errors",
+			"k8s.pod.network.io"),
 		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.ChangeDatapointAttributeValue("interface", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.pod.uid", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.volume.name", substituteRandomPartWithStar),
+		pmetrictest.IgnoreDatapointAttributesOrder(),
+		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreExemplarSlice(),
-		pmetrictest.ChangeDatapointAttributeValue("net.peer.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("service.instance.id", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("service.version", substituteWithStar),
+		pmetrictest.IgnoreResourceMetricsOrder(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
@@ -153,3 +170,8 @@ func TestE2E_KubeletstatsReceiver(t *testing.T) {
 }
 
 func substituteWithStar(_ string) string { return "*" }
+
+func substituteRandomPartWithStar(s string) string {
+	re := regexp.MustCompile(`(-[a-z0-9]{10})?(-[a-z0-9]{5})?$`)
+	return re.ReplaceAllString(s, "-*")
+}

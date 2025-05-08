@@ -6,6 +6,7 @@ Documentation=https://docs.dynatrace.com/docs/shortlink/otel-collector
 [Service]
 EnvironmentFile=/etc/dynatrace-otel-collector/dynatrace-otel-collector.conf
 ExecStart=/usr/bin/dynatrace-otel-collector $OTELCOL_OPTIONS
+ExecReload=/bin/kill -HUP $MAINPID
 KillMode=mixed
 Restart=on-failure
 Type=simple

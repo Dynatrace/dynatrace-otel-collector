@@ -4,6 +4,82 @@
 
 <!-- next version -->
 
+## v0.29.0
+
+This release includes version v0.125.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.125.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.125.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.125.0>
+
+### 🛑 Breaking changes 🛑
+
+- `processor/k8sattributes`: Change processor/k8sattributes to return error if unset envvar is used for `node_from_env_var` ([#39447](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39447))
+  Before this was a valid configuration, but had an unexpected behavior to monitor the entire cluster. | To keep the same behavior simply do not set the `node_from_env_var` value or use empty string.
+- `service`: Lowercase values for 'otelcol.component.kind' attributes. ([#12865](https://github.com/open-telemetry/opentelemetry-collector/pull/12865))
+- `service`: Restrict the `telemetry.newPipelineTelemetry` feature gate to metrics. ([#12856](https://github.com/open-telemetry/opentelemetry-collector/pull/12856), [#12933](https://github.com/open-telemetry/opentelemetry-collector/pull/12933))
+  The "off" state of this feature gate introduced a regression, where the Collector's internal logs were missing component attributes. See issue #12870 for more details on this bug.
+  
+  On the other hand, the "on" state introduced an issue with the Collector's default internal metrics, because the Prometheus exporter does not currently support instrumentation scope attributes.
+  
+  To solve both of these issues, this change turns on the new scope attributes for logs and traces by default regardless of the feature gate.
+  However, the new scope attributes for metrics stay locked behind the feature gate, and will remain off by default until the Prometheus exporter is updated to support scope attributes.
+  
+  Please understand that enabling the `telemetry.newPipelineTelemetry` feature gate may break the export of Collector metrics through, depending on your configuration.
+  Having a `batch` processor in multiple pipelines is a known trigger for this.
+  
+  This comes with a breaking change, where internal logs exported through OTLP will now use instrumentation scope attributes to identify the source component instead of log attributes.
+  This does not affect the Collector's stderr output. See the changelog for v0.123.0 for a more detailed description of the gate's effects.
+  
+
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🚩 Deprecations 🚩
+
+- `spanmetricsconnector`: Deprecate the unused configuration `dimensions_cache_size` ([#39646](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39646))
+  Deprecated configuration `dimensions_cache_size`, please use `aggregation_cardinality_limit` instead
+
+### 💡 Enhancements 💡
+
+- `spanmetricsconnector`: Add new aggregation_cardinality_limit configuration option to limit the number of unique combinations of dimensions that will be tracked for metrics aggregation. ([#38990](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/38990))
+- `statsdreceiver`: Add new config to customize socket permissions when transport is set to `unixgram`. ([#37807](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37807))
+- `hostmetricsreceiver`: Possible to enable the process scraper under FreeBSD in the hostmetrics receiver. ([#39622](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39622))
+- `pkg/ottl`: Add `ottl.WithContextInferenceConditions` option to allow configuring extra context inferrer OTTL conditions ([#39455](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39455))
+- `pkg/ottl`: Add PMapGetSetter interface and StandardPMapGetSetter type. ([#39657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39657))
+- `pdata`: Add MoveTo to pcommon.Value, only type missing this ([#12877](https://github.com/open-telemetry/opentelemetry-collector/pull/12877))
+- `configgrpc`: Add gRPC middleware support. ([#12603](https://github.com/open-telemetry/opentelemetry-collector/pull/12603), [#9591](https://github.com/open-telemetry/opentelemetry-collector/pull/9591))
+- `confighttp`: Add HTTP middleware support. ([#12603](https://github.com/open-telemetry/opentelemetry-collector/pull/12603), [#9591](https://github.com/open-telemetry/opentelemetry-collector/pull/9591), [#7441](https://github.com/open-telemetry/opentelemetry-collector/pull/7441))
+
+### 🧰 Bug fixes 🧰
+
+- `resourcedetectionprocessor`: change the EKS cluster identifier and check the cluster version instead of the existence of aws-auth configmap ([#39479](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39479))
+- `filelogreceiver`: Fix frozen receiver when max_concurrent_files is 1 ([#39598](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39598))
+- `transformprocessor`: Fix the context inferrer to also take into consideration the global OTTL conditions configuration. ([#39455](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39455))
+- `prometheusreceiver`: When a histogram metric has both classic and native histogram buckets, keep both, instead of throwing away the native histogram buckets. ([#26555](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/26555))
+  This was a technical dept from the previous implementation in PR 28663.
+- `receivercreator`: Fix how escaped backticks are handled in receiver creator templates ([#39163](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39163))
+- `resourcedetectionprocessor`: change the EKS cluster identifier and check the cluster version instead of the existence of aws-auth configmap ([#39479](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39479))
+- `pdata`: Fix MoveTo when moving to the same destination ([#12887](https://github.com/open-telemetry/opentelemetry-collector/pull/12887))
+- `exporterhelper`: Do not ignore the `num_consumers` setting when batching is enabled. ([#12244](https://github.com/open-telemetry/opentelemetry-collector/pull/12244))
+- `exporterhelper`: Reject elements larger than the queue capacity ([#12847](https://github.com/open-telemetry/opentelemetry-collector/pull/12847))
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `docs`: Added Host Monitoring Dashboard that can be used to monitor hosts with pure OpenTelemetry data (#513)
+
+<!-- previous-version -->
+
 ## v0.28.1
 
 This release includes versions v0.124.0 and v0.124.1 of the upstream Collector components.

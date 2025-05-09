@@ -61,7 +61,9 @@ func TestE2E_KubeletstatsReceiver(t *testing.T) {
 	require.NoError(t, err)
 	collectorConfigPath := path.Join(configExamplesDir, "kubeletstats.yaml")
 	host := otelk8stest.HostEndpoint(t)
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
+		Host: host,
+	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,

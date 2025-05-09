@@ -1,26 +1,23 @@
 //go:build e2e
 
-package netflow
+package k8sobjects
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
-	"go.opentelemetry.io/collector/pdata/plog"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
-func TestE2E_NetflowReceiver(t *testing.T) {
+func TestE2E_K8sobjectsReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
@@ -54,10 +51,11 @@ func TestE2E_NetflowReceiver(t *testing.T) {
 
 	// create collector
 	testID := uuid.NewString()[:8]
-	collectorConfigPath := path.Join(configExamplesDir, "netflow.yaml")
+	collectorConfigPath := path.Join(configExamplesDir, "k8sobjects.yaml")
 	host := otelk8stest.HostEndpoint(t)
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host: host,
+		Host:      host,
+		Namespace: testNs,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
@@ -72,76 +70,50 @@ func TestE2E_NetflowReceiver(t *testing.T) {
 		host,
 	)
 
-	// create job
-	jobFile := filepath.Join(testDir, "netflow", "job.yaml")
-	buf, err = os.ReadFile(jobFile)
-	require.NoErrorf(t, err, "failed to read job object file %s", jobFile)
-	jobObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s job from file %s", nsFile)
+	// create deployment
+	deploymentFile := filepath.Join(testDir, "testobjects", "deployment.yaml")
+	buf, err = os.ReadFile(deploymentFile)
+	require.NoErrorf(t, err, "failed to read deployment object file %s", deploymentFile)
+	deploymentObj, err := otelk8stest.CreateObject(k8sClient, buf)
+	require.NoErrorf(t, err, "failed to create k8s deployment from file %s", deploymentFile)
 
 	defer func() {
-		for _, obj := range append(collectorObjs, jobObj) {
+		for _, obj := range append(collectorObjs, deploymentObj) {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
 
-	oteltest.WaitForLogs(t, 32, logsConsumer)
+	expected := map[string]bool{
+		"Deployment": false,
+		"Node":       false,
+		"Namespace":  false,
+		"Pod":        false,
+		"Event":      false,
+	}
 
-	scanForServiceLogs(t, logsConsumer)
-}
+	oteltest.WaitForLogs(t, 5, logsConsumer)
 
-func scanForServiceLogs(t *testing.T, ms *consumertest.LogsSink) {
-	for _, r := range ms.AllLogs() {
+	for _, r := range logsConsumer.AllLogs() {
 		for i := 0; i < r.ResourceLogs().Len(); i++ {
 			sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
-			assert.NoError(t, assertExpectedLogs(sm))
+			for j := 0; j < sm.Len(); j++ {
+				bodyMap := sm.At(j).Body().Map()
+				if kind, ok := bodyMap.Get("kind"); ok {
+					if _, ok := bodyMap.Get("message"); ok {
+						expected[kind.Str()] = true
+					}
+				}
+			}
 		}
 	}
+
+	checkMatched(t, expected)
 }
 
-func assertExpectedLogs(sm plog.LogRecordSlice) error {
-	expectedFlowType := "netflow_v5"
-	expectedAttributeKeys := []string{
-		"source.address",
-		"source.port",
-		"destination.address",
-		"destination.port",
-		"network.transport",
-		"network.type",
-		"flow.io.bytes",
-		"flow.io.packets",
-		"flow.type",
-		"flow.sequence_num",
-		"flow.time_received",
-		"flow.start",
-		"flow.end",
-		"flow.sampling_rate",
-		"flow.sampler_address",
-	}
-	for i := 0; i < sm.Len(); i++ {
-		attrs := sm.At(i).Attributes()
-		if attrs.Len() != 15 {
-			return fmt.Errorf("invalid length of attributes: %d", attrs.Len())
-		}
-		val, ok := attrs.Get("flow.type")
+func checkMatched(t *testing.T, e map[string]bool) {
+	for _, ok := range e {
 		if !ok {
-			return fmt.Errorf("flow type not found")
-		}
-		if val.AsString() != expectedFlowType {
-			return fmt.Errorf("invalid flow type: %s", val.AsString())
-		}
-		if !allItemsPresent(expectedAttributeKeys, attrs.AsRaw()) {
-			return fmt.Errorf("invalid attributes: %v", attrs.AsRaw())
+			require.True(t, ok, "Some resources were not found: %w", e)
 		}
 	}
-	return nil
-}
-
-func allItemsPresent(slice []string, m map[string]any) bool {
-	for _, item := range slice {
-		if _, exists := m[item]; !exists {
-			return false
-		}
-	}
-	return true
 }

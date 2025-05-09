@@ -1,0 +1,69 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  kubeletstats:
+    auth_type: "serviceAccount"
+    collection_interval: 10s
+    node: '${env:K8S_NODE_NAME}'
+    k8s_api_config:
+      auth_type: "serviceAccount"
+    endpoint: "https://${env:K8S_NODE_NAME}:10250"
+    insecure_skip_verify: true
+    metric_groups:
+      - node
+      - pod
+      - container
+      - volume
+    metrics:
+      container.uptime:
+        enabled: true
+      k8s.container.cpu.node.utilization:
+        enabled: true
+      k8s.container.cpu_limit_utilization:
+        enabled: true
+      k8s.container.cpu_request_utilization:
+        enabled: true
+      k8s.container.memory.node.utilization:
+        enabled: true
+      k8s.container.memory_limit_utilization:
+        enabled: true
+      k8s.container.memory_request_utilization:
+        enabled: true
+      k8s.node.uptime:
+        enabled: true
+      k8s.pod.cpu.node.utilization:
+        enabled: true
+      k8s.pod.cpu_limit_utilization:
+        enabled: true
+      k8s.pod.cpu_request_utilization:
+        enabled: true
+      k8s.pod.memory.node.utilization:
+        enabled: true
+      k8s.pod.memory_limit_utilization:
+        enabled: true
+      k8s.pod.memory_request_utilization:
+        enabled: true
+      k8s.pod.uptime:
+        enabled: true
+
+processors:
+  cumulativetodelta:
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+  debug:
+    verbosity: detailed
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers: [kubeletstats]
+      processors: [cumulativetodelta]
+      exporters: [otlphttp]

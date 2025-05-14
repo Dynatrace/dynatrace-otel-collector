@@ -62,14 +62,6 @@ jobs:
         if: steps.cache-collector-source.outputs.cache-hit != 'true'
         run: make generate
 
-      - name: Cache Go modules
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with:
-          path: |
-            ~/go/bin
-            ~/go/pkg/mod
-          key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
-
       - name: Create Snapshot for Pull Request
         run: make snapshot
 

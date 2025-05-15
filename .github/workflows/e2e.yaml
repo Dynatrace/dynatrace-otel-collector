@@ -112,6 +112,7 @@ jobs:
           - self-monitoring
           - k8sobjects
           - kubeletstats
+          - k8scluster
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

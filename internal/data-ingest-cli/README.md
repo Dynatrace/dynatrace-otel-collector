@@ -88,7 +88,8 @@ The tool accepts the following input parameters:
 1. Set up a Prometheus server for the Collector to scrape
 
 ```shell
-./data-ingest --send --input-format prometheus --input-file $(pwd)/commands/prometheus/testdata/metrics
+PROMETHEUS_PAYLOAD=$(cat $(pwd)/commands/prometheus/testdata/metrics)
+./data-ingest --send --input-format prometheus --prometheus-payload $PROMETHEUS_PAYLOAD
 ```
 
 1. Send Zipkin data to a collector:

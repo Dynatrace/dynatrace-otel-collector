@@ -4,6 +4,69 @@
 
 <!-- next version -->
 
+## v0.3.0
+
+This release includes version 0.126.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.126.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.126.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.126.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `receiver/prometheus`: Upgrade `receiver.prometheusreceiver.RemoveLegacyResourceAttributes` feature gate to `beta` stability (enabled by default) ([#32814](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32814))
+  Disable the `receiver.promtheusreceiver.RemoveLegacyResourceAttributes` feature gate to restore previous behavior. This feature gate will be removed in a future release.
+  The feature gate is used to replace the following legacy resource attributes:
+  `net.host.name` -> `server.address`
+  `net.host.port` -> `server.port`
+  `http.scheme` -> `url.scheme`
+
+### 💡 Enhancements 💡
+
+- `fileconsumer`: Support "`compression:auto`" which automatically detects file compression type and ingests data. Currently, only gzip compressed files are auto detected. This allows for mix of compressed and uncompressed files to be ingested with the same filelogreceiver. ([#37772](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37772))
+- `pkg/ottl`: Add support for HasPrefix and HasSuffix functions ([#39825](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39825))
+- `pkg/ottl`: OTTL is now officially considered Beta stability ([#39910](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39910))
+- `receiver/k8scluster`: Add node name to pod metadata ([#37454](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37454))
+- `netflowreceiver`: Add `send_raw` option to send logs as a raw string in the log body instead of parsed into attributes. ([#38920](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38920))
+- `processor/transform`: The transformprocessor is now officially considered Beta stability ([#39928](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39928))
+- `service`: Add item count metrics defined in Pipeline Component Telemetry RFC ([#12812](https://github.com/open-telemetry/opentelemetry-collector/pull/12812))
+  See [Pipeline Component Telemetry RFC](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/rfcs/component-universal-telemetry.md) for more details:
+    - `otelcol.receiver.produced.items`
+    - `otelcol.processor.consumed.items`
+    - `otelcol.processor.produced.items`
+    - `otelcol.connector.consumed.items`
+    - `otelcol.connector.produced.items`
+    - `otelcol.exporter.consumed.items`
+
+### 🧰 Bug fixes 🧰
+
+- `prometheusreceiver`: Add 'fallback_scrape_protocol' to entries obtained through Target Allocator, unless already defined. ([#39672](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/39672))
+  This applies the same configuration change that is already applied on static configuration.
+- `prometheusreceiver`: Convert ms to s when setting start time on the metric ([#39912](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39912))
+- `tailsamplingprocessor`: Fix the misleading decision timer latency metric ([#38502](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38502))
+- `exporterhelper`: Add validation error for batch config if min_size is greater than queue_size. ([#12948](https://github.com/open-telemetry/opentelemetry-collector/issues/12948))
+- `telemetry`: Allocate less memory per component when OTLP exporting of logs is disabled ([#13014](https://github.com/open-telemetry/opentelemetry-collector/issues/13014))
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 🚀 New components 🚀
+
+- `receiver/k8scluster`: Add k8scluster receiver (#568)
+- `receiver/k8sobjects`: Add k8sobjects receiver (#560)
+- `receiver/kubeletstats`: Add kubeletstats receiver (#564)
+
+<!-- previous-version -->
+
 ## v0.29.0
 
 This release includes version v0.125.0 of the upstream Collector components.

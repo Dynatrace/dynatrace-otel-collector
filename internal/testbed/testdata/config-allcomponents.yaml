@@ -1,4 +1,10 @@
 receivers:
+  k8s_cluster:
+    auth_type: "serviceAccount"
+    allocatable_types_to_report:
+      - cpu
+      - memory
+      - pods
   k8sobjects:
     objects:
     - name: pods

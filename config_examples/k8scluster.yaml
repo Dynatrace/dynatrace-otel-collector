@@ -1,0 +1,27 @@
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  k8s_cluster:
+    auth_type: "serviceAccount"
+    allocatable_types_to_report:
+      - cpu
+      - memory
+      - pods
+
+processors: {}
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [k8s_cluster]
+      processors: []
+      exporters: [otlphttp]

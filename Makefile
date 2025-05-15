@@ -41,7 +41,7 @@ ARCH ?= ""
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
 # renovate: datasource=github-releases depName=open-telemetry/opentelemetry-collector-contrib
-OTEL_UPSTREAM_VERSION=v0.124.1
+OTEL_UPSTREAM_VERSION=v0.125.0
 
 .PHONY: build generate test package-test clean clean-all components install-tools snapshot release
 build: $(BIN)
@@ -67,9 +67,9 @@ components: $(BIN)
 	$(BIN) components
 install-tools: install-go-junit-report $(TOOLS_BIN_NAMES)
 snapshot: .goreleaser.yaml $(GORELEASER)
-	$(GORELEASER) release --snapshot --clean --parallelism 2 --skip sbom
+	$(GORELEASER) release --snapshot --clean --parallelism 2 --skip archive,sbom --fail-fast
 release: .goreleaser.yaml $(GORELEASER)
-	$(GORELEASER) release --clean --parallelism 2 --release-notes $(RELEASE_NOTES)
+	$(GORELEASER) release --clean --parallelism 1 --release-notes $(RELEASE_NOTES)
 
 $(TOOLS_BIN_DIR):
 	mkdir -p $@

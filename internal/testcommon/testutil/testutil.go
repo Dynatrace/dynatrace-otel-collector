@@ -1,7 +1,9 @@
 package testutil
 
 import (
+	"crypto/rand"
 	"fmt"
+	"math/big"
 	"net"
 	"os/exec"
 	"runtime"
@@ -329,4 +331,19 @@ func extractProcessorsFromYAML(yamlStr []byte) (map[string]string, error) {
 	}
 
 	return result, nil
+}
+
+const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+// Function to generate a random string of specified length
+func GenerateRandomString(length int) (string, error) {
+	result := make([]byte, length)
+	for i := range result {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			return "", err
+		}
+		result[i] = charset[num.Int64()]
+	}
+	return string(result), nil
 }

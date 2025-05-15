@@ -38,40 +38,24 @@ jobs:
       - name: Install cyclonedx-gomod
         run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@${{ env.CYCLONEDX_VERSION }}
 
-      - name: Cache tools
-        id: cache-tools
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with:
-          path: .tools
-          key: snapshot-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
-
       - name: Install tools
-        if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
           make install-tools
 
-      - name: Cache collector source code
-        id: cache-collector-source
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with:
-          path: build
-          key: snapshot-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
-
-      - name: Generate source files
-        if: steps.cache-collector-source.outputs.cache-hit != 'true'
-        run: make generate
-
-      - name: Cache Go modules
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with:
-          path: |
-            ~/go/bin
-            ~/go/pkg/mod
-          key: snapshot-mods-${{ runner.os }}-${{ hashFiles('build/go.sum') }}
+      - name: Clean go caches
+        run: |
+          df -h
+          go clean -modcache -cache
+          df -h
 
       - name: Create Snapshot for Pull Request
         run: make snapshot
+
+      - if: always()
+        name: Show FS usage (debugging)
+        run: |
+          df -h
 
       - name: Upload Pull Request Preview
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

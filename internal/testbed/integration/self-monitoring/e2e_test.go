@@ -4,6 +4,12 @@ package selfmonitoring
 
 import (
 	"fmt"
+	"os"
+	"path"
+	"path/filepath"
+	"testing"
+	"time"
+
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
@@ -14,11 +20,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pmetric"
-	"os"
-	"path"
-	"path/filepath"
-	"testing"
-	"time"
 )
 
 func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
@@ -94,7 +95,9 @@ func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes 
 	defer shutdownSinks()
 
 	collectorConfigPath := path.Join(configExamplesDir, configPath)
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
+		Host: host,
+	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,
@@ -206,7 +209,9 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	defer shutdownSinks()
 
 	collectorConfigPath := path.Join(configExamplesDir, "self-monitoring-check-metrics.yaml")
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, host)
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
+		Host: host,
+	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,

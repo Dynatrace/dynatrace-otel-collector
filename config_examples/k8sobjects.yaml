@@ -1,0 +1,61 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  k8sobjects:
+    objects:
+      - name: namespaces
+        mode: pull
+      - name: nodes
+        mode: pull
+      - name: events
+        mode: watch
+        namespaces: [${env:NAMESPACE}]
+      - name: pods
+        mode: watch
+        namespaces: [${env:NAMESPACE}]
+        label_selector: app in (busybox)
+      - name: deployments
+        mode: watch
+        namespaces: [${env:NAMESPACE}]
+        label_selector: app in (busybox)
+
+processors:
+  transform:
+    error_mode: ignore
+    log_statements:
+      - context: log # pulled objects that do not have message key in log body set
+        conditions:
+          - IsMap(log.body) and log.body["object"] == nil and log.body["message"] == nil
+        statements:
+          - flatten(log.body, resolveConflicts=true)
+          - set(log.body["message"], Concat(["State of object ", log.body["kind"], " '", log.body["metadata.name"], "'"], ""))
+      - context: log # watched objects which do have message key in log body set (e.g. k8s Events)
+        conditions:
+          - IsMap(log.body) and log.body["object"] != nil and log.body["object"]["message"] != nil
+        statements:
+          - set(log.body, log.body["object"])
+          - flatten(log.body, resolveConflicts=true)
+      - context: log # watched objects which do not have message key in log body set
+        conditions:
+          - IsMap(log.body) and log.body["object"] != nil and log.body["object"]["message"] == nil
+        statements:
+          - set(log.body, log.body["object"])
+          - flatten(log.body, resolveConflicts=true)
+          - set(log.body["message"], Concat(["Object ", log.body["kind"], " '", log.body["metadata.name"], "' changed"], ""))
+      
+  
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+service:
+  extensions: [health_check]
+  pipelines:
+    logs:
+      receivers: [k8sobjects]
+      processors: [transform]
+      exporters: [otlphttp]

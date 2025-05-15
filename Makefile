@@ -67,7 +67,7 @@ components: $(BIN)
 	$(BIN) components
 install-tools: install-go-junit-report $(TOOLS_BIN_NAMES)
 snapshot: .goreleaser.yaml $(GORELEASER)
-	$(GORELEASER) release --snapshot --clean --parallelism 1 --skip sbom
+	$(GORELEASER) release --snapshot --clean --parallelism 2 --skip archive,sbom --fail-fast
 release: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --clean --parallelism 1 --release-notes $(RELEASE_NOTES)
 

@@ -3,34 +3,32 @@ package prometheus
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"path"
-
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver"
 	otlpreceiver "github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver/otlp"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli/receiver/otlphttp"
+	"net/http"
 )
 
 type Config struct {
 	ReceiveData     bool
-	InputFile       string
 	OutputFile      string
 	ServerPort      int
 	ReceiverPort    int
 	ReceiverType    string
 	ReceiverTimeout int
+	Payload         string
 }
 
 type Cmd struct {
-	receiver  receiver.Receiver
-	inputFile string
-	port      int
+	receiver receiver.Receiver
+	port     int
+	payload  string
 }
 
 func New(cfg Config) (*Cmd, error) {
 	c := &Cmd{
-		inputFile: cfg.InputFile,
-		port:      cfg.ServerPort,
+		payload: cfg.Payload,
+		port:    cfg.ServerPort,
 	}
 
 	if cfg.ReceiveData && cfg.ReceiverPort > 0 && cfg.OutputFile != "" {
@@ -55,7 +53,7 @@ func New(cfg Config) (*Cmd, error) {
 	return c, nil
 }
 
-func (c *Cmd) Do(ctx context.Context) error {
+func (c *Cmd) Do(_ context.Context) error {
 	if c.receiver != nil {
 		if err := c.receiver.Start(); err != nil {
 			return err
@@ -64,10 +62,16 @@ func (c *Cmd) Do(ctx context.Context) error {
 	}
 
 	endpoint := fmt.Sprintf("localhost:%d", c.port)
-	dir := path.Dir(c.inputFile)
-	fmt.Printf("Serving metrics at %s from %s\n", endpoint, dir)
 	fmt.Println("Send an interrupt to stop")
-	_ = http.ListenAndServe(endpoint, http.FileServer(http.Dir(dir)))
+	_ = http.ListenAndServe(endpoint, &promHttpHandler{payload: c.payload})
 
 	return nil
+}
+
+type promHttpHandler struct {
+	payload string
+}
+
+func (p promHttpHandler) ServeHTTP(writer http.ResponseWriter, _ *http.Request) {
+	_, _ = writer.Write([]byte(p.payload))
 }

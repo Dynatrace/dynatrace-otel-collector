@@ -43,10 +43,15 @@ jobs:
           mkdir -p .tools
           make install-tools
 
-      - name: Clean go caches
+      - name: Free up disk space
         run: |
           df -h
           go clean -modcache -cache
+          rm -r /opt/hostedtoolcache/CodeQL
+          rm -r /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          rm -r /opt/hostedtoolcache/PyPy
+          rm -r /opt/hostedtoolcache/Ruby
+          rm -r /opt/hostedtoolcache/node
           df -h
 
       - name: Create Snapshot for Pull Request

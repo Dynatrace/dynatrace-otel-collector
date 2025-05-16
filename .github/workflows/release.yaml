@@ -76,6 +76,17 @@ jobs:
       - name: Extract changelog
         run: awk '/<!-- next version -->/,/<!-- previous-version -->/' CHANGELOG.md > ./release-notes.md
 
+      - name: Free up disk space
+        run: |
+          df -h
+          go clean -modcache -cache
+          rm -r /opt/hostedtoolcache/CodeQL
+          rm -r /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          rm -r /opt/hostedtoolcache/PyPy
+          rm -r /opt/hostedtoolcache/Ruby
+          rm -r /opt/hostedtoolcache/node
+          df -h
+
       - name: Create release for version tag
         run: make release
         env:

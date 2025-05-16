@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli
 
-go 1.24.2
+go 1.24.3
 
 require (
 	github.com/fluent/fluent-logger-golang v1.9.0

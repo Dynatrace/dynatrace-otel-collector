@@ -157,10 +157,10 @@ service:
         - cumulativetodelta
       exporters:
         - otlphttp
-    # logs:
-    #   receivers: 
-    #     - k8sobjects
-    #   processors:
-    #     - transform
-    #   exporters: 
-    #     - otlphttp
+    logs:
+      receivers: 
+        - k8sobjects
+      processors:
+        - transform
+      exporters: 
+        - otlphttp

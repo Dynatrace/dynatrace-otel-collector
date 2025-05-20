@@ -14,23 +14,17 @@ rules:
       - nodes
       - nodes/spec
       - nodes/stats
+      - nodes/proxy
       - pods
       - pods/status
       - replicationcontrollers
       - replicationcontrollers/status
       - resourcequotas
       - services
-      - events
     verbs:
       - get
       - list
       - watch
-  - apiGroups:
-      - ""
-    resources:
-      - nodes/proxy
-    verbs:
-      - get
   - apiGroups:
       - apps
     resources:
@@ -38,16 +32,6 @@ rules:
       - deployments
       - replicasets
       - statefulsets
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - extensions
-    resources:
-      - daemonsets
-      - deployments
-      - replicasets
     verbs:
       - get
       - list
@@ -65,14 +49,6 @@ rules:
       - autoscaling
     resources:
       - horizontalpodautoscalers
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - "events.k8s.io"
-    resources:
-      - "events"
     verbs:
       - get
       - list

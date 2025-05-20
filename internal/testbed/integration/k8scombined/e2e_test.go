@@ -1,8 +1,7 @@
-//go:build e2e
-
 package k8scombined
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -50,18 +49,20 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	}()
 
 	metricsConsumer := new(consumertest.MetricsSink)
-	//logsConsumer := new(consumertest.LogsSink)
+	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Logs: &oteltest.LogSinkConfig{
+			Consumer: logsConsumer,
+			Ports: &oteltest.ReceiverPorts{
+				Http: 4319,
+			},
+		},
 		Metrics: &oteltest.MetricSinkConfig{
 			Consumer: metricsConsumer,
+			Ports: &oteltest.ReceiverPorts{
+				Http: 4318,
+			},
 		},
-		// Logs: &oteltest.LogSinkConfig{
-		// 	Consumer: logsConsumer,
-		// 	Ports: &oteltest.ReceiverPorts{
-		// 		Grpc: 4329,
-		// 		Http: 4429,
-		// 	},
-		// },
 	})
 	defer func() {
 		// give some more time to the collector to finish exporting before stopping the sinks
@@ -77,7 +78,68 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	host := otelk8stest.HostEndpoint(t)
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
+		Templates: []string{
+			`
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - kubeletstats
+        - k8s_cluster
+      processors:
+        - k8sattributes
+        - transform
+        - cumulativetodelta
+      exporters:
+        - otlphttp
+    logs:
+      receivers: 
+        - k8sobjects
+      processors:
+        - transform
+      exporters: 
+        - otlphttp`,
+			fmt.Sprintf(`
+  otlphttp/metrics:
+    endpoint: http://%s:4318
+    headers:
+      Authorization: "Api-Token "
+  otlphttp/logs:
+    endpoint: http://%s:4319
+    headers:
+      Authorization: "Api-Token "
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - kubeletstats
+        - k8s_cluster
+      processors:
+        - k8sattributes
+        - transform
+        - cumulativetodelta
+      exporters:
+        - otlphttp/metrics
+    logs:
+      receivers: 
+        - k8sobjects
+      processors:
+        - transform
+      exporters: 
+        - otlphttp/logs`, host, host),
+		},
 	})
+
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,
@@ -104,27 +166,26 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		}
 	}()
 
-	// expectedLogs := map[string]bool{
-	// 	"Event":      false,
-	// }
+	expectedLogEvents := false
+	oteltest.WaitForLogs(t, 1, logsConsumer)
 
-	// oteltest.WaitForLogs(t, 5, logsConsumer)
+	for _, r := range logsConsumer.AllLogs() {
+		for i := 0; i < r.ResourceLogs().Len(); i++ {
+			sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
+			for j := 0; j < sm.Len(); j++ {
+				bodyMap := sm.At(j).Body().Map()
+				if kind, ok := bodyMap.Get("kind"); ok && kind.Str() == "Event" {
+					if _, ok := bodyMap.Get("message"); ok {
+						expectedLogEvents = true
+					}
+				}
+			}
+		}
+	}
 
-	// for _, r := range logsConsumer.AllLogs() {
-	// 	for i := 0; i < r.ResourceLogs().Len(); i++ {
-	// 		sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
-	// 		for j := 0; j < sm.Len(); j++ {
-	// 			bodyMap := sm.At(j).Body().Map()
-	// 			if kind, ok := bodyMap.Get("kind"); ok {
-	// 				if _, ok := bodyMap.Get("message"); ok {
-	// 					expectedLogs[kind.Str()] = true
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
+	require.True(t, expectedLogEvents, "Event logs not found")
 
-	// checkMatched(t, expectedLogs)
+	t.Logf("Logs checked successfully")
 
 	oteltest.WaitForMetrics(t, 20, metricsConsumer)
 
@@ -261,11 +322,3 @@ func substituteRandomPartWithStar(s string) string {
 func substituteLocalhostImagePrefix(s string) string {
 	return strings.Replace(s, "localhost/", "docker.io/library/", 1)
 }
-
-// func checkMatched(t *testing.T, e map[string]bool) {
-// 	for _, ok := range e {
-// 		if !ok {
-// 			require.True(t, ok, "Some resources were not found: %w", e)
-// 		}
-// 	}
-// }

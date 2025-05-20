@@ -14,8 +14,6 @@ receivers:
     allocatable_types_to_report:
       - cpu
       - memory
-      # - ephemeral-storage
-      # - storage
       - pods
     node_conditions_to_report:
       - Ready

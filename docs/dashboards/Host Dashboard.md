@@ -43,9 +43,12 @@ receivers:
           system.filesystem.utilization:
             enabled: true
       load:
+        cpu_average: true
       memory:
         metrics:
           system.memory.limit:
+            enabled: true
+          system.memory.utilization:
             enabled: true
       network:
       processes:
@@ -83,6 +86,7 @@ The following attributes are not included in the default allow list of resource 
 - `host.name`
 - `os.type`
 - `process.command_line`
+- `process.pid`
 - `process.name`
 - `mountpoint`
 - `device`

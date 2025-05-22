@@ -25,6 +25,7 @@ Dynatrace distribution of the OpenTelemetry Collector.
 - [K8sobjects Receiver](k8sobjects.yaml)
 - [Kubeletstats Receiver](kubeletstats.yaml)
 - [K8scluster Receiver](k8scluster.yaml)
+- [K8s combined scenario](k8scombined.yaml)
 - [Redaction Processor](redaction.yaml)
 - [Host Metrics Receiver](host-metrics.yaml)
 - [Dynatrace Resource Detector](resource-detection.yaml)

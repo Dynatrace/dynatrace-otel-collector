@@ -27,6 +27,7 @@ exporters:
 
 extensions:
   - gomod: go.opentelemetry.io/collector/extension/zpagesextension v0.126.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector v0.126.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension v0.126.0
 
 processors:

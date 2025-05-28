@@ -1,3 +1,9 @@
+exporters:
+  otlphttp:
+    endpoint: "${env:DT_ENDPOINT}"
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
 receivers:
   hostmetrics:
     collection_interval: 10s
@@ -20,9 +26,12 @@ receivers:
           system.filesystem.utilization:
             enabled: true
       load:
+        cpu_average: true
       memory:
         metrics:
           system.memory.limit:
+            enabled: true
+          system.memory.utilization:
             enabled: true
       network:
       processes:
@@ -52,16 +61,9 @@ processors:
         host.mac:
           enabled: true
 
-exporters:
-  debug:
-#    verbosity: detailed
-  otlphttp:
-    endpoint: "http://localhost:8000"
-    compression: none
-
 service:
   pipelines:
     metrics:
       receivers: [hostmetrics]
       processors: [resourcedetection, cumulativetodelta]
-      exporters: [otlphttp, debug]
+      exporters: [otlphttp]

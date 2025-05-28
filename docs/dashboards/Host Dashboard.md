@@ -43,13 +43,17 @@ receivers:
           system.filesystem.utilization:
             enabled: true
       load:
+        cpu_average: true
       memory:
         metrics:
           system.memory.limit:
             enabled: true
+          system.memory.utilization:
+            enabled: true
       network:
       processes:
       process:
+        mute_process_all_errors: true
         metrics:
           process.cpu.utilization:
             enabled: true

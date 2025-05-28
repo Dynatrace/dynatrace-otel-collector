@@ -112,7 +112,7 @@ jobs:
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
         with:
-          config: "./multi-node.yaml"
+          config: "./.github/actions/create-cluster/multi-node.yaml"
 
       - name: Run e2e tests
         run: |

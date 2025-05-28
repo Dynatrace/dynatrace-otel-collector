@@ -15,6 +15,10 @@ inputs:
     required: false
     description: "Name of the kind cluster"
     default: "kind"
+  config:
+    required: false
+    description: "Config for the kind cluster"
+    default: "./single-node.yaml"
 env:
   # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.24.3"
@@ -51,6 +55,7 @@ runs:
         version: ${{ inputs.kind-version }}
         node_image: "kindest/node:${{ inputs.k8s-version }}"
         kubectl_version: ${{ inputs.k8s-version }}
+        config: ${{ inputs.config }}
     
     - name: Download artifact
       uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0

@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: {{ .Name }}
   namespace: e2ek8scombined
@@ -21,10 +21,6 @@ spec:
             - /dynatrace-otel-collector
             - --config=/conf/relay.yaml
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
-          ports:
-            - name: otlp
-              containerPort: 4317
-              protocol: TCP
           env:
             - name: MY_POD_IP
               valueFrom:
@@ -35,6 +31,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           livenessProbe:
             httpGet:
               path: /
@@ -46,9 +46,12 @@ spec:
               port: 13133
             initialDelaySeconds: 3
           resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
             limits:
-              cpu: 128m
-              memory: 256Mi
+              cpu: '1'
+              memory: 512Mi
           volumeMounts:
             - mountPath: /conf
               name: opentelemetry-collector-configmap

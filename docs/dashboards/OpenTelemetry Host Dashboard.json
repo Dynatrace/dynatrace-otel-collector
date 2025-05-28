@@ -14,7 +14,7 @@
     "0": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_usage = max(system.cpu.load_average.1m)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd usage = arrayLast(cpu_usage) * 100\n\n",
+      "query": "timeseries {\n  cpu_usage = max(system.cpu.load_average.1m)\n},\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_usage) * 100\n\n",
       "visualization": "gauge",
       "visualizationSettings": {
         "thresholds": [],
@@ -199,7 +199,7 @@
     "1": {
       "title": "Memory usage",
       "type": "data",
-      "query": "timeseries {\n\tusage = max(system.memory.utilization)\n},\nby: { host.name }\n,filter: { state == \"used\" }\n| fieldsAdd MemoryUtilization = arrayLast(usage) * 100\n",
+      "query": "timeseries {\n\tusage = max(system.memory.utilization)\n},\nby: { host.name },\nfrom: -2m, to: -1m,\nfilter: { state == \"used\" AND host.name == $Hosts }\n| fieldsAdd MemoryUtilization = arrayLast(usage) * 100\n",
       "visualization": "gauge",
       "visualizationSettings": {
         "autoSelectVisualization": false,
@@ -411,11 +411,11 @@
         }
       },
       "timeframe": {
-        "tileTimeframeEnabled": false,
         "tileTimeframe": {
           "from": "now()-3m",
           "to": "now()"
-        }
+        },
+        "tileTimeframeEnabled": false
       }
     },
     "2": {
@@ -624,7 +624,7 @@
     "3": {
       "title": "Filesystem usage (root)",
       "type": "data",
-      "query": "timeseries avg(system.filesystem.utilization), by: { host.name }, filter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" }\n| fieldsAdd FileSystemUtilization = arrayAvg(`avg(system.filesystem.utilization)`)\n| summarize sum(FileSystemUtilization) * 100",
+      "query": "timeseries avg(system.filesystem.utilization),\nby: { host.name, state },\nfilter: {\n  matchesValue(host.name, $Hosts) and mountpoint == \"/\"\n},\nfrom: -2m, to: -1m\n| fieldsAdd FileSystemUtilization = arrayAvg(`avg(system.filesystem.utilization)`)\n| summarize sum(FileSystemUtilization) * 100",
       "visualization": "gauge",
       "visualizationSettings": {
         "thresholds": [],
@@ -866,10 +866,11 @@
           "columnTypeOverrides": [
             {
               "fields": [
-                "cpu_usage"
+                "cpu_usage",
+                "percentage"
               ],
               "value": "sparkline",
-              "id": 1747810714101
+              "id": 1748412085375
             }
           ]
         },
@@ -971,7 +972,7 @@
     "5": {
       "title": "CPU usage per process",
       "type": "data",
-      "query": "timeseries {\n  usage = avg(process.cpu.utilization)\n},\nby: { process.command_line, host.name, process.pid, state },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: {process.pid, process.command_line}\n| sort cpu desc",
+      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, host.name, state },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: {process.command_line}\n| sort cpu desc",
       "visualization": "table",
       "visualizationSettings": {
         "thresholds": [],
@@ -1061,7 +1062,6 @@
             }
           ],
           "columnOrder": [
-            "[\"process.pid\"]",
             "[\"process.command_line\"]",
             "[\"cpu\"]"
           ],
@@ -1847,7 +1847,7 @@
     "11": {
       "title": "Paging usage",
       "type": "data",
-      "query": "timeseries {\n  paging_usage=avg(system.paging.usage)\n}, by: {device, state, host.name}\n,filter: { host.name == $Hosts }\n\n",
+      "query": "timeseries {\n  paging_usage=avg(system.paging.usage)\n},\nby: {device, state, host.name},\nfilter: { host.name == $Hosts }\n",
       "visualization": "lineChart",
       "visualizationSettings": {
         "thresholds": [],
@@ -2499,9 +2499,10 @@
     "16": {
       "title": "Filesystem capacity (root)",
       "type": "data",
-      "query": "timeseries {\n  space=max(system.filesystem.usage)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" }\n| fieldsAdd value.A = arrayMax(space)",
+      "query": "timeseries {\n  space=sum(system.filesystem.usage, rollup: avg)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -2m, to: -1m\n| fieldsAdd fs_space = arrayLast(space)",
       "visualization": "singleValue",
       "visualizationSettings": {
+        "autoSelectVisualization": false,
         "thresholds": [],
         "chartSettings": {
           "xAxisScaling": "auto",
@@ -2556,7 +2557,7 @@
           "autoscale": true,
           "alignment": "center",
           "colorThresholdTarget": "value",
-          "recordField": "value.A",
+          "recordField": "fs_space",
           "trend": {
             "trendType": "custom",
             "isVisible": false
@@ -2584,7 +2585,15 @@
               "id": 1737358808509
             }
           ],
-          "enableThresholdInRow": false
+          "enableThresholdInRow": false,
+          "columnOrder": [
+            "[\"timeframe\",\"start\"]",
+            "[\"timeframe\",\"end\"]",
+            "[\"interval\"]",
+            "[\"host.name\"]",
+            "[\"space\"]",
+            "[\"fs_space\"]"
+          ]
         },
         "honeycomb": {
           "shape": "hexagon",
@@ -2637,14 +2646,13 @@
           "showIcon": false,
           "icon": ""
         },
-        "autoSelectVisualization": false,
         "unitsOverrides": [
           {
-            "identifier": "value.A",
+            "identifier": "fs_space",
             "unitCategory": "data",
             "baseUnit": "byte",
-            "displayUnit": null,
-            "decimals": 1,
+            "displayUnit": "gibibyte",
+            "decimals": 2,
             "suffix": "",
             "delimiter": false,
             "added": 1732273745399
@@ -2988,7 +2996,7 @@
     "25": {
       "title": "Filesystem usage",
       "type": "data",
-      "query": "timeseries {\n  filesystem_usage=avg(system.filesystem.usage)\n}, by: {mountpoint, host.name, state}\n,filter: { host.name == $Hosts and in(state, array(\"used\", \"reserved\"))}\n\n",
+      "query": "timeseries {\n  filesystem_usage=sum(system.filesystem.usage, rollup: avg)\n}, by: {mountpoint, host.name}\n,filter: { host.name == $Hosts and state == \"used\" }\n\n",
       "visualization": "lineChart",
       "visualizationSettings": {
         "thresholds": [],
@@ -3308,87 +3316,87 @@
       "h": 5
     },
     "2": {
-      "x": 17,
-      "y": 3,
+      "x": 18,
+      "y": 5,
       "w": 6,
       "h": 3
     },
     "3": {
       "x": 12,
       "y": 5,
-      "w": 5,
+      "w": 6,
       "h": 5
     },
     "4": {
       "x": 0,
       "y": 10,
-      "w": 9,
+      "w": 12,
       "h": 6
     },
     "5": {
-      "x": 9,
-      "y": 10,
-      "w": 14,
+      "x": 0,
+      "y": 35,
+      "w": 12,
       "h": 6
     },
     "6": {
-      "x": 7,
+      "x": 8,
       "y": 3,
       "w": 2,
       "h": 2
     },
     "7": {
-      "x": 9,
-      "y": 16,
-      "w": 14,
+      "x": 12,
+      "y": 35,
+      "w": 12,
       "h": 6
     },
     "8": {
-      "x": 0,
-      "y": 16,
-      "w": 9,
+      "x": 12,
+      "y": 10,
+      "w": 12,
       "h": 6
     },
     "10": {
       "x": 0,
-      "y": 23,
-      "w": 23,
+      "y": 17,
+      "w": 24,
       "h": 6
     },
     "11": {
       "x": 0,
-      "y": 29,
-      "w": 23,
+      "y": 23,
+      "w": 24,
       "h": 6
     },
     "13": {
-      "x": 13,
+      "x": 12,
       "y": 3,
-      "w": 2,
+      "w": 3,
       "h": 2
     },
     "14": {
-      "x": 9,
+      "x": 10,
       "y": 3,
       "w": 2,
       "h": 2
     },
     "15": {
-      "x": 17,
-      "y": 6,
+      "x": 18,
+      "y": 3,
       "w": 3,
       "h": 2
     },
     "16": {
-      "x": 20,
-      "y": 6,
+      "x": 21,
+      "y": 3,
       "w": 3,
       "h": 2
     },
     "18": {
       "x": 15,
       "y": 3,
-      "w": 2,
+      "w": 3,
       "h": 2
     },
     "19": {
@@ -3399,24 +3407,24 @@
     },
     "20": {
       "x": 0,
-      "y": 22,
-      "w": 23,
+      "y": 16,
+      "w": 24,
       "h": 1
     },
     "24": {
       "x": 0,
       "y": 3,
-      "w": 7,
+      "w": 8,
       "h": 2
     },
     "25": {
       "x": 0,
-      "y": 35,
-      "w": 23,
+      "y": 29,
+      "w": 24,
       "h": 6
     },
     "26": {
-      "x": 17,
+      "x": 18,
       "y": 8,
       "w": 6,
       "h": 2

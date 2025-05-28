@@ -53,6 +53,7 @@ receivers:
       network:
       processes:
       process:
+        mute_process_all_errors: true
         metrics:
           process.cpu.utilization:
             enabled: true
@@ -86,7 +87,6 @@ The following attributes are not included in the default allow list of resource 
 - `host.name`
 - `os.type`
 - `process.command_line`
-- `process.pid`
 - `process.name`
 - `mountpoint`
 - `device`

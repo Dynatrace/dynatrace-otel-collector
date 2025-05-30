@@ -165,10 +165,6 @@ connectors:
 
 extensions:
   zpages:
-  k8s_leader_elector:
-    auth_type: "serviceAccount"
-    lease_name: opentelemetry-collector
-    lease_namespace: default
   health_check:
     endpoint: "localhost:13000"
     tls:

@@ -1,3 +1,5 @@
+//go:build e2e
+
 package k8scombined
 
 import (
@@ -108,7 +110,6 @@ var defaultOptions = []pmetrictest.CompareMetricsOption{
 	pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.name", substituteRandomPartWithStar),
 	pmetrictest.ChangeResourceAttributeValue("k8s.deployment.name", substituteRandomPartWithStar),
 	pmetrictest.ChangeResourceAttributeValue("k8s.namespace.name", substituteRandomPartWithStar),
-	//pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName),
 	pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
 	pmetrictest.ChangeResourceAttributeValue("k8s.workload.name", substituteRandomPartWithStar),
 
@@ -357,8 +358,8 @@ func substituteRandomPartWithStar(s string) string {
 }
 
 func substituteWorkerNodeName(s string) string {
-	re := regexp.MustCompile(`kind-worker([0-9])?`)
-	return re.ReplaceAllString(s, "kind-worker-*")
+	re := regexp.MustCompile(`kind-worker2`)
+	return re.ReplaceAllString(s, "kind-worker")
 }
 
 func substituteLocalhostImagePrefix(s string) string {

@@ -1,5 +1,3 @@
-//go:build e2e
-
 package k8scombined
 
 import (
@@ -179,12 +177,59 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		shutdownSinks2()
 	}()
 
-	// create gateway collector
+	// create agent collector
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
-	collectorConfigPath := path.Join(configExamplesDir, "k8scombined-gateway.yaml")
+	collectorConfigPath := path.Join(configExamplesDir, "k8scombined-agent.yaml")
 	host := otelk8stest.HostEndpoint(t)
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
+		Host: host,
+	})
+
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+	collectorObjs2 := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID,
+		filepath.Join(testDir, "collector-agent"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfig,
+		},
+		host,
+	)
+
+	defer func() {
+		for _, obj := range collectorObjs2 {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
+	t.Logf("Checking agent metrics...")
+
+	oteltest.WaitForMetrics(t, 10, metricsConsumerAgent)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	// require.Nil(t, golden.WriteMetrics(t, expectedAgentFile, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1]))
+
+	var expected pmetric.Metrics
+	expected, err = golden.ReadMetrics(expectedAgentFile)
+	require.NoError(t, err)
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1],
+			append(defaultOptions, pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName))...,
+		),
+		)
+	}, 3*time.Minute, 1*time.Second)
+
+	t.Logf("Agent metrics checked successfully")
+
+	// create gateway collector
+	testID, err = testutil.GenerateRandomString(10)
+	require.NoError(t, err)
+	collectorConfigPath = path.Join(configExamplesDir, "k8scombined-gateway.yaml")
+	collectorConfig, err = k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
 			`
@@ -259,30 +304,15 @@ service:
 		host,
 	)
 
-	// create agent collector
-	testID, err = testutil.GenerateRandomString(10)
-	require.NoError(t, err)
-	collectorConfigPath = path.Join(configExamplesDir, "k8scombined-agent.yaml")
-	host = otelk8stest.HostEndpoint(t)
-	collectorConfig, err = k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host: host,
-	})
-
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs2 := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "collector-agent"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfig,
-		},
-		host,
-	)
+	// create deployment
+	deploymentFile := filepath.Join(testDir, "testobjects", "deployment.yaml")
+	buf, err = os.ReadFile(deploymentFile)
+	require.NoErrorf(t, err, "failed to read deployment object file %s", deploymentFile)
+	deploymentObj, err := otelk8stest.CreateObject(k8sClient, buf)
+	require.NoErrorf(t, err, "failed to create k8s deployment from file %s", deploymentFile)
 
 	defer func() {
-		for _, obj := range append(collectorObjs1, collectorObjs2...) {
+		for _, obj := range append(collectorObjs1, deploymentObj) {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
@@ -311,12 +341,11 @@ service:
 	t.Logf("Logs checked successfully")
 	t.Logf("Checking gateway metrics...")
 
-	oteltest.WaitForMetrics(t, 10, metricsConsumerGateway)
+	oteltest.WaitForMetrics(t, 5, metricsConsumerGateway)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedGatewayFile, metricsConsumerGateway.AllMetrics()[len(metricsConsumerGateway.AllMetrics())-1]))
 
-	var expected pmetric.Metrics
 	expected, err = golden.ReadMetrics(expectedGatewayFile)
 	require.NoError(t, err)
 
@@ -328,26 +357,6 @@ service:
 	}, 3*time.Minute, 1*time.Second)
 
 	t.Logf("Gateway metrics checked successfully")
-	t.Logf("Checking agent metrics...")
-
-	oteltest.WaitForMetrics(t, 10, metricsConsumerAgent)
-
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedAgentFile, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1]))
-
-	expected, err = golden.ReadMetrics(expectedAgentFile)
-	require.NoError(t, err)
-
-	//defaultOptions = append(defaultOptions, pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName))
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1],
-			defaultOptions...,
-		),
-		)
-	}, 3*time.Minute, 1*time.Second)
-
-	t.Logf("Agent metrics checked successfully")
 }
 
 func substituteWithStar(_ string) string { return "*" }
@@ -357,10 +366,10 @@ func substituteRandomPartWithStar(s string) string {
 	return re.ReplaceAllString(s, "-*")
 }
 
-// func substituteWorkerNodeName(s string) string {
-// 	re := regexp.MustCompile(`kind-worker2`)
-// 	return re.ReplaceAllString(s, "kind-worker")
-// }
+func substituteWorkerNodeName(s string) string {
+	re := regexp.MustCompile(`kind-worker2`)
+	return re.ReplaceAllString(s, "kind-worker")
+}
 
 func substituteLocalhostImagePrefix(s string) string {
 	return strings.Replace(s, "localhost/", "docker.io/library/", 1)

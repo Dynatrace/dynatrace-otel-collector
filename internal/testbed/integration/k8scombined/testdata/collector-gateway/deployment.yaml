@@ -14,6 +14,8 @@ spec:
         app.kubernetes.io/name: opentelemetry-collector
         app.kubernetes.io/instance: {{ .Name }}
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: kind-worker
       serviceAccountName: {{ .Name }}
       containers:
         - name: opentelemetry-collector

@@ -33,7 +33,7 @@ resourceMetrics:
             stringValue: e2ek8scombined
         - key: k8s.namespace.uid
           value:
-            stringValue: f8095dc5-bf91-4a68-a2bb-b86d27ed6fef
+            stringValue: b2c765d4-1166-4667-be00-b66b4f7b33cc
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -504,6 +504,61 @@ resourceMetrics:
             stringValue: k8s-testing-cluster
         - key: k8s.daemonset.uid
           value:
+            stringValue: 2715871a-8f61-4fd2-ac95-7ea2567d7704
+        - key: k8s.namespace.name
+          value:
+            stringValue: e2ek8scombined
+        - key: k8s.workload.kind
+          value:
+            stringValue: daemonset
+        - key: k8s.workload.name
+          value:
+            stringValue: otelcol-oaoqkgnli3
+    schemaUrl: https://opentelemetry.io/schemas/1.18.0
+    scopeMetrics:
+      - metrics:
+          - description: Number of nodes that are running at least 1 daemon pod and are supposed to run the daemon pod
+            gauge:
+              dataPoints:
+                - asInt: "2"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.daemonset.current_scheduled_nodes
+            unit: '{node}'
+          - description: Number of nodes that should be running the daemon pod (including nodes currently running the daemon pod)
+            gauge:
+              dataPoints:
+                - asInt: "2"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.daemonset.desired_scheduled_nodes
+            unit: '{node}'
+          - description: Number of nodes that are running the daemon pod, but are not supposed to run the daemon pod
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.daemonset.misscheduled_nodes
+            unit: '{node}'
+          - description: Number of nodes that should be running the daemon pod and have one or more of the daemon pod running and ready
+            gauge:
+              dataPoints:
+                - asInt: "2"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.daemonset.ready_nodes
+            unit: '{node}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver
+          version: 0.30.1
+  - resource:
+      attributes:
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
+        - key: k8s.daemonset.uid
+          value:
             stringValue: 907ecd3e-a108-49a4-8545-f28355cdee2a
         - key: k8s.namespace.name
           value:
@@ -545,61 +600,6 @@ resourceMetrics:
             gauge:
               dataPoints:
                 - asInt: "3"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.daemonset.ready_nodes
-            unit: '{node}'
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver
-          version: 0.30.1
-  - resource:
-      attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
-        - key: k8s.daemonset.uid
-          value:
-            stringValue: c9643708-b673-4af1-b5dc-a205cfe45e31
-        - key: k8s.namespace.name
-          value:
-            stringValue: e2ek8scombined
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: otelcol-sec0xczo85
-    schemaUrl: https://opentelemetry.io/schemas/1.18.0
-    scopeMetrics:
-      - metrics:
-          - description: Number of nodes that are running at least 1 daemon pod and are supposed to run the daemon pod
-            gauge:
-              dataPoints:
-                - asInt: "2"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.daemonset.current_scheduled_nodes
-            unit: '{node}'
-          - description: Number of nodes that should be running the daemon pod (including nodes currently running the daemon pod)
-            gauge:
-              dataPoints:
-                - asInt: "2"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.daemonset.desired_scheduled_nodes
-            unit: '{node}'
-          - description: Number of nodes that are running the daemon pod, but are not supposed to run the daemon pod
-            gauge:
-              dataPoints:
-                - asInt: "0"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.daemonset.misscheduled_nodes
-            unit: '{node}'
-          - description: Number of nodes that should be running the daemon pod and have one or more of the daemon pod running and ready
-            gauge:
-              dataPoints:
-                - asInt: "2"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.daemonset.ready_nodes
@@ -659,6 +659,45 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: k8s.daemonset.ready_nodes
             unit: '{node}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver
+          version: 0.30.1
+  - resource:
+      attributes:
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
+        - key: k8s.deployment.uid
+          value:
+            stringValue: 221f2293-7a4e-45b9-8507-5833dc34c502
+        - key: k8s.namespace.name
+          value:
+            stringValue: e2ek8scombined
+        - key: k8s.workload.kind
+          value:
+            stringValue: deployment
+        - key: k8s.workload.name
+          value:
+            stringValue: otelcol-cgn16fiaph
+    schemaUrl: https://opentelemetry.io/schemas/1.18.0
+    scopeMetrics:
+      - metrics:
+          - description: Total number of available pods (ready for at least minReadySeconds) targeted by this deployment
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.deployment.available
+            unit: '{pod}'
+          - description: Number of desired pods in this deployment
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.deployment.desired
+            unit: '{pod}'
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver
           version: 0.30.1
@@ -745,45 +784,6 @@ resourceMetrics:
         - key: k8s.cluster.name
           value:
             stringValue: k8s-testing-cluster
-        - key: k8s.deployment.uid
-          value:
-            stringValue: f1193382-def3-4f0a-9f5e-d75ea17d79d7
-        - key: k8s.namespace.name
-          value:
-            stringValue: e2ek8scombined
-        - key: k8s.workload.kind
-          value:
-            stringValue: deployment
-        - key: k8s.workload.name
-          value:
-            stringValue: otelcol-9tkx95pdtp
-    schemaUrl: https://opentelemetry.io/schemas/1.18.0
-    scopeMetrics:
-      - metrics:
-          - description: Total number of available pods (ready for at least minReadySeconds) targeted by this deployment
-            gauge:
-              dataPoints:
-                - asInt: "1"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.deployment.available
-            unit: '{pod}'
-          - description: Number of desired pods in this deployment
-            gauge:
-              dataPoints:
-                - asInt: "1"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.deployment.desired
-            unit: '{pod}'
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver
-          version: 0.30.1
-  - resource:
-      attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.namespace.name
           value:
             stringValue: e2ek8scombined
@@ -792,10 +792,10 @@ resourceMetrics:
             stringValue: kind-worker2
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-sec0xczo85-jn4rf
+            stringValue: otelcol-oaoqkgnli3-nbxdb
         - key: k8s.pod.uid
           value:
-            stringValue: fae99f64-35b9-4267-afdd-739719ab6f5d
+            stringValue: eb7fc344-de2a-470b-8662-4eef16af527e
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -826,13 +826,13 @@ resourceMetrics:
             stringValue: e2ek8scombined
         - key: k8s.replicaset.uid
           value:
-            stringValue: 27fd564f-1f3f-437f-b1c3-e6e5c0d51df5
+            stringValue: 85dd569f-06ca-47d6-b6d4-b1b37eaac7a5
         - key: k8s.workload.kind
           value:
             stringValue: replicaset
         - key: k8s.workload.name
           value:
-            stringValue: otelcol-9tkx95pdtp-67dbdfdc4f
+            stringValue: otelcol-cgn16fiaph-546cc7cb47
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -1592,7 +1592,7 @@ resourceMetrics:
       attributes:
         - key: container.id
           value:
-            stringValue: 4cb2412fccb9016c04f9fbf7174a94575cafc56fee27281c02945a2222cb83cd
+            stringValue: 55fd8c7fca6b2ba3ad75333b530ccc84801b8eb8529a7fd1ebe678cbbe1d4084
         - key: container.image.name
           value:
             stringValue: localhost/dynatrace-otel-collector
@@ -1613,10 +1613,10 @@ resourceMetrics:
             stringValue: kind-worker2
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-sec0xczo85-jn4rf
+            stringValue: otelcol-oaoqkgnli3-nbxdb
         - key: k8s.pod.uid
           value:
-            stringValue: fae99f64-35b9-4267-afdd-739719ab6f5d
+            stringValue: eb7fc344-de2a-470b-8662-4eef16af527e
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -2140,19 +2140,19 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.244.2.2
+            stringValue: 10.244.2.8
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-9tkx95pdtp-67dbdfdc4f-ckvw8
+            stringValue: otelcol-cgn16fiaph-546cc7cb47-gjfq9
         - key: k8s.pod.uid
           value:
-            stringValue: c1f3db88-1502-41dd-9487-a8ec6b5f278c
+            stringValue: 2937eb34-7450-44ad-81ca-65b24947d8f6
         - key: k8s.workload.kind
           value:
             stringValue: deployment
         - key: k8s.workload.name
           value:
-            stringValue: otelcol-9tkx95pdtp
+            stringValue: otelcol-cgn16fiaph
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -2189,19 +2189,19 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.244.2.3
+            stringValue: 10.244.2.9
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-sec0xczo85-nfmfr
+            stringValue: otelcol-oaoqkgnli3-5q767
         - key: k8s.pod.uid
           value:
-            stringValue: 847872ed-cce6-4b2c-82d6-e2d3f4a96051
+            stringValue: aec71a80-c7a8-410e-901e-d594013fbe5c
         - key: k8s.workload.kind
           value:
             stringValue: daemonset
         - key: k8s.workload.name
           value:
-            stringValue: otelcol-sec0xczo85
+            stringValue: otelcol-oaoqkgnli3
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -2418,7 +2418,7 @@ resourceMetrics:
       attributes:
         - key: container.id
           value:
-            stringValue: 6ba03b98642417d0c067c5ff4172a0528d9edfbb5b22726c5db5ee222f49ad71
+            stringValue: 6fd9da442ed0985c390f975dd35de31d7dbea44765ac48db182bb08b7bc59c89
         - key: container.image.name
           value:
             stringValue: localhost/dynatrace-otel-collector
@@ -2442,19 +2442,19 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.244.2.3
+            stringValue: 10.244.2.8
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-sec0xczo85-nfmfr
+            stringValue: otelcol-cgn16fiaph-546cc7cb47-gjfq9
         - key: k8s.pod.uid
           value:
-            stringValue: 847872ed-cce6-4b2c-82d6-e2d3f4a96051
+            stringValue: 2937eb34-7450-44ad-81ca-65b24947d8f6
         - key: k8s.workload.kind
           value:
-            stringValue: daemonset
+            stringValue: deployment
         - key: k8s.workload.name
           value:
-            stringValue: otelcol-sec0xczo85
+            stringValue: otelcol-cgn16fiaph
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -2512,7 +2512,7 @@ resourceMetrics:
       attributes:
         - key: container.id
           value:
-            stringValue: 6f91de61e7b20d7a108d8c05961597fb1cab74a3530bedcf425f818acfa466ff
+            stringValue: 937bce79c9433202cff28235e8e7c723e64eba57c7a1a2f30a6b65f98f3b44ea
         - key: container.image.name
           value:
             stringValue: localhost/dynatrace-otel-collector
@@ -2536,19 +2536,19 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.244.2.2
+            stringValue: 10.244.2.9
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-9tkx95pdtp-67dbdfdc4f-ckvw8
+            stringValue: otelcol-oaoqkgnli3-5q767
         - key: k8s.pod.uid
           value:
-            stringValue: c1f3db88-1502-41dd-9487-a8ec6b5f278c
+            stringValue: aec71a80-c7a8-410e-901e-d594013fbe5c
         - key: k8s.workload.kind
           value:
-            stringValue: deployment
+            stringValue: daemonset
         - key: k8s.workload.name
           value:
-            stringValue: otelcol-9tkx95pdtp
+            stringValue: otelcol-oaoqkgnli3
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:

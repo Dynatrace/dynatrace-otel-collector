@@ -338,7 +338,7 @@ service:
 	expected, err = golden.ReadMetrics(expectedAgentFile)
 	require.NoError(t, err)
 
-	defaultOptions = append(defaultOptions, pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName))
+	//defaultOptions = append(defaultOptions, pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1],
@@ -357,10 +357,10 @@ func substituteRandomPartWithStar(s string) string {
 	return re.ReplaceAllString(s, "-*")
 }
 
-func substituteWorkerNodeName(s string) string {
-	re := regexp.MustCompile(`kind-worker2`)
-	return re.ReplaceAllString(s, "kind-worker")
-}
+// func substituteWorkerNodeName(s string) string {
+// 	re := regexp.MustCompile(`kind-worker2`)
+// 	return re.ReplaceAllString(s, "kind-worker")
+// }
 
 func substituteLocalhostImagePrefix(s string) string {
 	return strings.Replace(s, "localhost/", "docker.io/library/", 1)

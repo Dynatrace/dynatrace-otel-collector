@@ -1,9 +1,6 @@
 resourceMetrics:
   - resource:
       attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.node.name
           value:
             stringValue: kind-worker
@@ -12,9 +9,9 @@ resourceMetrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: k8s.node.cpu.time
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
-                - asDouble: 0.2488659999999996
+                - asDouble: 160.357546
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -22,7 +19,7 @@ resourceMetrics:
           - description: Total CPU usage (sum of all cores per second) averaged over the sample window
             gauge:
               dataPoints:
-                - asDouble: 0.024855863
+                - asDouble: 0.024861526
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.node.cpu.usage
@@ -30,7 +27,7 @@ resourceMetrics:
           - description: Node filesystem available
             gauge:
               dataPoints:
-                - asInt: "70946779136"
+                - asInt: "70939299840"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.node.filesystem.available
@@ -46,7 +43,7 @@ resourceMetrics:
           - description: Node filesystem usage
             gauge:
               dataPoints:
-                - asInt: "35822354432"
+                - asInt: "35829833728"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.node.filesystem.usage
@@ -54,7 +51,7 @@ resourceMetrics:
           - description: Node memory available
             gauge:
               dataPoints:
-                - asInt: "12280815616"
+                - asInt: "12279214080"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.node.memory.available
@@ -70,7 +67,7 @@ resourceMetrics:
           - description: Node memory page_faults
             gauge:
               dataPoints:
-                - asInt: "364018"
+                - asInt: "1475512"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.node.memory.page_faults
@@ -78,7 +75,7 @@ resourceMetrics:
           - description: Node memory rss
             gauge:
               dataPoints:
-                - asInt: "198463488"
+                - asInt: "201228288"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.node.memory.rss
@@ -86,7 +83,7 @@ resourceMetrics:
           - description: Node memory usage
             gauge:
               dataPoints:
-                - asInt: "745533440"
+                - asInt: "751669248"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.node.memory.usage
@@ -94,7 +91,7 @@ resourceMetrics:
           - description: Node memory working_set
             gauge:
               dataPoints:
-                - asInt: "227426304"
+                - asInt: "229027840"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.node.memory.working_set
@@ -102,7 +99,7 @@ resourceMetrics:
           - description: Node network errors
             name: k8s.node.network.errors
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
                 - asInt: "0"
                   attributes:
@@ -129,9 +126,9 @@ resourceMetrics:
           - description: Node network IO
             name: k8s.node.network.io
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
-                - asInt: "1838"
+                - asInt: "16068845"
                   attributes:
                     - key: direction
                       value:
@@ -141,7 +138,7 @@ resourceMetrics:
                         stringValue: eth0
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "4135"
+                - asInt: "3479994"
                   attributes:
                     - key: direction
                       value:
@@ -158,12 +155,348 @@ resourceMetrics:
           version: 0.30.1
   - resource:
       attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.cluster.uid
           value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
+        - key: k8s.daemonset.name
+          value:
+            stringValue: kindnet
+        - key: k8s.namespace.name
+          value:
+            stringValue: kube-system
+        - key: k8s.node.name
+          value:
+            stringValue: kind-worker
+        - key: k8s.pod.ip
+          value:
+            stringValue: 10.89.0.35
+        - key: k8s.pod.name
+          value:
+            stringValue: kindnet-g58cr
+        - key: k8s.pod.uid
+          value:
+            stringValue: 3fa6cef4-776e-40f9-98c1-0a93f6be3ff8
+    scopeMetrics:
+      - metrics:
+          - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
+            name: k8s.pod.cpu.time
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asDouble: 2.223146
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: s
+          - description: Total CPU usage (sum of all cores per second) averaged over the sample window
+            gauge:
+              dataPoints:
+                - asDouble: 0.000405854
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.cpu.usage
+            unit: '{cpu}'
+          - description: Pod filesystem available
+            gauge:
+              dataPoints:
+                - asInt: "70939299840"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.filesystem.available
+            unit: By
+          - description: Pod filesystem capacity
+            gauge:
+              dataPoints:
+                - asInt: "106769133568"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.filesystem.capacity
+            unit: By
+          - description: Pod filesystem usage
+            gauge:
+              dataPoints:
+                - asInt: "471040"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.filesystem.usage
+            unit: By
+          - description: Pod memory available
+            gauge:
+              dataPoints:
+                - asInt: "42827776"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.available
+            unit: By
+          - description: Pod memory major_page_faults
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.major_page_faults
+            unit: "1"
+          - description: Pod memory page_faults
+            gauge:
+              dataPoints:
+                - asInt: "45342"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.page_faults
+            unit: "1"
+          - description: Pod memory rss
+            gauge:
+              dataPoints:
+                - asInt: "8679424"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.rss
+            unit: By
+          - description: Pod memory usage
+            gauge:
+              dataPoints:
+                - asInt: "9605120"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.usage
+            unit: By
+          - description: Pod memory working_set
+            gauge:
+              dataPoints:
+                - asInt: "9601024"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.working_set
+            unit: By
+          - description: Pod network errors
+            name: k8s.pod.network.errors
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: receive
+                    - key: interface
+                      value:
+                        stringValue: eth0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: transmit
+                    - key: interface
+                      value:
+                        stringValue: eth0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: Pod network IO
+            name: k8s.pod.network.io
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "16068845"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: receive
+                    - key: interface
+                      value:
+                        stringValue: eth0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "3479994"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: transmit
+                    - key: interface
+                      value:
+                        stringValue: eth0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: 0.30.1
+  - resource:
+      attributes:
+        - key: k8s.cluster.uid
+          value:
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
+        - key: k8s.daemonset.name
+          value:
+            stringValue: kube-proxy
+        - key: k8s.namespace.name
+          value:
+            stringValue: kube-system
+        - key: k8s.node.name
+          value:
+            stringValue: kind-worker
+        - key: k8s.pod.ip
+          value:
+            stringValue: 10.89.0.35
+        - key: k8s.pod.name
+          value:
+            stringValue: kube-proxy-pzpcs
+        - key: k8s.pod.uid
+          value:
+            stringValue: 1efa0e48-dadf-4e5c-9569-9682c1a1c487
+    scopeMetrics:
+      - metrics:
+          - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
+            name: k8s.pod.cpu.time
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asDouble: 2.204647
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: s
+          - description: Total CPU usage (sum of all cores per second) averaged over the sample window
+            gauge:
+              dataPoints:
+                - asDouble: 6.6821e-05
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.cpu.usage
+            unit: '{cpu}'
+          - description: Pod filesystem available
+            gauge:
+              dataPoints:
+                - asInt: "70939299840"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.filesystem.available
+            unit: By
+          - description: Pod filesystem capacity
+            gauge:
+              dataPoints:
+                - asInt: "106769133568"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.filesystem.capacity
+            unit: By
+          - description: Pod filesystem usage
+            gauge:
+              dataPoints:
+                - asInt: "24576"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.filesystem.usage
+            unit: By
+          - description: Pod memory major_page_faults
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.major_page_faults
+            unit: "1"
+          - description: Pod memory page_faults
+            gauge:
+              dataPoints:
+                - asInt: "73384"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.page_faults
+            unit: "1"
+          - description: Pod memory rss
+            gauge:
+              dataPoints:
+                - asInt: "12566528"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.rss
+            unit: By
+          - description: Pod memory usage
+            gauge:
+              dataPoints:
+                - asInt: "13750272"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.usage
+            unit: By
+          - description: Pod memory working_set
+            gauge:
+              dataPoints:
+                - asInt: "13750272"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.pod.memory.working_set
+            unit: By
+          - description: Pod network errors
+            name: k8s.pod.network.errors
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: receive
+                    - key: interface
+                      value:
+                        stringValue: eth0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: transmit
+                    - key: interface
+                      value:
+                        stringValue: eth0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: Pod network IO
+            name: k8s.pod.network.io
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "16068845"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: receive
+                    - key: interface
+                      value:
+                        stringValue: eth0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "3479994"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: transmit
+                    - key: interface
+                      value:
+                        stringValue: eth0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: 0.30.1
+  - resource:
+      attributes:
+        - key: k8s.cluster.uid
+          value:
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
+        - key: k8s.daemonset.name
+          value:
+            stringValue: otelcol-0p7f65moen
         - key: k8s.namespace.name
           value:
             stringValue: e2ek8scombined
@@ -172,27 +505,21 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.244.2.6
+            stringValue: 10.244.2.27
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-colgrq3c3v-w7r96
+            stringValue: otelcol-0p7f65moen-wwc86
         - key: k8s.pod.uid
           value:
-            stringValue: d73f0970-5492-4094-80a9-8c4b422eaaca
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: otelcol-colgrq3c3v
+            stringValue: e2832591-b648-4535-af3d-2b214f3ad5de
     scopeMetrics:
       - metrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: k8s.pod.cpu.time
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
-                - asDouble: 0
+                - asDouble: 1.138456
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -200,7 +527,7 @@ resourceMetrics:
           - description: Total CPU usage (sum of all cores per second) averaged over the sample window
             gauge:
               dataPoints:
-                - asDouble: 0.001970188
+                - asDouble: 0.005487955
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.pod.cpu.usage
@@ -208,7 +535,7 @@ resourceMetrics:
           - description: Pod filesystem available
             gauge:
               dataPoints:
-                - asInt: "70946779136"
+                - asInt: "70939299840"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.pod.filesystem.available
@@ -224,7 +551,7 @@ resourceMetrics:
           - description: Pod filesystem usage
             gauge:
               dataPoints:
-                - asInt: "24576"
+                - asInt: "20480"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.pod.filesystem.usage
@@ -232,7 +559,7 @@ resourceMetrics:
           - description: Pod memory available
             gauge:
               dataPoints:
-                - asInt: "435843072"
+                - asInt: "439574528"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.pod.memory.available
@@ -248,7 +575,7 @@ resourceMetrics:
           - description: Pod memory page_faults
             gauge:
               dataPoints:
-                - asInt: "16047"
+                - asInt: "16176"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.pod.memory.page_faults
@@ -256,7 +583,7 @@ resourceMetrics:
           - description: Pod memory rss
             gauge:
               dataPoints:
-                - asInt: "99672064"
+                - asInt: "95911936"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.pod.memory.rss
@@ -264,7 +591,7 @@ resourceMetrics:
           - description: Pod memory usage
             gauge:
               dataPoints:
-                - asInt: "101027840"
+                - asInt: "97296384"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.pod.memory.usage
@@ -272,7 +599,7 @@ resourceMetrics:
           - description: Pod memory working_set
             gauge:
               dataPoints:
-                - asInt: "101027840"
+                - asInt: "97296384"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.pod.memory.working_set
@@ -280,7 +607,7 @@ resourceMetrics:
           - description: Pod network errors
             name: k8s.pod.network.errors
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
                 - asInt: "0"
                   attributes:
@@ -307,9 +634,9 @@ resourceMetrics:
           - description: Pod network IO
             name: k8s.pod.network.io
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
-                - asInt: "33173"
+                - asInt: "172533"
                   attributes:
                     - key: direction
                       value:
@@ -319,7 +646,7 @@ resourceMetrics:
                         stringValue: eth0
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "4910"
+                - asInt: "32691"
                   attributes:
                     - key: direction
                       value:
@@ -336,363 +663,15 @@ resourceMetrics:
           version: 0.30.1
   - resource:
       attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.cluster.uid
           value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
-        - key: k8s.namespace.name
-          value:
-            stringValue: kube-system
-        - key: k8s.node.name
-          value:
-            stringValue: kind-worker
-        - key: k8s.pod.ip
-          value:
-            stringValue: 10.89.0.30
-        - key: k8s.pod.name
-          value:
-            stringValue: kindnet-54pkt
-        - key: k8s.pod.uid
-          value:
-            stringValue: ce01dc5f-5bf2-4686-9007-9e44c085f979
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: kindnet
-    scopeMetrics:
-      - metrics:
-          - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
-            name: k8s.pod.cpu.time
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: s
-          - description: Total CPU usage (sum of all cores per second) averaged over the sample window
-            gauge:
-              dataPoints:
-                - asDouble: 0.000161011
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.cpu.usage
-            unit: '{cpu}'
-          - description: Pod filesystem available
-            gauge:
-              dataPoints:
-                - asInt: "70946779136"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.filesystem.available
-            unit: By
-          - description: Pod filesystem capacity
-            gauge:
-              dataPoints:
-                - asInt: "106769133568"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.filesystem.capacity
-            unit: By
-          - description: Pod filesystem usage
-            gauge:
-              dataPoints:
-                - asInt: "77824"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.filesystem.usage
-            unit: By
-          - description: Pod memory available
-            gauge:
-              dataPoints:
-                - asInt: "43155456"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.available
-            unit: By
-          - description: Pod memory major_page_faults
-            gauge:
-              dataPoints:
-                - asInt: "0"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.major_page_faults
-            unit: "1"
-          - description: Pod memory page_faults
-            gauge:
-              dataPoints:
-                - asInt: "14984"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.page_faults
-            unit: "1"
-          - description: Pod memory rss
-            gauge:
-              dataPoints:
-                - asInt: "8343552"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.rss
-            unit: By
-          - description: Pod memory usage
-            gauge:
-              dataPoints:
-                - asInt: "9277440"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.usage
-            unit: By
-          - description: Pod memory working_set
-            gauge:
-              dataPoints:
-                - asInt: "9273344"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.working_set
-            unit: By
-          - description: Pod network errors
-            name: k8s.pod.network.errors
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asInt: "0"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: receive
-                    - key: interface
-                      value:
-                        stringValue: eth0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: transmit
-                    - key: interface
-                      value:
-                        stringValue: eth0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: "1"
-          - description: Pod network IO
-            name: k8s.pod.network.io
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asInt: "1207"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: receive
-                    - key: interface
-                      value:
-                        stringValue: eth0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "3566"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: transmit
-                    - key: interface
-                      value:
-                        stringValue: eth0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: By
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.30.1
-  - resource:
-      attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
-        - key: k8s.cluster.uid
-          value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
-        - key: k8s.namespace.name
-          value:
-            stringValue: kube-system
-        - key: k8s.node.name
-          value:
-            stringValue: kind-worker
-        - key: k8s.pod.ip
-          value:
-            stringValue: 10.89.0.30
-        - key: k8s.pod.name
-          value:
-            stringValue: kube-proxy-4lgfc
-        - key: k8s.pod.uid
-          value:
-            stringValue: ba4585cb-4b2e-4e1f-bb0e-218076eac6c2
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: kube-proxy
-    scopeMetrics:
-      - metrics:
-          - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
-            name: k8s.pod.cpu.time
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 0.005471000000000004
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: s
-          - description: Total CPU usage (sum of all cores per second) averaged over the sample window
-            gauge:
-              dataPoints:
-                - asDouble: 0.000289391
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.cpu.usage
-            unit: '{cpu}'
-          - description: Pod filesystem available
-            gauge:
-              dataPoints:
-                - asInt: "70946779136"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.filesystem.available
-            unit: By
-          - description: Pod filesystem capacity
-            gauge:
-              dataPoints:
-                - asInt: "106769133568"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.filesystem.capacity
-            unit: By
-          - description: Pod filesystem usage
-            gauge:
-              dataPoints:
-                - asInt: "24576"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.filesystem.usage
-            unit: By
-          - description: Pod memory major_page_faults
-            gauge:
-              dataPoints:
-                - asInt: "0"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.major_page_faults
-            unit: "1"
-          - description: Pod memory page_faults
-            gauge:
-              dataPoints:
-                - asInt: "23354"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.page_faults
-            unit: "1"
-          - description: Pod memory rss
-            gauge:
-              dataPoints:
-                - asInt: "11665408"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.rss
-            unit: By
-          - description: Pod memory usage
-            gauge:
-              dataPoints:
-                - asInt: "12824576"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.usage
-            unit: By
-          - description: Pod memory working_set
-            gauge:
-              dataPoints:
-                - asInt: "12824576"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.pod.memory.working_set
-            unit: By
-          - description: Pod network errors
-            name: k8s.pod.network.errors
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asInt: "0"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: receive
-                    - key: interface
-                      value:
-                        stringValue: eth0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: transmit
-                    - key: interface
-                      value:
-                        stringValue: eth0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: "1"
-          - description: Pod network IO
-            name: k8s.pod.network.io
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asInt: "2418"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: receive
-                    - key: interface
-                      value:
-                        stringValue: eth0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "7106"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: transmit
-                    - key: interface
-                      value:
-                        stringValue: eth0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: By
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.30.1
-  - resource:
-      attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
-        - key: k8s.cluster.uid
-          value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
         - key: k8s.container.name
           value:
             stringValue: kindnet-cni
+        - key: k8s.daemonset.name
+          value:
+            stringValue: kindnet
         - key: k8s.namespace.name
           value:
             stringValue: kube-system
@@ -701,27 +680,21 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.89.0.30
+            stringValue: 10.89.0.35
         - key: k8s.pod.name
           value:
-            stringValue: kindnet-54pkt
+            stringValue: kindnet-g58cr
         - key: k8s.pod.uid
           value:
-            stringValue: ce01dc5f-5bf2-4686-9007-9e44c085f979
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: kindnet
+            stringValue: 3fa6cef4-776e-40f9-98c1-0a93f6be3ff8
     scopeMetrics:
       - metrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: container.cpu.time
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
-                - asDouble: 0.0008800000000000474
+                - asDouble: 2.216089
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -729,7 +702,7 @@ resourceMetrics:
           - description: Total CPU usage (sum of all cores per second) averaged over the sample window
             gauge:
               dataPoints:
-                - asDouble: 7.9043e-05
+                - asDouble: 5.7018e-05
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.cpu.usage
@@ -737,7 +710,7 @@ resourceMetrics:
           - description: Container filesystem available
             gauge:
               dataPoints:
-                - asInt: "70946779136"
+                - asInt: "70939299840"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.filesystem.available
@@ -761,7 +734,7 @@ resourceMetrics:
           - description: Container memory available
             gauge:
               dataPoints:
-                - asInt: "43397120"
+                - asInt: "43073536"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.available
@@ -777,7 +750,7 @@ resourceMetrics:
           - description: Container memory page_faults
             gauge:
               dataPoints:
-                - asInt: "13746"
+                - asInt: "44197"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.page_faults
@@ -785,7 +758,7 @@ resourceMetrics:
           - description: Container memory rss
             gauge:
               dataPoints:
-                - asInt: "8306688"
+                - asInt: "8642560"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.rss
@@ -793,7 +766,7 @@ resourceMetrics:
           - description: Container memory usage
             gauge:
               dataPoints:
-                - asInt: "9035776"
+                - asInt: "9359360"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.usage
@@ -801,7 +774,7 @@ resourceMetrics:
           - description: Container memory working_set
             gauge:
               dataPoints:
-                - asInt: "9031680"
+                - asInt: "9355264"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.working_set
@@ -811,13 +784,13 @@ resourceMetrics:
           version: 0.30.1
   - resource:
       attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.cluster.uid
           value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
         - key: k8s.container.name
+          value:
+            stringValue: kube-proxy
+        - key: k8s.daemonset.name
           value:
             stringValue: kube-proxy
         - key: k8s.namespace.name
@@ -828,27 +801,21 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.89.0.30
+            stringValue: 10.89.0.35
         - key: k8s.pod.name
           value:
-            stringValue: kube-proxy-4lgfc
+            stringValue: kube-proxy-pzpcs
         - key: k8s.pod.uid
           value:
-            stringValue: ba4585cb-4b2e-4e1f-bb0e-218076eac6c2
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: kube-proxy
+            stringValue: 1efa0e48-dadf-4e5c-9569-9682c1a1c487
     scopeMetrics:
       - metrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: container.cpu.time
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
-                - asDouble: 0.005342000000000013
+                - asDouble: 2.200337
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -856,7 +823,7 @@ resourceMetrics:
           - description: Total CPU usage (sum of all cores per second) averaged over the sample window
             gauge:
               dataPoints:
-                - asDouble: 0.000370915
+                - asDouble: 2.8662e-05
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.cpu.usage
@@ -864,7 +831,7 @@ resourceMetrics:
           - description: Container filesystem available
             gauge:
               dataPoints:
-                - asInt: "70946779136"
+                - asInt: "70939299840"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.filesystem.available
@@ -896,7 +863,7 @@ resourceMetrics:
           - description: Container memory page_faults
             gauge:
               dataPoints:
-                - asInt: "22444"
+                - asInt: "72369"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.page_faults
@@ -904,7 +871,7 @@ resourceMetrics:
           - description: Container memory rss
             gauge:
               dataPoints:
-                - asInt: "11628544"
+                - asInt: "12529664"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.rss
@@ -912,7 +879,7 @@ resourceMetrics:
           - description: Container memory usage
             gauge:
               dataPoints:
-                - asInt: "12595200"
+                - asInt: "13524992"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.usage
@@ -920,7 +887,7 @@ resourceMetrics:
           - description: Container memory working_set
             gauge:
               dataPoints:
-                - asInt: "12595200"
+                - asInt: "13524992"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.working_set
@@ -930,15 +897,15 @@ resourceMetrics:
           version: 0.30.1
   - resource:
       attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.cluster.uid
           value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
         - key: k8s.container.name
           value:
             stringValue: opentelemetry-collector
+        - key: k8s.daemonset.name
+          value:
+            stringValue: otelcol-0p7f65moen
         - key: k8s.namespace.name
           value:
             stringValue: e2ek8scombined
@@ -947,27 +914,21 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.244.2.6
+            stringValue: 10.244.2.27
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-colgrq3c3v-w7r96
+            stringValue: otelcol-0p7f65moen-wwc86
         - key: k8s.pod.uid
           value:
-            stringValue: d73f0970-5492-4094-80a9-8c4b422eaaca
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: otelcol-colgrq3c3v
+            stringValue: e2832591-b648-4535-af3d-2b214f3ad5de
     scopeMetrics:
       - metrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: container.cpu.time
             sum:
-              aggregationTemporality: 1
+              aggregationTemporality: 2
               dataPoints:
-                - asDouble: 0.03697600000000012
+                - asDouble: 1.114746
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -975,7 +936,7 @@ resourceMetrics:
           - description: Total CPU usage (sum of all cores per second) averaged over the sample window
             gauge:
               dataPoints:
-                - asDouble: 0.002307634
+                - asDouble: 0.007817041
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.cpu.usage
@@ -983,7 +944,7 @@ resourceMetrics:
           - description: Container filesystem available
             gauge:
               dataPoints:
-                - asInt: "70946779136"
+                - asInt: "70939299840"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.filesystem.available
@@ -1007,7 +968,7 @@ resourceMetrics:
           - description: Container memory available
             gauge:
               dataPoints:
-                - asInt: "435335168"
+                - asInt: "439828480"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.available
@@ -1023,7 +984,7 @@ resourceMetrics:
           - description: Container memory page_faults
             gauge:
               dataPoints:
-                - asInt: "14982"
+                - asInt: "15021"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.page_faults
@@ -1031,7 +992,7 @@ resourceMetrics:
           - description: Container memory rss
             gauge:
               dataPoints:
-                - asInt: "100384768"
+                - asInt: "95862784"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.rss
@@ -1039,7 +1000,7 @@ resourceMetrics:
           - description: Container memory usage
             gauge:
               dataPoints:
-                - asInt: "101535744"
+                - asInt: "97042432"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.usage
@@ -1047,7 +1008,7 @@ resourceMetrics:
           - description: Container memory working_set
             gauge:
               dataPoints:
-                - asInt: "101535744"
+                - asInt: "97042432"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.memory.working_set
@@ -1057,89 +1018,12 @@ resourceMetrics:
           version: 0.30.1
   - resource:
       attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.cluster.uid
           value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
-        - key: k8s.namespace.name
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
+        - key: k8s.daemonset.name
           value:
-            stringValue: e2ek8scombined
-        - key: k8s.node.name
-          value:
-            stringValue: kind-worker
-        - key: k8s.pod.ip
-          value:
-            stringValue: 10.244.2.6
-        - key: k8s.pod.name
-          value:
-            stringValue: otelcol-colgrq3c3v-w7r96
-        - key: k8s.pod.uid
-          value:
-            stringValue: d73f0970-5492-4094-80a9-8c4b422eaaca
-        - key: k8s.volume.name
-          value:
-            stringValue: kube-api-access-stc6s
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: otelcol-colgrq3c3v
-    scopeMetrics:
-      - metrics:
-          - description: The number of available bytes in the volume.
-            gauge:
-              dataPoints:
-                - asInt: "536858624"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.volume.available
-            unit: By
-          - description: The total capacity in bytes of the volume.
-            gauge:
-              dataPoints:
-                - asInt: "536870912"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.volume.capacity
-            unit: By
-          - description: The total inodes in the filesystem.
-            gauge:
-              dataPoints:
-                - asInt: "1526885"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.volume.inodes
-            unit: "1"
-          - description: The free inodes in the filesystem.
-            gauge:
-              dataPoints:
-                - asInt: "1526875"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.volume.inodes.free
-            unit: "1"
-          - description: The inodes used by the filesystem. This may not equal inodes - free because filesystem may share inodes with other filesystems.
-            gauge:
-              dataPoints:
-                - asInt: "9"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: k8s.volume.inodes.used
-            unit: "1"
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.30.1
-  - resource:
-      attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
-        - key: k8s.cluster.uid
-          value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
+            stringValue: kindnet
         - key: k8s.namespace.name
           value:
             stringValue: kube-system
@@ -1148,22 +1032,16 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.89.0.30
+            stringValue: 10.89.0.35
         - key: k8s.pod.name
           value:
-            stringValue: kindnet-54pkt
+            stringValue: kindnet-g58cr
         - key: k8s.pod.uid
           value:
-            stringValue: ce01dc5f-5bf2-4686-9007-9e44c085f979
+            stringValue: 3fa6cef4-776e-40f9-98c1-0a93f6be3ff8
         - key: k8s.volume.name
           value:
-            stringValue: kube-api-access-5jzn2
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: kindnet
+            stringValue: kube-api-access-mzh62
     scopeMetrics:
       - metrics:
           - description: The number of available bytes in the volume.
@@ -1211,12 +1089,12 @@ resourceMetrics:
           version: 0.30.1
   - resource:
       attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.cluster.uid
           value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
+        - key: k8s.daemonset.name
+          value:
+            stringValue: kube-proxy
         - key: k8s.namespace.name
           value:
             stringValue: kube-system
@@ -1225,22 +1103,16 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.89.0.30
+            stringValue: 10.89.0.35
         - key: k8s.pod.name
           value:
-            stringValue: kube-proxy-4lgfc
+            stringValue: kube-proxy-pzpcs
         - key: k8s.pod.uid
           value:
-            stringValue: ba4585cb-4b2e-4e1f-bb0e-218076eac6c2
+            stringValue: 1efa0e48-dadf-4e5c-9569-9682c1a1c487
         - key: k8s.volume.name
           value:
-            stringValue: kube-api-access-tt4ck
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: kube-proxy
+            stringValue: kube-api-access-9bpfs
     scopeMetrics:
       - metrics:
           - description: The number of available bytes in the volume.
@@ -1288,12 +1160,12 @@ resourceMetrics:
           version: 0.30.1
   - resource:
       attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.cluster.uid
           value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
+        - key: k8s.daemonset.name
+          value:
+            stringValue: otelcol-0p7f65moen
         - key: k8s.namespace.name
           value:
             stringValue: e2ek8scombined
@@ -1302,31 +1174,22 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.244.2.6
+            stringValue: 10.244.2.27
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-colgrq3c3v-w7r96
+            stringValue: otelcol-0p7f65moen-wwc86
         - key: k8s.pod.uid
           value:
-            stringValue: d73f0970-5492-4094-80a9-8c4b422eaaca
+            stringValue: e2832591-b648-4535-af3d-2b214f3ad5de
         - key: k8s.volume.name
           value:
-            stringValue: opentelemetry-collector-configmap
-        - key: k8s.volume.type
-          value:
-            stringValue: configMap
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: otelcol-colgrq3c3v
+            stringValue: kube-api-access-nq6mx
     scopeMetrics:
       - metrics:
           - description: The number of available bytes in the volume.
             gauge:
               dataPoints:
-                - asInt: "70946779136"
+                - asInt: "536858624"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.volume.available
@@ -1334,7 +1197,7 @@ resourceMetrics:
           - description: The total capacity in bytes of the volume.
             gauge:
               dataPoints:
-                - asInt: "106769133568"
+                - asInt: "536870912"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.volume.capacity
@@ -1342,7 +1205,7 @@ resourceMetrics:
           - description: The total inodes in the filesystem.
             gauge:
               dataPoints:
-                - asInt: "52166080"
+                - asInt: "1526885"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.volume.inodes
@@ -1350,7 +1213,7 @@ resourceMetrics:
           - description: The free inodes in the filesystem.
             gauge:
               dataPoints:
-                - asInt: "51745350"
+                - asInt: "1526875"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.volume.inodes.free
@@ -1358,7 +1221,7 @@ resourceMetrics:
           - description: The inodes used by the filesystem. This may not equal inodes - free because filesystem may share inodes with other filesystems.
             gauge:
               dataPoints:
-                - asInt: "5"
+                - asInt: "9"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.volume.inodes.used
@@ -1368,12 +1231,12 @@ resourceMetrics:
           version: 0.30.1
   - resource:
       attributes:
-        - key: k8s.cluster.name
-          value:
-            stringValue: k8s-testing-cluster
         - key: k8s.cluster.uid
           value:
-            stringValue: f9900a79-ecd3-4a06-bf37-e0fbff305c55
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
+        - key: k8s.daemonset.name
+          value:
+            stringValue: kube-proxy
         - key: k8s.namespace.name
           value:
             stringValue: kube-system
@@ -1382,31 +1245,25 @@ resourceMetrics:
             stringValue: kind-worker
         - key: k8s.pod.ip
           value:
-            stringValue: 10.89.0.30
+            stringValue: 10.89.0.35
         - key: k8s.pod.name
           value:
-            stringValue: kube-proxy-4lgfc
+            stringValue: kube-proxy-pzpcs
         - key: k8s.pod.uid
           value:
-            stringValue: ba4585cb-4b2e-4e1f-bb0e-218076eac6c2
+            stringValue: 1efa0e48-dadf-4e5c-9569-9682c1a1c487
         - key: k8s.volume.name
           value:
             stringValue: kube-proxy
         - key: k8s.volume.type
           value:
             stringValue: configMap
-        - key: k8s.workload.kind
-          value:
-            stringValue: daemonset
-        - key: k8s.workload.name
-          value:
-            stringValue: kube-proxy
     scopeMetrics:
       - metrics:
           - description: The number of available bytes in the volume.
             gauge:
               dataPoints:
-                - asInt: "70946897920"
+                - asInt: "70939054080"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.volume.available
@@ -1430,7 +1287,7 @@ resourceMetrics:
           - description: The free inodes in the filesystem.
             gauge:
               dataPoints:
-                - asInt: "51745465"
+                - asInt: "51745306"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.volume.inodes.free
@@ -1439,6 +1296,80 @@ resourceMetrics:
             gauge:
               dataPoints:
                 - asInt: "7"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.volume.inodes.used
+            unit: "1"
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: 0.30.1
+  - resource:
+      attributes:
+        - key: k8s.cluster.uid
+          value:
+            stringValue: d67f6814-4d32-467c-9c54-dfbb0f9d376a
+        - key: k8s.daemonset.name
+          value:
+            stringValue: otelcol-0p7f65moen
+        - key: k8s.namespace.name
+          value:
+            stringValue: e2ek8scombined
+        - key: k8s.node.name
+          value:
+            stringValue: kind-worker
+        - key: k8s.pod.ip
+          value:
+            stringValue: 10.244.2.27
+        - key: k8s.pod.name
+          value:
+            stringValue: otelcol-0p7f65moen-wwc86
+        - key: k8s.pod.uid
+          value:
+            stringValue: e2832591-b648-4535-af3d-2b214f3ad5de
+        - key: k8s.volume.name
+          value:
+            stringValue: opentelemetry-collector-configmap
+        - key: k8s.volume.type
+          value:
+            stringValue: configMap
+    scopeMetrics:
+      - metrics:
+          - description: The number of available bytes in the volume.
+            gauge:
+              dataPoints:
+                - asInt: "70939033600"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.volume.available
+            unit: By
+          - description: The total capacity in bytes of the volume.
+            gauge:
+              dataPoints:
+                - asInt: "106769133568"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.volume.capacity
+            unit: By
+          - description: The total inodes in the filesystem.
+            gauge:
+              dataPoints:
+                - asInt: "52166080"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.volume.inodes
+            unit: "1"
+          - description: The free inodes in the filesystem.
+            gauge:
+              dataPoints:
+                - asInt: "51745306"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: k8s.volume.inodes.free
+            unit: "1"
+          - description: The inodes used by the filesystem. This may not equal inodes - free because filesystem may share inodes with other filesystems.
+            gauge:
+              dataPoints:
+                - asInt: "5"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: k8s.volume.inodes.used

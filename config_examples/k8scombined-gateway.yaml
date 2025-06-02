@@ -3,6 +3,10 @@ extensions:
     endpoint: 0.0.0.0:13133
 
 receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
   k8sobjects:
     error_mode: ignore
     objects:
@@ -98,6 +102,8 @@ processors:
           - from: connection
 
 exporters:
+  debug:
+    verbosity: detailed
   otlphttp:
     endpoint: ${env:DT_ENDPOINT}
     headers:
@@ -107,6 +113,14 @@ service:
   extensions:
     - health_check
   pipelines:
+    metrics/forward:
+      receivers:
+        - otlp
+      processors:
+        - transform
+        - cumulativetodelta
+      exporters:
+        - otlphttp
     metrics:
       receivers:
         - k8s_cluster

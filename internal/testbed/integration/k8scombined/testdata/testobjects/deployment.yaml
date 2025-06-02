@@ -16,6 +16,8 @@ spec:
       labels:
         app: busybox
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: kind-worker
       containers:
       - name: busybox
         image: busybox

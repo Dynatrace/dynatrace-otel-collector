@@ -1,5 +1,3 @@
-//go:build e2e
-
 package k8scombined
 
 import (
@@ -167,7 +165,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		Metrics: &oteltest.MetricSinkConfig{
 			Consumer: metricsConsumerAgent,
 			Ports: &oteltest.ReceiverPorts{
-				Http: 4318,
+				Http: 4321,
 			},
 		},
 	})
@@ -182,10 +180,46 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	// create agent collector
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
-	collectorConfigPath := path.Join(configExamplesDir, "k8scombined-agent.yaml")
 	host := otelk8stest.HostEndpoint(t)
+	collectorConfigPath := path.Join(configExamplesDir, "k8scombined-agent.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
+		Templates: []string{
+			`
+  otlp:
+    endpoint: otelcolsvc:4317
+    tls:
+      insecure: true
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - kubeletstats
+      processors:
+        - k8sattributes
+      exporters:
+        - otlp`,
+			fmt.Sprintf(`
+  otlphttp:
+    endpoint: http://%s:4321
+    headers:
+      Authorization: "Api-Token "
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - kubeletstats
+      processors:
+        - k8sattributes
+      exporters:
+        - otlphttp`, host),
+		},
 	})
 
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
@@ -209,7 +243,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	t.Logf("Checking agent metrics...")
 
-	oteltest.WaitForMetrics(t, 10, metricsConsumerAgent)
+	oteltest.WaitForMetrics(t, 5, metricsConsumerAgent)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedAgentFile, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1]))
@@ -218,9 +252,16 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	expected, err = golden.ReadMetrics(expectedAgentFile)
 	require.NoError(t, err)
 
+	agentOptions := []pmetrictest.CompareMetricsOption{
+		pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.deployment.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName),
+	}
+
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1],
-			append(defaultOptions, pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName))...,
+			append(defaultOptions, agentOptions...)...,
 		),
 		)
 	}, 3*time.Minute, 1*time.Second)
@@ -228,8 +269,6 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	t.Logf("Agent metrics checked successfully")
 
 	// create gateway collector
-	testID, err = testutil.GenerateRandomString(10)
-	require.NoError(t, err)
 	collectorConfigPath = path.Join(configExamplesDir, "k8scombined-gateway.yaml")
 	collectorConfig, err = k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
@@ -244,6 +283,14 @@ service:
   extensions:
     - health_check
   pipelines:
+    metrics/forward:
+      receivers:
+        - otlp
+      processors:
+        - transform
+        - cumulativetodelta
+      exporters:
+        - otlphttp
     metrics:
       receivers:
         - k8s_cluster

@@ -263,7 +263,7 @@ service:
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1],
-			append(defaultOptions, agentOptions...)...,
+			append(agentOptions, defaultOptions...)...,
 		),
 		)
 	}, 3*time.Minute, 1*time.Second)

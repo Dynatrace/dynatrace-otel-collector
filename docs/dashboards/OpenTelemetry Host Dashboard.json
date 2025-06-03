@@ -2,10 +2,11 @@
   "version": 18,
   "variables": [
     {
-      "version": 1,
       "key": "Hosts",
-      "type": "query",
       "visible": true,
+      "type": "query",
+      "version": 1,
+      "editable": true,
       "input": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name }\n| fieldsAdd host.name\n| fieldsRemove timeframe, interval, uptime",
       "multiple": false
     }
@@ -972,7 +973,7 @@
     "5": {
       "title": "CPU usage per process",
       "type": "data",
-      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, host.name, state },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: {process.command_line}\n| sort cpu desc",
+      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name, state },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: { process.command_line }\n| sort cpu desc",
       "visualization": "table",
       "visualizationSettings": {
         "thresholds": [],
@@ -1302,7 +1303,7 @@
     "7": {
       "title": "Memory usage per process",
       "type": "data",
-      "query": "timeseries {\n  usage = avg(process.memory.usage)\n},\nby: { process.command_line, host.name, process.pid },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd memory = arrayLast(usage)\n| fieldsRemove host.name, usage\n| sort memory desc",
+      "query": "timeseries {\n  usage = sum(process.memory.usage, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd memory = arrayLast(usage)\n| fieldsRemove host.name, usage\n| summarize memory = sum(memory), by: { process.command_line }\n| sort memory desc",
       "visualization": "table",
       "visualizationSettings": {
         "thresholds": [],
@@ -1342,12 +1343,6 @@
           },
           "legend": {
             "hidden": true
-          },
-          "fieldMapping": {
-            "timestamp": "timeframe",
-            "leftAxisValues": [
-              "interval"
-            ]
           }
         },
         "singleValue": {
@@ -1379,9 +1374,6 @@
             ],
             [
               "interval"
-            ],
-            [
-              "process.pid"
             ]
           ],
           "linewrapEnabled": false,
@@ -1393,15 +1385,11 @@
             ]
           ],
           "columnWidths": {
-            "[\"process.command_line\"]": 792.8
+            "[\"process.command_line\"]": 526.8
           },
           "columnTypeOverrides": [],
           "columnOrder": [
-            "[\"timeframe\",\"start\"]",
-            "[\"timeframe\",\"end\"]",
-            "[\"interval\"]",
             "[\"process.command_line\"]",
-            "[\"process.pid\"]",
             "[\"memory\"]"
           ],
           "sortBy": [
@@ -3334,8 +3322,8 @@
       "h": 6
     },
     "5": {
-      "x": 0,
-      "y": 35,
+      "x": 12,
+      "y": 10,
       "w": 12,
       "h": 6
     },
@@ -3347,25 +3335,25 @@
     },
     "7": {
       "x": 12,
-      "y": 35,
+      "y": 16,
       "w": 12,
       "h": 6
     },
     "8": {
-      "x": 12,
-      "y": 10,
+      "x": 0,
+      "y": 16,
       "w": 12,
       "h": 6
     },
     "10": {
       "x": 0,
-      "y": 17,
+      "y": 23,
       "w": 24,
       "h": 6
     },
     "11": {
       "x": 0,
-      "y": 23,
+      "y": 29,
       "w": 24,
       "h": 6
     },
@@ -3407,7 +3395,7 @@
     },
     "20": {
       "x": 0,
-      "y": 16,
+      "y": 22,
       "w": 24,
       "h": 1
     },
@@ -3419,7 +3407,7 @@
     },
     "25": {
       "x": 0,
-      "y": 29,
+      "y": 35,
       "w": 24,
       "h": 6
     },

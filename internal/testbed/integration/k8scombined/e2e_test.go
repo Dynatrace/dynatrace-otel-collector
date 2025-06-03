@@ -201,6 +201,7 @@ service:
       receivers:
         - kubeletstats
       processors:
+        - filter
         - k8sattributes
       exporters:
         - otlp`,
@@ -218,6 +219,7 @@ service:
       receivers:
         - kubeletstats
       processors:
+        - filter
         - k8sattributes
       exporters:
         - otlphttp`, host),

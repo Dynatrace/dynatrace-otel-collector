@@ -96,9 +96,7 @@ The following attributes are not included in the default allow list of resource 
 - `process.name`
 - `process.pid`
     - CAUTION: This resource attribute only needs to be added when you have processes that spawn sub-processes to be
-      able to accurately show CPU/memory usage per process. Only add the attribute if you have a need for it, since it
-      is otherwise discouraged to use the `process.pid` as a resource attribute due to the risk of cardinality explosion
-      in your metrics.
+      able to accurately show CPU/memory usage per process. Only add the `process.pid` attribute if you have a need for it. Adding the attribute can lead to a cardinality explosion in your metrics.
 - `mountpoint`
 - `device`
 - `state`

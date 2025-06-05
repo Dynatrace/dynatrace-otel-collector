@@ -102,8 +102,6 @@ processors:
           - from: connection
 
 exporters:
-  debug:
-    verbosity: detailed
   otlphttp:
     endpoint: ${env:DT_ENDPOINT}
     headers:

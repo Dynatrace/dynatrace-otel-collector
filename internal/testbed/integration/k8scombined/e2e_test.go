@@ -312,12 +312,8 @@ service:
 			fmt.Sprintf(`
   otlphttp/metrics:
     endpoint: http://%s:4320
-    headers:
-      Authorization: "Api-Token "
   otlphttp/logs:
     endpoint: http://%s:4319
-    headers:
-      Authorization: "Api-Token "
 
 service:
   extensions:

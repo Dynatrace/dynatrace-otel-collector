@@ -18,19 +18,6 @@ v0.127.0:
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
----
-
-</details>
-
-#### Dynatrace distribution changelog:
-
-### 💡 Enhancements 💡
-
-- `docs`: Update host monitoring dashboard together with docs and configuration example (#585)
-
-<details>
-<summary>Highlights from the upstream Collector changelog</summary>
-
 ### 💡 Enhancements 💡
 
 - `processor/tailsampling`: Add first policy match decision to tailsampling processor (#36795)
@@ -54,6 +41,12 @@ v0.127.0:
 - `spanmetricsconnector`: Fix bug causing span metrics calls count to be always 0 when using delta temporality (#40139)
 
 </details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `docs`: Update host monitoring dashboard together with docs and configuration example (#585)
 
 <!-- previous-version -->
 

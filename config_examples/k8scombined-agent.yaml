@@ -1,0 +1,84 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  kubeletstats:
+    auth_type: "serviceAccount"
+    collection_interval: 10s
+    node: '${env:K8S_NODE_NAME}'
+    extra_metadata_labels:
+      - k8s.volume.type
+    k8s_api_config:
+      auth_type: "serviceAccount"
+    endpoint: "https://${env:K8S_NODE_NAME}:10250"
+    insecure_skip_verify: true
+    metric_groups:
+      - node
+      - pod
+      - container
+      - volume
+
+processors:
+  filter:
+    error_mode: ignore
+    metrics:
+      metric:
+          - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
+          - 'resource.attributes["k8s.volume.type"] == "configMap"'
+          - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
+          - 'resource.attributes["k8s.volume.type"] == "secret"'
+  k8sattributes:
+    filter:
+      node_from_env_var: K8S_NODE_NAME
+    extract:
+      metadata:
+        - k8s.pod.name
+        - k8s.pod.uid
+        - k8s.pod.ip
+        - k8s.deployment.name
+        - k8s.replicaset.name
+        - k8s.statefulset.name
+        - k8s.daemonset.name
+        - k8s.job.name
+        - k8s.cronjob.name
+        - k8s.namespace.name
+        - k8s.node.name
+        - k8s.cluster.uid
+      annotations:
+        - from: pod
+          key_regex: metadata.dynatrace.com/(.*)
+          tag_name: $$1
+    pod_association:
+      - sources:
+          - from: resource_attribute
+            name: k8s.pod.name
+          - from: resource_attribute
+            name: k8s.namespace.name
+      - sources:
+          - from: resource_attribute
+            name: k8s.pod.ip
+      - sources:
+          - from: resource_attribute
+            name: k8s.pod.uid
+      - sources:
+          - from: connection
+
+exporters:
+  otlp:
+    endpoint: otelcolsvc:4317
+    tls:
+      insecure: true
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - kubeletstats
+      processors:
+        - filter
+        - k8sattributes
+      exporters:
+        - otlp

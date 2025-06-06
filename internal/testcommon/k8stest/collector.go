@@ -12,6 +12,7 @@ import (
 type ConfigTemplate struct {
 	Host      string
 	Namespace string
+	Templates []string
 }
 
 func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
@@ -25,7 +26,7 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 
 	parsedConfig := string(cfg)
 
-	r := strings.NewReplacer(
+	replacerSlice := []string{
 		"${env:DT_ENDPOINT}",
 		fmt.Sprintf("http://%s:4318", template.Host),
 		"${env:DT_API_TOKEN}",
@@ -34,6 +35,11 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 		"",
 		"${env:NAMESPACE}",
 		template.Namespace,
+	}
+	replacerSlice = append(replacerSlice, template.Templates...)
+
+	r := strings.NewReplacer(
+		replacerSlice...,
 	)
 	parsedConfig = r.Replace(parsedConfig)
 

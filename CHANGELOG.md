@@ -23,7 +23,6 @@ v0.127.0:
 - `processor/tailsampling`: Add first policy match decision to tailsampling processor ([#36795](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36795))
 - `receiver/k8sclusterreceiver`: Added new resource attributes `k8s.hpa.scaletargetref.kind`, `k8s.hpa.scaletargetref.name`, and `k8s.hpa.scaletargetref.apiversion` to the `k8s.hpa` resource.  These attributes are disabled by default. ([#38768](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38768))
 - `receiver/netflow`: Adds additional common EtherTypes for `network.type`. ([#40219](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/40219))
- (#39556)
 - `k8sattributesprocessor`: Add option to configure automatic service resource attributes ([#37114](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37114))
   Implements [Service Attributes](https://opentelemetry.io/docs/specs/semconv/non-normative/k8s-attributes/#service-attributes).
   

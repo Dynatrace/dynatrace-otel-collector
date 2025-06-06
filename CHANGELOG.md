@@ -4,6 +4,51 @@
 
 <!-- next version -->
 
+## v0.31.0
+
+This release includes version 0.127.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.127.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.127.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.127.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 💡 Enhancements 💡
+
+- `processor/tailsampling`: Add first policy match decision to tailsampling processor ([#36795](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36795))
+- `receiver/k8sclusterreceiver`: Added new resource attributes `k8s.hpa.scaletargetref.kind`, `k8s.hpa.scaletargetref.name`, and `k8s.hpa.scaletargetref.apiversion` to the `k8s.hpa` resource.  These attributes are disabled by default. ([#38768](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38768))
+- `receiver/netflow`: Adds additional common EtherTypes for `network.type`. ([#40219](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/40219))
+- `k8sattributesprocessor`: Add option to configure automatic service resource attributes ([#37114](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37114))
+  Implements [Service Attributes](https://opentelemetry.io/docs/specs/semconv/non-normative/k8s-attributes/#service-attributes).
+  
+  If you are using the file log receiver, you can now create the same resource attributes as traces (via OTLP) received
+  from an application instrumented with the OpenTelemetry Operator -
+  simply by adding the
+  `extract: { metadata: ["service.namespace", "service.name", "service.version", "service.instance.id"] }`
+  configuration to the `k8sattributesprocessor` processor.
+  See the [documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#configuring-recommended-resource-attributes) for more details.
+- `exporter/debug`: Display resource and scope in `normal` verbosity ([#10515](https://github.com/open-telemetry/opentelemetry-collector/issues/10515))
+
+### 🧰 Bug fixes 🧰
+
+- `filelogreceiver`: Introduce `utf8-raw` encoding to avoid replacing invalid bytes with \uFFFD when reading UTF-8 input. ([#39653](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39653))
+- `spanmetricsconnector`: Fix bug causing span metrics calls count to be always 0 when using delta temporality ([#40139](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40139))
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `docs`: Update host monitoring dashboard together with docs and configuration example (#585)
+
+<!-- previous-version -->
+
 ## v0.30.1
 
 This release includes version 0.126.0 of the upstream Collector components.

@@ -25,100 +25,196 @@ import (
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
-var defaultOptions = []pmetrictest.CompareMetricsOption{
-	pmetrictest.IgnoreTimestamp(),
-	pmetrictest.IgnoreStartTimestamp(),
-	pmetrictest.IgnoreMetricValues(
-		"container.cpu.usage",
-		"k8s.node.cpu.usage",
-		"k8s.pod.cpu.usage",
-		"k8s.volume.available",
-		"k8s.volume.capacity",
-		"k8s.volume.inodes.used",
-		"k8s.volume.inodes",
-		"k8s.volume.inodes.free",
-		"container.cpu.time",
-		"container.filesystem.available",
-		"container.filesystem.capacity",
-		"container.filesystem.usage",
-		"container.memory.available",
-		"container.memory.major_page_faults",
-		"container.memory.page_faults",
-		"container.memory.rss",
-		"container.memory.usage",
-		"container.memory.working_set",
-		"k8s.node.cpu.time",
-		"k8s.node.filesystem.available",
-		"k8s.node.filesystem.capacity",
-		"k8s.node.filesystem.usage",
-		"k8s.node.memory.available",
-		"k8s.node.memory.major_page_faults",
-		"k8s.node.memory.page_faults",
-		"k8s.node.memory.rss",
-		"k8s.node.memory.usage",
-		"k8s.node.memory.working_set",
-		"k8s.node.network.errors",
-		"k8s.node.network.io",
-		"k8s.pod.cpu.time",
-		"k8s.pod.filesystem.available",
-		"k8s.pod.filesystem.capacity",
-		"k8s.pod.filesystem.usage",
-		"k8s.pod.memory.available",
-		"k8s.pod.memory.major_page_faults",
-		"k8s.pod.memory.page_faults",
-		"k8s.pod.memory.rss",
-		"k8s.pod.memory.usage",
-		"k8s.pod.memory.working_set",
-		"k8s.pod.network.errors",
-		"k8s.pod.network.io",
-		"k8s.node.allocatable_cpu",
-		"k8s.node.allocatable_memory",
-		"k8s.namespace.phase",
-		"k8s.node.condition_ready",
-		"k8s.replicaset.available",
-		"k8s.container.ready",
-		"k8s.replicaset.desired",
-		"k8s.deployment.available",
-		"k8s.container.restarts",
-		"k8s.daemonset.ready_nodes",
-		"k8s.daemonset.current_scheduled_nodes",
-		"k8s.daemonset.desired_scheduled_nodes",
-		"k8s.pod.phase",
-		"k8s.daemonset.misscheduled_nodes",
-		"k8s.deployment.desired",
-		"k8s.node.allocatable_pods"),
-	pmetrictest.IgnoreScopeVersion(),
+var (
+	defaultOptions = []pmetrictest.CompareMetricsOption{
+		pmetrictest.IgnoreTimestamp(),
+		pmetrictest.IgnoreStartTimestamp(),
+		pmetrictest.IgnoreMetricValues(
+			"container.cpu.usage",
+			"k8s.node.cpu.usage",
+			"k8s.pod.cpu.usage",
+			"k8s.volume.available",
+			"k8s.volume.capacity",
+			"k8s.volume.inodes.used",
+			"k8s.volume.inodes",
+			"k8s.volume.inodes.free",
+			"container.cpu.time",
+			"container.filesystem.available",
+			"container.filesystem.capacity",
+			"container.filesystem.usage",
+			"container.memory.available",
+			"container.memory.major_page_faults",
+			"container.memory.page_faults",
+			"container.memory.rss",
+			"container.memory.usage",
+			"container.memory.working_set",
+			"k8s.node.cpu.time",
+			"k8s.node.filesystem.available",
+			"k8s.node.filesystem.capacity",
+			"k8s.node.filesystem.usage",
+			"k8s.node.memory.available",
+			"k8s.node.memory.major_page_faults",
+			"k8s.node.memory.page_faults",
+			"k8s.node.memory.rss",
+			"k8s.node.memory.usage",
+			"k8s.node.memory.working_set",
+			"k8s.node.network.errors",
+			"k8s.node.network.io",
+			"k8s.pod.cpu.time",
+			"k8s.pod.filesystem.available",
+			"k8s.pod.filesystem.capacity",
+			"k8s.pod.filesystem.usage",
+			"k8s.pod.memory.available",
+			"k8s.pod.memory.major_page_faults",
+			"k8s.pod.memory.page_faults",
+			"k8s.pod.memory.rss",
+			"k8s.pod.memory.usage",
+			"k8s.pod.memory.working_set",
+			"k8s.pod.network.errors",
+			"k8s.pod.network.io",
+			"k8s.node.allocatable_cpu",
+			"k8s.node.allocatable_memory",
+			"k8s.namespace.phase",
+			"k8s.node.condition_ready",
+			"k8s.replicaset.available",
+			"k8s.container.ready",
+			"k8s.replicaset.desired",
+			"k8s.deployment.available",
+			"k8s.container.restarts",
+			"k8s.daemonset.ready_nodes",
+			"k8s.daemonset.current_scheduled_nodes",
+			"k8s.daemonset.desired_scheduled_nodes",
+			"k8s.pod.phase",
+			"k8s.daemonset.misscheduled_nodes",
+			"k8s.deployment.desired",
+			"k8s.node.allocatable_pods"),
+		pmetrictest.IgnoreScopeVersion(),
 
-	pmetrictest.ChangeDatapointAttributeValue("interface", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.pod.uid", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.pod.ip", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteRandomPartWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.volume.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeDatapointAttributeValue("interface", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.pod.uid", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.pod.ip", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.volume.name", substituteRandomPartWithStar),
 
-	pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.uid", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.deployment.uid", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.namespace.uid", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.node.uid", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.uid", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.cluster.uid", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("container.id", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("container.image.tag", substituteWithStar),
-	pmetrictest.ChangeResourceAttributeValue("container.image.name", substituteLocalhostImagePrefix),
+		pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.uid", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.deployment.uid", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.namespace.uid", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.node.uid", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.uid", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.cluster.uid", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("container.id", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("container.image.tag", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("container.image.name", substituteLocalhostImagePrefix),
 
-	pmetrictest.ChangeResourceAttributeValue("container.image.name", substituteRandomPartWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.container.name", substituteRandomPartWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.name", substituteRandomPartWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.deployment.name", substituteRandomPartWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.namespace.name", substituteRandomPartWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
-	pmetrictest.ChangeResourceAttributeValue("k8s.workload.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("container.image.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.container.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.deployment.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.namespace.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.workload.name", substituteRandomPartWithStar),
 
-	pmetrictest.IgnoreDatapointAttributesOrder(),
-	pmetrictest.IgnoreMetricDataPointsOrder(),
-	pmetrictest.IgnoreMetricsOrder(),
-	pmetrictest.IgnoreScopeMetricsOrder(),
-	pmetrictest.IgnoreResourceMetricsOrder(),
-}
+		pmetrictest.IgnoreDatapointAttributesOrder(),
+		pmetrictest.IgnoreMetricDataPointsOrder(),
+		pmetrictest.IgnoreMetricsOrder(),
+		pmetrictest.IgnoreScopeMetricsOrder(),
+		pmetrictest.IgnoreResourceMetricsOrder(),
+	}
+	templateAgentOrigin = `
+  otlp:
+    endpoint: otelcolsvc:4317
+    tls:
+      insecure: true
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - kubeletstats
+      processors:
+        - filter
+        - k8sattributes
+      exporters:
+        - otlp`
+	templateAgentNew = `
+  otlphttp:
+    endpoint: http://%s:4321
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - kubeletstats
+      processors:
+        - filter
+        - k8sattributes
+      exporters:
+        - otlphttp`
+	templateGatewayOrigin = `
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics/forward:
+      receivers:
+        - otlp
+      processors:
+        - transform
+        - cumulativetodelta
+      exporters:
+        - otlphttp
+    metrics:
+      receivers:
+        - k8s_cluster
+      processors:
+        - k8sattributes
+        - transform
+        - cumulativetodelta
+      exporters:
+        - otlphttp
+    logs:
+      receivers: 
+        - k8sobjects
+      processors:
+        - transform
+      exporters: 
+        - otlphttp`
+	templateGatewayNew = `
+  otlphttp/metrics:
+    endpoint: http://%s:4320
+  otlphttp/logs:
+    endpoint: http://%s:4319
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - k8s_cluster
+      processors:
+        - k8sattributes
+        - transform
+        - cumulativetodelta
+      exporters:
+        - otlphttp/metrics
+    logs:
+      receivers: 
+        - k8sobjects
+      processors:
+        - transform
+      exporters: 
+        - otlphttp/logs`
+)
 
 func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
@@ -187,40 +283,8 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			`
-  otlp:
-    endpoint: otelcolsvc:4317
-    tls:
-      insecure: true
-
-service:
-  extensions:
-    - health_check
-  pipelines:
-    metrics:
-      receivers:
-        - kubeletstats
-      processors:
-        - filter
-        - k8sattributes
-      exporters:
-        - otlp`,
-			fmt.Sprintf(`
-  otlphttp:
-    endpoint: http://%s:4321
-
-service:
-  extensions:
-    - health_check
-  pipelines:
-    metrics:
-      receivers:
-        - kubeletstats
-      processors:
-        - filter
-        - k8sattributes
-      exporters:
-        - otlphttp`, host),
+			templateAgentOrigin,
+			fmt.Sprintf(templateAgentNew, host),
 		},
 	})
 
@@ -275,66 +339,8 @@ service:
 	collectorConfig, err = k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			`
-  otlphttp:
-    endpoint: ${env:DT_ENDPOINT}
-    headers:
-      Authorization: "Api-Token ${env:API_TOKEN}"
-
-service:
-  extensions:
-    - health_check
-  pipelines:
-    metrics/forward:
-      receivers:
-        - otlp
-      processors:
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlphttp
-    metrics:
-      receivers:
-        - k8s_cluster
-      processors:
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlphttp
-    logs:
-      receivers: 
-        - k8sobjects
-      processors:
-        - transform
-      exporters: 
-        - otlphttp`,
-			fmt.Sprintf(`
-  otlphttp/metrics:
-    endpoint: http://%s:4320
-  otlphttp/logs:
-    endpoint: http://%s:4319
-
-service:
-  extensions:
-    - health_check
-  pipelines:
-    metrics:
-      receivers:
-        - k8s_cluster
-      processors:
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlphttp/metrics
-    logs:
-      receivers: 
-        - k8sobjects
-      processors:
-        - transform
-      exporters: 
-        - otlphttp/logs`, host, host),
+			templateGatewayOrigin,
+			fmt.Sprintf(templateGatewayNew, host, host),
 		},
 	})
 

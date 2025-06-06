@@ -38,7 +38,7 @@ processors:
     metric_statements:
       - context: resource
         statements:
-          - set(attributes["k8s.cluster.name"], "k8s-testing-cluster")
+          - set(attributes["k8s.cluster.name"], ${env:CLUSTER_NAME})
           - set(attributes["k8s.workload.kind"], "job") where IsString(attributes["k8s.job.name"])
           - set(attributes["k8s.workload.name"], attributes["k8s.job.name"]) where IsString(attributes["k8s.job.name"])
           - set(attributes["k8s.workload.kind"], "cronjob") where IsString(attributes["k8s.cronjob.name"])

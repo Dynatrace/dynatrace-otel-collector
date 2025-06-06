@@ -208,8 +208,6 @@ service:
 			fmt.Sprintf(`
   otlphttp:
     endpoint: http://%s:4321
-    headers:
-      Authorization: "Api-Token "
 
 service:
   extensions:

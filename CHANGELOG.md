@@ -20,11 +20,11 @@ v0.127.0:
 
 ### 💡 Enhancements 💡
 
-- `processor/tailsampling`: Add first policy match decision to tailsampling processor (#36795)
-- `receiver/k8sclusterreceiver`: Added new resource attributes `k8s.hpa.scaletargetref.kind`, `k8s.hpa.scaletargetref.name`, and `k8s.hpa.scaletargetref.apiversion` to the `k8s.hpa` resource.  These attributes are disabled by default. (#38768)
-- `receiver/netflow`: Adds additional common EtherTypes for `network.type`. (#40219)
+- `processor/tailsampling`: Add first policy match decision to tailsampling processor ([#36795](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36795))
+- `receiver/k8sclusterreceiver`: Added new resource attributes `k8s.hpa.scaletargetref.kind`, `k8s.hpa.scaletargetref.name`, and `k8s.hpa.scaletargetref.apiversion` to the `k8s.hpa` resource.  These attributes are disabled by default. ([#38768](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38768))
+- `receiver/netflow`: Adds additional common EtherTypes for `network.type`. ([#40219](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/40219))
  (#39556)
-- `k8sattributesprocessor`: Add option to configure automatic service resource attributes (#37114)
+- `k8sattributesprocessor`: Add option to configure automatic service resource attributes ([#37114](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37114))
   Implements [Service Attributes](https://opentelemetry.io/docs/specs/semconv/non-normative/k8s-attributes/#service-attributes).
   
   If you are using the file log receiver, you can now create the same resource attributes as traces (via OTLP) received
@@ -33,12 +33,12 @@ v0.127.0:
   `extract: { metadata: ["service.namespace", "service.name", "service.version", "service.instance.id"] }`
   configuration to the `k8sattributesprocessor` processor.
   See the [documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#configuring-recommended-resource-attributes) for more details.
-- `exporter/debug`: Display resource and scope in `normal` verbosity (#10515)
+- `exporter/debug`: Display resource and scope in `normal` verbosity ([#10515](https://github.com/open-telemetry/opentelemetry-collector/issues/10515))
 
 ### 🧰 Bug fixes 🧰
 
-- `filelogreceiver`: Introduce `utf8-raw` encoding to avoid replacing invalid bytes with \uFFFD when reading UTF-8 input. (#39653)
-- `spanmetricsconnector`: Fix bug causing span metrics calls count to be always 0 when using delta temporality (#40139)
+- `filelogreceiver`: Introduce `utf8-raw` encoding to avoid replacing invalid bytes with \uFFFD when reading UTF-8 input. ([#39653](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39653))
+- `spanmetricsconnector`: Fix bug causing span metrics calls count to be always 0 when using delta temporality ([#40139](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40139))
 
 </details>
 

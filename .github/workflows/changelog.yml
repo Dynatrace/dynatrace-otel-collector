@@ -12,7 +12,7 @@ on:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.24.3"
+  GO_VERSION: "1.24.4"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}

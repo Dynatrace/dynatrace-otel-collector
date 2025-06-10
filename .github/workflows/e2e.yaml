@@ -97,6 +97,28 @@ jobs:
           name: dynatrace-otel-collector-image
           path: /tmp/dynatrace-otel-collector.tar
 
+  k8s-multinode-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        usecase:
+          - k8scombined
+    runs-on: ubuntu-24.04
+    needs: docker-build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup cluster
+        uses: ./.github/actions/create-cluster
+        with:
+          config: "./.github/actions/create-cluster/multi-node.yaml"
+
+      - name: Run e2e tests
+        run: |
+          cd internal/testbed/integration/${{ matrix.usecase }}
+          go test -v --tags=e2e
+
   k8s-e2e-test-matrix:
     strategy:
       fail-fast: false
@@ -204,7 +226,7 @@ jobs:
 
   notify-slack-e2e-tests:
     runs-on: ubuntu-24.04
-    needs: [k8s-e2e-test-matrix, eec-confmap-provider]
+    needs: [k8s-e2e-test-matrix, eec-confmap-provider, k8s-multinode-matrix]
     if: failure() && github.event_name == 'push'
     steps:
       - name: Slack Notification

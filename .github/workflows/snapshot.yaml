@@ -10,7 +10,7 @@ concurrency:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.24.3"
+  GO_VERSION: "1.24.4"
   # renovate: datasource=go depName=github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod
   CYCLONEDX_VERSION: "v1.9.0"
 

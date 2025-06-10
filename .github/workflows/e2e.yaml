@@ -150,8 +150,8 @@ jobs:
           go test -v --tags=e2e
 
   combined-load-test:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04
+    #if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
     needs: docker-build
     steps:
       - name: Check out code

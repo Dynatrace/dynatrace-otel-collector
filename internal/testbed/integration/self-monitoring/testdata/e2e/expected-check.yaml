@@ -461,7 +461,7 @@ resourceMetrics:
                         stringValue: "1.1"
                     - key: server.address
                       value:
-                        stringValue: host.docker.internal
+                        stringValue: 172.18.0.1
                     - key: server.port
                       value:
                         intValue: "4318"
@@ -537,7 +537,7 @@ resourceMetrics:
                         stringValue: "1.1"
                     - key: server.address
                       value:
-                        stringValue: host.docker.internal
+                        stringValue: 172.18.0.1
                     - key: server.port
                       value:
                         intValue: "4318"

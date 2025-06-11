@@ -150,9 +150,9 @@ jobs:
           go test -v --tags=e2e
 
   combined-load-test:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     # if the runner is flaky, try "Linux-x64-16-64GB-Runner", it's ubuntu 24.04
-    runs-on: ubuntu-24.04
+    runs-on: "Linux-x64-16-64GB-Runner"
     needs: docker-build
     steps:
       - name: Check out code
@@ -165,6 +165,11 @@ jobs:
         run: |
           cd internal/testbed/integration/combinedload
           go test -v --tags=e2e
+
+      - if: always()
+        name: Show pods
+        run: |
+          kubectl get pods -A
 
   helm-install-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

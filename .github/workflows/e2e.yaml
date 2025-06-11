@@ -169,7 +169,7 @@ jobs:
       - if: always()
         name: Show pods
         run: |
-          kubectl get pods -A
+          kubectl get pods --no-headers -o custom-columns=":metadata.name" -n load-combined | grep '^telemetrygen' | xargs -I {} kubectl describe pod {} -n load-combined
 
   helm-install-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

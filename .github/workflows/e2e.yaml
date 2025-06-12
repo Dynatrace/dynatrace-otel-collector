@@ -175,6 +175,17 @@ jobs:
             kubectl describe pod "$name" -n "$namespace"
           done
 
+      - if: always()
+        name: Memory
+        run: | 
+          df -h
+          df -i
+
+      - if: always()
+        name: Versions
+        run: | 
+          kubelet --version
+          containerd --version
 
   helm-install-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

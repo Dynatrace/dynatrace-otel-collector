@@ -170,7 +170,7 @@ jobs:
         name: Show pods
         run: |
           kubectl get pods -A --no-headers -o custom-columns="NAMESPACE:.metadata.namespace,NAME:.metadata.name" | \
-          grep '^load-combined[[:space:]]telemetry' | \
+          grep '^load-combined' | \
           while read namespace name; do
             kubectl describe pod "$name" -n "$namespace"
           done

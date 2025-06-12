@@ -151,8 +151,7 @@ jobs:
 
   combined-load-test:
     # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    # if the runner is flaky, try "Linux-x64-16-64GB-Runner", it's ubuntu 24.04
-    runs-on: "Linux-x64-16-64GB-Runner"
+    runs-on: "Linux-x64-16-64GB-Runner" # ubuntu 24.04
     needs: docker-build
     steps:
       - name: Check out code
@@ -165,26 +164,6 @@ jobs:
         run: |
           cd internal/testbed/integration/combinedload
           go test -v --tags=e2e
-
-      - if: always()
-        name: Show pods
-        run: |
-          kubectl get pods -A --no-headers -o custom-columns="NAMESPACE:.metadata.namespace,NAME:.metadata.name" | \
-          grep '^load-combined' | \
-          while read namespace name; do
-            kubectl describe pod "$name" -n "$namespace"
-          done
-
-      - if: always()
-        name: Memory
-        run: | 
-          df -h
-          df -i
-
-      - if: always()
-        name: Versions
-        run: | 
-          kubectl describe node kind-control-plane
 
   helm-install-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

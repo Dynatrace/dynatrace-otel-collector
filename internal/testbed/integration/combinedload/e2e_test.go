@@ -37,14 +37,14 @@ func TestLoad_Combined(t *testing.T) {
 	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
 
 	testNs := nsObj.GetName()
-	// defer func() {
-	// 	require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	// }()
+	defer func() {
+		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
+	}()
 
 	tracesConsumer := new(consumertest.TracesSink)
 	metricsConsumer := new(consumertest.MetricsSink)
 	logsConsumer := new(consumertest.LogsSink)
-	_ = oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Traces: &oteltest.TraceSinkConfig{
 			Consumer: tracesConsumer,
 			Ports: &oteltest.ReceiverPorts{
@@ -67,22 +67,22 @@ func TestLoad_Combined(t *testing.T) {
 			},
 		},
 	})
-	// defer func() {
-	// 	// give some more time to the collector to finish exporting before stopping the sinks
-	// 	// so we do not have any dropped data after the test is finished
-	// 	time.Sleep(10 * time.Second)
-	// 	shutdownSinks()
-	// }()
+	defer func() {
+		// give some more time to the collector to finish exporting before stopping the sinks
+		// so we do not have any dropped data after the test is finished
+		time.Sleep(10 * time.Second)
+		shutdownSinks()
+	}()
 
 	// start up metrics-server
 	t.Log("deploying metrics-server...")
 	err = k8stest.PerformOperationOnYAMLFiles(k8sClient, filepath.Join(testDir, "metrics-server"), otelk8stest.CreateObject)
 	require.NoErrorf(t, err, "failed to create k8s metrics server")
 
-	// defer func() {
-	// 	err = k8stest.PerformOperationOnYAMLFiles(k8sClient, filepath.Join(testDir, "metrics-server"), k8stest.DeleteObjectFromManifest)
-	// 	require.NoErrorf(t, err, "failed to delete k8s metrics server")
-	// }()
+	defer func() {
+		err = k8stest.PerformOperationOnYAMLFiles(k8sClient, filepath.Join(testDir, "metrics-server"), k8stest.DeleteObjectFromManifest)
+		require.NoErrorf(t, err, "failed to delete k8s metrics server")
+	}()
 
 	// wait for metrics server to be ready
 	err = k8stest.WaitForDeploymentPods(k8sClient.DynamicClient, "kube-system", "metrics-server", 2*time.Minute)
@@ -94,7 +94,7 @@ func TestLoad_Combined(t *testing.T) {
 	require.NoError(t, err)
 
 	testID := uuid.NewString()[:8]
-	_ = otelk8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), map[string]string{
+	collectorObjs := otelk8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), map[string]string{
 		"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 	}, "")
 
@@ -105,12 +105,12 @@ func TestLoad_Combined(t *testing.T) {
 		DataTypes:    []string{""},
 	}
 
-	_, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
-	// defer func() {
-	// 	for _, obj := range append(collectorObjs, telemetryGenObjs...) {
-	// 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-	// 	}
-	// }()
+	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
+	defer func() {
+		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
 
 	for _, info := range telemetryGenObjInfos {
 		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)

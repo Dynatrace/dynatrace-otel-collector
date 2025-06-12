@@ -169,7 +169,12 @@ jobs:
       - if: always()
         name: Show pods
         run: |
-          kubectl get pods --no-headers -o custom-columns=":metadata.name" -A | grep '^telemetry' | xargs -I {} kubectl describe pod {} -n load-combined
+          kubectl get pods -A --no-headers -o custom-columns="NAMESPACE:.metadata.namespace,NAME:.metadata.name" | \
+          grep '^load-combined[[:space:]]telemetry' | \
+          while read namespace name; do
+            kubectl describe pod "$name" -n "$namespace"
+          done
+
 
   helm-install-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

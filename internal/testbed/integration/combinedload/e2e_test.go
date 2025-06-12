@@ -122,8 +122,8 @@ func TestLoad_Combined(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Log("collecting data...")
-	ctx, _ := context.WithTimeout(context.Background(), 151*time.Second)
-	//defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 151*time.Second)
+	defer cancel()
 	interval := 15 * time.Second
 	ticker := time.NewTicker(interval)
 	i := 0

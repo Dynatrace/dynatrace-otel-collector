@@ -184,8 +184,7 @@ jobs:
       - if: always()
         name: Versions
         run: | 
-          kubelet --version
-          containerd --version
+          kubectl get nodes -o wide
 
   helm-install-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

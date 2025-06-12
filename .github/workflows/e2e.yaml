@@ -184,7 +184,7 @@ jobs:
       - if: always()
         name: Versions
         run: | 
-          kubectl get nodes -o wide
+          kubectl describe node kind-control-plane
 
   helm-install-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

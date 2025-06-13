@@ -442,114 +442,59 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/service
       - metrics:
-          - description: Measures the size of HTTP request messages.
-            name: http.client.request.size
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asInt: "2020"
-                  attributes:
-                    - key: http.method
-                      value:
-                        stringValue: POST
-                    - key: http.status_code
-                      value:
-                        intValue: "404"
-                    - key: net.peer.name
-                      value:
-                        stringValue: host.docker.internal
-                    - key: net.peer.port
-                      value:
-                        intValue: "4318"
-                  exemplars:
-                    - asInt: "1212"
-                      spanId: ba9e66f2f026d315
-                      timeUnixNano: "1743166590130072216"
-                      traceId: 4a001086a53e3b5c067dc6a1fef40cd0
-                    - asInt: "808"
-                      spanId: b5acf69a1dfdd5be
-                      timeUnixNano: "1743166595130563024"
-                      traceId: f8f2b523a991fa11bae3f47804f70c95
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: By
-          - description: Measures the size of HTTP response messages.
-            name: http.client.response.size
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asInt: "38"
-                  attributes:
-                    - key: http.method
-                      value:
-                        stringValue: POST
-                    - key: http.status_code
-                      value:
-                        intValue: "404"
-                    - key: net.peer.name
-                      value:
-                        stringValue: host.docker.internal
-                    - key: net.peer.port
-                      value:
-                        intValue: "4318"
-                  exemplars:
-                    - asInt: "19"
-                      spanId: ba9e66f2f026d315
-                      timeUnixNano: "1743166590217895918"
-                      traceId: 4a001086a53e3b5c067dc6a1fef40cd0
-                    - asInt: "19"
-                      spanId: b5acf69a1dfdd5be
-                      timeUnixNano: "1743166595131095191"
-                      traceId: f8f2b523a991fa11bae3f47804f70c95
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: By
-          - description: Measures the duration of outbound HTTP requests.
+          - description: Size of HTTP client request bodies.
             histogram:
               aggregationTemporality: 1
               dataPoints:
                 - attributes:
-                    - key: http.method
+                    - key: http.request.method
                       value:
                         stringValue: POST
-                    - key: http.status_code
+                    - key: http.response.status_code
                       value:
                         intValue: "404"
-                    - key: net.peer.name
+                    - key: network.protocol.name
                       value:
-                        stringValue: host.docker.internal
-                    - key: net.peer.port
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: 172.18.0.1
+                    - key: server.port
                       value:
                         intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
                   bucketCounts:
                     - "0"
                     - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
                     - "1"
                     - "1"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
                   count: "2"
                   exemplars:
-                    - asDouble: 8.364632
-                      spanId: b5acf69a1dfdd5be
-                      timeUnixNano: "1743166595130667191"
-                      traceId: f8f2b523a991fa11bae3f47804f70c95
-                    - asDouble: 10.220134
-                      spanId: ba9e66f2f026d315
-                      timeUnixNano: "1743166590130195300"
-                      traceId: 4a001086a53e3b5c067dc6a1fef40cd0
+                    - asInt: "808"
+                      spanId: 81fab68fd75cbe65
+                      timeUnixNano: "1749632288613948909"
+                      traceId: c6d9424c7301bd404db44bf4e3141089
+                    - asInt: "1212"
+                      spanId: 83f3afdd026d8b0c
+                      timeUnixNano: "1749632292717009088"
+                      traceId: 4d45fa34de07664ea907e4f72f75e746
                   explicitBounds:
                     - 0
                     - 5
@@ -566,13 +511,87 @@ resourceMetrics:
                     - 5000
                     - 7500
                     - 10000
-                  max: 10.220134
-                  min: 8.364632
+                  max: 1212
+                  min: 808
                   startTimeUnixNano: "1000000"
-                  sum: 18.584766000000002
+                  sum: 2020
                   timeUnixNano: "2000000"
-            name: http.client.duration
-            unit: ms
+            name: http.client.request.body.size
+            unit: By
+          - description: Duration of HTTP client requests.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "404"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: 172.18.0.1
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 0.075431413
+                      spanId: 81fab68fd75cbe65
+                      timeUnixNano: "1749632288613998951"
+                      traceId: c6d9424c7301bd404db44bf4e3141089
+                    - asDouble: 0.100899634
+                      spanId: 83f3afdd026d8b0c
+                      timeUnixNano: "1749632292717080380"
+                      traceId: 4d45fa34de07664ea907e4f72f75e746
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.100899634
+                  min: 0.075431413
+                  startTimeUnixNano: "1000000"
+                  sum: 0.17633104700000002
+                  timeUnixNano: "2000000"
+            name: http.client.request.duration
+            unit: s
         scope:
           name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
           version: 0.60.0
@@ -1181,7 +1200,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: rpc.server.duration
             unit: ms
-          - description: Measures size of RPC request messages (uncompressed).
+          - description: Measures the size of RPC request messages (uncompressed).
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -1349,7 +1368,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: rpc.server.request.size
             unit: By
-          - description: Measures size of RPC response messages (uncompressed).
+          - description: Measures the size of RPC response messages (uncompressed).
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -1517,7 +1536,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: rpc.server.response.size
             unit: By
-          - description: Measures the number of messages received per RPC. Should be 1 for all non-streaming RPCs.
+          - description: Measures the number of messages received per RPC.
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -1694,7 +1713,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: rpc.server.requests_per_rpc
             unit: '{count}'
-          - description: Measures the number of messages received per RPC. Should be 1 for all non-streaming RPCs.
+          - description: Measures the number of messages sent per RPC.
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -1871,7 +1890,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: rpc.server.responses_per_rpc
             unit: '{count}'
-        schemaUrl: https://opentelemetry.io/schemas/1.17.0
+        schemaUrl: https://opentelemetry.io/schemas/1.30.0
         scope:
           name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
           version: 0.60.0

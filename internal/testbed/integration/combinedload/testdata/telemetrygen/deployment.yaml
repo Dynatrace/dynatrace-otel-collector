@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telemetrygen-deployment
+  namespace: load-combined
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telemetrygen-deployment
+  template:
+    metadata:
+      annotations:
+        workload: deployment
+      labels:
+        app: telemetrygen-deployment
+    spec:
+      containers:
+        - command:
+            - /telemetrygen
+            - logs
+            - --otlp-insecure
+            - --otlp-endpoint={{ .OTLPEndpoint }}
+            - --duration=900s
+            - --rate=5000
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --severity-text="loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongText"
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+          imagePullPolicy: IfNotPresent
+          name: telemetrygen-logs
+        - command:
+            - /telemetrygen
+            - metrics
+            - --otlp-insecure
+            - --otlp-endpoint={{ .OTLPEndpoint }}
+            - --duration=900s
+            - --rate=1000
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey1="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey2="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey3="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey4="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey5="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey6="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey7="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey8="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey9="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey10="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+          imagePullPolicy: IfNotPresent
+          name: telemetrygen-metrics
+        - command:
+            - /telemetrygen
+            - traces
+            - --otlp-insecure
+            - --otlp-endpoint={{ .OTLPEndpoint }}
+            - --rate=1000
+            - --duration=900s
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey1="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey2="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey3="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey4="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey5="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey6="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey7="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey8="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey9="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+            - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey10="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+          imagePullPolicy: IfNotPresent
+          name: telemetrygen-traces
+      restartPolicy: Always

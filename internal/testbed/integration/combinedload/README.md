@@ -30,9 +30,7 @@ $ KUBECONFIG=/Users/ondrej.dubaj/.kube/config CONTAINER_REGISTRY="localhost/" go
     telemetrygen.go:50: Creating telemetrygen object from manifest deployment-logs.yaml
     telemetrygen.go:50: Creating telemetrygen object from manifest deployment-metrics.yaml
     telemetrygen.go:50: Creating telemetrygen object from manifest deployment-traces.yaml
-    telemetrygen.go:82: Telemetrygen pod with app label telemetrygen-logs-deployment started successfully
-    telemetrygen.go:82: Telemetrygen pod with app label telemetrygen-metrics-deployment started successfully
-    telemetrygen.go:82: Telemetrygen pod with app label telemetrygen-traces-deployment started successfully
+    telemetrygen.go:82: Telemetrygen pod with app label telemetrygen-deployment started successfully
     e2e_test.go:116: collecting data...
     e2e_test.go:130: ------------------------------------------------------
     e2e_test.go:131: data after 15 seconds:

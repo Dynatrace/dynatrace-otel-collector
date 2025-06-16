@@ -20,6 +20,7 @@ processors:
         - k8s.namespace.name
         - k8s.node.name
         - k8s.cluster.uid
+        - k8s.container.name
     pod_association:
       - sources:
           - from: resource_attribute

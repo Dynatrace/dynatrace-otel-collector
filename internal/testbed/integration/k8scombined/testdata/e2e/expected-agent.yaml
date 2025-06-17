@@ -351,6 +351,9 @@ resourceMetrics:
         - key: k8s.pod.uid
           value:
             stringValue: df151b27-b265-49ac-9f0d-fafda9400af2
+        - key: k8s.container.name
+          value:
+            stringValue: kube-proxy
     scopeMetrics:
       - metrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation

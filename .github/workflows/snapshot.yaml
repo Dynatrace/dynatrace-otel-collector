@@ -84,9 +84,9 @@ jobs:
           path: |
             dist/dynatrace-otel-collector_*_Linux_x86_64.deb
             dist/dynatrace-otel-collector_*_Linux_x86_64.rpm
+            dist/metadata.json
 #            dist/dynatrace-otel-collector_*_Linux_arm64.deb
 #            dist/dynatrace-otel-collector_*_Linux_arm64.rpm
-            dist/metadata.json
 
   linux-package-tests:
     name: Test Linux Packages

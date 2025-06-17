@@ -1820,9 +1820,6 @@ resourceMetrics:
         - key: k8s.cluster.name
           value:
             stringValue: k8s-testing-cluster
-        - key: k8s.container.name
-          value:
-            stringValue: opentelemetry-collector
         - key: k8s.namespace.name
           value:
             stringValue: e2ek8scombined
@@ -2392,7 +2389,7 @@ resourceMetrics:
             stringValue: kindnet
         - key: k8s.container.name
           value:
-            stringValue: kindnet
+            stringValue: kindnet-cni
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:

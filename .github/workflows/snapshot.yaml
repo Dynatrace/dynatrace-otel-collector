@@ -61,7 +61,7 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: ${{ env.GORELEASER_PRO_VERSION }}
-          args: release --snapshot --clean --skip archive,sbom --fail-fast
+          args: release --snapshot --clean --skip archive,sbom --fail-fast --single-target
         env:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -84,8 +84,8 @@ jobs:
           path: |
             dist/dynatrace-otel-collector_*_Linux_x86_64.deb
             dist/dynatrace-otel-collector_*_Linux_x86_64.rpm
-            dist/dynatrace-otel-collector_*_Linux_arm64.deb
-            dist/dynatrace-otel-collector_*_Linux_arm64.rpm
+#            dist/dynatrace-otel-collector_*_Linux_arm64.deb
+#            dist/dynatrace-otel-collector_*_Linux_arm64.rpm
             dist/metadata.json
 
   linux-package-tests:

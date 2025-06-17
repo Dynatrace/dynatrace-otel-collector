@@ -127,9 +127,17 @@ jobs:
           path: linux-packages
 
       - name: Parse metadata file
+        if: matrix.arch == 'x86_64'
         id: parse-metadata
         run: |
-          metadata=`cat ./linux-packages/metadata.json`
+          metadata=`cat ./linux-packages/linux_amd64/metadata.json`
+          echo "metadata=$metadata" >> "$GITHUB_OUTPUT"
+
+      - name: Parse metadata file
+        if: matrix.arch == 'arm64'
+        id: parse-metadata
+        run: |
+          metadata=`cat ./linux-packages/linux_arm64/metadata.json`
           echo "metadata=$metadata" >> "$GITHUB_OUTPUT"
 
       - name: Extract version number

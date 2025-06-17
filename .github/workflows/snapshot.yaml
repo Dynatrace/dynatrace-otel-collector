@@ -13,6 +13,8 @@ env:
   GO_VERSION: "1.24.4"
   # renovate: datasource=go depName=github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod
   CYCLONEDX_VERSION: "v1.9.0"
+  # renovate: datasource=github-tags depName=goreleaser-pro packageName=goreleaser/goreleaser-pro
+  GORELEASER_PRO_VERSION: v2.7.0
 
 jobs:
   build:
@@ -54,8 +56,15 @@ jobs:
           rm -r /opt/hostedtoolcache/node
           df -h
 
-      - name: Create Snapshot for Pull Request
-        run: make snapshot
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@9c156ee8a17a598857849441385a2041ef570552 # v6.3.0
+        with:
+          distribution: goreleaser-pro
+          version: ${{ env.GORELEASER_PRO_VERSION }}
+          args: build --snapshot --clean
+        env:
+          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - if: always()
         name: Show FS usage (debugging)

@@ -22,6 +22,7 @@ processors:
         - k8s.namespace.name
         - k8s.node.name
         - k8s.cluster.uid
+        - k8s.container.name
       annotations:
         - from: pod
           key_regex: metadata.dynatrace.com/(.*)

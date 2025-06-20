@@ -176,6 +176,9 @@ resourceMetrics:
         - key: k8s.pod.uid
           value:
             stringValue: 116cff7f-42e4-48e6-92ec-a90b411e5adf
+        - key: k8s.container.name
+          value:
+            stringValue: kindnet-cni
     scopeMetrics:
       - metrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
@@ -348,6 +351,9 @@ resourceMetrics:
         - key: k8s.pod.uid
           value:
             stringValue: df151b27-b265-49ac-9f0d-fafda9400af2
+        - key: k8s.container.name
+          value:
+            stringValue: kube-proxy
     scopeMetrics:
       - metrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
@@ -512,6 +518,9 @@ resourceMetrics:
         - key: k8s.pod.uid
           value:
             stringValue: dfb254f9-2c08-4462-a52e-7c0d6051db2e
+        - key: k8s.container.name
+          value:
+            stringValue: opentelemetry-collector
     scopeMetrics:
       - metrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation

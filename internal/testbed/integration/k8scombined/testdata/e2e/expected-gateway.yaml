@@ -1820,9 +1820,6 @@ resourceMetrics:
         - key: k8s.cluster.name
           value:
             stringValue: k8s-testing-cluster
-        - key: k8s.container.name
-          value:
-            stringValue: opentelemetry-collector
         - key: k8s.namespace.name
           value:
             stringValue: e2ek8scombined
@@ -1835,6 +1832,9 @@ resourceMetrics:
         - key: k8s.pod.uid
           value:
             stringValue: e53abad0-1534-494f-97c7-4622f7866c45
+        - key: k8s.container.name
+          value:
+            stringValue: opentelemetry-collector
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -2231,6 +2231,9 @@ resourceMetrics:
         - key: k8s.workload.name
           value:
             stringValue: otelcol-eo699wky0o
+        - key: k8s.container.name
+          value:
+            stringValue: opentelemetry-collector
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -2280,6 +2283,9 @@ resourceMetrics:
         - key: k8s.workload.name
           value:
             stringValue: otelcol-eo699wky0o
+        - key: k8s.container.name
+          value:
+            stringValue: opentelemetry-collector
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -2329,6 +2335,9 @@ resourceMetrics:
         - key: k8s.workload.name
           value:
             stringValue: busybox-deployment
+        - key: k8s.container.name
+          value:
+            stringValue: busybox
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -2378,6 +2387,9 @@ resourceMetrics:
         - key: k8s.workload.name
           value:
             stringValue: kindnet
+        - key: k8s.container.name
+          value:
+            stringValue: kindnet-cni
     schemaUrl: https://opentelemetry.io/schemas/1.18.0
     scopeMetrics:
       - metrics:
@@ -2425,6 +2437,9 @@ resourceMetrics:
           value:
             stringValue: daemonset
         - key: k8s.workload.name
+          value:
+            stringValue: kube-proxy
+        - key: k8s.container.name
           value:
             stringValue: kube-proxy
     schemaUrl: https://opentelemetry.io/schemas/1.18.0

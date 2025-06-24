@@ -93,9 +93,9 @@ jobs:
         with:
           name: linux-packages-arm64
           path: |
-            dist/metadata.json
-            dist/dynatrace-otel-collector_*_Linux_arm64.deb
-            dist/dynatrace-otel-collector_*_Linux_arm64.rpm
+            dist/**/metadata.json
+            dist/**/dynatrace-otel-collector_*_Linux_arm64.deb
+            dist/**/dynatrace-otel-collector_*_Linux_arm64.rpm
 
       - name: Upload linux service packages
         if: matrix.goarch == 'amd64'
@@ -103,9 +103,9 @@ jobs:
         with:
           name: linux-packages-x86_64
           path: |
-            dist/metadata.json
-            dist/dynatrace-otel-collector_*_Linux_x86_64.deb
-            dist/dynatrace-otel-collector_*_Linux_x86_64.rpm
+            dist/**/metadata.json
+            dist/**/dynatrace-otel-collector_*_Linux_x86_64.deb
+            dist/**/dynatrace-otel-collector_*_Linux_x86_64.rpm
 
   linux-package-tests:
     name: Test Linux Packages

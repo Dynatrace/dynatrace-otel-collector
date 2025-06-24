@@ -73,6 +73,9 @@ jobs:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Show produced artifacts
+        run: ls -la ./dist
+
       - if: always()
         name: Show FS usage (debugging)
         run: |

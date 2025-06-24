@@ -74,7 +74,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Show produced artifacts
-        run: ls -la ./dist
+        run: ls -laR ./dist
 
       - if: always()
         name: Show FS usage (debugging)

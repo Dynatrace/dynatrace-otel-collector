@@ -1,4 +1,6 @@
 version: 2
+partial:
+  by: target
 before:
   hooks:
     - make generate

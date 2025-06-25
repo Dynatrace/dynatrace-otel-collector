@@ -4,6 +4,52 @@
 
 <!-- next version -->
 
+## v0.32.0
+
+This release includes version 0.128.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.128.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.128.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.128.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🚩 Deprecations 🚩
+
+- `receiver/hostmetrics`: Mark `hostmetrics.process.onWindowsUseNewGetProcesses` feature gate as stable ([#32947](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32947))
+
+### 💡 Enhancements 💡
+
+- `resourcedetectionprocessor`: Add the option to retrieve resource attributes from the K8s API server and EC2 api when the IMDS service is not available.([#39503](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39503)
+- `resourcedetectionprocessor`: Add additional OS properties to resource detection: `os.build.id` and `os.name`([#39941](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39941)
+- `filelogreceiver`: The fingerprint of gzip compressed files is created by decompressing and reading the first `fingerprint_size` bytes.([#37772](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37772)
+  This feature can be enabled via the following feature gate `--feature-gates=filelog.decompressFingerprint`. This can cause existing gzip files to be re-ingested because of changes in how fingerprints are computed.
+- `processor/k8sattributes`: Support extracting labels and annotations from k8s Deployments([#37957](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37957)
+- `receiver/k8s_cluster`: Add onDelete handler to emit the experimental entity delete events([#40278](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40278)
+- `processor/resourcedetection`: add `host.interface` resource attribute to `system` detector([#39419](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39419)
+
+### 🧰 Bug fixes 🧰
+
+- `prometheusrecevier`: Add feature gate to allow enabling and disabling the Prometheus created timestamp zero ingestion feature flag.([#40245](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40245)
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `k8sattributesprocessor`: Add `k8s.container.name` to list of extracted attributes by the k8sattributes processor. (#596)
+  Please note that the `k8s.container.name` attribute will only be added if the pod from which the incoming
+  signal has been received contains only one container, or if the ingested signal contains the `k8s.container.id` resource attribute.
+  Otherwise, the k8sattributes processor will not be able to correctly associate the correct container.
+  
+
+<!-- previous-version -->
+
 ## v0.31.0
 
 This release includes version 0.127.0 of the upstream Collector components.

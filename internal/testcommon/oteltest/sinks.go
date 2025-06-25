@@ -15,6 +15,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/component/componenttest"
+	"go.opentelemetry.io/collector/config/configoptional"
+	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -116,13 +118,31 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 	}
 }
 
+// InsertDefault is a helper function to insert a default value for a configoptional.Optional type.
+func InsertDefault[T any](opt *configoptional.Optional[T]) error {
+	if opt.HasValue() {
+		return nil
+	}
+
+	empty := confmap.NewFromStringMap(map[string]any{})
+	return empty.Unmarshal(opt)
+}
+
 func setupReceiverPorts(cfg *otlpreceiver.Config, ports *ReceiverPorts) {
+	if err := InsertDefault(&cfg.GRPC); err != nil {
+		panic(fmt.Sprintf("failed to insert default for gRPC config: %v", err))
+	}
+
+	if err := InsertDefault(&cfg.HTTP); err != nil {
+		panic(fmt.Sprintf("failed to insert default for gRPC config: %v", err))
+	}
+
 	if ports != nil {
-		cfg.GRPC.NetAddr.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Grpc)
-		cfg.HTTP.ServerConfig.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Http)
+		cfg.GRPC.Get().NetAddr.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Grpc)
+		cfg.HTTP.Get().ServerConfig.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Http)
 	} else {
-		cfg.GRPC.NetAddr.Endpoint = "0.0.0.0:4317"
-		cfg.HTTP.ServerConfig.Endpoint = "0.0.0.0:4318"
+		cfg.GRPC.Get().NetAddr.Endpoint = "0.0.0.0:4317"
+		cfg.HTTP.Get().ServerConfig.Endpoint = "0.0.0.0:4318"
 	}
 }
 

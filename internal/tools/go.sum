@@ -813,8 +813,8 @@ go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJyS
 go.opentelemetry.io/auto/sdk v1.1.0/go.mod h1:3wSPjt5PWp2RhlCcmmOial7AvC4DQqZb7a7wCow3W8A=
 go.opentelemetry.io/build-tools/chloggen v0.23.1 h1:vc7BCQ43OtEr9onDU/0igWwM08ocn8AzxX+0BXG9OPo=
 go.opentelemetry.io/build-tools/chloggen v0.23.1/go.mod h1:wJ8tJY5bURruxByT9gaaaGxjr1FoK8bUl/FiE+yQTfE=
-go.opentelemetry.io/collector/cmd/builder v0.127.0 h1:yStYxHrj2I+C1R27iGd6VcXRjn236IsSDukebu7Xsj8=
-go.opentelemetry.io/collector/cmd/builder v0.127.0/go.mod h1:Pa+tZZ6Kl009Uv7hnIiJxjZ8ME54Mdfu4mhsuvoJw+0=
+go.opentelemetry.io/collector/cmd/builder v0.128.0 h1:bpS2PKSc03x8Mj36Vk2/Q+giPoWWwUG+w2JIOJuDUew=
+go.opentelemetry.io/collector/cmd/builder v0.128.0/go.mod h1:Pa+tZZ6Kl009Uv7hnIiJxjZ8ME54Mdfu4mhsuvoJw+0=
 go.opentelemetry.io/contrib/bridges/prometheus v0.57.0 h1:UW0+QyeyBVhn+COBec3nGhfnFe5lwB0ic1JBVjzhk0w=
 go.opentelemetry.io/contrib/bridges/prometheus v0.57.0/go.mod h1:ppciCHRLsyCio54qbzQv0E4Jyth/fLWDTJYfvWpcSVk=
 go.opentelemetry.io/contrib/detectors/gcp v1.29.0 h1:TiaiXB4DpGD3sdzNlYQxruQngn5Apwzi1X0DRhuGvDQ=

@@ -136,9 +136,8 @@ jobs:
         run: |
           metadata=`cat ./linux-packages/linux_${{ matrix.arch }}/metadata.json`
           # make single-line json out of multi-line json
-          metadata="${metadata//'%'/'%25'}"
-          metadata="${metadata//$'\n'/'%0A'}"
-          metadata="${metadata//$'\r'/'%0D'}"
+          metadata="${metadata//$'\n'/''}"
+          metadata="${metadata//$'\r'/''}"
           echo "metadata=$metadata" >> "$GITHUB_OUTPUT"
 
       - name: Extract version number

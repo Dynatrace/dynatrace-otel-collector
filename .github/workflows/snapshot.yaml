@@ -134,8 +134,9 @@ jobs:
       - name: Parse metadata file
         id: parse-metadata
         run: |
-          cat ./linux-packages/**/metadata.json
-          metadata=`cat ./linux-packages/**/metadata.json`
+          ls -la ./linux-packages/
+          cat ./linux-packages/linux_${{ matrix.arch }}/metadata.json
+          metadata=`cat ./linux-packages/linux_${{ matrix.arch }}/metadata.json`
           echo "metadata=$metadata" >> "$GITHUB_OUTPUT"
 
       - name: Extract version number

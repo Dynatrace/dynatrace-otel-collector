@@ -134,6 +134,7 @@ jobs:
       - name: Parse metadata file
         id: parse-metadata
         run: |
+          cat ./linux-packages/**/metadata.json
           metadata=`cat ./linux-packages/**/metadata.json`
           echo "metadata=$metadata" >> "$GITHUB_OUTPUT"
 

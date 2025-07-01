@@ -144,10 +144,10 @@ jobs:
         id: extract-version
         run: echo "version=${{ fromJson(steps.parse-metadata.outputs.metadata).version }}" >> "$GITHUB_OUTPUT"
 
-      - name: Test
+      - name: Test amd64
         if: matrix.arch == 'amd64'
         run: make package-test ARCH=${{ matrix.arch }} PACKAGE_PATH=linux-packages/linux_${{ matrix.arch }}/dynatrace-otel-collector_${{ steps.extract-version.outputs.version }}_Linux_x86_64.${{ matrix.os }}
 
-      - name: Test
+      - name: Test arm64
         if: matrix.arch == 'arm64'
         run: make package-test ARCH=${{ matrix.arch }} PACKAGE_PATH=linux-packages/linux_${{ matrix.arch }}/dynatrace-otel-collector_${{ steps.extract-version.outputs.version }}_Linux_${{ matrix.arch }}.${{ matrix.os }}

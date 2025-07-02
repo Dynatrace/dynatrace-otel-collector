@@ -40,8 +40,8 @@ github.com/stretchr/testify v1.10.0 h1:Xv5erBjTwe/5IxqUQTdXv5kgmIvbHo3QQyRwhJsOf
 github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 go.opentelemetry.io/build-tools/chloggen v0.23.1 h1:vc7BCQ43OtEr9onDU/0igWwM08ocn8AzxX+0BXG9OPo=
 go.opentelemetry.io/build-tools/chloggen v0.23.1/go.mod h1:wJ8tJY5bURruxByT9gaaaGxjr1FoK8bUl/FiE+yQTfE=
-go.opentelemetry.io/collector/cmd/builder v0.127.0 h1:yStYxHrj2I+C1R27iGd6VcXRjn236IsSDukebu7Xsj8=
-go.opentelemetry.io/collector/cmd/builder v0.127.0/go.mod h1:Pa+tZZ6Kl009Uv7hnIiJxjZ8ME54Mdfu4mhsuvoJw+0=
+go.opentelemetry.io/collector/cmd/builder v0.128.0 h1:bpS2PKSc03x8Mj36Vk2/Q+giPoWWwUG+w2JIOJuDUew=
+go.opentelemetry.io/collector/cmd/builder v0.128.0/go.mod h1:Pa+tZZ6Kl009Uv7hnIiJxjZ8ME54Mdfu4mhsuvoJw+0=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/goleak v1.3.0/go.mod h1:CoHD4mav9JJNrW/WLlf7HGZPjdw8EucARQHekz1X6bE=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=

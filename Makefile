@@ -101,10 +101,8 @@ URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEAS
 install-goreleaser-pro:
 	if [ ! -f "$(GORELEASER)" ]; then \
 		echo "Downloading $(BINARY_NAME) from $(URL)..."; \
-
 		curl -L $(URL) -o $(BINARY_NAME); \
 		if [ "$(EXT)" = "zip" ]; then unzip -o "$(BINARY_NAME)"; else tar -xzf "$(BINARY_NAME)"; fi; \
-
 		chmod +x goreleaser; \
 		mv goreleaser $(TOOLS_BIN_DIR); \
 		echo "GoReleaser Pro installed successfully!"; \

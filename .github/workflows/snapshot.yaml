@@ -14,7 +14,7 @@ env:
   # renovate: datasource=go depName=github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod
   CYCLONEDX_VERSION: "v1.9.0"
   # renovate: datasource=github-tags depName=goreleaser-pro packageName=goreleaser/goreleaser-pro
-  GORELEASER_PRO_VERSION: v2.10.2
+  GORELEASER_PRO_VERSION: v2.8.2
 
 jobs:
   build:

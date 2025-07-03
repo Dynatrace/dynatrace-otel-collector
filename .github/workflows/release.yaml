@@ -88,7 +88,12 @@ jobs:
           df -h
 
       - name: Create release for version tag
-        run: make release
+        uses: goreleaser/goreleaser-action@9c156ee8a17a598857849441385a2041ef570552 # v6.3.0
+        with:
+          distribution: goreleaser-pro
+          version: ${{ env.GORELEASER_PRO_VERSION }}
+          args: release --clean --parallelism 1 --release-notes ${{ env.RELEASE_NOTES }}
         env:
-          RELEASE_NOTES: "./release-notes.md"
+          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_NOTES: "./release-notes.md"

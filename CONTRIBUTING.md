@@ -43,7 +43,7 @@ The command `make` or `make build` (the default target) will build the collector
 
 #### Cross-compiling other architectures
 
-The command `make snapshot` will build all supported OS and architecture versions of the collector.
+The command `make build-all` will build all supported OS and architecture versions of the collector.
 The resulting binaries will be in the `dist` directory.
 
 ### Testing the collector

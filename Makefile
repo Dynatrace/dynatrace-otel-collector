@@ -19,10 +19,10 @@ BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
 
 # renovate: datasource=github-releases depName=jstemmer/go-junit-report
-GO_JUNIT_REPORT_VERSION?=v2.1.0
+GO_JUNIT_REPORT_VERSION ?= v2.1.0
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
-GORELEASER_PRO_VERSION?=v2.8.2
+GORELEASER_PRO_VERSION ?= v2.8.2
 
 # Files to be copied directly from the project root
 CP_FILES = LICENSE README.md
@@ -92,20 +92,24 @@ ifeq ($(OS), 'windows')
 	EXT='zip'
 endif
 
+FLAGS := --version
+GORELEASER_ACTUAL_VERSION := $(shell $(GORELEASER) $(FLAGS) | grep '^GitVersion:' | awk '{print $$2}')
+
 # Construct binary name and URL
 BINARY_NAME := goreleaser-pro_$(OS)_$(ARCH).$(EXT)
 URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/$(BINARY_NAME)
 
 install-goreleaser-pro:
-	if [ ! -f "$(GORELEASER)" ]; then \
+	echo 'Installing GoReleaser Pro...'; \
+	if [ "v$(GORELEASER_ACTUAL_VERSION)" = "$(GORELEASER_PRO_VERSION)" ]; then \
+	  	echo "GoReleaser is already installed with the correct version, moving on..."; \
+	else \
 		echo "Downloading $(BINARY_NAME) from $(URL)..."; \
 		curl -L $(URL) -o $(BINARY_NAME); \
 		if [ "$(EXT)" = "zip" ]; then unzip -o "$(BINARY_NAME)"; else tar -xzf "$(BINARY_NAME)"; fi; \
 		chmod +x goreleaser; \
 		mv goreleaser $(TOOLS_BIN_DIR); \
 		echo "GoReleaser Pro installed successfully!"; \
-	else \
-	  	echo "GoReleaser is already installed, moving on..."; \
   	fi
 
 $(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN) $(SOURCES)

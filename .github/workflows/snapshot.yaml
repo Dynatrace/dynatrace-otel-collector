@@ -11,8 +11,6 @@ concurrency:
 env:
   # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.24.4"
-  # renovate: datasource=go depName=github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod
-  CYCLONEDX_VERSION: "v1.9.0"
   # renovate: datasource=github-tags depName=goreleaser-pro packageName=goreleaser/goreleaser-pro
   GORELEASER_PRO_VERSION: v2.8.2
 
@@ -22,17 +20,16 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        goos: ["linux", "darwin", "windows"]
+        goos: ["linux", "darwin"]
         goarch: ["amd64", "arm64", "ppc64le", "s390x"]
         exclude:
           - goos: darwin
             goarch: s390x
           - goos: darwin
             goarch: ppc64le
+        include:
           - goos: windows
-            goarch: arm64
-          - goos: windows
-            goarch: s390x
+            goarch: amd64
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -50,9 +47,6 @@ jobs:
           platforms: arm64,ppc64le,s390x
 
       - uses: docker/setup-buildx-action@18ce135bb5112fa8ce4ed6c17ab05699d7f3a5e0 # v3.11.0
-
-      - name: Install cyclonedx-gomod
-        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@${{ env.CYCLONEDX_VERSION }}
 
       - name: Install tools
         run: |

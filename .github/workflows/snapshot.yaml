@@ -22,13 +22,17 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        goos: ["linux", "darwin"]
+        goos: ["linux", "darwin", "windows"]
         goarch: ["amd64", "arm64", "ppc64le", "s390x"]
         exclude:
-          - goos: "darwin"
-            goarch: "s390x"
-          - goos: "darwin"
-            goarch: "ppc64le"
+          - goos: darwin
+            goarch: s390x
+          - goos: darwin
+            goarch: ppc64le
+          - goos: windows
+            goarch: arm64
+          - goos: windows
+            goarch: s390x
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2

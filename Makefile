@@ -124,7 +124,7 @@ install-goreleaser-pro:
 		echo "Checksum verified successfully."; \
 		rm $(CHECKSUM_NAME); \
 		\
-		if [ "$(EXT)" = "zip" ]; then unzip -o "$(BINARY_NAME)"; else tar -xzf "$(BINARY_NAME)" goreleaser; fi; \
+		if [ "$(EXT)" = "zip" ]; then unzip goreleaser -o "$(BINARY_NAME)"; else tar -xzf "$(BINARY_NAME)" goreleaser; fi; \
 		chmod +x goreleaser; \
 		mv goreleaser $(TOOLS_BIN_DIR); \
 		echo "GoReleaser Pro installed successfully!"; \

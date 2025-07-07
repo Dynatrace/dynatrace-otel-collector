@@ -97,7 +97,9 @@ GORELEASER_ACTUAL_VERSION := $(shell $(GORELEASER) $(FLAGS) | grep '^GitVersion:
 
 # Construct binary name and URL
 BINARY_NAME := goreleaser-pro_$(OS)_$(ARCH).$(EXT)
+CHECKSUM_NAME := ./checksums.txt
 URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/$(BINARY_NAME)
+CHECKSUM_URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt
 
 install-goreleaser-pro:
 	echo 'Installing GoReleaser Pro...'; \
@@ -105,7 +107,21 @@ install-goreleaser-pro:
 	  	echo "GoReleaser is already installed with the correct version, moving on..."; \
 	else \
 		echo "Downloading $(BINARY_NAME) from $(URL)..."; \
-		curl -L $(URL) -o $(BINARY_NAME); \
+		curl -vL $(URL) -o $(BINARY_NAME); \
+		\
+		echo "Downloading checksum to verify downloaded binary..." ; \
+		curl -L $(CHECKSUM_URL) -o $(CHECKSUM_NAME); \
+		\
+		echo "Verifying checksum..."; \
+		EXPECTED_CHECKSUM=$$(grep -E "$(BINARY_NAME)$$" $(CHECKSUM_NAME) | awk '{ print $$1 }'); \
+		ACTUAL_CHECKSUM=$$(sha256sum $(BINARY_NAME) | awk '{ print $$1 }'); \
+		if [ "$$EXPECTED_CHECKSUM" != "$$ACTUAL_CHECKSUM" ]; then \
+			echo "Checksum verification failed!"; \
+			exit 1; \
+		fi; \
+		echo "Checksum verified successfully."; \
+		rm $(CHECKSUM_NAME); \
+		\
 		if [ "$(EXT)" = "zip" ]; then unzip -o "$(BINARY_NAME)"; else tar -xzf "$(BINARY_NAME)"; fi; \
 		chmod +x goreleaser; \
 		mv goreleaser $(TOOLS_BIN_DIR); \

@@ -37,6 +37,7 @@ TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
 GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
 BUILDER    := $(TOOLS_BIN_DIR)/builder
 CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
+COSIGN     := $(TOOLS_BIN_DIR)/cosign
 
 PACKAGE_PATH ?= ""
 ARCH ?= ""
@@ -68,7 +69,7 @@ clean-tools:
 clean-all: clean clean-tools
 components: $(BIN)
 	$(BIN) components
-install-tools: install-goreleaser-pro install-go-junit-report $(TOOLS_BIN_NAMES)
+install-tools: $(TOOLS_BIN_NAMES) install-goreleaser-pro install-go-junit-report
 snapshot: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --snapshot --clean --parallelism 2 --skip archive,sbom --fail-fast
 
@@ -92,9 +93,6 @@ ifeq ($(OS), 'windows')
 	EXT='zip'
 endif
 
-FLAGS := --version
-GORELEASER_ACTUAL_VERSION := $(shell $(GORELEASER) $(FLAGS) | grep '^GitVersion:' | awk '{print $$2}')
-
 # Construct binary name and URL
 BINARY_NAME := goreleaser-pro_$(OS)_$(ARCH).$(EXT)
 CHECKSUM_NAME := ./checksums.txt
@@ -103,26 +101,30 @@ CHECKSUM_URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$
 
 install-goreleaser-pro:
 	echo 'Installing GoReleaser Pro...'; \
-	if [ "v$(GORELEASER_ACTUAL_VERSION)" = "$(GORELEASER_PRO_VERSION)" ]; then \
+	GORELEASER_ACTUAL_VERSION=$$($(GORELEASER) --version 2>&1 | grep '^GitVersion:' | awk '{print $$2}'); \
+	if [ "v$$GORELEASER_ACTUAL_VERSION" = "$(GORELEASER_PRO_VERSION)" ]; then \
 	  	echo "GoReleaser is already installed with the correct version, moving on..."; \
 	else \
 		echo "Downloading $(BINARY_NAME) from $(URL)..."; \
-		curl -vL $(URL) -o $(BINARY_NAME); \
+		curl -sL $(URL) -o $(BINARY_NAME); \
 		\
 		echo "Downloading checksum to verify downloaded binary..." ; \
-		curl -L $(CHECKSUM_URL) -o $(CHECKSUM_NAME); \
+		curl -sL $(CHECKSUM_URL) -o $(CHECKSUM_NAME); \
+		\
+		echo "Verifying checksum signature..."; \
+		$(COSIGN) verify-blob \
+          --certificate-identity 'https://github.com/goreleaser/goreleaser-pro-internal/.github/workflows/release-pro.yml@refs/tags/$(GORELEASER_PRO_VERSION)' \
+          --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
+          --cert 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.pem' \
+          --signature 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.sig' \
+          ./checksums.txt; \
 		\
 		echo "Verifying checksum..."; \
-		EXPECTED_CHECKSUM=$$(grep -E "$(BINARY_NAME)$$" $(CHECKSUM_NAME) | awk '{ print $$1 }'); \
-		ACTUAL_CHECKSUM=$$(sha256sum $(BINARY_NAME) | awk '{ print $$1 }'); \
-		if [ "$$EXPECTED_CHECKSUM" != "$$ACTUAL_CHECKSUM" ]; then \
-			echo "Checksum verification failed!"; \
-			exit 1; \
-		fi; \
+		sha256sum --ignore-missing -c $(CHECKSUM_NAME); \
 		echo "Checksum verified successfully."; \
 		rm $(CHECKSUM_NAME); \
 		\
-		if [ "$(EXT)" = "zip" ]; then unzip -o "$(BINARY_NAME)"; else tar -xzf "$(BINARY_NAME)"; fi; \
+		if [ "$(EXT)" = "zip" ]; then unzip -o "$(BINARY_NAME)"; else tar -xzf "$(BINARY_NAME)" goreleaser; fi; \
 		chmod +x goreleaser; \
 		mv goreleaser $(TOOLS_BIN_DIR); \
 		echo "GoReleaser Pro installed successfully!"; \

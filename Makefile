@@ -117,7 +117,7 @@ install-goreleaser-pro:
           --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
           --cert 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.pem' \
           --signature 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.sig' \
-          ./checksums.txt; \
+          $(CHECKSUM_NAME) \
 		\
 		echo "Verifying checksum..."; \
 		sha256sum --ignore-missing -c $(CHECKSUM_NAME); \

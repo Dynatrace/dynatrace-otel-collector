@@ -94,9 +94,9 @@ ifeq ($(OS), 'windows')
 endif
 
 # Construct binary name and URL
-BINARY_NAME := goreleaser-pro_$(OS)_$(ARCH).$(EXT)
+ARCHIVE_NAME := goreleaser-pro_$(OS)_$(ARCH).$(EXT)
 CHECKSUM_NAME := ./checksums.txt
-URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/$(BINARY_NAME)
+URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/$(ARCHIVE_NAME)
 CHECKSUM_URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt
 
 install-goreleaser-pro:
@@ -105,8 +105,8 @@ install-goreleaser-pro:
 	if [ "v$$GORELEASER_ACTUAL_VERSION" = "$(GORELEASER_PRO_VERSION)" ]; then \
 	  	echo "GoReleaser is already installed with the correct version, moving on..."; \
 	else \
-		echo "Downloading $(BINARY_NAME) from $(URL)..."; \
-		curl -sL $(URL) -o $(BINARY_NAME); \
+		echo "Downloading $(ARCHIVE_NAME) from $(URL)..."; \
+		curl -sL $(URL) -o $(ARCHIVE_NAME); \
 		\
 		echo "Downloading checksum to verify downloaded binary..." ; \
 		curl -sL $(CHECKSUM_URL) -o $(CHECKSUM_NAME); \
@@ -124,7 +124,7 @@ install-goreleaser-pro:
 		echo "Checksum verified successfully."; \
 		rm $(CHECKSUM_NAME); \
 		\
-		if [ "$(EXT)" = "zip" ]; then unzip goreleaser -o "$(BINARY_NAME)"; else tar -xzf "$(BINARY_NAME)" goreleaser; fi; \
+		if [ "$(EXT)" = "zip" ]; then unzip goreleaser -o "$(ARCHIVE_NAME)"; else tar -xzf "$(ARCHIVE_NAME)" goreleaser; fi; \
 		chmod +x goreleaser; \
 		mv goreleaser $(TOOLS_BIN_DIR); \
 		echo "GoReleaser Pro installed successfully!"; \

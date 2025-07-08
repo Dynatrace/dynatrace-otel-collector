@@ -1,4 +1,6 @@
 version: 2
+partial:
+  by: target
 before:
   hooks:
     - make generate
@@ -226,5 +228,5 @@ release:
   draft: true
 # The lines beneath this are called `modelines`. See `:help modeline`
 # Feel free to remove those if you don't want/use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# yaml-language-server: $schema=https://goreleaser.com/static/schema-pro.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj

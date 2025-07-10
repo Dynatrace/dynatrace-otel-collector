@@ -716,8 +716,8 @@ go.mongodb.org/mongo-driver v1.14.0 h1:P98w8egYRjYe3XDjxhYJagTokP/H6HzlsnojRgZRd
 go.mongodb.org/mongo-driver v1.14.0/go.mod h1:Vzb0Mk/pa7e6cWw85R4F/endUC3u0U9jGcNU603k65c=
 go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJySYA=
 go.opentelemetry.io/auto/sdk v1.1.0/go.mod h1:3wSPjt5PWp2RhlCcmmOial7AvC4DQqZb7a7wCow3W8A=
-go.opentelemetry.io/build-tools/chloggen v0.23.1 h1:vc7BCQ43OtEr9onDU/0igWwM08ocn8AzxX+0BXG9OPo=
-go.opentelemetry.io/build-tools/chloggen v0.23.1/go.mod h1:wJ8tJY5bURruxByT9gaaaGxjr1FoK8bUl/FiE+yQTfE=
+go.opentelemetry.io/build-tools/chloggen v0.24.0 h1:HjCCm1hy+dh7RIAvOxtBoXEXCgGvUmPYrVaWw5a42Ug=
+go.opentelemetry.io/build-tools/chloggen v0.24.0/go.mod h1:wJ8tJY5bURruxByT9gaaaGxjr1FoK8bUl/FiE+yQTfE=
 go.opentelemetry.io/collector/cmd/builder v0.128.0 h1:bpS2PKSc03x8Mj36Vk2/Q+giPoWWwUG+w2JIOJuDUew=
 go.opentelemetry.io/collector/cmd/builder v0.128.0/go.mod h1:Pa+tZZ6Kl009Uv7hnIiJxjZ8ME54Mdfu4mhsuvoJw+0=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.61.0 h1:q4XOmH/0opmeuJtPsbFNivyl7bCt7yRBbeEm2sC/XtQ=

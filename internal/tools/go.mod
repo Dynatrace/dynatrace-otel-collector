@@ -4,7 +4,7 @@ go 1.24.4
 
 require (
 	github.com/sigstore/cosign/v2 v2.5.2
-	go.opentelemetry.io/build-tools/chloggen v0.23.1
+	go.opentelemetry.io/build-tools/chloggen v0.24.0
 	go.opentelemetry.io/collector/cmd/builder v0.128.0
 )
 

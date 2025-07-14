@@ -11,13 +11,25 @@ concurrency:
 env:
   # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.24.4"
-  # renovate: datasource=go depName=github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod
-  CYCLONEDX_VERSION: "v1.9.0"
+  # renovate: datasource=github-tags depName=goreleaser-pro packageName=goreleaser/goreleaser-pro
+  GORELEASER_PRO_VERSION: v2.8.2
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        goos: ["linux", "darwin"]
+        goarch: ["amd64", "arm64", "ppc64le", "s390x"]
+        exclude:
+          - goos: darwin
+            goarch: s390x
+          - goos: darwin
+            goarch: ppc64le
+        include:
+          - goos: windows
+            goarch: amd64
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -30,13 +42,11 @@ jobs:
           cache: false
 
       - uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
+        if: matrix.goarch != 'amd64'
         with:
-          platforms: arm64,ppc64le,s390x
+          platforms: ${{ matrix.goarch }}
 
       - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
-
-      - name: Install cyclonedx-gomod
-        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@${{ env.CYCLONEDX_VERSION }}
 
       - name: Install tools
         run: |
@@ -54,8 +64,20 @@ jobs:
           rm -r /opt/hostedtoolcache/node
           df -h
 
-      - name: Create Snapshot for Pull Request
-        run: make snapshot
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@9c156ee8a17a598857849441385a2041ef570552 # v6.3.0
+        with:
+          distribution: goreleaser-pro
+          version: ${{ env.GORELEASER_PRO_VERSION }}
+          args: release --snapshot --clean --skip archive,sbom --fail-fast --split
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Show produced artifacts
+        run: ls -laR ./dist
 
       - if: always()
         name: Show FS usage (debugging)
@@ -65,19 +87,28 @@ jobs:
       - name: Upload Pull Request Preview
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: otelcol_dynatrace_${{ github.event.pull_request.number }}_${{ github.run_number }}
+          name: otelcol_dynatrace_${{ matrix.goos }}_${{ matrix.goarch }}_${{ github.event.pull_request.number }}_${{ github.run_number }}
           path: dist/*
 
       - name: Upload linux service packages
+        if: matrix.goarch == 'arm64' && matrix.goos == 'linux'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: linux-packages
+          name: linux-packages-arm64
           path: |
-            dist/dynatrace-otel-collector_*_Linux_x86_64.deb
-            dist/dynatrace-otel-collector_*_Linux_x86_64.rpm
-            dist/dynatrace-otel-collector_*_Linux_arm64.deb
-            dist/dynatrace-otel-collector_*_Linux_arm64.rpm
-            dist/metadata.json
+            dist/**/metadata.json
+            dist/**/dynatrace-otel-collector_*_Linux_arm64.deb
+            dist/**/dynatrace-otel-collector_*_Linux_arm64.rpm
+
+      - name: Upload linux service packages
+        if: matrix.goarch == 'amd64' && matrix.goos == 'linux'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: linux-packages-amd64
+          path: |
+            dist/**/metadata.json
+            dist/**/dynatrace-otel-collector_*_Linux_x86_64.deb
+            dist/**/dynatrace-otel-collector_*_Linux_x86_64.rpm
 
   linux-package-tests:
     name: Test Linux Packages
@@ -86,7 +117,7 @@ jobs:
     strategy:
       matrix:
         os: ["deb", "rpm"]
-        arch: ["x86_64", "arm64"]
+        arch: ["amd64", "arm64"]
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -98,21 +129,28 @@ jobs:
       - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
 
       - name: Download linux service packages
-
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          name: linux-packages
+          name: linux-packages-${{ matrix.arch }}
           path: linux-packages
 
       - name: Parse metadata file
         id: parse-metadata
         run: |
-          metadata=`cat ./linux-packages/metadata.json`
+          metadata=`cat ./linux-packages/linux_${{ matrix.arch }}/metadata.json`
+          # make single-line json out of multi-line json
+          metadata="${metadata//$'\n'/''}"
+          metadata="${metadata//$'\r'/''}"
           echo "metadata=$metadata" >> "$GITHUB_OUTPUT"
 
       - name: Extract version number
         id: extract-version
         run: echo "version=${{ fromJson(steps.parse-metadata.outputs.metadata).version }}" >> "$GITHUB_OUTPUT"
 
-      - name: Test
-        run: make package-test ARCH=${{ matrix.arch }} PACKAGE_PATH=linux-packages/dynatrace-otel-collector_${{ steps.extract-version.outputs.version }}_Linux_${{ matrix.arch }}.${{ matrix.os }}
+      - name: Test amd64
+        if: matrix.arch == 'amd64'
+        run: make package-test ARCH=${{ matrix.arch }} PACKAGE_PATH=linux-packages/linux_${{ matrix.arch }}/dynatrace-otel-collector_${{ steps.extract-version.outputs.version }}_Linux_x86_64.${{ matrix.os }}
+
+      - name: Test arm64
+        if: matrix.arch == 'arm64'
+        run: make package-test ARCH=${{ matrix.arch }} PACKAGE_PATH=linux-packages/linux_${{ matrix.arch }}/dynatrace-otel-collector_${{ steps.extract-version.outputs.version }}_Linux_${{ matrix.arch }}.${{ matrix.os }}

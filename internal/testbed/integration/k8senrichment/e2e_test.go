@@ -120,6 +120,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 				"k8s.workload.kind":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "job"),
 				"k8s.workload.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-job"),
 				oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-job"),
+				"k8s.container.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen"),
 			},
 		},
 		{
@@ -135,6 +136,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 				oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-statefulset"),
 				"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-statefulset-0"),
 				"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.container.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen"),
 			},
 		},
 		{
@@ -150,6 +152,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 				oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-deployment"),
 				"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "telemetrygen-"+testID+"-traces-deployment-[a-z0-9]*-[a-z0-9]*"),
 				"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.container.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen"),
 			},
 		},
 		{
@@ -165,6 +168,7 @@ func TestE2E_ClusterRBAC(t *testing.T) {
 				"k8s.workload.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen-"+testID+"-traces-daemonset"),
 				oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-traces-daemonset"),
 				"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+				"k8s.container.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "telemetrygen"),
 			},
 		},
 	}

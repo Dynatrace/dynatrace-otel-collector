@@ -30,6 +30,34 @@
     {
       "matchManagers": ["github-actions"],
       "groupName": "github-actions deps"
+    },
+    {
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchPackageNames": [
+        "goreleaser/goreleaser-pro"
+      ],
+      "extractVersion": "^(?<version>.*)-pro$"
+    },
+    {
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchPackageNames": [
+        "github.com/goreleaser/goreleaser-pro/v2",
+        "github.com/goreleaser/goreleaser-pro"
+      ],
+      "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?-(?<compatibility>.*)$"
+    },
+    {
+      "matchPackageNames": [
+        "goreleaser-pro",
+        "goreleaser/goreleaser-pro",
+        "github.com/goreleaser/goreleaser-pro/v2",
+        "github.com/goreleaser/goreleaser-pro"
+      ],
+      "groupName": "GoReleaser Pro"
     }
   ],
   "customManagers": [

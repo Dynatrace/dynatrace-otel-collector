@@ -11,7 +11,7 @@ concurrency:
 env:
   # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.24.4"
-  # renovate: datasource=github-tags depName=goreleaser-pro packageName=goreleaser/goreleaser-pro
+  # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
   GORELEASER_PRO_VERSION: v2.8.2
 
 jobs:

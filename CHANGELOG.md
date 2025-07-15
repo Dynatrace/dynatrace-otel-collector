@@ -4,6 +4,83 @@
 
 <!-- next version -->
 
+## v0.32.0
+
+This release includes version 0.129.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.129.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.129.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.129.0>
+
+v0.128.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.128.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.128.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🚩 Deprecations 🚩
+
+- `receiver/hostmetrics`: Mark `hostmetrics.process.onWindowsUseNewGetProcesses` feature gate as stable ([#32947](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32947))
+- `resourcedetectionprocessor`: Promote the processor.resourcedetection.removeGCPFaasID feature gate to beta. ([#40601](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40601))
+  The faas.id attribute is replaced by the faas.instance attribute. | This disables detection of the faas.id resource attribute by default. | Re-enable by disabling the processor.resourcedetection.removeGCPFaasID feature gate.
+- `prometheusreceiver`: Promote the receiver.prometheusreceiver.RemoveLegacyResourceAttributes featuregate to stable ([#40572](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40572))
+  It has been beta since v0.126.0
+
+### 💡 Enhancements 💡
+
+- `resourcedetectionprocessor`: Add the option to retrieve resource attributes from the K8s API server and EC2 api when the IMDS service is not available.([#39503](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39503)
+- `resourcedetectionprocessor`: Add additional OS properties to resource detection: `os.build.id` and `os.name`([#39941](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39941)
+- `filelogreceiver`: The fingerprint of gzip compressed files is created by decompressing and reading the first `fingerprint_size` bytes.([#37772](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37772)
+  This feature can be enabled via the following feature gate `--feature-gates=filelog.decompressFingerprint`. This can cause existing gzip files to be re-ingested because of changes in how fingerprints are computed.
+- `processor/k8sattributes`: Support extracting labels and annotations from k8s Deployments([#37957](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37957)
+- `receiver/k8s_cluster`: Add onDelete handler to emit the experimental entity delete events([#40278](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40278)
+- `processor/resourcedetection`: add `host.interface` resource attribute to `system` detector([#39419](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39419)
+- `service`: Support setting `sampler` and `limits` under `service::telemetry::traces` ([#13201](https://github.com/open-telemetry/opentelemetry-collector/issues/13201))
+  This allows users to enable sampling and set span limits on internal Collector traces using the
+  OpenTelemetry SDK declarative configuration.
+- `exporterhelper`: Preserve request span context and client information in the persistent queue. ([#11740](https://github.com/open-telemetry/opentelemetry-collector/issues/11740), [#13220](https://github.com/open-telemetry/opentelemetry-collector/issues/13220), [#13232](https://github.com/open-telemetry/opentelemetry-collector/issues/13232))
+  It allows internal collector spans and client information to propagate through the persistent queue used by 
+  the exporters. The same way as it's done for the in-memory queue.
+  Currently, it is behind the exporter.PersistRequestContext feature gate, which can be enabled by adding 
+  `--feature-gates=exporter.PersistRequestContext` to the collector command line. An exporter buffer stored by
+  a previous version of the collector (or by a collector with the feature gate disabled) can be read by a newer
+  collector with the feature enabled. However, the reverse is not supported: a buffer stored by a newer collector with
+  the feature enabled cannot be read by an older collector (or by a collector with the feature gate disabled).
+- `receiver/hostmetrics`: Add `system.paging.faults` metrics on Windows ([#40468](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40468))
+- `netflowreceiver`: Add TCP flags attribute to netflow receiver. ([#40487](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40487))
+- `processor/transform`: Introduce optional metric name suffix setup for metric conversion functions ([#33850](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33850))
+  The affected functions are: convert_summary_count_val_to_sum(), convert_summary_sum_val_to_sum(), extract_count_metric(), extract_sum_metric()
+
+### 🧰 Bug fixes 🧰
+
+- `prometheusrecevier`: Add feature gate to allow enabling and disabling the Prometheus created timestamp zero ingestion feature flag.([#40245](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40245)
+- `service`: Only allocate one set of internal log sampling counters ([#13014](https://github.com/open-telemetry/opentelemetry-collector/issues/13014))
+  The case where logs are only exported to stdout was fixed in v0.126.0;
+  this new fix also covers the case where logs are exported through OTLP.
+- `prometheusreceiver`: Fix invalid metric name validation error in scrape start from target allocator. (#[35459](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35459), #[40788](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40788))
+  Prometheus made setting metric_name_validation_scheme, metric_name_escaping_scheme mandatory mandatory, use sane defaults.
+- `hostmetricsreceiver`: Minor fix to the handling of conntrack errors ([#40175](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40175))
+- `k8sattributesprocessor`: Make sure getIdentifiersFromAssoc() can handle container.id ([#40745](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40745))
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `k8sattributesprocessor`: Add `k8s.container.name` to list of extracted attributes by the k8sattributes processor. (#596)
+  Please note that the `k8s.container.name` attribute will only be added if the pod from which the incoming
+  signal has been received contains only one container, or if the ingested signal contains the `k8s.container.id` resource attribute.
+  Otherwise, the k8sattributes processor will not be able to correctly associate the correct container.
+  
+
+<!-- previous-version -->
+
 ## v0.31.0
 
 This release includes version 0.127.0 of the upstream Collector components.

@@ -15,7 +15,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
-	semconv "go.opentelemetry.io/collector/semconv/v1.18.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	idutils "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils"
@@ -498,10 +498,10 @@ func TestConfigMetricsFromPreSampledTraces(t *testing.T) {
 	oksExp.SetStartTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond)))
 	oksExp.SetEndTimestamp(pcommon.NewTimestampFromTime(startTime.Add(time.Millisecond * 3)))
 
-	rss.Resource().Attributes().PutStr(semconv.AttributeServiceName, "integration.test")
-	expectedRss.Resource().Attributes().PutStr(semconv.AttributeServiceName, "integration.test")
-	expectedRss2.Resource().Attributes().PutStr(semconv.AttributeServiceName, "integration.test")
-	expectedRss3.Resource().Attributes().PutStr(semconv.AttributeServiceName, "integration.test")
+	rss.Resource().Attributes().PutStr(string(semconv.ServiceNameKey), "integration.test")
+	expectedRss.Resource().Attributes().PutStr(string(semconv.ServiceNameKey), "integration.test")
+	expectedRss2.Resource().Attributes().PutStr(string(semconv.ServiceNameKey), "integration.test")
+	expectedRss3.Resource().Attributes().PutStr(string(semconv.ServiceNameKey), "integration.test")
 
 	// Error ers
 	ers := actualSpans.AppendEmpty()

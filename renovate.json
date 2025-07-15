@@ -30,6 +30,15 @@
     {
       "matchManagers": ["github-actions"],
       "groupName": "github-actions deps"
+    },
+    {
+      "matchPackageNames": [
+        "goreleaser-pro",
+        "goreleaser/goreleaser-pro",
+        "github.com/goreleaser/goreleaser-pro/v2",
+        "github.com/goreleaser/goreleaser-pro"
+      ],
+      "groupName": "GoReleaser Pro"
     }
   ],
   "customManagers": [

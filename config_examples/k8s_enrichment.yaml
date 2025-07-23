@@ -27,6 +27,9 @@ processors:
         - from: pod
           key_regex: metadata.dynatrace.com/(.*)
           tag_name: $$1
+        - from: pod
+          key: metadata.dynatrace.com
+          tag_name: metadata.dynatrace.com
     pod_association:
       - sources:
         - from: resource_attribute
@@ -44,6 +47,7 @@ processors:
   transform:
     error_mode: ignore
     trace_statements: &dynatrace_transformations
+      # Set attributes taken from k8s metadata.
       - context: resource
         statements:
           - set(attributes["k8s.workload.kind"], "job") where IsString(attributes["k8s.job.name"])
@@ -65,6 +69,12 @@ processors:
           - delete_key(attributes, "k8s.daemonset.name")
           - delete_key(attributes, "k8s.cronjob.name")
           - delete_key(attributes, "k8s.job.name")
+      # Set attributes from metadata specified in Dynatrace and set through the Dynatrace Operator. 
+      # For more: https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment
+      - context: resource
+        statements:
+          - merge_maps(attributes, ParseJSON(attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(attributes["metadata.dynatrace.com"], "[ ]*^\\{")
+          - delete_key(attributes, "metadata.dynatrace.com")
     metric_statements: *dynatrace_transformations
     log_statements: *dynatrace_transformations
 exporters:

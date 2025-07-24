@@ -73,7 +73,7 @@ processors:
       # For more: https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment
       - context: resource
         statements:
-          - merge_maps(attributes, ParseJSON(attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(attributes["metadata.dynatrace.com"], "[ ]*^\\{")
+          - merge_maps(attributes, ParseJSON(attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(attributes["metadata.dynatrace.com"], "^\\{")
           - delete_key(attributes, "metadata.dynatrace.com")
     metric_statements: *dynatrace_transformations
     log_statements: *dynatrace_transformations

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Name }}
+  name: "{{ .Name }}"
   namespace: e2ek8senrichment
 spec:
   replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: opentelemetry-collector
-      app.kubernetes.io/instance: {{ .Name }}
+      app.kubernetes.io/instance: "{{ .Name }}"
   template:
     metadata:
       labels:
         app.kubernetes.io/name: opentelemetry-collector
-        app.kubernetes.io/instance: {{ .Name }}
+        app.kubernetes.io/instance: "{{ .Name }}"
     spec:
-      serviceAccountName: {{ .Name }}
+      serviceAccountName: "{{ .Name }}"
       containers:
         - name: opentelemetry-collector
           command:
@@ -54,7 +54,7 @@ spec:
       volumes:
         - name: opentelemetry-collector-configmap
           configMap:
-            name: {{ .Name }}-config
+            name: "{{ .Name }}-config"
             items:
               - key: relay
                 path: relay.yaml

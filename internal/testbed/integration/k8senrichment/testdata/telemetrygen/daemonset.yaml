@@ -11,6 +11,13 @@ spec:
     metadata:
       annotations:
         workload: daemonset
+        metadata.dynatrace.com: >
+          {
+            "dt.cost.costcenter":"costcenter_test",
+            "dt.cost.product":"costprdct_test",
+            "dt.security_context":"secctxt_test",
+            "k8s.namespace.annotation.myAnnotationKey":"custom_test"
+          }
       labels:
         app: {{ .Name }}-{{ .DataType }}-daemonset
     spec:

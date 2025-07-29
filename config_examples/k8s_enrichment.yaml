@@ -70,7 +70,7 @@ processors:
           - delete_key(attributes, "k8s.cronjob.name")
           - delete_key(attributes, "k8s.job.name")
       # Set attributes from metadata specified in Dynatrace and set through the Dynatrace Operator. 
-      # For more: https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment
+      # For more info: https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment
       - context: resource
         statements:
           - merge_maps(attributes, ParseJSON(attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(attributes["metadata.dynatrace.com"], "^\\{")

@@ -208,11 +208,11 @@ service:
       exporters:
         - otlphttp/metrics
     logs:
-      receivers: 
+      receivers:
         - k8sobjects
       processors:
         - transform
-      exporters: 
+      exporters:
         - otlphttp/logs`
 )
 

@@ -158,7 +158,7 @@ service:
   otlphttp:
     endpoint: ${env:DT_ENDPOINT}
     headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+      Authorization: "Api-Token ${env:API_TOKEN}"
 
 service:
   extensions:

@@ -182,11 +182,11 @@ service:
       exporters:
         - otlphttp
     logs:
-      receivers: 
+      receivers:
         - k8sobjects
       processors:
         - transform
-      exporters: 
+      exporters:
         - otlphttp`
 	templateGatewayNew = `
   otlphttp/metrics:

@@ -24,10 +24,10 @@ processors:
     error_mode: ignore
     metrics:
       metric:
-          - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
-          - 'resource.attributes["k8s.volume.type"] == "configMap"'
-          - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
-          - 'resource.attributes["k8s.volume.type"] == "secret"'
+        - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
+        - 'resource.attributes["k8s.volume.type"] == "configMap"'
+        - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
+        - 'resource.attributes["k8s.volume.type"] == "secret"'
   k8sattributes:
     filter:
       node_from_env_var: K8S_NODE_NAME

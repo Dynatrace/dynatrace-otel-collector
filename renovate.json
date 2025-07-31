@@ -10,7 +10,7 @@
   "prConcurrentLimit": 25,
   "minimumReleaseAge": "3 days",
   "timezone": "Europe/Vienna",
-  "rebaseWhen": "conflicted",
+  "rebaseWhen": "behind-base-branch",
   "postUpdateOptions": [
     "gomodTidy",
     "gomodMassage"

@@ -158,7 +158,7 @@ service:
   otlphttp:
     endpoint: ${env:DT_ENDPOINT}
     headers:
-      Authorization: "Api-Token ${env:API_TOKEN}"
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
 
 service:
   extensions:
@@ -182,11 +182,11 @@ service:
       exporters:
         - otlphttp
     logs:
-      receivers: 
+      receivers:
         - k8sobjects
       processors:
         - transform
-      exporters: 
+      exporters:
         - otlphttp`
 	templateGatewayNew = `
   otlphttp/metrics:
@@ -208,11 +208,11 @@ service:
       exporters:
         - otlphttp/metrics
     logs:
-      receivers: 
+      receivers:
         - k8sobjects
       processors:
         - transform
-      exporters: 
+      exporters:
         - otlphttp/logs`
 )
 

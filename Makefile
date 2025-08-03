@@ -22,7 +22,7 @@ MAIN = $(BUILD_DIR)/main.go
 GO_JUNIT_REPORT_VERSION ?= v2.1.0
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
-GORELEASER_PRO_VERSION ?= v2.11.1
+GORELEASER_PRO_VERSION ?= v2.11.2
 
 # Files to be copied directly from the project root
 CP_FILES = LICENSE README.md

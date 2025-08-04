@@ -6,19 +6,91 @@
 
 ## v0.33.0
 
-This release includes version XX.YY.ZZ of the upstream Collector components.
+This release includes version 0.131.0 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
-vXX.YY.ZZ:
+v0.131.0:
 
-- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/vXX.YY.ZZ>
-- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/vXX.YY.ZZ>
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.131.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.131.0>
+
+v0.130.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.130.1>
+
+v0.130.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.130.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.130.0>
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
----
+### 🛑 Breaking changes 🛑
+
+- `confighttp`: Move `confighttp.framedSnappy` feature gate to beta. ([#10584](https://github.com/open-telemetry/opentelemetry-collector/issues/10584))
+- `exporter/otlp`: Remove deprecated batcher config from OTLP, use queuebatch ([#13339](https://github.com/open-telemetry/opentelemetry-collector/issues/13339))
+
+### 💡 Enhancements 💡
+
+- `exporter/debug`: Move to alpha stability except profiles ([#13487](https://github.com/open-telemetry/opentelemetry-collector/issues/13487))
+- `exporterhelper`: Enable `exporter.PersistRequestContext` feature gate by default. ([#13437](https://github.com/open-telemetry/opentelemetry-collector/issues/13437))
+  Request context is now preserved by default when using persistent queues.
+  Note that Auth extensions context is not propagated through the persistent queue.
+
+- `pdata`: Use pdatagen to generate marshalJSON without using gogo proto jsonpb. ([#13450](https://github.com/open-telemetry/opentelemetry-collector/issues/13450))
+- `otlpreceiver`: Remove usage of gogo proto which uses reflect.Value.MethodByName. Removes one source of disabling DCE. ([#12747](https://github.com/open-telemetry/opentelemetry-collector/issues/12747))
+- `exporterhelper`: Fix metrics split logic to consider metrics description into the size. ([#13418](https://github.com/open-telemetry/opentelemetry-collector/issues/13418))
+- `service`: New pipeline instrumentation now differentiates internal failures from downstream errors ([#13234](https://github.com/open-telemetry/opentelemetry-collector/issues/13234))
+  With the telemetry.newPipelineTelemetry feature gate enabled, the "received" and "produced"
+  metrics related to a component now distinguish between two types of errors:
+  - "outcome = failure" indicates that the component returned an internal error;
+  - "outcome = refused" indicates that the component successfully emitted data, but returned an
+    error coming from a downstream component processing that data.
+
+- `pdata`: Remove usage of text/template from pdata, improves DCE. ([#12747](https://github.com/open-telemetry/opentelemetry-collector/issues/12747))
+- `architecture`: New Tier 3 platform riscv64 allowing the collector to be built and distributed for this platform. ([#13462](https://github.com/open-telemetry/opentelemetry-collector/issues/13462))
+- `exporterhelper`: Enable items and bytes sizers for persistent queue ([#12881](https://github.com/open-telemetry/opentelemetry-collector/issues/12881))
+- `exporterhelper`: Refactor persistent storage size backup to always record it. ([#12890](https://github.com/open-telemetry/opentelemetry-collector/issues/12890))
+- `exporterhelper`: Add support to configure a different Sizer for the batcher than the queue ([#13313](https://github.com/open-telemetry/opentelemetry-collector/issues/13313))
+- `yaml`: Replaced `sigs.k8s.io/yaml` with `go.yaml.in/yaml` for improved support and long-term maintainability. ([#13308](https://github.com/open-telemetry/opentelemetry-collector/issues/13308))
+
+### 🧰 Bug fixes 🧰
+
+- `exporterhelper`: Prevents the exporter for being stuck when telemetry data is bigger than batch.max_size ([#12893](https://github.com/open-telemetry/opentelemetry-collector/issues/12893))
+- `mdatagen`: Fix import paths for mdatagen component ([#13069](https://github.com/open-telemetry/opentelemetry-collector/issues/13069))
+- `otlpreceiver`: Error handler correctly fallbacks to content type ([#13414](https://github.com/open-telemetry/opentelemetry-collector/issues/13414))
+- `pdata/pprofiles`: Fix profiles JSON unmarshal logic for originalPayload. The bytes have to be base64 encoded. ([#13483](https://github.com/open-telemetry/opentelemetry-collector/issues/13483))
+- `xpdata`: Fix unmarshaling JSON for entities, add e2e tests to avoid this in the future. ([#13480](https://github.com/open-telemetry/opentelemetry-collector/issues/13480))
+- `service`: Downgrade dependency of prometheus exporter in OTel Go SDK ([#13429](https://github.com/open-telemetry/opentelemetry-collector/issues/13429))
+  This fixes the bug where collector's internal metrics are emitted with an unexpected suffix in their names when users configure the service::telemetry::metrics::readers with Prometheus
+- `service`: Revert Default internal metrics config now enables `otel_scope_` labels (#12939, #13344)
+  Reverting change temporarily due to prometheus exporter downgrade. This unfortunately re-introduces the bug that instrumentation scope attributes cause errors in Prometheus exporter. See http://github.com/open-telemetry/opentelemetry-collector/issues/12939 for details.
+- `builder`: Remove undocumented handling of `DIST_*` environment variables replacements ([#13335](https://github.com/open-telemetry/opentelemetry-collector/issues/13335))
+- `service`: Fixes bug where internal metrics are emitted with an unexpected suffix in their names when users configure `service::telemetry::metrics::readers` with Prometheus. ([#13449](https://github.com/open-telemetry/opentelemetry-collector/issues/13449))
+  See more details on https://github.com/open-telemetry/opentelemetry-go/issues/7039
+
+- `exporterhelper`: Fix exporter.PersistRequestContext feature gate ([#13342](https://github.com/open-telemetry/opentelemetry-collector/issues/13342))
+- `exporterhelper`: Preserve all metrics metadata when batch splitting. ([#13236](https://github.com/open-telemetry/opentelemetry-collector/issues/13236))
+  Previously, when large batches of metrics were processed, the splitting logic in `metric_batch.go` could
+  cause the `name` field of some metrics to disappear. This fix ensures that all metric fields are
+  properly preserved when `metricRequest` objects are split.
+
+- `service`: Default internal metrics config now enables `otel_scope_` labels ([#12939](https://github.com/open-telemetry/opentelemetry-collector/issues/12939), [#13344](https://github.com/open-telemetry/opentelemetry-collector/issues/13344))
+  By default, the Collector exports its internal metrics using a Prometheus
+  exporter from the opentelemetry-go repository. With this change, the Collector
+  no longer sets "without_scope_info" to true in its configuration.
+
+  This means that all exported metrics will have `otel_scope_name`,
+  `otel_scope_schema_url`, and `otel_scope_version` labels corresponding to the
+  instrumentation scope metadata for that metric.
+
+  This notably prevents an error when multiple metrics are only distinguished
+  by their instrumentation scopes and end up aliased during export.
+
+  If this is not desired behavior, a Prometheus exporter can be explicitly
+  configured with this option enabled.
 
 </details>
 

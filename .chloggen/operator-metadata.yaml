@@ -15,6 +15,7 @@ issues: [615]
 # (Optional) One or more lines of additional information to render under the primary note.
 # These lines will be padded with 2 spaces and then inserted directly into the document.
 # Use pipe (|) for multiline entries.
-subtext: This extends the config example for the k8sattributesprocessor and related transformprocessor statements
-| to add pod metadata added by the Dynatrace Operator to the resource attributes in exported telemetry. See
-| https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment on how to configure this operator feature.
+subtext: |
+  This extends the config example for the k8sattributesprocessor and related transformprocessor statements
+  to add pod metadata added by the Dynatrace Operator to the resource attributes in exported telemetry. See
+  https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment on how to configure this operator feature.

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: collector-receiver2
+spec:
+  type: ClusterIP
+  ports:
+    - name: otlp
+      port: 6317
+      targetPort: 6317
+      protocol: TCP
+      appProtocol: grpc
+  selector:
+    app.kubernetes.io/name: opentelemetry-collector
+    app.kubernetes.io/instance: collector-receiver2

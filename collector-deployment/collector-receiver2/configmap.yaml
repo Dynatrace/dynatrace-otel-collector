@@ -11,7 +11,7 @@ data:
       otlp:
         protocols:
           grpc:
-            endpoint: 0.0.0.0:6317
+            endpoint: 0.0.0.0:5317
     exporters:
       debug:
         verbosity: detailed

@@ -34,7 +34,7 @@ data:
           static:
             hostnames:
               - collector-receiver1.default.svc.cluster.local:5317
-              - collector-receiver2.default.svc.cluster.local:6317
+              - collector-receiver2.default.svc.cluster.local:5317
 
     service:
       telemetry:

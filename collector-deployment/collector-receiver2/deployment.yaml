@@ -23,7 +23,7 @@ spec:
           image: otel/opentelemetry-collector:latest
           ports:
             - name: otlp
-              containerPort: 6317
+              containerPort: 5317
               protocol: TCP
           env:
             - name: MY_POD_IP

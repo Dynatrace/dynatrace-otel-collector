@@ -6,8 +6,8 @@ spec:
   type: ClusterIP
   ports:
     - name: otlp
-      port: 6317
-      targetPort: 6317
+      port: 5317
+      targetPort: 5317
       protocol: TCP
       appProtocol: grpc
   selector:

@@ -5,7 +5,7 @@ go 1.24.4
 require (
 	github.com/sigstore/cosign/v2 v2.5.3
 	go.opentelemetry.io/build-tools/chloggen v0.26.2
-	go.opentelemetry.io/collector/cmd/builder v0.131.0
+	go.opentelemetry.io/collector/cmd/builder v0.132.0
 )
 
 require (
@@ -266,7 +266,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.3 // indirect
 	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
-	golang.org/x/mod v0.26.0 // indirect
+	golang.org/x/mod v0.27.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect

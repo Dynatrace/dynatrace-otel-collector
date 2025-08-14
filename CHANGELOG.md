@@ -116,7 +116,7 @@ v0.132.0:
   With this change, they will no longer return an error, conforming to the lifecycle of components expected.
   
 - `confighttp`: Reuse zstd Reader objects ([#11824](https://github.com/open-telemetry/opentelemetry-collector/issues/11824))
-- `opampsupervisor`: Propagate feature flag service.AllowNoPipeline to collector started by OpAMP supervisor ([#41819](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41537))
+- `opampsupervisor`: Propagate feature flag service.AllowNoPipeline to collector started by OpAMP supervisor ([#41537](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41537))
 - `statsdreceiver`: Fixes a bug when storing k8s.pod.ip in the metrics. Previously otelcol IP was used instead of the client IP. ([#41361](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41361), [#41362](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41362))
 - `spanmetricsconnector`: Adds a default maximum number of exemplars within the metric export interval. ([#41679](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41679))
   1. If the user manually sets max_per_data_point, there will be no impact.

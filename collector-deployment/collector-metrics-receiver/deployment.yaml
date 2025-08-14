@@ -18,9 +18,9 @@ spec:
       containers:
         - name: opentelemetry-collector
           command:
-            - /otelcol
+            - /otelcol-contrib
             - --config=/conf/relay.yaml
-          image: otel/opentelemetry-collector:latest
+          image: otel/opentelemetry-collector-contrib:latest
           ports:
             - name: otlp
               containerPort: 5317

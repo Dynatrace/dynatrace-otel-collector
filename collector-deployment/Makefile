@@ -3,12 +3,12 @@ install:
 	@echo "-----------------------------------"
 	@echo "Create backend receivers"
 	@echo "-----------------------------------"
-	kubectl apply -f collector-receiver1
-	kubectl wait --for=condition=available deployment/collector-receiver1 --timeout=300s
-	kubectl apply -f collector-receiver2
-	kubectl wait --for=condition=available deployment/collector-receiver2 --timeout=300s
-	kubectl apply -f collector-receiver3
-	kubectl wait --for=condition=available deployment/collector-receiver3 --timeout=300s
+	kubectl apply -f collector-metrics-receiver
+	kubectl apply -f collector-traces-receiver
+	kubectl apply -f collector-logs-receiver
+	kubectl wait --for=condition=available deployment/collector-metrics-receiver --timeout=300s
+	kubectl wait --for=condition=available deployment/collector-traces-receiver --timeout=300s
+	kubectl wait --for=condition=available deployment/collector-logs-receiver --timeout=300s
 
 	@echo "-----------------------------------"
 	@echo "Create load balancer"
@@ -27,22 +27,22 @@ generate-load:
 	@echo "-----------------------------------"
 	@echo "Create load generators"
 	@echo "-----------------------------------"
-	kubectl apply -f telemetrygen
-	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment --timeout=300s
-	kubectl apply -f telemetrygen2
+	kubectl apply -f metrics-gen-1
+	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment1 --timeout=300s
+	kubectl apply -f metrics-gen-2
 	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment2 --timeout=300s
-	kubectl apply -f telemetrygen3
+	kubectl apply -f traces-gen
 	kubectl wait --for=condition=available deployment/temeletrygen-traces-deployment --timeout=300s
-	kubectl apply -f telemetrygen4
+	kubectl apply -f logs-gen
 	kubectl wait --for=condition=available deployment/temeletrygen-logs-deployment --timeout=300s
 
 .PHONY: uninstall
 uninstall:
-	kubectl delete -f telemetrygen
-	kubectl delete -f telemetrygen2
-	kubectl delete -f telemetrygen3
-	kubectl delete -f telemetrygen4
-	kubectl delete -f collector-loadbalancer
-	kubectl delete -f collector-receiver1
-	kubectl delete -f collector-receiver2
-	kubectl delete -f collector-receiver3
+	kubectl delete -f metrics-gen-1 --ignore-not-found
+	kubectl delete -f metrics-gen-2 --ignore-not-found
+	kubectl delete -f traces-gen --ignore-not-found
+	kubectl delete -f logs-gen --ignore-not-found
+	kubectl delete -f collector-loadbalancer --ignore-not-found
+	kubectl delete -f collector-metrics-receiver --ignore-not-found
+	kubectl delete -f collector-traces-receiver --ignore-not-found
+	kubectl delete -f collector-logs-receiver --ignore-not-found

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: traces-receiver
+  name: logs-receiver
 spec:
   clusterIP: None
   ports:
@@ -12,4 +12,4 @@ spec:
       appProtocol: grpc
   selector:
     app.kubernetes.io/name: opentelemetry-collector
-    app.kubernetes.io/instance: collector-receiver2
+    app.kubernetes.io/instance: collector-logs-receiver

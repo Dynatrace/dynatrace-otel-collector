@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: temeletrygen-metrics-deployment
+  name: temeletrygen-metrics-deployment1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: temeletrygen-metrics-deployment
+      app: temeletrygen-metrics-deployment1
   template:
     metadata:
       annotations:
         workload: deployment
       labels:
-        app: temeletrygen-metrics-deployment
+        app: temeletrygen-metrics-deployment1
     spec:
       containers:
       - command:
@@ -22,7 +22,7 @@ spec:
         - --otlp-endpoint=collector-loadbalancer.default.svc.cluster.local:4317
         - --duration=36000s
         - --rate=1
-        - --otlp-attributes=service.name="test-metrics-deployment"
+        - --otlp-attributes=service.name="test-metrics-deployment1"
         image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
         imagePullPolicy: IfNotPresent
         name: telemetrygen

@@ -14,8 +14,6 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-    processors:
-      cumulativetodelta:
     exporters:
       loadbalancing/metrics:
         retry_on_failure:
@@ -63,7 +61,7 @@ data:
       pipelines:
         metrics:
           receivers: [otlp]
-          processors: [cumulativetodelta]
+          processors: []
           exporters:
             - loadbalancing/metrics
         traces:

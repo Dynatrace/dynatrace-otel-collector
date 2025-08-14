@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: collector-receiver1
+  name: collector-traces-receiver
 rules:
   - apiGroups: [""]
     resources: ["namespaces", "events", "pods", "nodes"]

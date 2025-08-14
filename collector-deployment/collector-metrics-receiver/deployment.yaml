@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: collector-receiver3
+  name: collector-metrics-receiver
 spec:
   replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: opentelemetry-collector
-      app.kubernetes.io/instance: collector-receiver3
+      app.kubernetes.io/instance: collector-metrics-receiver
   template:
     metadata:
       labels:
         app.kubernetes.io/name: opentelemetry-collector
-        app.kubernetes.io/instance: collector-receiver3
+        app.kubernetes.io/instance: collector-metrics-receiver
     spec:
-      serviceAccountName: collector-receiver3
+      serviceAccountName: collector-metrics-receiver
       containers:
         - name: opentelemetry-collector
           command:
@@ -51,7 +51,7 @@ spec:
       volumes:
         - name: opentelemetry-collector-configmap
           configMap:
-            name: collector-receiver3-config
+            name: collector-metrics-receiver-config
             items:
               - key: relay
                 path: relay.yaml

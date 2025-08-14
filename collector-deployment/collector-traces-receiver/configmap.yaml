@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: collector-receiver1-config
+  name: collector-traces-receiver-config
 data:
   relay: |
     extensions:
@@ -23,7 +23,7 @@ data:
           level: none
       extensions: [health_check]
       pipelines:
-        metrics:
+        traces:
           receivers: [otlp]
           processors: []
           exporters:

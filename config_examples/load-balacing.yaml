@@ -28,7 +28,7 @@ exporters:
       k8s:
         service: metrics-receiver.default
         ports:
-          - 5317
+          - 4317
   loadbalancing/traces:
     protocol:
       otlp:
@@ -38,7 +38,7 @@ exporters:
       k8s:
         service: traces-receiver.default
         ports:
-          - 5317
+          - 4317
   loadbalancing/logs:
     protocol:
       otlp:
@@ -48,7 +48,7 @@ exporters:
       k8s:
         service: logs-receiver.default
         ports:
-          - 5317
+          - 4317
 
 service:
   extensions: [health_check]

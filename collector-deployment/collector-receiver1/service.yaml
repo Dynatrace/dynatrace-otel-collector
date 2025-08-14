@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: collector-receiver1
+  name: metrics-receiver
 spec:
-  type: ClusterIP
+  clusterIP: None
   ports:
     - name: otlp
       port: 5317

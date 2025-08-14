@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: temeletrygen-metrics-deployment4
+  name: temeletrygen-logs-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: temeletrygen-metrics-deployment4
+      app: temeletrygen-logs-deployment
   template:
     metadata:
       annotations:
         workload: deployment
       labels:
-        app: temeletrygen-metrics-deployment4
+        app: temeletrygen-logs-deployment
     spec:
       containers:
       - command:
         - /telemetrygen
-        - metrics
+        - logs
         - --otlp-insecure
         - --otlp-endpoint=collector-loadbalancer.default.svc.cluster.local:4317
         - --duration=36000s
         - --rate=1
-        - --otlp-attributes=service.name="test-metrics-deployment4"
+        - --otlp-attributes=service.name="test-logs-deployment"
         image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
         imagePullPolicy: IfNotPresent
         name: telemetrygen

@@ -7,6 +7,8 @@ install:
 	kubectl wait --for=condition=available deployment/collector-receiver1 --timeout=300s
 	kubectl apply -f collector-receiver2
 	kubectl wait --for=condition=available deployment/collector-receiver2 --timeout=300s
+	kubectl apply -f collector-receiver3
+	kubectl wait --for=condition=available deployment/collector-receiver3 --timeout=300s
 
 	@echo "-----------------------------------"
 	@echo "Create load balancer"
@@ -30,9 +32,9 @@ generate-load:
 	kubectl apply -f telemetrygen2
 	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment2 --timeout=300s
 	kubectl apply -f telemetrygen3
-	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment3 --timeout=300s
+	kubectl wait --for=condition=available deployment/temeletrygen-traces-deployment --timeout=300s
 	kubectl apply -f telemetrygen4
-	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment4 --timeout=300s
+	kubectl wait --for=condition=available deployment/temeletrygen-logs-deployment --timeout=300s
 
 .PHONY: uninstall
 uninstall:
@@ -43,3 +45,4 @@ uninstall:
 	kubectl delete -f collector-loadbalancer
 	kubectl delete -f collector-receiver1
 	kubectl delete -f collector-receiver2
+	kubectl delete -f collector-receiver3

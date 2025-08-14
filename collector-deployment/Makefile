@@ -28,21 +28,31 @@ generate-load:
 	@echo "Create load generators"
 	@echo "-----------------------------------"
 	kubectl apply -f metrics-gen-1
-	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment1 --timeout=300s
 	kubectl apply -f metrics-gen-2
+	kubectl apply -f metrics-gen-3
+	kubectl apply -f metrics-gen-4
+	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment1 --timeout=300s
 	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment2 --timeout=300s
+	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment3 --timeout=300s
+	kubectl wait --for=condition=available deployment/temeletrygen-metrics-deployment4 --timeout=300s
+
 	kubectl apply -f traces-gen
 	kubectl wait --for=condition=available deployment/temeletrygen-traces-deployment --timeout=300s
 	kubectl apply -f logs-gen
 	kubectl wait --for=condition=available deployment/temeletrygen-logs-deployment --timeout=300s
 
 .PHONY: uninstall
-uninstall:
-	kubectl delete -f metrics-gen-1 --ignore-not-found
-	kubectl delete -f metrics-gen-2 --ignore-not-found
-	kubectl delete -f traces-gen --ignore-not-found
-	kubectl delete -f logs-gen --ignore-not-found
+uninstall: uninstall-load
 	kubectl delete -f collector-loadbalancer --ignore-not-found
 	kubectl delete -f collector-metrics-receiver --ignore-not-found
 	kubectl delete -f collector-traces-receiver --ignore-not-found
 	kubectl delete -f collector-logs-receiver --ignore-not-found
+
+.PHONY: uninstall-load
+uninstall-load:
+	kubectl delete -f metrics-gen-1 --ignore-not-found
+	kubectl delete -f metrics-gen-2 --ignore-not-found
+	kubectl delete -f metrics-gen-3 --ignore-not-found
+	kubectl delete -f metrics-gen-4 --ignore-not-found
+	kubectl delete -f traces-gen --ignore-not-found
+	kubectl delete -f logs-gen --ignore-not-found

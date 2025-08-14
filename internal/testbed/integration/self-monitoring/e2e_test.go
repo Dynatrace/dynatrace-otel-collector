@@ -283,6 +283,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 			"otelcol_processor_batch_timeout_trigger_send",
 			"otelcol_processor_incoming_items",
 			"otelcol_processor_outgoing_items",
+			"otelcol_processor_internal_duration",
 			"rpc.server.duration",
 			"rpc.server.request.size",
 			"rpc.server.response.size",

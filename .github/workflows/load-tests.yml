@@ -18,47 +18,21 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Setup Go
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           go-version: ${{ env.GO_VERSION }}
-          check-latest: true
-          cache: false
-
-      - name: Cache tools
-        id: cache-tools
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with:
-          path: .tools
-          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+          cache-dependency-path: "**/*.sum"
 
       - name: Install tools
-        if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
           make install-tools
 
-      - name: Cache collector source code
-        id: cache-collector-source
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with:
-          path: build
-          key: load-test-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
-
       - name: Generate source files
-        if: steps.cache-collector-source.outputs.cache-hit != 'true'
         run: make generate
-
-      - name: Cache Go modules
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with:
-          path: |
-            internal/oteltestbedcol
-            ~/go/bin
-            ~/go/pkg/mod
-          key: load-test-mods-${{ runner.os }}-${{ hashFiles('internal/oteltestbedcol/go.sum') }}
 
       - run: make oteltestbedcol
 
@@ -73,24 +47,15 @@ jobs:
     needs: [setup-environment]
     steps:
       - name: Check out code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Setup Go
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           go-version: ${{ env.GO_VERSION }}
-          check-latest: true
-          cache: false
-
-      - name: Cache tools
-        id: cache-tools
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with:
-          path: .tools
-          key: load-test-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+          cache-dependency-path: "**/*.sum"
 
       - name: Install tools
-        if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           mkdir -p .tools
           touch .tools/*
@@ -100,7 +65,7 @@ jobs:
         run: mkdir -p results && touch results/TESTRESULTS.md
 
       - name: Download Testbed Binaries
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           name: testbed-binaries
           path: bin/
@@ -153,10 +118,10 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - name: Check out code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Download Benchmark results
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           pattern: benchmark-results-*
           merge-multiple: true

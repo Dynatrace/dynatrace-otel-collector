@@ -9,8 +9,8 @@ inputs:
   k8s-version:
     required: false
     description: "Kubernetes version that should be used"
-    # renovate: datasource=github-releases depName=kubernetes/kubernetes
-    default: "v1.33.0"
+    # renovate: datasource=docker depName=kindest/node
+    default: "v1.33.2"
   cluster-name:
     required: false
     description: "Name of the kind cluster"
@@ -35,7 +35,7 @@ runs:
 
     - name: Cache tools
       id: cache-tools
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       with:
         path: .tools
         key: e2e-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
@@ -58,7 +58,7 @@ runs:
         config: ${{ inputs.config }}
     
     - name: Download artifact
-      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
       with:
         name: dynatrace-otel-collector-image
         path: /tmp

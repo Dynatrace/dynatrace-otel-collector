@@ -1016,6 +1016,165 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{items}'
+          - description: Duration of time taken to process a batch of telemetry data through the processor. [alpha]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: logs
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  bucketCounts:
+                    - "0"
+                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "10"
+                  exemplars:
+                    - asDouble: 0.000166376
+                      spanId: 7eb38578b2fcae78
+                      timeUnixNano: "1755163171466944196"
+                      traceId: 381fd9e01cd0ba6032bc9c7e196862b9
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 0.000519587
+                  min: 0.000154584
+                  startTimeUnixNano: "1000000"
+                  sum: 0.00373311
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  bucketCounts:
+                    - "0"
+                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "10"
+                  exemplars:
+                    - asDouble: 9.7334e-05
+                      spanId: 669d8e15fe93aafc
+                      timeUnixNano: "1755163171526661780"
+                      traceId: 663f53bb0063ebea8bdfc52d16e11729
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 0.000129501
+                  min: 4.5959e-05
+                  startTimeUnixNano: "1000000"
+                  sum: 0.0009441310000000001
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: traces
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  bucketCounts:
+                    - "0"
+                    - "5"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "5"
+                  exemplars:
+                    - asDouble: 0.00013971
+                      spanId: 728feb4a0838a01d
+                      timeUnixNano: "1755163170876375986"
+                      traceId: 73bda45fd4d622d891d4155d5ffb7567
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 0.000170751
+                  min: 0.000109542
+                  startTimeUnixNano: "1000000"
+                  sum: 0.000672546
+                  timeUnixNano: "2000000"
+            name: otelcol_processor_internal_duration
+            unit: s
         scope:
           name: go.opentelemetry.io/collector/processor/processorhelper
       - metrics:
@@ -1890,7 +2049,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: rpc.server.responses_per_rpc
             unit: '{count}'
-        schemaUrl: https://opentelemetry.io/schemas/1.30.0
+        schemaUrl: https://opentelemetry.io/schemas/1.34.0
         scope:
           name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
           version: 0.60.0

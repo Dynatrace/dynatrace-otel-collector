@@ -9,6 +9,8 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 exporters:
+  debug:
+    verbosity: detailed
   loadbalancing/metrics:
     retry_on_failure:
       enabled: true
@@ -22,33 +24,33 @@ exporters:
       sizer: requests
     protocol:
       otlp:
+        compression: none
         tls:
           insecure: true
     resolver:
-      k8s:
-        service: metrics-receiver.default
-        ports:
-          - 4317
+      static:
+        hostnames:
+          - ${env:ENDPOINT_METRICS}
   loadbalancing/traces:
     protocol:
       otlp:
+        compression: none
         tls:
           insecure: true
     resolver:
-      k8s:
-        service: traces-receiver.default
-        ports:
-          - 4317
+      static:
+        hostnames:
+          - ${env:ENDPOINT_TRACES}
   loadbalancing/logs:
     protocol:
       otlp:
+        compression: none
         tls:
           insecure: true
     resolver:
-      k8s:
-        service: logs-receiver.default
-        ports:
-          - 4317
+      static:
+        hostnames:
+          - ${env:ENDPOINT_LOGS}
 
 service:
   extensions: [health_check]
@@ -58,13 +60,16 @@ service:
       processors: []
       exporters:
         - loadbalancing/metrics
+        - debug
     traces:
       receivers: [otlp]
       processors: []
       exporters:
         - loadbalancing/traces
+        - debug
     logs:
       receivers: [otlp]
       processors: []
       exporters:
         - loadbalancing/logs
+        - debug

@@ -4,6 +4,137 @@
 
 <!-- next version -->
 
+## v0.34.0
+
+This release includes version 0.132.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.132.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.132.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.132.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `componentstatus`: Change the signature of the componentstatus.NewEvent to accept multiple options. ([#13210](https://github.com/open-telemetry/opentelemetry-collector/issues/13210))
+  Changes the signature of the component.NewEvent to accept multiple EventBuilderOption,
+  like the new WithAttributes constructor.
+
+### 🚩 Deprecations 🚩
+
+- `service`: move `service.noopTraceProvider` feature gate to deprecated stage ([#13492](https://github.com/open-telemetry/opentelemetry-collector/issues/13492))
+  The functionality of the feature gate is available via configuration with the following telemetry settings:
+  ```
+  service:
+    telemetry:
+      traces:
+        level: none
+  ```
+  
+- `service`: The `telemetry.disableHighCardinalityMetrics` feature gate is deprecated ([#13537](https://github.com/open-telemetry/opentelemetry-collector/issues/13537))
+  The feature gate is now deprecated since metric views can be configured.
+  The feature gate will be removed in v0.134.0.
+  
+  The metric attributes removed by this feature gate are no longer emitted
+  by the Collector by default, but if needed, you can achieve the same
+  functionality by configuring the following metric views:
+  
+  ```yaml
+  service:
+    telemetry:
+      metrics:
+        level: detailed
+        views:
+          - selector:
+              meter_name: "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+            stream:
+              attribute_keys:
+                excluded: ["net.sock.peer.addr", "net.sock.peer.port", "net.sock.peer.name"]
+          - selector:
+              meter_name: "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+            stream:
+              attribute_keys:
+                excluded: ["net.host.name", "net.host.port"]
+  ```
+  
+  Note that this requires setting `service::telemetry::metrics::level: detailed`.
+  If you have a strong use case for using views in combination with a different
+  level, please show your interest in
+  https://github.com/open-telemetry/opentelemetry-collector/issues/10769.
+
+### 💡 Enhancements 💡
+
+- `exporterhelper`: Provide an interface `queue_batch.Setting.MergeCtx` so users can control how context values are preserved or combined ([#13320](https://github.com/open-telemetry/opentelemetry-collector/issues/13320))
+  By supplying a custom mergeCtx function, users can control how context values are preserved or combined.
+  The default behavior is to preserve no context values.
+- `pdata`: Avoid unnecessary buffer copy when JSON marshal fails. ([#13598](https://github.com/open-telemetry/opentelemetry-collector/issues/13598))
+- `pipeline`: Mark module as stable ([#12831](https://github.com/open-telemetry/opentelemetry-collector/issues/12831))
+- `pdata`: Generate Logs/Traces/Metrics/Profiles and p[log|trace|metric|profile]ExportResponse with pdatagen. ([#13597](https://github.com/open-telemetry/opentelemetry-collector/issues/13597))
+  This change brings consistency on how these structs are written and remove JSON marshaling/unmarshaling hand written logic.
+- `confighttp`: Add option to configure ForceAttemptHTTP2 to support HTTP/1 specific transport settings. ([#13426](https://github.com/open-telemetry/opentelemetry-collector/issues/13426))
+- `pdata`: Avoid unnecessary buffer copy when JSON marshal fails. ([#13598](https://github.com/open-telemetry/opentelemetry-collector/issues/13598))
+- `processorhelper`: Add processor internal duration metric. ([#13231](https://github.com/open-telemetry/opentelemetry-collector/issues/13231))
+- `pdata`: Improve RemoveIf for slices to not reference anymore the removed memory ([#13522](https://github.com/open-telemetry/opentelemetry-collector/issues/13522))
+- `pkg/ottl`: Add OTTL support for sample submessage of OTel Profiling signal. ([#40161](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40161))
+- `internal/common`: Add a priority queue implementation to the common package. ([#41755](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41755))
+- `redactionprocessor`: Add database sanitization capability to the redaction processor. ([#41647](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41647))
+- `pkg/ottl`: Add `UUIDv7` function to generate v7 UUIDs. ([#41268](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41268))
+- `filelogreceiver`: Add a new setting, `polls_to_archive`, to control the number of poll cycles to store on disk, rather than being discarded. ([#32727](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32727))
+  If `polls_to_archive` setting is used in conjunction with `storage` setting, file offsets older than three poll cycles are stored on disk rather than being discarded. 
+  This feature enables the receiver to remember file for a longer period and also aims to use limited amount of memory. 
+  
+- `pkg/stanza`: Add support for batch processing in most operators ([#39575](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39575))
+  The following operators now support batching: `add`, `assign_keys`, `copy`, `flatten`, `move`,
+  `regex_replace`, `remove`, `retain`, `unquote` `json_parser`, `json_array_parser`, `key_value_parser`,
+  `regex_parser`, `scope_name`, `severity`, `timestamp`, `trace_parser`, `uri_parser`.
+  
+  The following operators do not support batching yet: `container`, `csv_parser`, `filter`,
+  `recombine`, `router`, `syslog`.
+
+- `k8sobjectsreceiver`: Introduces `include_initial_state` for watch mode, so the existing state of watched objects emitted as log events. ([#41536](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41536))
+- `cmd/opampsupervisor`: The Supervisor can now be configured to expose a health check endpoint ([#40529](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40529))
+  Use `agent::healthcheck` to configure the Supervisor's health check endpoint. It supports all of
+  the configuration from `confighttp.ServerConfig`.
+  The health check endpoint is checking the following conditions:
+  - The persistent state is not nil: this should cover the existence of the instance ID, among other things.
+  - The config state is not nil: this should cover the existence of the merged config.
+  
+- `processor/transform`: Introduce convert_summary_quantile_val_to_gauge() function ([#33850](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33850))
+- `tailsamplingprocessor`: Add `decision` attribute to metrics tracking sampling decisions ([#41819](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41819))
+  Possible values for the `decision` attribute are `sampled`, `not_sampled` and `dropped`
+
+### 🧰 Bug fixes 🧰
+
+- `pdata`: Fix null pointer access when copying into a slice with larger cap but smaller len. ([#13523](https://github.com/open-telemetry/opentelemetry-collector/issues/13523))
+- `confighttp`: Fix middleware configuration field name from "middleware" to "middlewares" for consistency with configgrpc ([#13444](https://github.com/open-telemetry/opentelemetry-collector/issues/13444))
+- `memorylimiterextension, memorylimiterprocessor`: Memory limiter extension and processor shutdown don't throw an error if the component was not started first. ([#9687](https://github.com/open-telemetry/opentelemetry-collector/issues/9687))
+  The components would throw an error if they were shut down before being started.
+  With this change, they will no longer return an error, conforming to the lifecycle of components expected.
+  
+- `confighttp`: Reuse zstd Reader objects ([#11824](https://github.com/open-telemetry/opentelemetry-collector/issues/11824))
+- `statsdreceiver`: Fixes a bug when storing k8s.pod.ip in the metrics. Previously otelcol IP was used instead of the client IP. ([#41361](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41361), [#41362](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41362))
+- `spanmetricsconnector`: Adds a default maximum number of exemplars within the metric export interval. ([#41679](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41679))
+  1. If the user manually sets max_per_data_point, there will be no impact.
+  2. If the user does not set max_per_data_point, the default value will take effect, with max_per_data_point = 5.
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `config_examples`: Add Dynatrace Operator metadata object processing to k8s enrichment config example [#615](https://github.com/Dynatrace/dynatrace-otel-collector/pull/615)
+  This extends the config example for the k8sattributesprocessor and related transformprocessor statements
+  to add pod metadata added by the Dynatrace Operator to the resource attributes in exported telemetry. See
+  https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment on how to configure this operator feature.
+  
+
+<!-- previous-version -->
+
 ## v0.33.0
 
 This release includes version 0.131.0 of the upstream Collector components.

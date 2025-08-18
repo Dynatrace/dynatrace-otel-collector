@@ -80,6 +80,9 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	})
 	defer shutdownSinks()
 
+	// TODO continue here i guess
+	// metricsSender := testbed.NewOTLPMetricDataSender()
+
 	// create collector
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
@@ -126,6 +129,8 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	}
 
 	oteltest.WaitForMetrics(t, 20, metricsConsumer)
+	oteltest.ScanForServiceMetrics(t, metricsConsumer, "my-service", []string{})
+
 	oteltest.WaitForTraces(t, 20, tracesConsumer)
 	oteltest.WaitForLogs(t, 20, logsConsumer)
 }

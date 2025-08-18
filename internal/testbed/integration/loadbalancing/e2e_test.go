@@ -16,6 +16,17 @@ import (
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
+const k8sResolverConfig = `
+      k8s:
+        service: %s-receiver.default
+        ports:
+          - 4317`
+const replacementK8sResolverConfig = `
+      static:
+        hostnames:
+          - %s
+`
+
 func TestE2E_LoadBalancing(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
@@ -41,7 +52,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	}()
 
 	metricsConsumer := new(consumertest.MetricsSink)
-	//add another metrics sink
+	// TODO add another metrics sink
 	tracesConsumer := new(consumertest.TracesSink)
 	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
@@ -77,9 +88,9 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			"${env:ENDPOINT_METRICS}", host + ":4327",
-			"${env:ENDPOINT_TRACES}", host + ":4337",
-			"${env:ENDPOINT_LOGS}", host + ":4347",
+			fmt.Sprintf(k8sResolverConfig, "metrics"), fmt.Sprintf(replacementK8sResolverConfig, host+":4327"),
+			fmt.Sprintf(k8sResolverConfig, "traces"), fmt.Sprintf(replacementK8sResolverConfig, host+":4337"),
+			fmt.Sprintf(k8sResolverConfig, "logs"), fmt.Sprintf(replacementK8sResolverConfig, host+":4347"),
 		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)

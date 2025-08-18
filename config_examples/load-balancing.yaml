@@ -28,9 +28,10 @@ exporters:
         tls:
           insecure: true
     resolver:
-      static:
-        hostnames:
-          - ${env:ENDPOINT_METRICS}
+      k8s:
+        service: metrics-receiver.default
+        ports:
+          - 4317
   loadbalancing/traces:
     protocol:
       otlp:
@@ -38,9 +39,10 @@ exporters:
         tls:
           insecure: true
     resolver:
-      static:
-        hostnames:
-          - ${env:ENDPOINT_TRACES}
+      k8s:
+        service: traces-receiver.default
+        ports:
+          - 4317
   loadbalancing/logs:
     protocol:
       otlp:
@@ -48,9 +50,10 @@ exporters:
         tls:
           insecure: true
     resolver:
-      static:
-        hostnames:
-          - ${env:ENDPOINT_LOGS}
+      k8s:
+        service: logs-receiver.default
+        ports:
+          - 4317
 
 service:
   extensions: [health_check]

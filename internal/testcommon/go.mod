@@ -16,10 +16,10 @@ require (
 	go.opentelemetry.io/collector/receiver/otlpreceiver v0.132.0
 	go.opentelemetry.io/collector/receiver/receivertest v0.132.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.33.3
-	k8s.io/apimachinery v0.33.3
-	k8s.io/client-go v0.33.3
-	k8s.io/metrics v0.33.3
+	k8s.io/api v0.33.4
+	k8s.io/apimachinery v0.33.4
+	k8s.io/client-go v0.33.4
+	k8s.io/metrics v0.33.4
 )
 
 require (

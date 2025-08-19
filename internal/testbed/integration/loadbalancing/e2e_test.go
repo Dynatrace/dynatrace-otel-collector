@@ -152,31 +152,13 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
-	// expectedMetrics := false
-	oteltest.WaitForMetrics(t, 20, metricsConsumer1)
-
-	// metricName1 := metricsConsumer1.AllMetrics()[0].ResourceMetrics().At(0).ScopeMetrics().At(0).Metrics().At(0).Name()
-
 	customMetricName1 := "custom-metric-name1"
 	customMetricName2 := "custom-metric-name2"
 	customMetricName3 := "custom-metric-name3"
 	customMetricName4 := "custom-metric-name4"
 
-	var metrics1Names = make(map[string]bool)
-	var metrics1Keys []string
-
-	for _, r := range metricsConsumer1.AllMetrics() {
-		for i := 0; i < r.ResourceMetrics().Len(); i++ {
-			datapoints := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
-			for j := 0; j < datapoints.Len(); j++ {
-				metrics1Names[datapoints.At(j).Name()] = true
-			}
-		}
-	}
-
-	for key := range metrics1Names {
-		metrics1Keys = append(metrics1Keys, key)
-	}
+	oteltest.WaitForMetrics(t, 20, metricsConsumer1)
+	oteltest.WaitForMetrics(t, 20, metricsConsumer2)
 
 	for _, r := range metricsConsumer1.AllMetrics() {
 		for i := 0; i < r.ResourceMetrics().Len(); i++ {
@@ -189,9 +171,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 			}
 		}
 	}
-
-	oteltest.WaitForMetrics(t, 20, metricsConsumer2)
-
+	
 	for _, r := range metricsConsumer2.AllMetrics() {
 		for i := 0; i < r.ResourceMetrics().Len(); i++ {
 			datapoints := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()

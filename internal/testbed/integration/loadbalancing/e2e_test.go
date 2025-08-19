@@ -152,10 +152,20 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
-	// TODO check
+	// expectedMetrics := false
 	oteltest.WaitForMetrics(t, 20, metricsConsumer1)
-	// oteltest.WaitForMetrics(t, 20, metricsConsumer2)
-	// oteltest.ScanForServiceMetrics(t, metricsConsumer, "my-service", []string{})
+
+	metricName1 := metricsConsumer1.AllMetrics()[0].ResourceMetrics().At(0).ScopeMetrics().At(0).Metrics().At(0).Name()
+
+	for _, r := range metricsConsumer1.AllMetrics() {
+		for i := 0; i < r.ResourceMetrics().Len(); i++ {
+			datapoints := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
+			for j := 0; j < datapoints.Len(); j++ {
+				require.Equal(t, metricName1, datapoints.At(j).Name())
+			}
+		}
+	}
+	oteltest.WaitForMetrics(t, 20, metricsConsumer2)
 
 	oteltest.WaitForTraces(t, 20, tracesConsumer)
 	oteltest.WaitForLogs(t, 20, logsConsumer)

@@ -24,8 +24,22 @@ const k8sResolverConfig = `
 const replacementK8sResolverConfig = `
       static:
         hostnames:
-          - %s
+          - %s:%d
 `
+const replacementK8sMetricsResolverConfig = `
+      static:
+        hostnames:
+          - %s:%d
+          - %s:%d
+`
+const metricsPortGrpc1 = 4327
+const metricsPortGrpc2 = 4328
+const metricsPortHttp1 = 4329
+const metricsPortHttp2 = 4330
+const tracesPortGrpc = 4337
+const tracesPortHttp = 4438
+const logsPortGrpc = 4347
+const logsPortHttp = 4448
 
 func TestE2E_LoadBalancing(t *testing.T) {
 	testDir := filepath.Join("testdata")
@@ -51,30 +65,43 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
 
-	metricsConsumer := new(consumertest.MetricsSink)
-	// TODO add another metrics sink
+	metricsConsumer1 := new(consumertest.MetricsSink)
+	metricsConsumer2 := new(consumertest.MetricsSink)
 	tracesConsumer := new(consumertest.TracesSink)
 	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Metrics: &oteltest.MetricSinkConfig{
-			Consumer: metricsConsumer,
-			Ports: &oteltest.ReceiverPorts{
-				Grpc: 4327,
-				Http: 4328,
+		Metrics: []*oteltest.MetricSinkConfig{
+			{
+				Consumer: metricsConsumer1,
+				Ports: &oteltest.ReceiverPorts{
+					Grpc: metricsPortGrpc1,
+					Http: metricsPortHttp1,
+				},
+			},
+			{
+				Consumer: metricsConsumer2,
+				Ports: &oteltest.ReceiverPorts{
+					Grpc: metricsPortGrpc2,
+					Http: metricsPortHttp2,
+				},
 			},
 		},
-		Traces: &oteltest.TraceSinkConfig{
-			Consumer: tracesConsumer,
-			Ports: &oteltest.ReceiverPorts{
-				Grpc: 4337,
-				Http: 4438,
+		Traces: []*oteltest.TraceSinkConfig{
+			{
+				Consumer: tracesConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Grpc: tracesPortGrpc,
+					Http: tracesPortHttp,
+				},
 			},
 		},
-		Logs: &oteltest.LogSinkConfig{
-			Consumer: logsConsumer,
-			Ports: &oteltest.ReceiverPorts{
-				Grpc: 4347,
-				Http: 4448,
+		Logs: []*oteltest.LogSinkConfig{
+			{
+				Consumer: logsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Grpc: logsPortGrpc,
+					Http: logsPortHttp,
+				},
 			},
 		},
 	})
@@ -88,10 +115,9 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			// TODO change substitution to 2 metrics sinks
-			fmt.Sprintf(k8sResolverConfig, "metrics"), fmt.Sprintf(replacementK8sResolverConfig, host+":4327"),
-			fmt.Sprintf(k8sResolverConfig, "traces"), fmt.Sprintf(replacementK8sResolverConfig, host+":4337"),
-			fmt.Sprintf(k8sResolverConfig, "logs"), fmt.Sprintf(replacementK8sResolverConfig, host+":4347"),
+			fmt.Sprintf(k8sResolverConfig, "metrics"), fmt.Sprintf(replacementK8sMetricsResolverConfig, host, metricsPortGrpc1, host, metricsPortGrpc2),
+			fmt.Sprintf(k8sResolverConfig, "traces"), fmt.Sprintf(replacementK8sResolverConfig, host, tracesPortGrpc),
+			fmt.Sprintf(k8sResolverConfig, "logs"), fmt.Sprintf(replacementK8sResolverConfig, host, logsPortGrpc),
 		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
@@ -127,8 +153,9 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	}
 
 	// TODO check
-	oteltest.WaitForMetrics(t, 20, metricsConsumer)
-	//oteltest.ScanForServiceMetrics(t, metricsConsumer, "my-service", []string{})
+	oteltest.WaitForMetrics(t, 20, metricsConsumer1)
+	oteltest.WaitForMetrics(t, 20, metricsConsumer2)
+	// oteltest.ScanForServiceMetrics(t, metricsConsumer, "my-service", []string{})
 
 	oteltest.WaitForTraces(t, 20, tracesConsumer)
 	oteltest.WaitForLogs(t, 20, logsConsumer)

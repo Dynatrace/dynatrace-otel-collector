@@ -1,5 +1,5 @@
 # A debian image with systemd enabled
-FROM debian:12
+FROM debian:13
 
 ENV container docker
 ENV DEBIAN_FRONTEND noninteractive

@@ -171,7 +171,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 			}
 		}
 	}
-	
+
 	for _, r := range metricsConsumer2.AllMetrics() {
 		for i := 0; i < r.ResourceMetrics().Len(); i++ {
 			datapoints := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()

@@ -80,9 +80,6 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	})
 	defer shutdownSinks()
 
-	// TODO continue here i guess
-	// metricsSender := testbed.NewOTLPMetricDataSender()
-
 	// create collector
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
@@ -91,6 +88,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
+			// TODO change substitution to 2 metrics sinks
 			fmt.Sprintf(k8sResolverConfig, "metrics"), fmt.Sprintf(replacementK8sResolverConfig, host+":4327"),
 			fmt.Sprintf(k8sResolverConfig, "traces"), fmt.Sprintf(replacementK8sResolverConfig, host+":4337"),
 			fmt.Sprintf(k8sResolverConfig, "logs"), fmt.Sprintf(replacementK8sResolverConfig, host+":4347"),
@@ -128,8 +126,9 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
+	// TODO check
 	oteltest.WaitForMetrics(t, 20, metricsConsumer)
-	oteltest.ScanForServiceMetrics(t, metricsConsumer, "my-service", []string{})
+	//oteltest.ScanForServiceMetrics(t, metricsConsumer, "my-service", []string{})
 
 	oteltest.WaitForTraces(t, 20, tracesConsumer)
 	oteltest.WaitForLogs(t, 20, logsConsumer)

@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: temeletrygen-metrics-deployment
+  name: temeletrygen-metrics-deployment2
   namespace: e2eloadbalancing
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: temeletrygen-metrics-deployment
+      app: temeletrygen-metrics-deployment2
   template:
     metadata:
       annotations:
         workload: deployment
       labels:
-        app: temeletrygen-metrics-deployment
+        app: temeletrygen-metrics-deployment2
     spec:
       containers:
       - command:
         - /telemetrygen
         - metrics
         - --otlp-insecure
-        - --otlp-metric-name=custom-metric-name
+        - --otlp-metric-name=custom-metric-name2
         - --otlp-endpoint={{ .OTLPEndpoint }}
         - --duration=36000s
         - --rate=1

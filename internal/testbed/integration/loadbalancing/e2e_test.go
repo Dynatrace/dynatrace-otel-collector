@@ -155,17 +155,54 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	// expectedMetrics := false
 	oteltest.WaitForMetrics(t, 20, metricsConsumer1)
 
-	metricName1 := metricsConsumer1.AllMetrics()[0].ResourceMetrics().At(0).ScopeMetrics().At(0).Metrics().At(0).Name()
+	// metricName1 := metricsConsumer1.AllMetrics()[0].ResourceMetrics().At(0).ScopeMetrics().At(0).Metrics().At(0).Name()
+
+	customMetricName1 := "custom-metric-name1"
+	customMetricName2 := "custom-metric-name2"
+	customMetricName3 := "custom-metric-name3"
+	customMetricName4 := "custom-metric-name4"
+
+	var metrics1Names = make(map[string]bool)
+	var metrics1Keys []string
 
 	for _, r := range metricsConsumer1.AllMetrics() {
 		for i := 0; i < r.ResourceMetrics().Len(); i++ {
 			datapoints := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
 			for j := 0; j < datapoints.Len(); j++ {
-				require.Equal(t, metricName1, datapoints.At(j).Name())
+				metrics1Names[datapoints.At(j).Name()] = true
 			}
 		}
 	}
+
+	for key := range metrics1Names {
+		metrics1Keys = append(metrics1Keys, key)
+	}
+
+	for _, r := range metricsConsumer1.AllMetrics() {
+		for i := 0; i < r.ResourceMetrics().Len(); i++ {
+			datapoints := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
+			for j := 0; j < datapoints.Len(); j++ {
+				actual := datapoints.At(j).Name()
+				require.Condition(t, func() bool {
+					return actual == customMetricName2 || actual == customMetricName3
+				}, "Expected metric name to be either %s or %s, but got: %s", customMetricName2, customMetricName3, actual)
+			}
+		}
+	}
+
 	oteltest.WaitForMetrics(t, 20, metricsConsumer2)
+
+	for _, r := range metricsConsumer2.AllMetrics() {
+		for i := 0; i < r.ResourceMetrics().Len(); i++ {
+			datapoints := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
+			for j := 0; j < datapoints.Len(); j++ {
+				actual := datapoints.At(j).Name()
+				require.Condition(t, func() bool {
+					return actual == customMetricName1 || actual == customMetricName4
+				}, "Expected metric name to be either %s or %s, but got: %s", customMetricName1, customMetricName4, actual)
+			}
+		}
+	}
 
 	oteltest.WaitForTraces(t, 20, tracesConsumer)
 	oteltest.WaitForLogs(t, 20, logsConsumer)

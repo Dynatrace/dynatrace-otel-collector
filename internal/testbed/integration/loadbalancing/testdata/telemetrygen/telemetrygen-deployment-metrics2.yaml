@@ -20,12 +20,24 @@ spec:
         - /telemetrygen
         - metrics
         - --otlp-insecure
-        - --otlp-metric-name=custom-metric-name2
+        - --otlp-metric-name=custom-metric-name3
         - --otlp-endpoint={{ .OTLPEndpoint }}
         - --duration=36000s
         - --rate=1
         - --otlp-attributes=service.name="test-metrics-deployment"
         image: odubajdt/telemetrygen:metric-name-final
         imagePullPolicy: Always
-        name: telemetrygen
+        name: telemetrygen1
+      - command:
+        - /telemetrygen
+        - metrics
+        - --otlp-insecure
+        - --otlp-metric-name=custom-metric-name4
+        - --otlp-endpoint={{ .OTLPEndpoint }}
+        - --duration=36000s
+        - --rate=1
+        - --otlp-attributes=service.name="test-metrics-deployment"
+        image: odubajdt/telemetrygen:metric-name-final
+        imagePullPolicy: Always
+        name: telemetrygen2
       restartPolicy: Always

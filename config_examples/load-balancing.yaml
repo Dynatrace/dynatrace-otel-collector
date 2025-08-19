@@ -12,6 +12,7 @@ exporters:
   debug:
     verbosity: detailed
   loadbalancing/metrics:
+    routing_key: metric
     retry_on_failure:
       enabled: true
       initial_interval: 5s

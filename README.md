@@ -72,7 +72,7 @@ The following components are included in the distribution:
 * [otlpexporter](https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/otlpexporter)
 * [otlphttpexporter](https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/otlphttpexporter)
 
-[1]: The load balancing exporter is [**in development**](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/component-stability.md#development) for the metrics signal. There may be bugs or performance issues, and production use is discouraged. Bugs, performance issues, and feature requests related to metrics should be reported to the upstream repository.
+[1]: The load balancing exporter is [**in development**](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/component-stability.md#development) for the metrics signal. There may be bugs or performance issues, and using this component for metrics in production is discouraged. Bugs, performance issues, and feature requests related to metrics should be reported to the upstream repository.
 
 ### Extensions
 

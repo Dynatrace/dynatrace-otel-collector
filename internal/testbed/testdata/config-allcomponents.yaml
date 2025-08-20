@@ -158,6 +158,12 @@ exporters:
     endpoint: https://localhost:4312
   otlphttp:
     endpoint: https://localhost:7821
+  loadbalancing/metrics:
+    resolver:
+      k8s:
+        service: metrics-receiver.default
+        ports:
+          - 4317
 
 connectors:
   forward:

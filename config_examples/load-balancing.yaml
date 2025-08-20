@@ -23,7 +23,6 @@ exporters:
       sizer: requests
     protocol:
       otlp:
-        compression: none
         tls:
           insecure: true
     resolver:
@@ -34,7 +33,6 @@ exporters:
   loadbalancing/traces:
     protocol:
       otlp:
-        compression: none
         tls:
           insecure: true
     resolver:
@@ -45,7 +43,6 @@ exporters:
   loadbalancing/logs:
     protocol:
       otlp:
-        compression: none
         tls:
           insecure: true
     resolver:

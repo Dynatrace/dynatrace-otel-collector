@@ -41,6 +41,9 @@
       "groupName": "GoReleaser Pro"
     }
   ],
+  "ocb": {
+    "managerFilePatterns": ["^manifest.yaml$"]
+  },
   "customManagers": [
     {
       "customType": "regex",
@@ -53,16 +56,6 @@
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\s.*(:|=|\\?=|:=|\\+=) ?\\\"?(?<currentValue>.+?)?\\\"?\\s"
-      ]
-    },
-    {
-      "customType": "regex",
-      "fileMatch": [
-        "^manifest.yaml$"
-      ],
-      "datasourceTemplate": "go",
-      "matchStrings": [
-        "- gomod: (?<depName>(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib|github\\.com/dynatrace/dynatrace-otel-collector)/([A-Za-z0-9]+/)*[A-Za-z0-9]+) (?<currentValue>v\\d+\\.\\d+\\.\\d+)\\n"
       ]
     }
   ]

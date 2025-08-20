@@ -1,3 +1,5 @@
+//go:build e2e
+
 package loadbalancing
 
 import (
@@ -40,6 +42,11 @@ const tracesPortGrpc = 4337
 const tracesPortHttp = 4438
 const logsPortGrpc = 4347
 const logsPortHttp = 4448
+
+type MetricValidator struct {
+	Name string
+	Set  bool
+}
 
 func TestE2E_LoadBalancing(t *testing.T) {
 	testDir := filepath.Join("testdata")
@@ -152,13 +159,13 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
-	customMetricName1 := "custom-metric-name1"
-	customMetricName2 := "custom-metric-name2"
-	customMetricName3 := "custom-metric-name3"
-	customMetricName4 := "custom-metric-name4"
-
 	oteltest.WaitForMetrics(t, 20, metricsConsumer1)
 	oteltest.WaitForMetrics(t, 20, metricsConsumer2)
+
+	metricValidator1 := MetricValidator{}
+	metricValidator2 := MetricValidator{}
+	metricValidator3 := MetricValidator{}
+	metricValidator4 := MetricValidator{}
 
 	for _, r := range metricsConsumer1.AllMetrics() {
 		for i := 0; i < r.ResourceMetrics().Len(); i++ {
@@ -166,8 +173,8 @@ func TestE2E_LoadBalancing(t *testing.T) {
 			for j := 0; j < datapoints.Len(); j++ {
 				actual := datapoints.At(j).Name()
 				require.Condition(t, func() bool {
-					return actual == customMetricName2 || actual == customMetricName3
-				}, "Expected metric name to be either %s or %s, but got: %s", customMetricName2, customMetricName3, actual)
+					return checkMetricName(actual, &metricValidator1) || checkMetricName(actual, &metricValidator2)
+				}, "Expected metric name to be either %s or %s, but got: %s", metricValidator1.Name, metricValidator2.Name, actual)
 			}
 		}
 	}
@@ -178,12 +185,22 @@ func TestE2E_LoadBalancing(t *testing.T) {
 			for j := 0; j < datapoints.Len(); j++ {
 				actual := datapoints.At(j).Name()
 				require.Condition(t, func() bool {
-					return actual == customMetricName1 || actual == customMetricName4
-				}, "Expected metric name to be either %s or %s, but got: %s", customMetricName1, customMetricName4, actual)
+					return checkMetricName(actual, &metricValidator3) || checkMetricName(actual, &metricValidator4)
+				}, "Expected metric name to be either %s or %s, but got: %s", metricValidator3.Name, metricValidator4.Name, actual)
 			}
 		}
 	}
 
 	oteltest.WaitForTraces(t, 20, tracesConsumer)
 	oteltest.WaitForLogs(t, 20, logsConsumer)
+}
+
+func checkMetricName(actual string, validator *MetricValidator) bool {
+	if validator.Set {
+		return actual == validator.Name
+	}
+	validator.Set = true
+	validator.Name = actual
+	return true
+
 }

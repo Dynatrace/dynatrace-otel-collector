@@ -9,8 +9,6 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 exporters:
-  debug:
-    verbosity: detailed
   loadbalancing/metrics:
     routing_key: metric
     retry_on_failure:
@@ -64,16 +62,13 @@ service:
       processors: []
       exporters:
         - loadbalancing/metrics
-        - debug
     traces:
       receivers: [otlp]
       processors: []
       exporters:
         - loadbalancing/traces
-        - debug
     logs:
       receivers: [otlp]
       processors: []
       exporters:
         - loadbalancing/logs
-        - debug

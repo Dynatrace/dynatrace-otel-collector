@@ -24,7 +24,7 @@ spec:
         - --otlp-endpoint={{ .OTLPEndpoint }}
         - --duration=36000s
         - --rate=1
-        - --otlp-attributes=service.name="test-metrics-deployment"
+        - --otlp-attributes=service.name="custom-service-name1"
         image: odubajdt/telemetrygen:metric-name-final
         imagePullPolicy: Always
         name: telemetrygen1
@@ -36,7 +36,7 @@ spec:
         - --otlp-endpoint={{ .OTLPEndpoint }}
         - --duration=36000s
         - --rate=1
-        - --otlp-attributes=service.name="test-metrics-deployment"
+        - --otlp-attributes=service.name="custom-service-name2"
         image: odubajdt/telemetrygen:metric-name-final
         imagePullPolicy: Always
         name: telemetrygen2

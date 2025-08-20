@@ -10,7 +10,6 @@ receivers:
         endpoint: 0.0.0.0:4318
 exporters:
   loadbalancing/metrics:
-    routing_key: metric
     retry_on_failure:
       enabled: true
       initial_interval: 5s

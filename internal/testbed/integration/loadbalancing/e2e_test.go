@@ -34,6 +34,14 @@ const replacementK8sMetricsResolverConfig = `
           - %s:%d
           - %s:%d
 `
+const OTLPConfig = `
+      otlp:`
+
+const replacementOTLPConfig = `
+      otlp:
+        tls:
+          insecure: true`
+
 const metricsPortGrpc1 = 4327
 const metricsPortGrpc2 = 4328
 const metricsPortHttp1 = 4329
@@ -122,6 +130,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
+			OTLPConfig, replacementOTLPConfig,
 			fmt.Sprintf(k8sResolverConfig, "metrics"), fmt.Sprintf(replacementK8sMetricsResolverConfig, host, metricsPortGrpc1, host, metricsPortGrpc2),
 			fmt.Sprintf(k8sResolverConfig, "traces"), fmt.Sprintf(replacementK8sResolverConfig, host, tracesPortGrpc),
 			fmt.Sprintf(k8sResolverConfig, "logs"), fmt.Sprintf(replacementK8sResolverConfig, host, logsPortGrpc),

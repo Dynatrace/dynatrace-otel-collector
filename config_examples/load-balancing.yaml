@@ -23,8 +23,6 @@ exporters:
       sizer: requests
     protocol:
       otlp:
-        tls:
-          insecure: true
     resolver:
       k8s:
         service: metrics-receiver.default
@@ -33,8 +31,6 @@ exporters:
   loadbalancing/traces:
     protocol:
       otlp:
-        tls:
-          insecure: true
     resolver:
       k8s:
         service: traces-receiver.default
@@ -43,8 +39,6 @@ exporters:
   loadbalancing/logs:
     protocol:
       otlp:
-        tls:
-          insecure: true
     resolver:
       k8s:
         service: logs-receiver.default

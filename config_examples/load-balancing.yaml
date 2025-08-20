@@ -9,6 +9,22 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 exporters:
+  loadbalancing/traces:
+    protocol:
+      otlp:
+    resolver:
+      k8s:
+        service: traces-receiver.default
+        ports:
+          - 4317
+  loadbalancing/logs:
+    protocol:
+      otlp:
+    resolver:
+      k8s:
+        service: logs-receiver.default
+        ports:
+          - 4317
   loadbalancing/metrics:
     retry_on_failure:
       enabled: true
@@ -25,22 +41,6 @@ exporters:
     resolver:
       k8s:
         service: metrics-receiver.default
-        ports:
-          - 4317
-  loadbalancing/traces:
-    protocol:
-      otlp:
-    resolver:
-      k8s:
-        service: traces-receiver.default
-        ports:
-          - 4317
-  loadbalancing/logs:
-    protocol:
-      otlp:
-    resolver:
-      k8s:
-        service: logs-receiver.default
         ports:
           - 4317
 

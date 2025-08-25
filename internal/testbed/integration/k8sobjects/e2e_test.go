@@ -43,8 +43,10 @@ func TestE2E_K8sobjectsReceiver(t *testing.T) {
 
 	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Logs: &oteltest.LogSinkConfig{
-			Consumer: logsConsumer,
+		Logs: []*oteltest.LogSinkConfig{
+			{
+				Consumer: logsConsumer,
+			},
 		},
 	})
 	defer shutdownSinks()

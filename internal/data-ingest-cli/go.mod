@@ -3,7 +3,7 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli
 go 1.24.4
 
 require (
-	github.com/fluent/fluent-logger-golang v1.10.0
+	github.com/fluent/fluent-logger-golang v1.10.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.132.0
 	github.com/openzipkin/zipkin-go v0.4.3
 	go.opentelemetry.io/collector/config/confignet v1.38.0
@@ -24,7 +24,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.132.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.132.0 // indirect
-	github.com/philhofer/fwd v1.1.3-0.20240916144458-20a13a1f6b7c // indirect
+	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	github.com/tinylib/msgp v1.3.0 // indirect
 	go.opentelemetry.io/collector/config/configopaque v1.38.0 // indirect

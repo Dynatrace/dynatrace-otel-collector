@@ -246,24 +246,30 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	metricsConsumerAgent := new(consumertest.MetricsSink)
 	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Logs: &oteltest.LogSinkConfig{
-			Consumer: logsConsumer,
-			Ports: &oteltest.ReceiverPorts{
-				Http: 4319,
+		Logs: []*oteltest.LogSinkConfig{
+			{
+				Consumer: logsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4319,
+				},
 			},
 		},
-		Metrics: &oteltest.MetricSinkConfig{
-			Consumer: metricsConsumerGateway,
-			Ports: &oteltest.ReceiverPorts{
-				Http: 4320,
+		Metrics: []*oteltest.MetricSinkConfig{
+			{
+				Consumer: metricsConsumerGateway,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4320,
+				},
 			},
 		},
 	})
 	shutdownSinks2 := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Metrics: &oteltest.MetricSinkConfig{
-			Consumer: metricsConsumerAgent,
-			Ports: &oteltest.ReceiverPorts{
-				Http: 4321,
+		Metrics: []*oteltest.MetricSinkConfig{
+			{
+				Consumer: metricsConsumerAgent,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4321,
+				},
 			},
 		},
 	})

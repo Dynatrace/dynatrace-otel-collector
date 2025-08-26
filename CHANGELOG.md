@@ -4,6 +4,61 @@
 
 <!-- next version -->
 
+## v0.35.0
+
+This release includes version 0.133.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.133.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.133.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.133.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🧰 Bug fixes 🧰
+
+- `exporterhelper`: Prevent uncontrolled goroutines in batcher due to a incorrect worker pool behaviour. ([#13689](https://github.com/open-telemetry/opentelemetry-collector/issues/13689))
+- `service`: Ensure the insecure configuration is accounted for when normalizing the endpoint. ([#13691](https://github.com/open-telemetry/opentelemetry-collector/issues/13691))
+- `batchprocessor`: Fix UB in batch processor when trying to read bytes size after adding request to pipeline ([#13698](https://github.com/open-telemetry/opentelemetry-collector/issues/13698))
+    This bug only happens id detailed metrics are enabled and also an async (sending queue enabled) exporter that mutates data is configure.
+
+### 💡 Enhancements 💡
+
+- `otlphttpexporter`: Add `profiles_endpoint` configuration option to allow custom endpoint for profiles data export ([#13504](https://github.com/open-telemetry/opentelemetry-collector/issues/13504))
+  The `profiles_endpoint` configuration follows the same pattern as `traces_endpoint`, `metrics_endpoint`, and `logs_endpoint`.
+  When specified, profiles data will be sent to the custom URL instead of the default `{endpoint}/v1development/profiles`.
+- `receiverhelper`: New feature flag to make receiverhelper distinguish internal vs. downstream errors using new `otelcol_receiver_failed_x` and `otelcol_receiver_requests` metrics ([#12207](https://github.com/open-telemetry/opentelemetry-collector/issues/12207), [#12802](https://github.com/open-telemetry/opentelemetry-collector/issues/12802))
+  This is a breaking change for the semantics of the otelcol_receiver_refused_metric_points,  otelcol_receiver_refused_log_records and otelcol_receiver_refused_spans metrics.
+  These new metrics and semantics are enabled through the `receiverhelper.newReceiverMetrics` feature gate.
+- `debugexporter`: Add support for entity references in debug exporter output ([#13324](https://github.com/open-telemetry/opentelemetry-collector/issues/13324))
+- `pdata`: Add support for local memory pooling for data objects. ([#13678](https://github.com/open-telemetry/opentelemetry-collector/issues/13678))
+  This is still an early experimental (alpha) feature. Do not recommended to be used production. To enable use "--featuregate=+pdata.useProtoPooling"
+- `pdata`: Optimize CopyTo messages to avoid any copy when same source and destination ([#13680](https://github.com/open-telemetry/opentelemetry-collector/issues/13680))
+- `pdata`: Fix unnecessary allocation of a new state when adding new values to pcommon.Map ([#13634](https://github.com/open-telemetry/opentelemetry-collector/issues/13634))
+- `service`: Implement refcounting for pipeline data owned memory. ([#13631](https://github.com/open-telemetry/opentelemetry-collector/issues/13631))
+  This feature is protected by `--featuregate=+pdata.useProtoPooling`.
+- `service`: Add a debug-level log message when a consumer returns an error. ([#13357](https://github.com/open-telemetry/opentelemetry-collector/issues/13357))
+- `xpdata`: Optimize xpdata/context for persistent queue when only one value for key ([#13636](https://github.com/open-telemetry/opentelemetry-collector/issues/13636))
+- `otlpreceiver`: Log the listening addresses of the receiver, rather than the configured endpoints. ([#13654](https://github.com/open-telemetry/opentelemetry-collector/issues/13654))
+- `pdata`: Use the newly added proto marshaler/unmarshaler for the official proto Marshaler/Unmarshaler ([#13637](https://github.com/open-telemetry/opentelemetry-collector/issues/13637))
+  If any problems observed with this consider to disable the featuregate `--feature-gates=-pdata.useCustomProtoEncoding`
+
+
+
+- `k8sclusterreceiver`: Add optional experimental k8s.container.status.state metric ([#32457](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32457), [#32457](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32457))
+- `filelogreceiver`: Move filelog.decompressFingerprint feature gate to beta stage ([#42189](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42189))
+- `tailsamplingprocessor`: Optimize telemetry collection in tailsamplingprocessor ([#41888](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41888))
+- `tailsamplingprocessor`: Add a new option to block on num traces overflow. ([#41546](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41546))
+- `prometheusreceiver`: Remove temporary fix for metric name validation, fix upstream resolved ([#42004](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42004))
+- `prometheusreceiver`: Fixes a bug where static configuration labels were dropped when using the Prometheus receiver. Previously, labels defined in the static config were not being applied to the metrics. ([#41727](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41727))
+
+</details>
+
+<!-- previous-version -->
+
 ## v0.34.0
 
 This release includes version 0.132.0 of the upstream Collector components.

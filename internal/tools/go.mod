@@ -5,7 +5,7 @@ go 1.24.4
 require (
 	github.com/sigstore/cosign/v2 v2.5.3
 	go.opentelemetry.io/build-tools/chloggen v0.26.2
-	go.opentelemetry.io/collector/cmd/builder v0.132.0
+	go.opentelemetry.io/collector/cmd/builder v0.133.0
 )
 
 require (
@@ -127,7 +127,7 @@ require (
 	github.com/go-openapi/swag v0.23.1 // indirect
 	github.com/go-openapi/validate v0.24.0 // indirect
 	github.com/go-piv/piv-go/v2 v2.3.0 // indirect
-	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
+	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect

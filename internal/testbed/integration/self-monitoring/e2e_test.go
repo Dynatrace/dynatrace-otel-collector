@@ -249,7 +249,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	//require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	var expected pmetric.Metrics
 	expected, err = golden.ReadMetrics(expectedFile)

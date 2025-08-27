@@ -249,7 +249,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	var expected pmetric.Metrics
 	expected, err = golden.ReadMetrics(expectedFile)
@@ -312,27 +312,6 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-
-		t.Log("expected metrics:")
-		for i := 0; i < expected.ResourceMetrics().At(0).ScopeMetrics().Len(); i++ {
-			scope := expected.ResourceMetrics().At(0).ScopeMetrics().At(i)
-			t.Logf("scope %s:", scope.Scope().Name())
-			for j := 0; j < scope.Metrics().Len(); j++ {
-				expectedMetric := scope.Metrics().At(j)
-				t.Logf("Metric %d: %s", j, expectedMetric.Name())
-			}
-		}
-		// TODO remove this again
-		gotScopeMetrics := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1].ResourceMetrics().At(0).ScopeMetrics()
-		t.Log("got metrics:")
-		for i := 0; i < gotScopeMetrics.Len(); i++ {
-			scope := gotScopeMetrics.At(i)
-			t.Logf("scope %s:", scope.Scope().Name())
-			for j := 0; j < scope.Metrics().Len(); j++ {
-				expectedMetric := scope.Metrics().At(j)
-				t.Logf("Metric %d: %s", j, expectedMetric.Name())
-			}
-		}
 		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1],
 			defaultOptions...,
 		),

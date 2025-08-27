@@ -314,16 +314,24 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 
 		t.Log("expected metrics:")
-		for i := 0; i < expected.ResourceMetrics().At(0).ScopeMetrics().At(0).Metrics().Len(); i++ {
-			expectedMetric := expected.ResourceMetrics().At(0).ScopeMetrics().At(0).Metrics().At(i)
-			t.Logf("Metric %d: %s", i, expectedMetric.Name())
+		for i := 0; i < expected.ResourceMetrics().At(0).ScopeMetrics().Len(); i++ {
+			scope := expected.ResourceMetrics().At(0).ScopeMetrics().At(i)
+			t.Logf("scope %s:", scope.Scope().Name())
+			for j := 0; j < scope.Metrics().Len(); j++ {
+				expectedMetric := scope.Metrics().At(j)
+				t.Logf("Metric %d: %s", j, expectedMetric.Name())
+			}
 		}
 		// TODO remove this again
 		gotScopeMetrics := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1].ResourceMetrics().At(0).ScopeMetrics()
 		t.Log("got metrics:")
-		for i := 0; i < gotScopeMetrics.At(0).Metrics().Len(); i++ {
-			gotMetric := gotScopeMetrics.At(0).Metrics().At(i)
-			t.Logf("Metric %d: %s", i, gotMetric.Name())
+		for i := 0; i < gotScopeMetrics.Len(); i++ {
+			scope := gotScopeMetrics.At(i)
+			t.Logf("scope %s:", scope.Scope().Name())
+			for j := 0; j < scope.Metrics().Len(); j++ {
+				expectedMetric := scope.Metrics().At(j)
+				t.Logf("Metric %d: %s", j, expectedMetric.Name())
+			}
 		}
 		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1],
 			defaultOptions...,

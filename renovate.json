@@ -42,7 +42,7 @@
     }
   ],
   "ocb": {
-    "managerFilePatterns": ["^manifest.yaml$"]
+    "managerFilePatterns": ["/^manifest.yaml$/"]
   },
   "customManagers": [
     {

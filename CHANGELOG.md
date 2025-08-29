@@ -23,7 +23,7 @@ v0.133.0:
 - `exporterhelper`: Prevent uncontrolled goroutines in batcher due to a incorrect worker pool behaviour. ([#13689](https://github.com/open-telemetry/opentelemetry-collector/issues/13689))
 - `service`: Ensure the insecure configuration is accounted for when normalizing the endpoint. ([#13691](https://github.com/open-telemetry/opentelemetry-collector/issues/13691))
 - `batchprocessor`: Fix UB in batch processor when trying to read bytes size after adding request to pipeline ([#13698](https://github.com/open-telemetry/opentelemetry-collector/issues/13698))
-    This bug only happens id detailed metrics are enabled and also an async (sending queue enabled) exporter that mutates data is configure.
+    This bug only happens if detailed metrics are enabled and also an async (sending queue enabled) exporter that mutates data is configured.
 
 ### 💡 Enhancements 💡
 

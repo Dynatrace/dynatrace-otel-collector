@@ -1567,8 +1567,8 @@ go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJyS
 go.opentelemetry.io/auto/sdk v1.1.0/go.mod h1:3wSPjt5PWp2RhlCcmmOial7AvC4DQqZb7a7wCow3W8A=
 go.opentelemetry.io/build-tools/chloggen v0.26.2 h1:AjR5rLhwIfr/A83kqR1y4COkeVZB73D09xLlQJtnmrI=
 go.opentelemetry.io/build-tools/chloggen v0.26.2/go.mod h1:1e/hCg1CjMlLgdZeUuSACZLHuX59jWw2cSyJ2FHRK30=
-go.opentelemetry.io/collector/cmd/builder v0.132.0 h1:0U6AxuPEYAGVnTsCdSU8WrTVGgFg8fV0sO8NdNKxLBQ=
-go.opentelemetry.io/collector/cmd/builder v0.132.0/go.mod h1:0XQ22UlmegZupqHIS1aofUgacmBRB0zCzPQhBpBi5Po=
+go.opentelemetry.io/collector/cmd/builder v0.133.0 h1:5sM+ILBYNZCXbSXsxsEKTIBqMGfCAS/3p/MXN4nVc+M=
+go.opentelemetry.io/collector/cmd/builder v0.133.0/go.mod h1:fsnIA8SaGqIxX1LEaO4rw5h1plzAljTzNu9NQrlo8DM=
 go.opentelemetry.io/contrib/detectors/gcp v1.36.0 h1:F7q2tNlCaHY9nMKHR6XH9/qkp8FktLnIcy6jJNyOCQw=
 go.opentelemetry.io/contrib/detectors/gcp v1.36.0/go.mod h1:IbBN8uAIIx734PTonTPxAxnjc2pQTxWNkwfstZ+6H2k=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.61.0 h1:q4XOmH/0opmeuJtPsbFNivyl7bCt7yRBbeEm2sC/XtQ=

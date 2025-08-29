@@ -97,5 +97,5 @@ service:
               otlp:
                 protocol: http/protobuf
                 temporality_preference: delta
-                endpoint: ${env:MY_POD_IP}:4318
+                endpoint: http://${env:MY_POD_IP}:4318
 

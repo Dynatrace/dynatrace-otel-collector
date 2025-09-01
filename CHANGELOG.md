@@ -6,7 +6,7 @@
 
 ## v0.35.0
 
-This release includes version 0.133.0 of the upstream Collector components.
+This release includes version 0.133.0 and 0.134.0 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
@@ -15,8 +15,17 @@ v0.133.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.133.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.133.0>
 
+v0.134.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.134.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.134.0>
+
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/ottl`: Keep the original map and continue processing keys if an error is encountered when calling an optional replacement function in `replace_all_patterns`. ([#42359](https://github.com/open-telemetry/opentelemetry-collector/issues/42359))
 
 ### 🧰 Bug fixes 🧰
 
@@ -24,6 +33,11 @@ v0.133.0:
 - `service`: Ensure the insecure configuration is accounted for when normalizing the endpoint. ([#13691](https://github.com/open-telemetry/opentelemetry-collector/issues/13691))
 - `batchprocessor`: Fix UB in batch processor when trying to read bytes size after adding request to pipeline ([#13698](https://github.com/open-telemetry/opentelemetry-collector/issues/13698))
     This bug only happens if detailed metrics are enabled and also an async (sending queue enabled) exporter that mutates data is configured.
+- `k8sattributesprocessor`: Allow service.namespace to be used in rules and fix docs ([#40859](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40859))
+- `tailsamplingprocessor`: Fix a race condition in the tailsampling processor that could cause traces to be dropped prematurely. ([#41656](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41656))
+- `pdata`: Correctly parse OTLP payloads containing non-packed repeated primitive fields ([#13727](https://github.com/open-telemetry/opentelemetry-collector/issues/13727), [#13730](https://github.com/open-telemetry/opentelemetry-collector/issues/13730))
+  This bug prevented the Collector from ingesting most Histogram, ExponentialHistogram,
+  and Profile payloads.
 
 ### 💡 Enhancements 💡
 
@@ -45,15 +59,21 @@ v0.133.0:
 - `otlpreceiver`: Log the listening addresses of the receiver, rather than the configured endpoints. ([#13654](https://github.com/open-telemetry/opentelemetry-collector/issues/13654))
 - `pdata`: Use the newly added proto marshaler/unmarshaler for the official proto Marshaler/Unmarshaler ([#13637](https://github.com/open-telemetry/opentelemetry-collector/issues/13637))
   If any problems observed with this consider to disable the featuregate `--feature-gates=-pdata.useCustomProtoEncoding`
-
-
-
 - `k8sclusterreceiver`: Add optional experimental k8s.container.status.state metric ([#32457](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32457), [#32457](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32457))
 - `filelogreceiver`: Move filelog.decompressFingerprint feature gate to beta stage ([#42189](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42189))
 - `tailsamplingprocessor`: Optimize telemetry collection in tailsamplingprocessor ([#41888](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41888))
 - `tailsamplingprocessor`: Add a new option to block on num traces overflow. ([#41546](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41546))
 - `prometheusreceiver`: Remove temporary fix for metric name validation, fix upstream resolved ([#42004](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42004))
 - `prometheusreceiver`: Fixes a bug where static configuration labels were dropped when using the Prometheus receiver. Previously, labels defined in the static config were not being applied to the metrics. ([#41727](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41727))
+- `pkg/ottl`: Avoid multiple copies of the Map in replace_all_patterns. ([#42359](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42359))
+- `pkg/ottl`: Remove unnecessary Value initialization when setting an attribute/body ([#42335](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42335), [#42362](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42362))
+- `pkg/ottl`: Add an `Index(target, value)` OTTL function which returns the index of the first occurrence of `value` in `target`. ([#40351](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40351))
+- `pkg/stanza`: add `sanitize_utf8` operator to replace invalid UTF-8 characters. ([#42028](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42028))
+- `pdata`: Add custom grpc/encoding that replaces proto and calls into the custom marshal/unmarshal logic in pdata. ([#13631](https://github.com/open-telemetry/opentelemetry-collector/issues/13631))
+  This change should not affect other gRPC calls since it fallbacks to the default grpc/proto encoding if requests are not pdata/otlp requests.
+- `pdata`: Avoid copying the pcommon.Map when same origin ([#13731](https://github.com/open-telemetry/opentelemetry-collector/issues/13731))
+  This is a very large improvement if using OTTL with map functions since it will avoid a map copy.
+- `exporterhelper`: Respect `num_consumers` when batching and partitioning are enabled. ([#13607](https://github.com/open-telemetry/opentelemetry-collector/issues/13607))
 
 </details>
 

@@ -4,7 +4,7 @@ go 1.24.4
 
 require (
 	github.com/fluent/fluent-logger-golang v1.10.1
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.133.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.134.0
 	github.com/openzipkin/zipkin-go v0.4.3
 	go.opentelemetry.io/collector/config/confignet v1.40.0
 	go.opentelemetry.io/collector/config/configtls v1.40.0
@@ -23,8 +23,8 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
-	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.133.0 // indirect
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.133.0 // indirect
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.134.0 // indirect
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.134.0 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	github.com/tinylib/msgp v1.3.0 // indirect

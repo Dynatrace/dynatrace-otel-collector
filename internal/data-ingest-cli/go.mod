@@ -6,9 +6,9 @@ require (
 	github.com/fluent/fluent-logger-golang v1.10.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.133.0
 	github.com/openzipkin/zipkin-go v0.4.3
-	go.opentelemetry.io/collector/config/confignet v1.39.0
-	go.opentelemetry.io/collector/config/configtls v1.39.0
-	go.opentelemetry.io/collector/pdata v1.39.0
+	go.opentelemetry.io/collector/config/confignet v1.40.0
+	go.opentelemetry.io/collector/config/configtls v1.40.0
+	go.opentelemetry.io/collector/pdata v1.40.0
 	google.golang.org/grpc v1.75.0
 )
 
@@ -28,8 +28,8 @@ require (
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	github.com/tinylib/msgp v1.3.0 // indirect
-	go.opentelemetry.io/collector/config/configopaque v1.39.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.39.0 // indirect
+	go.opentelemetry.io/collector/config/configopaque v1.40.0 // indirect
+	go.opentelemetry.io/collector/featuregate v1.40.0 // indirect
 	go.opentelemetry.io/otel v1.37.0 // indirect
 	go.opentelemetry.io/otel/trace v1.37.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
@@ -38,5 +38,5 @@ require (
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250707201910-8d1bb00bc6a7 // indirect
-	google.golang.org/protobuf v1.36.7 // indirect
+	google.golang.org/protobuf v1.36.8 // indirect
 )

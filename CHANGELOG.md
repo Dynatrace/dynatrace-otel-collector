@@ -25,7 +25,7 @@ v0.134.0:
 
 ### 🛑 Breaking changes 🛑
 
-- `pkg/ottl`: Keep the original map and continue processing keys if an error is encountered when calling an optional replacement function in `replace_all_patterns`. ([#42359](https://github.com/open-telemetry/opentelemetry-collector/issues/42359))
+- `pkg/ottl`: Keep the original map and continue processing keys if an error is encountered when calling an optional replacement function in `replace_all_patterns`. ([#42359](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42359))
 
 ### 🧰 Bug fixes 🧰
 

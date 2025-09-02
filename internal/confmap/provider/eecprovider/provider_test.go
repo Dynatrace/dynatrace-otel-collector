@@ -601,13 +601,18 @@ func TestFirstRequestHeader(t *testing.T) {
 
 		if count.Load() == 0 {
 			assert.Equal(t, "true", req.Header.Get(FirstRequestHeaderKey))
+			assert.Equal(t, "false", req.Header.Get(ConfigChangedHeaderKey))
 		} else {
 			assert.Equal(t, "false", req.Header.Get(FirstRequestHeaderKey))
+			assert.Equal(t, "true", req.Header.Get(ConfigChangedHeaderKey))
 		}
 
 		count.Add(1)
 	}
-	watcherFunc := func(_ *confmap.ChangeEvent) {}
+	done := make(chan struct{}, 1)
+	watcherFunc := func(_ *confmap.ChangeEvent) {
+		done <- struct{}{}
+	}
 	ep := newEECProvider(confmaptest.NewNopProviderSettings())
 	ts := httptest.NewServer(http.HandlerFunc(answerWithConfig))
 	defer ts.Close()
@@ -615,16 +620,18 @@ func TestFirstRequestHeader(t *testing.T) {
 	require.NoError(t, err)
 	params, err := url.ParseQuery(uri.Fragment)
 	require.NoError(t, err)
-	params.Set(RefreshInterval, "5ms")
+	params.Set(RefreshInterval, "20ms")
 	uri.Fragment = params.Encode()
 
 	for i := 0; i < 5; i++ {
 		_, err = ep.Retrieve(context.Background(), uri.String(), watcherFunc)
 		require.NoError(t, err)
 
-		require.Eventually(t, func() bool {
-			return count.Load() > int64(i)
-		}, time.Second*3, time.Millisecond*20)
+		select {
+		case <-done:
+		case <-time.After(2 * time.Second):
+			t.Fatal("Timeout waiting for config reload")
+		}
 	}
 
 	require.NoError(t, ep.Shutdown(context.Background()))
@@ -657,8 +664,13 @@ func TestConfigChangedHeader(t *testing.T) {
 		// The header should only be set to true on the request after the config changed
 		if count.Load() == 1 || count.Load()%4 == 2 || count.Load()%4 == 3 {
 			assert.Equal(t, "true", req.Header.Get(ConfigChangedHeaderKey))
+			assert.Equal(t, "false", req.Header.Get(FirstRequestHeaderKey))
+		} else if count.Load() == 0 {
+			assert.Equal(t, "false", req.Header.Get(ConfigChangedHeaderKey))
+			assert.Equal(t, "true", req.Header.Get(FirstRequestHeaderKey))
 		} else {
 			assert.Equal(t, "false", req.Header.Get(ConfigChangedHeaderKey))
+			assert.Equal(t, "false", req.Header.Get(FirstRequestHeaderKey))
 		}
 
 		count.Add(1)

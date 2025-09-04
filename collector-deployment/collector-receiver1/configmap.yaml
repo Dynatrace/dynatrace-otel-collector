@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: collector-receiver1-config
+data:
+  relay: |
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+    exporters:
+      debug:
+        verbosity: detailed
+      otlphttp:
+        endpoint: https://fya1093d.dev.dynatracelabs.com/api/v2/otlp
+        headers:
+          Authorization: "Api-Token"
+
+    processors:
+      k8sattributes:
+        extract:
+          metadata:
+            - k8s.pod.name
+            - k8s.pod.uid
+            - k8s.pod.ip
+            - k8s.deployment.name
+            - k8s.replicaset.name
+            - k8s.namespace.name
+            - k8s.node.name
+            - k8s.cluster.uid
+            - k8s.container.name
+          annotations:
+            - from: pod
+              key_regex: metadata.dynatrace.com/(.*)
+              tag_name: $$1
+            - from: pod
+              key: metadata.dynatrace.com
+              tag_name: metadata.dynatrace.com
+        pod_association:
+          - sources:
+            - from: resource_attribute
+              name: k8s.pod.name
+            - from: resource_attribute
+              name: k8s.namespace.name
+          - sources:
+            - from: resource_attribute
+              name: k8s.pod.ip
+          - sources:
+            - from: resource_attribute
+              name: k8s.pod.uid
+          - sources:
+            - from: connection
+
+      transform:
+        error_mode: ignore
+        trace_statements:
+          # Set attributes taken from k8s metadata.
+          - context: resource
+            statements:
+              - set(attributes["k8s.workload.kind"], "replicaset") where IsString(attributes["k8s.replicaset.name"])
+              - set(attributes["k8s.workload.name"], attributes["k8s.replicaset.name"]) where IsString(attributes["k8s.replicaset.name"])
+              - set(attributes["k8s.workload.kind"], "deployment") where IsString(attributes["k8s.deployment.name"])
+              - set(attributes["k8s.workload.name"], attributes["k8s.deployment.name"]) where IsString(attributes["k8s.deployment.name"])
+
+    service:
+      telemetry:
+        metrics:
+          level: none
+      extensions: [health_check]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [k8sattributes, transform]
+          exporters:
+            - otlphttp
+            - debug
+        metrics:
+          receivers: [otlp]
+          processors: []
+          exporters:
+            - otlphttp
+        logs:
+          receivers: [otlp]
+          processors: []
+          exporters:
+            - otlphttp

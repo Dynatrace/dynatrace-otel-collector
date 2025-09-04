@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collector-receiver3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: collector-receiver3
+      app.kubernetes.io/instance: collector-receiver3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: collector-receiver3
+        app.kubernetes.io/instance: collector-receiver3
+    spec:
+      serviceAccountName: collector-receiver3
+      containers:
+        - name: collector-receiver3
+          args:
+            - --config=/conf/relay.yaml
+          image: otel/opentelemetry-collector-contrib:latest
+          ports:
+            - name: otlp
+              containerPort: 4317
+              protocol: TCP
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 13133
+            initialDelaySeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 13133
+            initialDelaySeconds: 3
+          resources:
+            limits:
+              cpu: 128m
+              memory: 256Mi
+          volumeMounts:
+            - mountPath: /conf
+              name: collector-receiver3-configmap
+      volumes:
+        - name: collector-receiver3-configmap
+          configMap:
+            name: collector-receiver3-config
+            items:
+              - key: relay
+                path: relay.yaml

@@ -3,6 +3,7 @@
 package k8sobjects
 
 import (
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"os"
 	"path"
 	"path/filepath"
@@ -97,10 +98,21 @@ func TestE2E_K8sobjectsReceiver(t *testing.T) {
 		for i := 0; i < r.ResourceLogs().Len(); i++ {
 			sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
 			for j := 0; j < sm.Len(); j++ {
-				bodyMap := sm.At(j).Body().Map()
-				if kind, ok := bodyMap.Get("kind"); ok {
-					if _, ok := bodyMap.Get("message"); ok {
-						expected[kind.Str()] = true
+				switch sm.At(j).Body().Type() {
+				case pcommon.ValueTypeStr:
+					bodyStr := sm.At(j).Body().Str()
+					// event log bodies received by the k8sevents receiver are of type strings
+					_, ok := sm.At(j).Attributes().Get("k8s.event.name")
+					if bodyStr != "" && ok {
+						expected["Event"] = true
+					}
+				case pcommon.ValueTypeMap:
+					// logs for other resources, received by the k8sobjects receiver are of type map
+					bodyMap := sm.At(j).Body().Map()
+					if kind, ok := bodyMap.Get("kind"); ok {
+						if _, ok := bodyMap.Get("message"); ok {
+							expected[kind.Str()] = true
+						}
 					}
 				}
 			}

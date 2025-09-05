@@ -4,6 +4,7 @@ package k8scombined
 
 import (
 	"fmt"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"os"
 	"path"
 	"path/filepath"
@@ -379,9 +380,10 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		for i := 0; i < r.ResourceLogs().Len(); i++ {
 			sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
 			for j := 0; j < sm.Len(); j++ {
-				bodyMap := sm.At(j).Body().Map()
-				if kind, ok := bodyMap.Get("kind"); ok && kind.Str() == "Event" {
-					if _, ok := bodyMap.Get("message"); ok {
+				if sm.At(j).Body().Type() == pcommon.ValueTypeStr {
+					bodyStr := sm.At(j).Body().Str()
+					_, ok := sm.At(j).Attributes().Get("k8s.event.name")
+					if bodyStr != "" && ok {
 						expectedLogEvents = true
 					}
 				}

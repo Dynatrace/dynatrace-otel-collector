@@ -184,7 +184,7 @@ service:
         - otlphttp
     logs:
       receivers:
-        - k8sobjects
+        - k8s_events
       processors:
         - transform
       exporters:
@@ -210,7 +210,7 @@ service:
         - otlphttp/metrics
     logs:
       receivers:
-        - k8sobjects
+        - k8s_events
       processors:
         - transform
       exporters:

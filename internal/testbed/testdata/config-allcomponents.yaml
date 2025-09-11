@@ -25,6 +25,7 @@ receivers:
     endpoint: "https://${env:K8S_NODE_NAME}:10250"
     insecure_skip_verify: true
   k8s_events:
+    auth_type: "serviceAccount"
   netflow:
     scheme: netflow
   statsd:

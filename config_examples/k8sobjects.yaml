@@ -4,6 +4,7 @@ extensions:
 
 receivers:
   k8s_events:
+    auth_type: "serviceAccount"
     namespaces: [${env:NAMESPACE}]
   k8sobjects:
     objects:

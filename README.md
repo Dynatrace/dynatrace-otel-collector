@@ -49,7 +49,7 @@ The following components are included in the distribution:
 * [k8sobjectsreceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/k8sobjectsreceiver)
 * [kubeletstatsreceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/kubeletstatsreceiver)
 * [k8sclusterreceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/k8sclusterreceiver)
-* [k8seventsreceiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/k8seventsreceiver)
+* [k8seventsreceiver (*)](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/k8seventsreceiver)
 
 ### Processors
 
@@ -81,6 +81,9 @@ The following components are included in the distribution:
 
 * [forwardconnector](https://github.com/open-telemetry/opentelemetry-collector/tree/main/connector/forwardconnector)
 * [spanmetricsconnector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/spanmetricsconnector)
+
+
+*(\*) The `k8seventsreceiver` is currently in alpha stage and may undergo significant changes. Despite its early maturity, it has been included in the Dynatrace distribution of the OpenTelemetry Collector to support early adoption and experimentation. Users should be aware that stability, performance, and feature completeness are not guaranteed at this stage.*
 
 ## Support
 

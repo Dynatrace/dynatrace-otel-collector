@@ -185,8 +185,6 @@ service:
     logs:
       receivers:
         - k8s_events
-      processors:
-        - transform
       exporters:
         - otlphttp`
 	templateGatewayNew = `

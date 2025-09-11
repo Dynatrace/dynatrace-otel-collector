@@ -7,11 +7,8 @@ receivers:
     protocols:
       grpc:
         endpoint: 0.0.0.0:4317
-  k8sobjects:
-    error_mode: ignore
-    objects:
-      - name: events
-        mode: watch
+  k8s_events:
+    auth_type: "serviceAccount"
   k8s_cluster:
     auth_type: "serviceAccount"
     collection_interval: 10s
@@ -35,10 +32,10 @@ processors:
   cumulativetodelta:
   transform:
     error_mode: ignore
-    metric_statements:
+    trace_statements: &dynatrace_transformations
+      # Set attributes taken from k8s metadata.
       - context: resource
         statements:
-          - set(attributes["k8s.cluster.name"], "${env:CLUSTER_NAME}")
           - set(attributes["k8s.workload.kind"], "job") where IsString(attributes["k8s.job.name"])
           - set(attributes["k8s.workload.name"], attributes["k8s.job.name"]) where IsString(attributes["k8s.job.name"])
           - set(attributes["k8s.workload.kind"], "cronjob") where IsString(attributes["k8s.cronjob.name"])
@@ -58,13 +55,13 @@ processors:
           - delete_key(attributes, "k8s.daemonset.name")
           - delete_key(attributes, "k8s.cronjob.name")
           - delete_key(attributes, "k8s.job.name")
-    log_statements:
-      - context: log # watched Events which do have message key in log body
-        conditions:
-          - IsMap(log.body) and log.body["object"] != nil and log.body["object"]["message"] != nil
+      # Set attributes from metadata specified in Dynatrace and set through the Dynatrace Operator.
+      # For more info: https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment
+      - context: resource
         statements:
-          - set(log.body, log.body["object"])
-          - flatten(log.body, resolveConflicts=true)
+          - merge_maps(attributes, ParseJSON(attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(attributes["metadata.dynatrace.com"], "^\\{")
+          - delete_key(attributes, "metadata.dynatrace.com")
+    metric_statements: *dynatrace_transformations
   k8sattributes:
     filter:
       node_from_env_var: K8S_NODE_NAME
@@ -87,6 +84,9 @@ processors:
         - from: pod
           key_regex: metadata.dynatrace.com/(.*)
           tag_name: $$1
+        - from: pod
+          key: metadata.dynatrace.com
+          tag_name: metadata.dynatrace.com
     pod_association:
       - sources:
           - from: resource_attribute
@@ -112,6 +112,14 @@ service:
   extensions:
     - health_check
   pipelines:
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - k8sattributes
+        - transform
+      exporters:
+        - otlphttp
     metrics/forward:
       receivers:
         - otlp
@@ -131,8 +139,6 @@ service:
         - otlphttp
     logs:
       receivers:
-        - k8sobjects
-      processors:
-        - transform
+        - k8s_events
       exporters:
         - otlphttp

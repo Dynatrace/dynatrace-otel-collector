@@ -164,6 +164,14 @@ service:
   extensions:
     - health_check
   pipelines:
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - k8sattributes
+        - transform
+      exporters:
+        - otlphttp
     metrics/forward:
       receivers:
         - otlp
@@ -198,6 +206,14 @@ service:
   extensions:
     - health_check
   pipelines:
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - k8sattributes
+        - transform
+      exporters:
+        - otlphttp
     metrics:
       receivers:
         - k8s_cluster

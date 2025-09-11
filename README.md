@@ -83,7 +83,7 @@ The following components are included in the distribution:
 * [spanmetricsconnector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/spanmetricsconnector) (*)
 
 
-*(\*) The components marked with (*) are currently in alpha stage and may undergo significant changes. Despite their early maturity, they have been included in the Dynatrace distribution of the OpenTelemetry Collector to support early adoption and experimentation. Users should be aware that stability, performance, and feature completeness are not guaranteed at this stage.*
+(\*) *The components marked with (\*) are currently in alpha stage and may undergo significant changes. Despite their early maturity, they have been included in the Dynatrace distribution of the OpenTelemetry Collector to support early adoption and experimentation. Users should be aware that stability, performance, and feature completeness are not guaranteed at this stage.*
 
 ## Support
 

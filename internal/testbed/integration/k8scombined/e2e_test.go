@@ -197,6 +197,8 @@ service:
       exporters:
         - otlphttp`
 	templateGatewayNew = `
+  otlphttp/traces:
+    endpoint: http://%s:4321
   otlphttp/metrics:
     endpoint: http://%s:4320
   otlphttp/logs:
@@ -213,7 +215,7 @@ service:
         - k8sattributes
         - transform
       exporters:
-        - otlphttp
+        - otlphttp/traces
     metrics:
       receivers:
         - k8s_cluster

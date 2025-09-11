@@ -7,11 +7,8 @@ receivers:
     protocols:
       grpc:
         endpoint: 0.0.0.0:4317
-  k8sobjects:
-    error_mode: ignore
-    objects:
-      - name: events
-        mode: watch
+  k8s_events:
+    auth_type: "serviceAccount"
   k8s_cluster:
     auth_type: "serviceAccount"
     collection_interval: 10s
@@ -58,13 +55,6 @@ processors:
           - delete_key(attributes, "k8s.daemonset.name")
           - delete_key(attributes, "k8s.cronjob.name")
           - delete_key(attributes, "k8s.job.name")
-    log_statements:
-      - context: log # watched Events which do have message key in log body
-        conditions:
-          - IsMap(log.body) and log.body["object"] != nil and log.body["object"]["message"] != nil
-        statements:
-          - set(log.body, log.body["object"])
-          - flatten(log.body, resolveConflicts=true)
   k8sattributes:
     filter:
       node_from_env_var: K8S_NODE_NAME
@@ -131,8 +121,6 @@ service:
         - otlphttp
     logs:
       receivers:
-        - k8sobjects
-      processors:
-        - transform
+        - k8s_events
       exporters:
         - otlphttp

@@ -55,13 +55,6 @@ processors:
           - delete_key(attributes, "k8s.daemonset.name")
           - delete_key(attributes, "k8s.cronjob.name")
           - delete_key(attributes, "k8s.job.name")
-    log_statements:
-      - context: log # watched Events which do have message key in log body
-        conditions:
-          - IsMap(log.body) and log.body["object"] != nil and log.body["object"]["message"] != nil
-        statements:
-          - set(log.body, log.body["object"])
-          - flatten(log.body, resolveConflicts=true)
   k8sattributes:
     filter:
       node_from_env_var: K8S_NODE_NAME
@@ -129,7 +122,5 @@ service:
     logs:
       receivers:
         - k8s_events
-      processors:
-        - transform
       exporters:
         - otlphttp

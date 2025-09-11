@@ -31,12 +31,6 @@ processors:
         statements:
           - flatten(log.body, resolveConflicts=true)
           - set(log.body["message"], Concat(["State of object ", log.body["kind"], " '", log.body["metadata.name"], "'"], ""))
-      - context: log # watched objects which do have message key in log body set (e.g. k8s Events)
-        conditions:
-          - IsMap(log.body) and log.body["object"] != nil and log.body["object"]["message"] != nil
-        statements:
-          - set(log.body, log.body["object"])
-          - flatten(log.body, resolveConflicts=true)
       - context: log # watched objects which do not have message key in log body set
         conditions:
           - IsMap(log.body) and log.body["object"] != nil and log.body["object"]["message"] == nil

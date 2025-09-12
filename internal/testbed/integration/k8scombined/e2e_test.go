@@ -260,6 +260,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	}()
 
 	metricsConsumerGateway := new(consumertest.MetricsSink)
+	tracesConsumerGateway := new(consumertest.TracesSink)
 	metricsConsumerAgent := new(consumertest.MetricsSink)
 	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
@@ -273,6 +274,12 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 			Consumer: metricsConsumerGateway,
 			Ports: &oteltest.ReceiverPorts{
 				Http: 4320,
+			},
+		},
+		Traces: &oteltest.TraceSinkConfig{
+			Consumer: tracesConsumerGateway,
+			Ports: &oteltest.ReceiverPorts{
+				Http: 4322,
 			},
 		},
 	})
@@ -429,6 +436,10 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	}, 3*time.Minute, 1*time.Second)
 
 	t.Logf("Gateway metrics checked successfully")
+
+	t.Log("Checking gateway traces...")
+	oteltest.WaitForTraces(t, 1, tracesConsumerGateway)
+	t.Logf("Traces checked successfully")
 }
 
 func substituteWithStar(_ string) string { return "*" }

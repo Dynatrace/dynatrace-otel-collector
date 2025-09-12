@@ -197,7 +197,7 @@ service:
         - otlphttp`
 	templateGatewayNew = `
   otlphttp/traces:
-    endpoint: http://%s:4321
+    endpoint: http://%s:4322
   otlphttp/metrics:
     endpoint: http://%s:4320
   otlphttp/logs:
@@ -362,6 +362,8 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	})
 
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+
+	t.Logf("Collector config: \n %s", collectorConfig)
 	collectorObjs1 := otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,

@@ -363,7 +363,6 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 
-	t.Logf("Collector config: \n %s", collectorConfig)
 	collectorObjs1 := otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,

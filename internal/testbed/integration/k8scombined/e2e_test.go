@@ -357,7 +357,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		Host: host,
 		Templates: []string{
 			templateGatewayOrigin,
-			fmt.Sprintf(templateGatewayNew, host, host),
+			fmt.Sprintf(templateGatewayNew, host, host, host),
 		},
 	})
 

@@ -1,0 +1,84 @@
+resourceSpans:
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-traces-deployment
+        - key: k8s.pod.ip
+          value:
+            stringValue: 10.244.2.32
+        - key: k8s.workload.kind
+          value:
+            stringValue: deployment
+        - key: k8s.workload.name
+          value:
+            stringValue: telemetrygen-deployment
+        - key: k8s.namespace.annotation.myAnnotationKey
+          value:
+            stringValue: custom_test
+        - key: k8s.pod.name
+          value:
+            stringValue: telemetrygen-deployment-6fc578d4c6-kqrsb
+        - key: k8s.node.name
+          value:
+            stringValue: kind-worker
+        - key: k8s.cluster.uid
+          value:
+            stringValue: de3e0715-a3c1-4e69-837f-5136a39c9e37
+        - key: k8s.namespace.name
+          value:
+            stringValue: e2ek8scombined
+        - key: k8s.pod.uid
+          value:
+            stringValue: 86d9247c-bf88-4ea1-a566-bc7856ecc084
+        - key: k8s.container.name
+          value:
+            stringValue: telemetrygen
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
+        - key: dt.cost.costcenter
+          value:
+            stringValue: costcenter_test
+        - key: dt.cost.product
+          value:
+            stringValue: costprdct_test
+        - key: dt.security_context
+          value:
+            stringValue: secctxt_test
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeSpans:
+      - scope:
+          name: telemetrygen
+        spans:
+          - attributes:
+              - key: network.peer.address
+                value:
+                  stringValue: 1.2.3.4
+              - key: peer.service
+                value:
+                  stringValue: telemetrygen-client
+            endTimeUnixNano: "1757662938283073814"
+            flags: 256
+            kind: 2
+            name: okey-dokey-0
+            parentSpanId: 848d5cd5ae0ca0de
+            spanId: f80a4f0e271ffbb7
+            startTimeUnixNano: "1757662938282950814"
+            status: {}
+            traceId: 0f1d332aadfa89c553691f8e54e97bba
+          - attributes:
+              - key: network.peer.address
+                value:
+                  stringValue: 1.2.3.4
+              - key: peer.service
+                value:
+                  stringValue: telemetrygen-server
+            endTimeUnixNano: "1757662938283073814"
+            flags: 256
+            kind: 3
+            name: lets-go
+            spanId: 848d5cd5ae0ca0de
+            startTimeUnixNano: "1757662938282950814"
+            status: {}
+            traceId: 0f1d332aadfa89c553691f8e54e97bba

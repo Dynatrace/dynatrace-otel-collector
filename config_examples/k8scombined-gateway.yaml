@@ -32,7 +32,8 @@ processors:
   cumulativetodelta:
   transform:
     error_mode: ignore
-    metric_statements:
+    trace_statements: &dynatrace_transformations
+      # Set attributes taken from k8s metadata.
       - context: resource
         statements:
           - set(attributes["k8s.cluster.name"], "${env:CLUSTER_NAME}")
@@ -55,6 +56,13 @@ processors:
           - delete_key(attributes, "k8s.daemonset.name")
           - delete_key(attributes, "k8s.cronjob.name")
           - delete_key(attributes, "k8s.job.name")
+      # Set attributes from metadata specified in Dynatrace and set through the Dynatrace Operator.
+      # For more info: https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment
+      - context: resource
+        statements:
+          - merge_maps(attributes, ParseJSON(attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(attributes["metadata.dynatrace.com"], "^\\{")
+          - delete_key(attributes, "metadata.dynatrace.com")
+    metric_statements: *dynatrace_transformations
   k8sattributes:
     filter:
       node_from_env_var: K8S_NODE_NAME
@@ -77,6 +85,9 @@ processors:
         - from: pod
           key_regex: metadata.dynatrace.com/(.*)
           tag_name: $$1
+        - from: pod
+          key: metadata.dynatrace.com
+          tag_name: metadata.dynatrace.com
     pod_association:
       - sources:
           - from: resource_attribute
@@ -102,6 +113,14 @@ service:
   extensions:
     - health_check
   pipelines:
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - k8sattributes
+        - transform
+      exporters:
+        - otlphttp
     metrics/forward:
       receivers:
         - otlp

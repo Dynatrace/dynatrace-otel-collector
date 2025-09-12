@@ -23,11 +23,12 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
 var (
-	defaultOptions = []pmetrictest.CompareMetricsOption{
+	metricsCompareOptions = []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreMetricValues(
@@ -121,6 +122,19 @@ var (
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
 	}
+
+	traceCompareOptions = []ptracetest.CompareTracesOption{
+		ptracetest.IgnoreStartTimestamp(),
+		ptracetest.IgnoreEndTimestamp(),
+		ptracetest.IgnoreTraceID(),
+		ptracetest.IgnoreSpanID(),
+		ptracetest.IgnoreResourceAttributeValue("k8s.pod.uid"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.pod.ip"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.pod.name"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.deployment.uid"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
+	}
+
 	templateAgentOrigin = `
   otlp:
     endpoint: otelcolsvc:4317
@@ -236,6 +250,7 @@ service:
 func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	expectedGatewayFile := testDir + "/e2e/expected-gateway.yaml"
+	expectedGatewayTracesFile := testDir + "/e2e/expected-gateway-traces.yaml"
 	expectedAgentFile := testDir + "/e2e/expected-agent.yaml"
 	configExamplesDir := "../../../../config_examples"
 
@@ -351,7 +366,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1],
-			append(agentOptions, defaultOptions...)...,
+			append(agentOptions, metricsCompareOptions...)...,
 		),
 		)
 	}, 3*time.Minute, 1*time.Second)
@@ -430,7 +445,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerGateway.AllMetrics()[len(metricsConsumerGateway.AllMetrics())-1],
-			defaultOptions...,
+			metricsCompareOptions...,
 		),
 		)
 	}, 3*time.Minute, 1*time.Second)
@@ -439,6 +454,20 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	t.Log("Checking gateway traces...")
 	oteltest.WaitForTraces(t, 1, tracesConsumerGateway)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	// require.Nil(t, golden.WriteTraces(t, expectedGatewayTracesFile, tracesConsumerGateway.AllTraces()[len(tracesConsumerGateway.AllTraces())-1]))
+
+	expectedTraces, err := golden.ReadTraces(expectedGatewayTracesFile)
+	require.NoError(t, err)
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, ptracetest.CompareTraces(expectedTraces, tracesConsumerGateway.AllTraces()[len(tracesConsumerGateway.AllTraces())-1],
+			traceCompareOptions...,
+		),
+		)
+	}, 3*time.Minute, 1*time.Second)
+
 	t.Logf("Traces checked successfully")
 }
 

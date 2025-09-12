@@ -13,7 +13,6 @@ spec:
       app: busybox
   template:
     metadata:
-      annotations:
       labels:
         app: busybox
     spec:

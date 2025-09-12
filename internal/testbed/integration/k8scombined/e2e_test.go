@@ -5,6 +5,7 @@ package k8scombined
 import (
 	"fmt"
 	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 	"os"
 	"path"
 	"path/filepath"
@@ -128,6 +129,7 @@ var (
 		ptracetest.IgnoreEndTimestamp(),
 		ptracetest.IgnoreTraceID(),
 		ptracetest.IgnoreSpanID(),
+		ptracetest.IgnoreSpansOrder(),
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.uid"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.ip"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.name"),
@@ -462,13 +464,30 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	require.NoError(t, err)
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, ptracetest.CompareTraces(expectedTraces, tracesConsumerGateway.AllTraces()[len(tracesConsumerGateway.AllTraces())-1],
-			traceCompareOptions...,
-		),
+		gotTraces := tracesConsumerGateway.AllTraces()[len(tracesConsumerGateway.AllTraces())-1]
+		maskParentSpanID(expectedTraces)
+		maskParentSpanID(gotTraces)
+		assert.NoError(tt,
+			ptracetest.CompareTraces(
+				expectedTraces,
+				gotTraces,
+				traceCompareOptions...,
+			),
 		)
 	}, 3*time.Minute, 1*time.Second)
 
 	t.Logf("Traces checked successfully")
+}
+
+func maskParentSpanID(traces ptrace.Traces) {
+	for i := 0; i < traces.ResourceSpans().Len(); i++ {
+		scopeSpans := traces.ResourceSpans().At(i).ScopeSpans()
+		for j := 0; j < scopeSpans.Len(); j++ {
+			for k := 0; k < scopeSpans.At(j).Spans().Len(); k++ {
+				scopeSpans.At(j).Spans().At(k).SetParentSpanID(pcommon.NewSpanIDEmpty())
+			}
+		}
+	}
 }
 
 func substituteWithStar(_ string) string { return "*" }

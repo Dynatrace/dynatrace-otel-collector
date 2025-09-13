@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: collector-loadbalancer-config
+data:
+  relay: |
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+    processors:
+      cumulativetodelta:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+      otlp/selfmon:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4319
+          http:
+            endpoint: 0.0.0.0:4320
+    exporters:
+      otlphttp:
+        endpoint: https://fya1093d.dev.dynatracelabs.com/api/v2/otlp
+        headers:
+          Authorization: "Api-Token "
+      debug:
+        verbosity: detailed
+      loadbalancing:
+        retry_on_failure:
+          enabled: true
+          initial_interval: 1s
+          max_interval: 3s
+          max_elapsed_time: 10s
+        sending_queue:
+          enabled: true
+          num_consumers: 10
+          queue_size: 1000
+          sizer: requests
+        protocol:
+          otlp:
+            retry_on_failure:
+              enabled: true
+              initial_interval: 1s
+              max_interval: 3s
+              max_elapsed_time: 10s
+            tls:
+              insecure: true
+        resolver:
+          k8s:
+            service: collector-receiver1.default
+
+    service:
+      telemetry:
+        metrics:
+          level: basic
+          readers:
+            - periodic:
+                interval: 5000
+                exporter:
+                  otlp:
+                    protocol: grpc
+                    endpoint: http://0.0.0.0:4319
+      extensions: [health_check]
+      pipelines:
+        metrics:
+          receivers: [otlp]
+          processors: []
+          exporters:
+            - loadbalancing
+        metrics/selfmon:
+          receivers: [otlp/selfmon]
+          processors: [cumulativetodelta]
+          exporters:
+            - otlphttp
+        traces:
+          receivers: [otlp]
+          processors: []
+          exporters:
+            - loadbalancing
+        logs:
+          receivers: [otlp]
+          processors: []
+          exporters:
+            - loadbalancing

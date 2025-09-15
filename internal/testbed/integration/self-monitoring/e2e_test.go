@@ -253,7 +253,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	//require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	var expected pmetric.Metrics
 	expected, err = golden.ReadMetrics(expectedFile)
@@ -300,7 +300,9 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 			"otelcol_exporter_send_failed_spans",
 			"otelcol_exporter_sent_log_records",
 			"otelcol_exporter_sent_metric_points",
-			"otelcol_exporter_sent_spans"),
+			"otelcol_exporter_sent_spans",
+			"otelcol_exporter_queue_batch_send_size_bytes",
+			"otelcol_exporter_queue_batch_send_size"),
 		pmetrictest.IgnoreScopeVersion(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),

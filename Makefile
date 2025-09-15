@@ -22,7 +22,7 @@ MAIN = $(BUILD_DIR)/main.go
 GO_JUNIT_REPORT_VERSION ?= v2.1.0
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
-GORELEASER_PRO_VERSION ?= v2.11.2
+GORELEASER_PRO_VERSION ?= v2.12.0
 
 # Files to be copied directly from the project root
 CP_FILES = LICENSE README.md
@@ -45,7 +45,7 @@ ARCH ?= ""
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
 # renovate: datasource=github-releases depName=open-telemetry/opentelemetry-collector-contrib
-OTEL_UPSTREAM_VERSION=v0.132.0
+OTEL_UPSTREAM_VERSION=v0.135.0
 
 .PHONY: build generate test package-test clean clean-all components install-tools snapshot install-goreleaser-pro
 build: $(BIN)

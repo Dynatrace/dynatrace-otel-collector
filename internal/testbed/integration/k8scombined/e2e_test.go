@@ -4,6 +4,8 @@ package k8scombined
 
 import (
 	"fmt"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 	"os"
 	"path"
 	"path/filepath"
@@ -22,11 +24,12 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
 var (
-	defaultOptions = []pmetrictest.CompareMetricsOption{
+	metricsCompareOptions = []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreMetricValues(
@@ -120,6 +123,20 @@ var (
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
 	}
+
+	traceCompareOptions = []ptracetest.CompareTracesOption{
+		ptracetest.IgnoreStartTimestamp(),
+		ptracetest.IgnoreEndTimestamp(),
+		ptracetest.IgnoreTraceID(),
+		ptracetest.IgnoreSpanID(),
+		ptracetest.IgnoreSpansOrder(),
+		ptracetest.IgnoreResourceAttributeValue("k8s.pod.uid"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.pod.ip"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.pod.name"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.deployment.uid"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
+	}
+
 	templateAgentOrigin = `
   otlp:
     endpoint: otelcolsvc:4317
@@ -164,6 +181,14 @@ service:
   extensions:
     - health_check
   pipelines:
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - k8sattributes
+        - transform
+      exporters:
+        - otlphttp
     metrics/forward:
       receivers:
         - otlp
@@ -183,12 +208,12 @@ service:
         - otlphttp
     logs:
       receivers:
-        - k8sobjects
-      processors:
-        - transform
+        - k8s_events
       exporters:
         - otlphttp`
 	templateGatewayNew = `
+  otlphttp/traces:
+    endpoint: http://%s:4322
   otlphttp/metrics:
     endpoint: http://%s:4320
   otlphttp/logs:
@@ -198,6 +223,14 @@ service:
   extensions:
     - health_check
   pipelines:
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - k8sattributes
+        - transform
+      exporters:
+        - otlphttp/traces
     metrics:
       receivers:
         - k8s_cluster
@@ -209,7 +242,7 @@ service:
         - otlphttp/metrics
     logs:
       receivers:
-        - k8sobjects
+        - k8s_events
       processors:
         - transform
       exporters:
@@ -219,6 +252,7 @@ service:
 func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	expectedGatewayFile := testDir + "/e2e/expected-gateway.yaml"
+	expectedGatewayTracesFile := testDir + "/e2e/expected-gateway-traces.yaml"
 	expectedAgentFile := testDir + "/e2e/expected-agent.yaml"
 	configExamplesDir := "../../../../config_examples"
 
@@ -243,6 +277,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	}()
 
 	metricsConsumerGateway := new(consumertest.MetricsSink)
+	tracesConsumerGateway := new(consumertest.TracesSink)
 	metricsConsumerAgent := new(consumertest.MetricsSink)
 	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
@@ -260,6 +295,12 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 				Ports: &oteltest.ReceiverPorts{
 					Http: 4320,
 				},
+			},
+		},
+		Traces: &oteltest.TraceSinkConfig{
+			Consumer: tracesConsumerGateway,
+			Ports: &oteltest.ReceiverPorts{
+				Http: 4322,
 			},
 		},
 	})
@@ -333,7 +374,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1],
-			append(agentOptions, defaultOptions...)...,
+			append(agentOptions, metricsCompareOptions...)...,
 		),
 		)
 	}, 3*time.Minute, 1*time.Second)
@@ -346,11 +387,12 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		Host: host,
 		Templates: []string{
 			templateGatewayOrigin,
-			fmt.Sprintf(templateGatewayNew, host, host),
+			fmt.Sprintf(templateGatewayNew, host, host, host),
 		},
 	})
 
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+
 	collectorObjs1 := otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
@@ -385,9 +427,10 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		for i := 0; i < r.ResourceLogs().Len(); i++ {
 			sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
 			for j := 0; j < sm.Len(); j++ {
-				bodyMap := sm.At(j).Body().Map()
-				if kind, ok := bodyMap.Get("kind"); ok && kind.Str() == "Event" {
-					if _, ok := bodyMap.Get("message"); ok {
+				if sm.At(j).Body().Type() == pcommon.ValueTypeStr {
+					bodyStr := sm.At(j).Body().Str()
+					_, ok := sm.At(j).Attributes().Get("k8s.event.name")
+					if bodyStr != "" && ok {
 						expectedLogEvents = true
 					}
 				}
@@ -410,12 +453,47 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerGateway.AllMetrics()[len(metricsConsumerGateway.AllMetrics())-1],
-			defaultOptions...,
+			metricsCompareOptions...,
 		),
 		)
 	}, 3*time.Minute, 1*time.Second)
 
 	t.Logf("Gateway metrics checked successfully")
+
+	t.Log("Checking gateway traces...")
+	oteltest.WaitForTraces(t, 1, tracesConsumerGateway)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	// require.Nil(t, golden.WriteTraces(t, expectedGatewayTracesFile, tracesConsumerGateway.AllTraces()[len(tracesConsumerGateway.AllTraces())-1]))
+
+	expectedTraces, err := golden.ReadTraces(expectedGatewayTracesFile)
+	require.NoError(t, err)
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		gotTraces := tracesConsumerGateway.AllTraces()[len(tracesConsumerGateway.AllTraces())-1]
+		maskParentSpanID(expectedTraces)
+		maskParentSpanID(gotTraces)
+		assert.NoError(tt,
+			ptracetest.CompareTraces(
+				expectedTraces,
+				gotTraces,
+				traceCompareOptions...,
+			),
+		)
+	}, 3*time.Minute, 1*time.Second)
+
+	t.Logf("Traces checked successfully")
+}
+
+func maskParentSpanID(traces ptrace.Traces) {
+	for i := 0; i < traces.ResourceSpans().Len(); i++ {
+		scopeSpans := traces.ResourceSpans().At(i).ScopeSpans()
+		for j := 0; j < scopeSpans.Len(); j++ {
+			for k := 0; k < scopeSpans.At(j).Spans().Len(); k++ {
+				scopeSpans.At(j).Spans().At(k).SetParentSpanID(pcommon.NewSpanIDEmpty())
+			}
+		}
+	}
 }
 
 func substituteWithStar(_ string) string { return "*" }

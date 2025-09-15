@@ -21,7 +21,7 @@ spec:
         - --otlp-insecure
         - --otlp-endpoint=collector-loadbalancer.default.svc.cluster.local:4317
         - --duration=36000s
-        - --rate=100
+        - --rate=10
         - --otlp-attributes=service.name="test-traces-deployment"
         image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
         imagePullPolicy: IfNotPresent

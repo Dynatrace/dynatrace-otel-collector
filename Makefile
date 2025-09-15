@@ -45,7 +45,7 @@ ARCH ?= ""
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
 # renovate: datasource=github-releases depName=open-telemetry/opentelemetry-collector-contrib
-OTEL_UPSTREAM_VERSION=v0.134.0
+OTEL_UPSTREAM_VERSION=v0.135.0
 
 .PHONY: build generate test package-test clean clean-all components install-tools snapshot install-goreleaser-pro
 build: $(BIN)

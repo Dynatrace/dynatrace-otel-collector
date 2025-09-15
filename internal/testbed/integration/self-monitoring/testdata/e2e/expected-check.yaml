@@ -951,7 +951,117 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/service
       - metrics:
-          - description: Fixed capacity of the retry queue (in batches) [alpha]
+          - description: Number of units in the batch
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlphttp
+                  bucketCounts:
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                  max: 6
+                  min: 4
+                  startTimeUnixNano: "1000000"
+                  sum: 10
+                  timeUnixNano: "2000000"
+            name: otelcol_exporter_queue_batch_send_size
+            unit: '{units}'
+          - description: Number of bytes in batch that was sent. Only available on detailed level.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlphttp
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                  max: 1224
+                  min: 816
+                  startTimeUnixNano: "1000000"
+                  sum: 2040
+                  timeUnixNano: "2000000"
+            name: otelcol_exporter_queue_batch_send_size_bytes
+            unit: By
+          - description: Fixed capacity of the retry queue (in batches). [alpha]
             gauge:
               dataPoints:
                 - asInt: "1000"
@@ -966,7 +1076,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_capacity
             unit: '{batches}'
-          - description: Current size of the retry queue (in batches) [alpha]
+          - description: Current size of the retry queue (in batches). [alpha]
             gauge:
               dataPoints:
                 - asInt: "0"

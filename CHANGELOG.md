@@ -4,6 +4,47 @@
 
 <!-- next version -->
 
+## v0.36.0
+
+This release includes version 0.135.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.135.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.135.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.135.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `k8sattributesprocessor`: Introduce allowLabelsAnnotationsSingular feature gate to use singular format for k8s label and annotation resource attributes [#39774](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39774)
+  The feature gate, when enabled, will change the default resource attribute key format from k8s.<workload>.labels.<label-key> to k8s.<workload>.label.<label-key>. Same applies for annotations.
+
+### 💡 Enhancements 💡
+
+- - `exporterhelper`: Add new `exporter_queue_batch_send_size` and `exporter_queue_batch_send_size_bytes` metrics, showing the size of telemetry batches from the exporter. [#12894](https://github.com/open-telemetry/opentelemetry-collector/issues/12894)
+- `transformprocessor`: Add support for merging histogram buckets. [#40280](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40280)
+  The transformprocessor now supports merging histogram buckets using the `merge_histogram_buckets` function.
+- `statsdreceiver`: Introduce explicit bucket for statsd receiver [#41203](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41203), [#41503](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41503)
+- `k8sclusterreceiver`: Add option `namespaces` for setting a list of namespaces to be observed by the receiver. This supersedes the `namespace` option which is now deprecated. [#40089](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40089)
+- `k8sobjectsreceiver`: Adds the instrumentation scope name and version [#42290](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42290)
+- `receiver/kubeletstats`: Introduce k8s.pod.volume.usage metric. [#40476](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40476)
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `k8seventsreceiver`: Add the k8sevents receiver to the Dynatrace distribution of the OTel collector (#658)
+
+<!-- previous-version -->
+
 ## v0.35.1
 
 This release includes version 0.134.0 of the upstream Collector components.

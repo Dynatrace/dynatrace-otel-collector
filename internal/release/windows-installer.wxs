@@ -1,7 +1,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
    <Product
       Name="Dynatrace Distribution of the OpenTelemetry Collector ({{ .Version }})"
-      Id="B250A214-D463-4E9B-8902-1DE5C19EA951"
+      Id="B54F893B-A7D4-49D3-AB3B-CA2ECCA22FD0"
       UpgradeCode="B7C263DD-95A5-436A-A025-DCA5200C2BE3"
       Version="{{ .Version }}"
       Manufacturer="Dynatrace LLC"
@@ -10,7 +10,7 @@
       <Package
          InstallerVersion="200"
          Compressed="yes"
-         Comments="Windows Installer Package"
+         Comments="Copyright Dynatrace LLC"
          InstallScope="perMachine"/>
       <Media Id="1" Cabinet="product.cab" EmbedCab="yes"/>
       <Icon Id="ProductIcon" SourceFile="opentelemetry.ico"/>
@@ -21,7 +21,7 @@
       <Property Id="ARPNOMODIFY" Value="1"/>
 
       <MajorUpgrade
-         DowngradeErrorMessage="A later version of OpenTelemetry Collector already installed. Setup will now exit."/>
+         DowngradeErrorMessage="A later version of the Dynatrace Distribution of the OpenTelemetry Collector already installed. Setup will now exit."/>
 
       <Feature Id="Feature" Level="1">
          <ComponentRef Id="ApplicationComponent"/>
@@ -39,7 +39,7 @@
 
       <Directory Id="TARGETDIR" Name="SourceDir">
          <Directory Id="ProgramFiles64Folder">
-            <Directory Id="INSTALLDIR" Name="OpenTelemetry Collector">
+            <Directory Id="INSTALLDIR" Name="DT OTel Collector">
                <Component Id="ApplicationComponent" Guid="1207C3C4-1830-4DC8-8A7B-2BD7DBE45BC3">
                   <!-- Files to include -->
                   <File
@@ -53,9 +53,9 @@
                      Source="config.yaml"/>
 
                   <ServiceInstall
-                     Id="Sevice"
+                     Id="Service"
                      Name="{{ .Binary }}"
-                     DisplayName="OpenTelemetry Collector"
+                     DisplayName="Dynatrace Distribution of the OpenTelemetry Collector"
                      Description="Collects, processes, and exports telemetry from various configurable sources."
                      Type="ownProcess"
                      Vital="yes"

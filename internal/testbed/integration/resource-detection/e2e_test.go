@@ -43,8 +43,10 @@ func TestE2E_ResourceDetectionProcessor(t *testing.T) {
 
 	tracesConsumer := new(consumertest.TracesSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Traces: &oteltest.TraceSinkConfig{
-			Consumer: tracesConsumer,
+		Traces: []*oteltest.TraceSinkConfig{
+			{
+				Consumer: tracesConsumer,
+			},
 		},
 	})
 	defer shutdownSinks()

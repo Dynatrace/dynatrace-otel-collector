@@ -45,25 +45,32 @@ func TestLoad_Combined(t *testing.T) {
 	metricsConsumer := new(consumertest.MetricsSink)
 	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Traces: &oteltest.TraceSinkConfig{
-			Consumer: tracesConsumer,
-			Ports: &oteltest.ReceiverPorts{
-				Grpc: 4327,
-				Http: 4427,
+		Traces: []*oteltest.TraceSinkConfig{
+			{
+				Consumer: tracesConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Grpc: 4327,
+					Http: 4427,
+				},
 			},
 		},
-		Metrics: &oteltest.MetricSinkConfig{
-			Consumer: metricsConsumer,
-			Ports: &oteltest.ReceiverPorts{
-				Grpc: 4328,
-				Http: 4428,
+		Metrics: []*oteltest.MetricSinkConfig{
+			{
+				Consumer: metricsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Grpc: 4328,
+					Http: 4428,
+				},
 			},
 		},
-		Logs: &oteltest.LogSinkConfig{
-			Consumer: logsConsumer,
-			Ports: &oteltest.ReceiverPorts{
-				Grpc: 4329,
-				Http: 4429,
+		Logs: []*oteltest.LogSinkConfig{
+			{
+
+				Consumer: logsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Grpc: 4329,
+					Http: 4429,
+				},
 			},
 		},
 	})
@@ -131,7 +138,7 @@ func TestLoad_Combined(t *testing.T) {
 		select {
 		case <-ticker.C:
 			i += 1
-			//fetch metrics data
+			// fetch metrics data
 			cpu, mem, err := k8stest.FetchPodMetrics(metricsClientSet, testNs, otelColPodName)
 			require.NoError(t, err)
 

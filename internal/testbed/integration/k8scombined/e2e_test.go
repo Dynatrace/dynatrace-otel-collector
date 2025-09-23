@@ -426,6 +426,10 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	for _, r := range logsConsumer.AllLogs() {
 		for i := 0; i < r.ResourceLogs().Len(); i++ {
+			clusterName, ok_cluster := r.ResourceLogs().At(i).Resource().Attributes().Get("k8s.cluster.name")
+			if !ok_cluster || clusterName.AsString() != "k8s-testing-cluster" {
+				break
+			}
 			sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
 			for j := 0; j < sm.Len(); j++ {
 				if sm.At(j).Body().Type() == pcommon.ValueTypeStr {

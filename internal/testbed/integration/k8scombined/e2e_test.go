@@ -4,8 +4,6 @@ package k8scombined
 
 import (
 	"fmt"
-	"go.opentelemetry.io/collector/pdata/pcommon"
-	"go.opentelemetry.io/collector/pdata/ptrace"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,11 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/consumer/consumertest"
-	"go.opentelemetry.io/collector/pdata/pmetric"
-
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
@@ -26,6 +19,12 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
 var (
@@ -297,10 +296,12 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 				},
 			},
 		},
-		Traces: &oteltest.TraceSinkConfig{
-			Consumer: tracesConsumerGateway,
-			Ports: &oteltest.ReceiverPorts{
-				Http: 4322,
+		Traces: []*oteltest.TraceSinkConfig{
+			{
+				Consumer: tracesConsumerGateway,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4322,
+				},
 			},
 		},
 	})

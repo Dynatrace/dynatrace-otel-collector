@@ -208,7 +208,7 @@ service:
     logs:
       receivers:
         - k8s_events
-      procesors:
+      processors:
         - transform
       exporters:
         - otlphttp`

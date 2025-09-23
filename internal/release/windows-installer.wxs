@@ -2,7 +2,7 @@
    <Product
       Name="Dynatrace Distribution of the OpenTelemetry Collector ({{ .Version }})"
       Id="B54F893B-A7D4-49D3-AB3B-CA2ECCA22FD0"
-      UpgradeCode="B7C263DD-95A5-436A-A025-DCA5200C2BE3"
+      UpgradeCode="6D1FB773-63F0-45F1-9FCB-8E0FCC4AF375"
       Version="{{ .Version }}"
       Manufacturer="Dynatrace LLC"
       Language="1033">
@@ -13,7 +13,7 @@
          Comments="Copyright Dynatrace LLC"
          InstallScope="perMachine"/>
       <Media Id="1" Cabinet="product.cab" EmbedCab="yes"/>
-      <Icon Id="ProductIcon" SourceFile="opentelemetry.ico"/>
+<!--       <Icon Id="ProductIcon" SourceFile="opentelemetry.ico"/> -->
       <Property Id="ARPPRODUCTICON" Value="ProductIcon"/>
       <Property Id="ARPHELPLINK" Value="https://opentelemetry.io/"/>
       <Property Id="ARPURLINFOABOUT" Value="https://opentelemetry.io/"/>
@@ -28,14 +28,6 @@
       </Feature>
 
       <Property Id="COLLECTOR_SVC_ARGS"/>
-      <CustomAction
-         Id="SetCollectorSvcArgs"
-         Property="COLLECTOR_SVC_ARGS"
-         Value="--config &quot;[INSTALLDIR]config.yaml&quot;"/>
-
-      <InstallExecuteSequence>
-         <Custom Action="SetCollectorSvcArgs" Before="InstallFiles">NOT COLLECTOR_SVC_ARGS</Custom>
-      </InstallExecuteSequence>
 
       <Directory Id="TARGETDIR" Name="SourceDir">
          <Directory Id="ProgramFiles64Folder">
@@ -47,10 +39,10 @@
                      Name="{{ .Binary }}.exe"
                      Source="{{ .Binary }}.exe"
                      KeyPath="yes"/>
-                  <File
-                     Id="config.yaml"
-                     Name="config.yaml"
-                     Source="config.yaml"/>
+<!--                   <File -->
+<!--                      Id="config.yaml" -->
+<!--                      Name="config.yaml" -->
+<!--                      Source="config.yaml"/> -->
 
                   <ServiceInstall
                      Id="Service"

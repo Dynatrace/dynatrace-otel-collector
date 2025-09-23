@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temeletrygen-traces-deployment
+  namespace: e2eloadbalancing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temeletrygen-traces-deployment
+  template:
+    metadata:
+      annotations:
+        workload: deployment
+      labels:
+        app: temeletrygen-traces-deployment
+    spec:
+      containers:
+      - command:
+        - /telemetrygen
+        - traces
+        - --otlp-insecure
+        - --otlp-endpoint={{ .OTLPEndpoint }}
+        - --duration=36000s
+        - --rate=1
+        - --otlp-attributes=service.name="test-traces-deployment"
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+        imagePullPolicy: IfNotPresent
+        name: telemetrygen
+      restartPolicy: Always

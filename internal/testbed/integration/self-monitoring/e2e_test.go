@@ -88,8 +88,10 @@ func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes 
 
 	metricsConsumer := new(consumertest.MetricsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Metrics: &oteltest.MetricSinkConfig{
-			Consumer: metricsConsumer,
+		Metrics: []*oteltest.MetricSinkConfig{
+			{
+				Consumer: metricsConsumer,
+			},
 		},
 	})
 	defer shutdownSinks()
@@ -202,8 +204,10 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 
 	metricsConsumer := new(consumertest.MetricsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Metrics: &oteltest.MetricSinkConfig{
-			Consumer: metricsConsumer,
+		Metrics: []*oteltest.MetricSinkConfig{
+			{
+				Consumer: metricsConsumer,
+			},
 		},
 	})
 	defer shutdownSinks()

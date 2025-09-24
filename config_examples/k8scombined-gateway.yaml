@@ -63,6 +63,10 @@ processors:
           - merge_maps(attributes, ParseJSON(attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(attributes["metadata.dynatrace.com"], "^\\{")
           - delete_key(attributes, "metadata.dynatrace.com")
     metric_statements: *dynatrace_transformations
+    log_statements:
+      - context: resource
+        statements:
+          - set(attributes["k8s.cluster.name"], "${env:CLUSTER_NAME}")
   k8sattributes:
     filter:
       node_from_env_var: K8S_NODE_NAME
@@ -141,5 +145,7 @@ service:
     logs:
       receivers:
         - k8s_events
+      processors:
+        - transform
       exporters:
         - otlphttp

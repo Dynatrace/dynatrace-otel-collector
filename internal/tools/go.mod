@@ -5,7 +5,7 @@ go 1.25.1
 require (
 	github.com/sigstore/cosign/v2 v2.6.0
 	go.opentelemetry.io/build-tools/chloggen v0.28.0
-	go.opentelemetry.io/collector/cmd/builder v0.135.0
+	go.opentelemetry.io/collector/cmd/builder v0.136.0
 )
 
 require (
@@ -179,7 +179,7 @@ require (
 	github.com/knadh/koanf/providers/env/v2 v2.0.0 // indirect
 	github.com/knadh/koanf/providers/file v1.2.0 // indirect
 	github.com/knadh/koanf/providers/fs v1.0.0 // indirect
-	github.com/knadh/koanf/v2 v2.2.2 // indirect
+	github.com/knadh/koanf/v2 v2.3.0 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lestrrat-go/blackmagic v1.0.4 // indirect
 	github.com/lestrrat-go/httpcc v1.0.1 // indirect

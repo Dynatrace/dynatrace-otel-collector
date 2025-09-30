@@ -6,4 +6,4 @@ This directory contains pre-configured dashboards for the Dynatrace OpenTelemetr
 
 These dashboards can be imported in the [Dashboards App](https://docs.dynatrace.com/docs/shortlink/dashboards) in your Dynatrace tenant and you can further tailor them to your needs.
 
-Beyond that, Dynatrace features built-in dashboards as part of the [OpenTelemetry Dashboards App](https://www.dynatrace.com/hub/detail/opentelemetry-dashboards/), available for direct installation in your tenant via [Dynatrace Hub](https://docs.dynatrace.com/docs/shortlink/hub).
+Beyond that, Dynatrace features ready-made dashboards as part of the [OpenTelemetry Dashboards App](https://www.dynatrace.com/hub/detail/opentelemetry-dashboards/), available for direct installation in your tenant via [Dynatrace Hub](https://docs.dynatrace.com/docs/shortlink/hub).

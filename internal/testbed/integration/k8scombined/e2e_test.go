@@ -380,7 +380,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	t.Logf("Checking agent metrics...")
 
-	oteltest.WaitForMetrics(t, 5, metricsConsumerAgent)
+	oteltest.WaitForMetrics(t, 10, metricsConsumerAgent)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedAgentFile, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1]))

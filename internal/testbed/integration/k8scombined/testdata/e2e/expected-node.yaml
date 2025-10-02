@@ -4,12 +4,15 @@ resourceMetrics:
         - key: k8s.node.name
           value:
             stringValue: kind-worker2
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
     scopeMetrics:
       - metrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: k8s.node.cpu.time
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asDouble: 15.338967
                   startTimeUnixNano: "1000000"
@@ -99,7 +102,7 @@ resourceMetrics:
           - description: Node network errors
             name: k8s.node.network.errors
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asInt: "0"
                   attributes:
@@ -126,7 +129,7 @@ resourceMetrics:
           - description: Node network IO
             name: k8s.node.network.io
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asInt: "1067766"
                   attributes:
@@ -158,9 +161,15 @@ resourceMetrics:
         - key: k8s.cluster.uid
           value:
             stringValue: a3a0ed9d-1b49-45d1-9ac0-6974233e2c58
-        - key: k8s.daemonset.name
+        - key: k8s.workload.name
           value:
             stringValue: kindnet
+        - key: k8s.workload.kind
+          value:
+            stringValue: daemonset
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
         - key: k8s.namespace.name
           value:
             stringValue: kube-system
@@ -184,7 +193,7 @@ resourceMetrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: k8s.pod.cpu.time
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asDouble: 0.190315
                   startTimeUnixNano: "1000000"
@@ -274,7 +283,7 @@ resourceMetrics:
           - description: Pod network errors
             name: k8s.pod.network.errors
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asInt: "0"
                   attributes:
@@ -301,7 +310,7 @@ resourceMetrics:
           - description: Pod network IO
             name: k8s.pod.network.io
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asInt: "1066956"
                   attributes:
@@ -333,9 +342,15 @@ resourceMetrics:
         - key: k8s.cluster.uid
           value:
             stringValue: a3a0ed9d-1b49-45d1-9ac0-6974233e2c58
-        - key: k8s.daemonset.name
+        - key: k8s.workload.name
           value:
             stringValue: kube-proxy
+        - key: k8s.workload.kind
+          value:
+            stringValue: daemonset
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
         - key: k8s.namespace.name
           value:
             stringValue: kube-system
@@ -359,7 +374,7 @@ resourceMetrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: k8s.pod.cpu.time
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asDouble: 0.216918
                   startTimeUnixNano: "1000000"
@@ -441,7 +456,7 @@ resourceMetrics:
           - description: Pod network errors
             name: k8s.pod.network.errors
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asInt: "0"
                   attributes:
@@ -468,7 +483,7 @@ resourceMetrics:
           - description: Pod network IO
             name: k8s.pod.network.io
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asInt: "1069627"
                   attributes:
@@ -500,9 +515,15 @@ resourceMetrics:
         - key: k8s.cluster.uid
           value:
             stringValue: a3a0ed9d-1b49-45d1-9ac0-6974233e2c58
-        - key: k8s.daemonset.name
+        - key: k8s.workload.name
           value:
             stringValue: otelcol-q6xvrrh9d2
+        - key: k8s.workload.kind
+          value:
+            stringValue: daemonset
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
         - key: k8s.namespace.name
           value:
             stringValue: e2ek8scombined
@@ -526,7 +547,7 @@ resourceMetrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: k8s.pod.cpu.time
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asDouble: 0.998111
                   startTimeUnixNano: "1000000"
@@ -616,7 +637,7 @@ resourceMetrics:
           - description: Pod network errors
             name: k8s.pod.network.errors
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asInt: "0"
                   attributes:
@@ -643,7 +664,7 @@ resourceMetrics:
           - description: Pod network IO
             name: k8s.pod.network.io
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asInt: "105168"
                   attributes:
@@ -678,9 +699,15 @@ resourceMetrics:
         - key: k8s.container.name
           value:
             stringValue: kindnet-cni
-        - key: k8s.daemonset.name
+        - key: k8s.workload.name
           value:
             stringValue: kindnet
+        - key: k8s.workload.kind
+          value:
+            stringValue: daemonset
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
         - key: k8s.namespace.name
           value:
             stringValue: kube-system
@@ -701,7 +728,7 @@ resourceMetrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: container.cpu.time
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asDouble: 0.182306
                   startTimeUnixNano: "1000000"
@@ -799,9 +826,15 @@ resourceMetrics:
         - key: k8s.container.name
           value:
             stringValue: kube-proxy
-        - key: k8s.daemonset.name
+        - key: k8s.workload.name
           value:
             stringValue: kube-proxy
+        - key: k8s.workload.kind
+          value:
+            stringValue: daemonset
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
         - key: k8s.namespace.name
           value:
             stringValue: kube-system
@@ -822,7 +855,7 @@ resourceMetrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: container.cpu.time
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asDouble: 0.212561
                   startTimeUnixNano: "1000000"
@@ -912,9 +945,15 @@ resourceMetrics:
         - key: k8s.container.name
           value:
             stringValue: opentelemetry-collector
-        - key: k8s.daemonset.name
+        - key: k8s.workload.name
           value:
             stringValue: otelcol-q6xvrrh9d2
+        - key: k8s.workload.kind
+          value:
+            stringValue: daemonset
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
         - key: k8s.namespace.name
           value:
             stringValue: e2ek8scombined
@@ -935,7 +974,7 @@ resourceMetrics:
           - description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
             name: container.cpu.time
             sum:
-              aggregationTemporality: 2
+              aggregationTemporality: 1
               dataPoints:
                 - asDouble: 0.96939
                   startTimeUnixNano: "1000000"

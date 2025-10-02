@@ -7,6 +7,12 @@ extensions:
     lease_namespace: e2ek8scombined
 
 receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+  k8s_events:
+    auth_type: "serviceAccount"
   kubeletstats:
     auth_type: "serviceAccount"
     collection_interval: 10s
@@ -45,13 +51,13 @@ receivers:
 processors:
   cumulativetodelta:
   filter:
-        error_mode: ignore
-        metrics:
-          metric:
-              - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
-              - 'resource.attributes["k8s.volume.type"] == "configMap"'
-              - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
-              - 'resource.attributes["k8s.volume.type"] == "secret"'
+    error_mode: ignore
+    metrics:
+      metric:
+        - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
+        - 'resource.attributes["k8s.volume.type"] == "configMap"'
+        - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
+        - 'resource.attributes["k8s.volume.type"] == "secret"'
   transform:
     error_mode: ignore
     trace_statements: &dynatrace_transformations
@@ -157,5 +163,20 @@ service:
         - k8sattributes
         - transform
         - cumulativetodelta
+      exporters:
+        - otlphttp
+    logs:
+      receivers:
+        - k8s_events
+      processors:
+        - transform
+      exporters:
+        - otlphttp
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - k8sattributes
+        - transform
       exporters:
         - otlphttp

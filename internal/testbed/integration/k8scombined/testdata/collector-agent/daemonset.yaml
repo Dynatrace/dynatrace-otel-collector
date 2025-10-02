@@ -17,10 +17,9 @@ spec:
       serviceAccountName: {{ .Name }}
       containers:
         - name: opentelemetry-collector
-          command:
-            - /dynatrace-otel-collector
+          args:
             - --config=/conf/relay.yaml
-          image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
+          image: "otel/opentelemetry-collector-contrib:0.136.0"
           env:
             - name: MY_POD_IP
               valueFrom:
@@ -35,6 +34,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: CLUSTER_NAME
+              value: "k8s-testing-cluster"
           livenessProbe:
             httpGet:
               path: /

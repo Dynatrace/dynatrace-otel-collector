@@ -1,17 +1,31 @@
 extensions:
   health_check:
     endpoint: 0.0.0.0:13133
+  k8s_leader_elector:
+    auth_type: "serviceAccount"
+    lease_name: foo
+    lease_namespace: e2ek8scombined
 
 receivers:
-  otlp:
-    protocols:
-      grpc:
-        endpoint: 0.0.0.0:4317
-  k8s_events:
+  kubeletstats:
     auth_type: "serviceAccount"
+    collection_interval: 10s
+    node: '${env:K8S_NODE_NAME}'
+    extra_metadata_labels:
+      - k8s.volume.type
+    k8s_api_config:
+      auth_type: "serviceAccount"
+    endpoint: "https://${env:K8S_NODE_NAME}:10250"
+    insecure_skip_verify: true
+    metric_groups:
+      - node
+      - pod
+      - container
+      - volume
   k8s_cluster:
     auth_type: "serviceAccount"
     collection_interval: 10s
+    k8s_leader_elector: k8s_leader_elector
     allocatable_types_to_report:
       - cpu
       - memory
@@ -30,6 +44,14 @@ receivers:
 
 processors:
   cumulativetodelta:
+  filter:
+        error_mode: ignore
+        metrics:
+          metric:
+              - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
+              - 'resource.attributes["k8s.volume.type"] == "configMap"'
+              - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
+              - 'resource.attributes["k8s.volume.type"] == "secret"'
   transform:
     error_mode: ignore
     trace_statements: &dynatrace_transformations
@@ -116,19 +138,14 @@ exporters:
 service:
   extensions:
     - health_check
+    - k8s_leader_elector
   pipelines:
-    traces:
+    metrics/node:
       receivers:
-        - otlp
+        - kubeletstats
       processors:
+        - filter
         - k8sattributes
-        - transform
-      exporters:
-        - otlphttp
-    metrics/forward:
-      receivers:
-        - otlp
-      processors:
         - transform
         - cumulativetodelta
       exporters:
@@ -140,12 +157,5 @@ service:
         - k8sattributes
         - transform
         - cumulativetodelta
-      exporters:
-        - otlphttp
-    logs:
-      receivers:
-        - k8s_events
-      processors:
-        - transform
       exporters:
         - otlphttp

@@ -1,3 +1,5 @@
+//go:build e2e
+
 package k8scombined
 
 import (
@@ -133,8 +135,7 @@ var (
 		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
 	}
 
-	templateOriginFilterProc = `processors:
-  filter:
+	templateOriginFilterProc = `  filter:
     error_mode: ignore
     metrics:
       metric:
@@ -143,8 +144,7 @@ var (
         - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
         - 'resource.attributes["k8s.volume.type"] == "secret"'`
 
-	templateNewFilterProc = `processors:
-  filter:
+	templateNewFilterProc = `  filter:
     error_mode: ignore
     metrics:
       metric:
@@ -181,18 +181,45 @@ service:
         - transform
         - cumulativetodelta
       exporters:
+        - otlphttp
+    logs:
+      receivers:
+        - k8s_events
+      processors:
+        - transform
+      exporters:
+        - otlphttp
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - k8sattributes
+        - transform
+      exporters:
         - otlphttp`
 	templateNew = `
   otlphttp/node:
     endpoint: http://%s:4321
   otlphttp/cluster:
     endpoint: http://%s:4320
+  otlphttp/traces:
+    endpoint: http://%s:4322
+  otlphttp/logs:
+    endpoint: http://%s:4319
 
 service:
   extensions:
     - health_check
     - k8s_leader_elector
   pipelines:
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - k8sattributes
+        - transform
+      exporters:
+        - otlphttp/traces
     metrics/node:
       receivers:
         - kubeletstats
@@ -211,13 +238,20 @@ service:
         - transform
         - cumulativetodelta
       exporters:
-        - otlphttp/cluster`
+        - otlphttp/cluster
+    logs:
+      receivers:
+        - k8s_events
+      processors:
+        - transform
+      exporters:
+        - otlphttp/logs`
 )
 
 func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	expectedClusterFile := testDir + "/e2e/expected-cluster.yaml"
-	expectedClusterTracesFile := testDir + "/e2e/expected-traces.yaml"
+	expectedTracesFile := testDir + "/e2e/expected-traces.yaml"
 	expectedNodeFile := testDir + "/e2e/expected-node.yaml"
 	configExamplesDir := "../../../../config_examples"
 
@@ -300,7 +334,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 			templateOriginFilterProc,
 			templateNewFilterProc,
 			templateOrigin,
-			fmt.Sprintf(templateNew, host, host),
+			fmt.Sprintf(templateNew, host, host, host, host),
 		},
 	})
 
@@ -368,8 +402,6 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	t.Logf("Cluster metrics checked successfully")
 
-	return
-
 	// create deployment for trace generation
 	deploymentFile := filepath.Join(testDir, "testobjects", "deployment.yaml")
 	buf, err = os.ReadFile(deploymentFile)
@@ -409,13 +441,15 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	t.Logf("Logs checked successfully")
 
-	t.Log("Checking traces...")
+	t.Log("Waiting for traces...")
 	oteltest.WaitForTraces(t, 1, tracesConsumer)
 
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteTraces(t, expectedClusterTracesFile, tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]))
+	t.Log("Checking traces...")
 
-	expectedTraces, err := golden.ReadTraces(expectedClusterTracesFile)
+	// the commented line below writes the received list of metrics to the expected.yaml
+	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]))
+
+	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
 	require.NoError(t, err)
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

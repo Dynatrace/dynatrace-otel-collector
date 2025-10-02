@@ -1072,9 +1072,15 @@ resourceMetrics:
         - key: k8s.container.name
           value:
             stringValue: kube-proxy
-        - key: k8s.daemonset.name
+        - key: k8s.workload.name
           value:
             stringValue: kube-proxy
+        - key: k8s.workload.kind
+          value:
+            stringValue: daemonset
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
         - key: k8s.namespace.name
           value:
             stringValue: kube-system
@@ -1149,9 +1155,15 @@ resourceMetrics:
         - key: k8s.container.name
           value:
             stringValue: opentelemetry-collector
-        - key: k8s.daemonset.name
+        - key: k8s.workload.name
           value:
             stringValue: otelcol-ju5odfcjgf
+        - key: k8s.workload.kind
+          value:
+            stringValue: daemonset
+        - key: k8s.cluster.name
+          value:
+            stringValue: k8s-testing-cluster
         - key: k8s.namespace.name
           value:
             stringValue: e2ek8scombined

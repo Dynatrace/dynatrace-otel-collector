@@ -323,11 +323,11 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		shutdownSinks2()
 	}()
 
-	// create agent collector
+	// create collector
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
 	host := otelk8stest.HostEndpoint(t)
-	collectorConfigPath := path.Join(configExamplesDir, "k8scombined-gateway.yaml")
+	collectorConfigPath := path.Join(configExamplesDir, "k8scombined.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
@@ -343,7 +343,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		t,
 		k8sClient,
 		testID,
-		filepath.Join(testDir, "collector-agent"),
+		filepath.Join(testDir, "collector"),
 		map[string]string{
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 			"CollectorConfig":   collectorConfig,

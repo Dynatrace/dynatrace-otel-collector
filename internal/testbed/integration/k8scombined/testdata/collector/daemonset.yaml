@@ -59,7 +59,7 @@ spec:
       volumes:
         - name: opentelemetry-collector-configmap
           configMap:
-            name: {{ .Name }}-agent-config
+            name: {{ .Name }}-config
             items:
               - key: relay
                 path: relay.yaml

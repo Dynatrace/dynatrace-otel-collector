@@ -136,6 +136,25 @@ var (
 		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
 	}
 
+	templateAgentOriginFilterProc = `processors:
+  filter:
+    error_mode: ignore
+    metrics:
+      metric:
+        - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
+        - 'resource.attributes["k8s.volume.type"] == "configMap"'
+        - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
+        - 'resource.attributes["k8s.volume.type"] == "secret"'`
+
+	templateAgentNewFilterProc = `processors:
+  filter:
+    error_mode: ignore
+    metrics:
+      metric:
+        - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
+        - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
+        - 'resource.attributes["k8s.volume.type"] == "secret"'`
+
 	templateAgentOrigin = `
   otlp:
     endpoint: otelcolsvc:4317
@@ -333,6 +352,8 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
+			templateAgentOriginFilterProc,
+			templateAgentNewFilterProc,
 			templateAgentOrigin,
 			fmt.Sprintf(templateAgentNew, host),
 		},
@@ -359,7 +380,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	t.Logf("Checking agent metrics...")
 
-	oteltest.WaitForMetrics(t, 5, metricsConsumerAgent)
+	oteltest.WaitForMetrics(t, 10, metricsConsumerAgent)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedAgentFile, metricsConsumerAgent.AllMetrics()[len(metricsConsumerAgent.AllMetrics())-1]))

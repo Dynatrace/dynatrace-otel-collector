@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Name }}-agent-config
+  name: {{ .Name }}-config
   namespace: e2ek8scombined
 data:
   relay: |

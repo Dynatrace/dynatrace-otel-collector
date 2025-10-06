@@ -168,9 +168,9 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 		)
 	}, 3*time.Minute, 1*time.Second)
 
-	b, err := golden.MarshalMetricsYAML(metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1])
-	require.NoError(t, err)
-	t.Log("Received metrics:\n", string(b))
+	// b, err := golden.MarshalMetricsYAML(testutil.MergeResources(metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	// require.NoError(t, err)
+	// t.Log("Received metrics:\n", string(b))
 
 	t.Log("Host metrics checked successfully")
 }

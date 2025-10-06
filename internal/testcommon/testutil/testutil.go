@@ -353,23 +353,19 @@ func GenerateRandomString(length int) (string, error) {
 func MergeResources(m pmetric.Metrics) pmetric.Metrics {
 	new := pmetric.NewMetrics()
 	for i := 0; i < m.ResourceMetrics().Len(); i++ {
-		rm := m.ResourceMetrics().At(i)
-		attrsHash := pdatautil.MapHash(rm.Resource().Attributes())
+		attrsHash := pdatautil.MapHash(m.ResourceMetrics().At(i).Resource().Attributes())
 		found := false
 		for j := 0; j < new.ResourceMetrics().Len(); j++ {
-			existingRm := new.ResourceMetrics().At(j)
-			if pdatautil.MapHash(existingRm.Resource().Attributes()) == attrsHash {
-				rm.ScopeMetrics().MoveAndAppendTo(existingRm.ScopeMetrics())
+			if pdatautil.MapHash(new.ResourceMetrics().At(j).Resource().Attributes()) == attrsHash {
+				m.ResourceMetrics().At(i).ScopeMetrics().MoveAndAppendTo(new.ResourceMetrics().At(j).ScopeMetrics())
 				found = true
 				break
 			}
 		}
 		if !found {
-			newRm := new.ResourceMetrics().AppendEmpty()
-			rm.CopyTo(newRm)
+			m.ResourceMetrics().At(i).MoveTo(new.ResourceMetrics().AppendEmpty())
 		}
 	}
 
-	m = new
-	return m
+	return new
 }

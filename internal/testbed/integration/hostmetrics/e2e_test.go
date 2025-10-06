@@ -101,8 +101,6 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	defaultOptions := []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
-		pmetrictest.IgnoreExemplars(),
-		pmetrictest.IgnoreExemplarSlice(),
 		pmetrictest.IgnoreMetricValues(
 			"system.uptime",
 			"system.paging.faults",

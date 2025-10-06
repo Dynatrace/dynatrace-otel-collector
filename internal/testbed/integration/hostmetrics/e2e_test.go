@@ -92,7 +92,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	t.Log("Checking host metrics...")
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	require.Nil(t, golden.WriteMetrics(t, expectedFile, testutil.MergeResources(metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1])))
+	// require.Nil(t, golden.WriteMetrics(t, expectedFile, testutil.MergeResources(metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1])))
 
 	var expected pmetric.Metrics
 	expected, err = golden.ReadMetrics(expectedFile)

@@ -370,5 +370,6 @@ func MergeResources(m pmetric.Metrics) pmetric.Metrics {
 		}
 	}
 
-	return new
+	m = new
+	return m
 }

@@ -2,11 +2,10 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/tools
 
 go 1.25.1
 
-require (
-	github.com/sigstore/cosign/v2 v2.6.1
-	github.com/sigstore/cosign/v3 v3.0.1
-	go.opentelemetry.io/build-tools/chloggen v0.28.1
-	go.opentelemetry.io/collector/cmd/builder v0.137.0
+tool (
+	github.com/sigstore/cosign/v3
+	go.opentelemetry.io/build-tools/chloggen
+	go.opentelemetry.io/collector/cmd/builder
 )
 
 require (

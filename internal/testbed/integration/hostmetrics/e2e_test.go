@@ -162,7 +162,10 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expected, testutil.MergeResources(metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]),
+		b, err := golden.MarshalMetricsYAML(metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1])
+		require.NoError(t, err)
+		t.Log("Received metrics:\n", string(b))
+		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1],
 			defaultOptions...,
 		),
 		)

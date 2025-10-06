@@ -11,10 +11,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/featuregate"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 	"gopkg.in/yaml.v3"
 )
 
@@ -346,4 +348,27 @@ func GenerateRandomString(length int) (string, error) {
 		result[i] = charset[num.Int64()]
 	}
 	return string(result), nil
+}
+
+func MergeResources(m pmetric.Metrics) pmetric.Metrics {
+	new := pmetric.NewMetrics()
+	for i := 0; i < m.ResourceMetrics().Len(); i++ {
+		rm := m.ResourceMetrics().At(i)
+		attrsHash := pdatautil.MapHash(rm.Resource().Attributes())
+		found := false
+		for j := 0; j < new.ResourceMetrics().Len(); j++ {
+			existingRm := new.ResourceMetrics().At(j)
+			if pdatautil.MapHash(existingRm.Resource().Attributes()) == attrsHash {
+				rm.ScopeMetrics().MoveAndAppendTo(existingRm.ScopeMetrics())
+				found = true
+				break
+			}
+		}
+		if !found {
+			newRm := new.ResourceMetrics().AppendEmpty()
+			rm.CopyTo(newRm)
+		}
+	}
+
+	return new
 }

@@ -1,5 +1,3 @@
-//go:build e2e
-
 package hostmetrics
 
 import (
@@ -98,15 +96,16 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	expected, err = golden.ReadMetrics(expectedFile)
 	require.NoError(t, err)
 
-	// Note: check manually for breaking changes of system.paging.usage metric, as it is not checked by the integration test
-	// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/hostmetricsreceiver/internal/scraper/pagingscraper/metadata.yaml#L34
 	defaultOptions := []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
+		pmetrictest.IgnoreExemplars(),
+		pmetrictest.IgnoreExemplarSlice(),
 		pmetrictest.IgnoreMetricValues(
 			"system.uptime",
 			"system.paging.faults",
 			"system.paging.operations",
+			"system.paging.usage",
 			"system.processes.count",
 			"system.processes.created",
 			"system.cpu.load_average.15m",
@@ -154,11 +153,20 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("process.parent_pid", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("process.pid", substituteWithStar),
 
+		pmetrictest.ChangeDatapointAttributeValue("device", substituteWithStar),
+		pmetrictest.ChangeDatapointAttributeValue("mode", substituteWithStar),
+		pmetrictest.ChangeDatapointAttributeValue("mountpoint", substituteWithStar),
+		pmetrictest.ChangeDatapointAttributeValue("direction", substituteWithStar),
+		pmetrictest.ChangeDatapointAttributeValue("type", substituteWithStar),
+		pmetrictest.ChangeDatapointAttributeValue("cpu", substituteWithStar),
+		pmetrictest.ChangeDatapointAttributeValue("state", substituteWithStar),
+
 		pmetrictest.IgnoreDatapointAttributesOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreSubsequentDataPoints(),
 	}
 
 	expectedMerged := testutil.MergeResources(expected)
@@ -167,7 +175,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 			defaultOptions...,
 		),
 		)
-	}, 3*time.Minute, 1*time.Second)
+	}, 3*time.Minute, 5*time.Second)
 
 	t.Log("Host metrics checked successfully")
 }

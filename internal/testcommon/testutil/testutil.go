@@ -350,7 +350,9 @@ func GenerateRandomString(length int) (string, error) {
 	return string(result), nil
 }
 
-func MergeResources(m pmetric.Metrics) pmetric.Metrics {
+func MergeResources(metrics pmetric.Metrics) pmetric.Metrics {
+	m := pmetric.NewMetrics()
+	metrics.CopyTo(m)
 	new := pmetric.NewMetrics()
 	for i := 0; i < m.ResourceMetrics().Len(); i++ {
 		attrsHash := pdatautil.MapHash(m.ResourceMetrics().At(i).Resource().Attributes())

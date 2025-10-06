@@ -17,10 +17,9 @@ spec:
       serviceAccountName: {{ .Name }}
       containers:
         - name: opentelemetry-collector
-          command:
-            - /dynatrace-otel-collector
-            - --config=/conf/relay.yaml
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
+          args:
+            - --config=/conf/relay.yaml
           ports:
             - name: otlp
               containerPort: 4317

@@ -1,536 +1,524 @@
 resourceMetrics:
   - resource:
       attributes:
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
         - key: host.arch
           value:
-            stringValue: arm64
+            stringValue: amd64
         - key: host.ip
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.19
-                - stringValue: fe80::7800:4fff:fe7b:af67
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: 7A-00-4F-7B-AF-67
-        - key: host.name
-          value:
-            stringValue: otelcol-yv6m7j5s5r-5t5d7
-        - key: os.type
-          value:
-            stringValue: linux
+                - stringValue: 92-F5-4A-97-AE-5A
     schemaUrl: https://opentelemetry.io/schemas/1.9.0
     scopeMetrics:
-      - metrics:
-          - description: The time the system has been running
-            gauge:
-              dataPoints:
-                - asDouble: 112530
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: system.uptime
-            unit: s
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/systemscraper
-          version: 0.136.0
       - metrics:
           - description: FileSystem inodes used.
             name: system.filesystem.inodes.usage
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "51752343"
+                - asInt: "1036635"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: ro
                     - key: mountpoint
                       value:
                         stringValue: /conf
-                    - key: state
-                      value:
-                        stringValue: free
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "413737"
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "8662693"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: ro
                     - key: mountpoint
                       value:
                         stringValue: /conf
-                    - key: state
-                      value:
-                        stringValue: used
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "51752343"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /dev/termination-log
+                        stringValue: ext4
                     - key: state
                       value:
                         stringValue: free
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "413737"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "1036635"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /dev/termination-log
-                    - key: state
-                      value:
-                        stringValue: used
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "51752343"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /etc/hostname
-                    - key: state
-                      value:
-                        stringValue: free
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "413737"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /etc/hostname
-                    - key: state
-                      value:
-                        stringValue: used
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "51752343"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: rw
                     - key: mountpoint
                       value:
                         stringValue: /etc/hosts
-                    - key: state
-                      value:
-                        stringValue: free
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "413737"
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "8662693"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: rw
                     - key: mountpoint
                       value:
                         stringValue: /etc/hosts
-                    - key: state
-                      value:
-                        stringValue: used
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "51752343"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /etc/resolv.conf
+                        stringValue: ext4
                     - key: state
                       value:
                         stringValue: free
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "413737"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "1036635"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "8662693"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "1036635"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "8662693"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "1036635"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: rw
                     - key: mountpoint
                       value:
                         stringValue: /etc/resolv.conf
+                    - key: type
+                      value:
+                        stringValue: ext4
                     - key: state
                       value:
                         stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "8662693"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/resolv.conf
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: '{inodes}'
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+            unit: "{inodes}"
           - description: Filesystem bytes used.
             name: system.filesystem.usage
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "73675673600"
+                - asInt: "59752452096"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: ro
                     - key: mountpoint
                       value:
                         stringValue: /conf
-                    - key: state
-                      value:
-                        stringValue: free
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "17117925376"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: ro
                     - key: mountpoint
                       value:
                         stringValue: /conf
-                    - key: state
-                      value:
-                        stringValue: reserved
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "33093459968"
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "16777216"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: ro
                     - key: mountpoint
                       value:
                         stringValue: /conf
-                    - key: state
-                      value:
-                        stringValue: used
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "73675673600"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /dev/termination-log
-                    - key: state
-                      value:
-                        stringValue: free
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /dev/termination-log
+                        stringValue: ext4
                     - key: state
                       value:
                         stringValue: reserved
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "33093459968"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "59752452096"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /dev/termination-log
-                    - key: state
-                      value:
-                        stringValue: used
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "73675673600"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /etc/hostname
-                    - key: state
-                      value:
-                        stringValue: free
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /etc/hostname
-                    - key: state
-                      value:
-                        stringValue: reserved
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "33093459968"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /etc/hostname
-                    - key: state
-                      value:
-                        stringValue: used
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "73675673600"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: rw
                     - key: mountpoint
                       value:
                         stringValue: /etc/hosts
-                    - key: state
-                      value:
-                        stringValue: free
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "17117925376"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: rw
                     - key: mountpoint
                       value:
                         stringValue: /etc/hosts
-                    - key: state
-                      value:
-                        stringValue: reserved
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "33093459968"
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "16777216"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: rw
                     - key: mountpoint
                       value:
                         stringValue: /etc/hosts
-                    - key: state
-                      value:
-                        stringValue: used
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "73675673600"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /etc/resolv.conf
-                    - key: state
-                      value:
-                        stringValue: free
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /etc/resolv.conf
+                        stringValue: ext4
                     - key: state
                       value:
                         stringValue: reserved
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "33093459968"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "59752452096"
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "17117925376"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "16777216"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: reserved
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "59752452096"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "17117925376"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "16777216"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: reserved
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "59752452096"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: rw
                     - key: mountpoint
                       value:
                         stringValue: /etc/resolv.conf
+                    - key: type
+                      value:
+                        stringValue: ext4
                     - key: state
                       value:
                         stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "17117925376"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/resolv.conf
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asInt: "16777216"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/resolv.conf
+                    - key: type
+                      value:
+                        stringValue: ext4
+                    - key: state
+                      value:
+                        stringValue: reserved
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
             unit: By
           - description: Fraction of filesystem bytes used.
             gauge:
               dataPoints:
-                - asDouble: 0.30995343749720666
+                - asDouble: 0.7773144098032406
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: ro
@@ -539,46 +527,14 @@ resourceMetrics:
                         stringValue: /conf
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.30995343749720666
+                        stringValue: ext4
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asDouble: 0.7773144098032406
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /dev/termination-log
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.30995343749720666
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
-                    - key: mode
-                      value:
-                        stringValue: rw
-                    - key: mountpoint
-                      value:
-                        stringValue: /etc/hostname
-                    - key: type
-                      value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.30995343749720666
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: rw
@@ -587,14 +543,46 @@ resourceMetrics:
                         stringValue: /etc/hosts
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.30995343749720666
+                        stringValue: ext4
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asDouble: 0.7773144098032406
                   attributes:
                     - key: device
                       value:
-                        stringValue: /dev/vda4
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: type
+                      value:
+                        stringValue: ext4
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asDouble: 0.7773144098032406
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
+                    - key: mode
+                      value:
+                        stringValue: rw
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: type
+                      value:
+                        stringValue: ext4
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
+                - asDouble: 0.7773144098032406
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /dev/sda1
                     - key: mode
                       value:
                         stringValue: rw
@@ -603,39 +591,83 @@ resourceMetrics:
                         stringValue: /etc/resolv.conf
                     - key: type
                       value:
-                        stringValue: xfs
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                        stringValue: ext4
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220274570"
             name: system.filesystem.utilization
             unit: "1"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/filesystemscraper
           version: 0.136.0
+  - resource:
+      attributes:
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 92-F5-4A-97-AE-5A
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
       - metrics:
           - description: Number of available logical CPUs.
             name: system.cpu.logical.count
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "6"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: '{cpu}'
+                - asInt: "4"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+            unit: "{cpu}"
           - description: Number of available physical CPUs.
             name: system.cpu.physical.count
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "6"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: '{cpu}'
+                - asInt: "2"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+            unit: "{cpu}"
           - description: Total seconds each logical CPU spent on each mode.
             name: system.cpu.time
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 9.669999999998254
+                - asDouble: 0.0799999999999983
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu0
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.10999999999999943
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu0
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 9.720000000000027
                   attributes:
                     - key: cpu
                       value:
@@ -643,9 +675,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.11000000000012733
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -653,8 +685,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -663,9 +695,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.01999999999998181
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -673,8 +705,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -683,28 +715,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.07999999999992724
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu0
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.10000000000013642
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu0
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -713,9 +725,29 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 9.669999999998254
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.09000000000000341
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.08999999999999986
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 9.710000000000036
                   attributes:
                     - key: cpu
                       value:
@@ -723,9 +755,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.11000000000012733
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -733,8 +765,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -743,9 +775,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009999999999990905
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -753,8 +785,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -763,28 +795,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08000000000015461
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08999999999991815
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -793,9 +805,29 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 9.690000000002328
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.09000000000000341
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.08999999999999986
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 9.729999999999961
                   attributes:
                     - key: cpu
                       value:
@@ -803,9 +835,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.10999999999989996
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -813,8 +845,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -823,9 +855,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009999999999990905
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.009999999999999981
                   attributes:
                     - key: cpu
                       value:
@@ -833,8 +865,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -843,28 +875,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.06999999999993634
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu2
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08999999999991815
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu2
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -873,9 +885,29 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 9.639999999999418
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.09000000000000341
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu3
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.05999999999999872
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu3
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 9.759999999999991
                   attributes:
                     - key: cpu
                       value:
@@ -883,9 +915,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.10999999999989996
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -893,8 +925,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -903,9 +935,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.010000000000019327
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -913,8 +945,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -923,29 +955,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08999999999991815
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu3
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.10000000000013642
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu3
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.020000000000003126
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -953,174 +965,34 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 9.680000000007567
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.09999999999990905
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009999999999990905
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08999999999991815
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08999999999991815
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.00999999999999801
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 9.679999999993015
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.10000000000013642
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009999999999990905
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.06999999999993634
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.09000000000014552
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342221489280"
+                  timeUnixNano: "1759742352220753769"
               isMonotonic: true
             unit: s
           - description: Difference in system.cpu.time since the last measurement per logical CPU, divided by the elapsed time (value in interval [0,1]).
             gauge:
               dataPoints:
-                - asDouble: 0.9689378757545493
+                - asDouble: 0.008072653884964536
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu0
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.011099899091826416
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu0
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.9808274470232148
                   attributes:
                     - key: cpu
                       value:
@@ -1128,9 +1000,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.011022044088225753
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -1138,8 +1010,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1148,9 +1020,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.002004008016036904
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -1158,8 +1030,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1168,28 +1040,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.008016032064147615
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu0
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.010020040080207302
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu0
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1198,9 +1050,29 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.9708835341371652
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.009100101112234938
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.009100101112234579
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.9817997977755358
                   attributes:
                     - key: cpu
                       value:
@@ -1208,9 +1080,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.011044176706849129
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -1218,8 +1090,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1228,9 +1100,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.0010040160642569365
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -1238,8 +1110,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1248,28 +1120,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.00803212851407832
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009036144578312429
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1278,9 +1130,29 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.9719157472418453
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.009072580645161723
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.009072580645161366
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.9808467741935541
                   attributes:
                     - key: cpu
                       value:
@@ -1288,9 +1160,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.011033099297882359
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -1298,8 +1170,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1308,9 +1180,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.0010030090270802144
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.0010080645161290403
                   attributes:
                     - key: cpu
                       value:
@@ -1318,8 +1190,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1328,28 +1200,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.0070210631895615
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu2
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009027081243721929
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu2
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1358,9 +1210,29 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.9669007021061476
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.009081735620585589
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu3
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.006054490413723367
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu3
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0.9848637739656878
                   attributes:
                     - key: cpu
                       value:
@@ -1368,9 +1240,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.011033099297882359
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -1378,8 +1250,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1388,9 +1260,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.0010030090270830652
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -1398,8 +1270,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
                 - asDouble: 0
                   attributes:
                     - key: cpu
@@ -1408,29 +1280,9 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009027081243721929
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu3
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.01003009027082495
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu3
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.002006018054162567
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -1438,771 +1290,125 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.9699398797606733
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.010020040080155298
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.0010020040080155298
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009018036072139768
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009018036072139768
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.0010020040080162419
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.9728643216090456
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.010050251256312757
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.0010050251256289904
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.007035175879402934
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.009045226130683766
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
             name: system.cpu.utilization
             unit: "1"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/cpuscraper
           version: 0.136.0
+  - resource:
+      attributes:
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 92-F5-4A-97-AE-5A
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
       - metrics:
-          - description: Disk bytes transferred.
-            name: system.disk.io
-            sum:
-              aggregationTemporality: 1
+          - description: Average CPU Load over 15 minutes.
+            gauge:
               dataPoints:
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "1934336"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "1934336"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: By
-          - description: Time disk spent activated. On Windows, this is calculated as the inverse of disk idle time.
-            name: system.disk.io_time
-            sum:
-              aggregationTemporality: 1
+                - asDouble: 0.26
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221330690"
+            name: system.cpu.load_average.15m
+            unit: "{thread}"
+          - description: Average CPU Load over 1 minute.
+            gauge:
               dataPoints:
-                - asDouble: 0.08500000000003638
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08500000000003638
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: s
-          - description: The number of disk reads/writes merged into single physical disk access operations.
-            name: system.disk.merged
-            sum:
-              aggregationTemporality: 1
+                - asDouble: 1.145
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221330690"
+            name: system.cpu.load_average.1m
+            unit: "{thread}"
+          - description: Average CPU Load over 5 minutes.
+            gauge:
               dataPoints:
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "60"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "60"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: '{operations}'
-          - description: Time spent in disk operations.
-            name: system.disk.operation_time
-            sum:
-              aggregationTemporality: 1
+                - asDouble: 0.66
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221330690"
+            name: system.cpu.load_average.5m
+            unit: "{thread}"
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/loadscraper
+          version: 0.136.0
+  - resource:
+      attributes:
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 92-F5-4A-97-AE-5A
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: The time the system has been running
+            gauge:
               dataPoints:
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.7050000000000409
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.7050000000000409
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: s
-          - description: Disk operations count.
-            name: system.disk.operations
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "281"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "281"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: '{operations}'
-          - description: The queue size of pending I/O operations.
-            name: system.disk.pending_operations
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: '{operations}'
-          - description: Time disk spent activated multiplied by the queue length.
-            name: system.disk.weighted_io_time
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 0.7250000000001364
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda1
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda2
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda3
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.7049999999999272
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
+                - asDouble: 408
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221365354"
+            name: system.uptime
             unit: s
         scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/diskscraper
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/systemscraper
           version: 0.136.0
-      - metrics:
-          - description: Total number of processes in each state.
-            name: system.processes.count
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "0"
-                  attributes:
-                    - key: status
-                      value:
-                        stringValue: blocked
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "2"
-                  attributes:
-                    - key: status
-                      value:
-                        stringValue: running
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "1"
-                  attributes:
-                    - key: status
-                      value:
-                        stringValue: sleeping
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: '{processes}'
-          - description: Total number of created processes.
-            name: system.processes.created
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asInt: "2"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: '{processes}'
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processesscraper
-          version: 0.136.0
+  - resource:
+      attributes:
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 92-F5-4A-97-AE-5A
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
       - metrics:
           - description: The number of page faults.
             name: system.paging.faults
@@ -2214,17 +1420,17 @@ resourceMetrics:
                     - key: type
                       value:
                         stringValue: major
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "2301952"
+                  startTimeUnixNano: "1759742342222227444"
+                  timeUnixNano: "1759742352221410369"
+                - asInt: "3813376"
                   attributes:
                     - key: type
                       value:
                         stringValue: minor
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342222227444"
+                  timeUnixNano: "1759742352221410369"
               isMonotonic: true
-            unit: '{faults}'
+            unit: "{faults}"
           - description: The number of paging operations.
             name: system.paging.operations
             sum:
@@ -2238,18 +1444,8 @@ resourceMetrics:
                     - key: type
                       value:
                         stringValue: major
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: page_in
-                    - key: type
-                      value:
-                        stringValue: minor
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342222227444"
+                  timeUnixNano: "1759742352221410369"
                 - asInt: "0"
                   attributes:
                     - key: direction
@@ -2258,9 +1454,19 @@ resourceMetrics:
                     - key: type
                       value:
                         stringValue: major
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "7737344"
+                  startTimeUnixNano: "1759742342222227444"
+                  timeUnixNano: "1759742352221410369"
+                - asInt: "0"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: page_in
+                    - key: type
+                      value:
+                        stringValue: minor
+                  startTimeUnixNano: "1759742342222227444"
+                  timeUnixNano: "1759742352221410369"
+                - asInt: "932855808"
                   attributes:
                     - key: direction
                       value:
@@ -2268,149 +1474,1283 @@ resourceMetrics:
                     - key: type
                       value:
                         stringValue: minor
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342222227444"
+                  timeUnixNano: "1759742352221410369"
               isMonotonic: true
-            unit: '{operations}'
+            unit: "{operations}"
+          - description: Swap (unix) or pagefile (windows) usage.
+            name: system.paging.usage
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /mnt/swapfile
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221378650"
+                - asInt: "4294963200"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /mnt/swapfile
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221378650"
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/pagingscraper
           version: 0.136.0
+  - resource:
+      attributes:
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 92-F5-4A-97-AE-5A
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
       - metrics:
           - description: Total bytes of memory available.
             name: system.memory.limit
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "12508241920"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                - asInt: "16772579328"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
             unit: By
           - description: Bytes of memory in use.
             name: system.memory.usage
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "2084864"
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: buffered
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "2782154752"
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: cached
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "8864391168"
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: free
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "62877696"
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: slab_reclaimable
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "107696128"
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: slab_unreclaimable
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "1079619584"
+                - asInt: "1643167744"
                   attributes:
                     - key: state
                       value:
                         stringValue: used
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asInt: "6778769408"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asInt: "141275136"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: buffered
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asInt: "8631828480"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: cached
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asInt: "435281920"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: slab_reclaimable
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asInt: "127135744"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: slab_unreclaimable
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
             unit: By
           - description: Percentage of memory bytes in use.
             gauge:
               dataPoints:
-                - asDouble: 0.0001666792194566061
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: buffered
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.22242572295883448
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: cached
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.7086840200800977
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: free
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.0050269011746136745
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: slab_reclaimable
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.00861001319680264
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: slab_unreclaimable
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08631265615943572
+                - asDouble: 0.09796750469123791
                   attributes:
                     - key: state
                       value:
                         stringValue: used
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asDouble: 0.4041578385432693
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asDouble: 0.008422982132757393
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: buffered
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asDouble: 0.5146392997283429
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: cached
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asDouble: 0.02595199649903245
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: slab_reclaimable
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+                - asDouble: 0.007579975715944934
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: slab_unreclaimable
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
             name: system.memory.utilization
             unit: "1"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper
           version: 0.136.0
+  - resource:
+      attributes:
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 92-F5-4A-97-AE-5A
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
       - metrics:
-          - description: Average CPU Load over 15 minutes.
-            gauge:
+          - description: Total number of processes in each state.
+            name: system.processes.count
+            sum:
+              aggregationTemporality: 2
               dataPoints:
-                - asDouble: 0.034999999999999996
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: system.cpu.load_average.15m
-            unit: '{thread}'
-          - description: Average CPU Load over 1 minute.
-            gauge:
+                - asInt: "1"
+                  attributes:
+                    - key: status
+                      value:
+                        stringValue: sleeping
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221594804"
+                - asInt: "0"
+                  attributes:
+                    - key: status
+                      value:
+                        stringValue: blocked
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221594804"
+                - asInt: "1"
+                  attributes:
+                    - key: status
+                      value:
+                        stringValue: running
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221594804"
+            unit: "{processes}"
+          - description: Total number of created processes.
+            name: system.processes.created
+            sum:
+              aggregationTemporality: 1
               dataPoints:
-                - asDouble: 0.023333333333333334
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: system.cpu.load_average.1m
-            unit: '{thread}'
-          - description: Average CPU Load over 5 minutes.
-            gauge:
-              dataPoints:
-                - asDouble: 0.03666666666666667
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: system.cpu.load_average.5m
-            unit: '{thread}'
+                - asInt: "1"
+                  startTimeUnixNano: "1759742342222429062"
+                  timeUnixNano: "1759742352221594804"
+              isMonotonic: true
+            unit: "{processes}"
         scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/loadscraper
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processesscraper
           version: 0.136.0
+  - resource:
+      attributes:
+        - key: process.pid
+          value:
+            intValue: "1"
+        - key: process.parent_pid
+          value:
+            intValue: "0"
+        - key: process.executable.name
+          value:
+            stringValue: otelcol-contrib
+        - key: process.executable.path
+          value:
+            stringValue: /otelcol-contrib
+        - key: process.command
+          value:
+            stringValue: /otelcol-contrib
+        - key: process.command_line
+          value:
+            stringValue: /otelcol-contrib --config=/conf/relay.yaml
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 92-F5-4A-97-AE-5A
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: Total CPU seconds broken down by different states.
+            name: process.cpu.time
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759742342223006545"
+                  timeUnixNano: "1759742352222266712"
+                - asDouble: 0.020000000000000004
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759742342223006545"
+                  timeUnixNano: "1759742352222266712"
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: wait
+                  startTimeUnixNano: "1759742342223006545"
+                  timeUnixNano: "1759742352222266712"
+              isMonotonic: true
+            unit: s
+          - description: Percentage of total CPU time used by the process since last scrape, expressed as a value between 0 and 1. On the first scrape, no data point is emitted for this metric.
+            gauge:
+              dataPoints:
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1759742329810000000"
+                  timeUnixNano: "1759742352222266712"
+                - asDouble: 0.000500036994386967
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1759742329810000000"
+                  timeUnixNano: "1759742352222266712"
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: wait
+                  startTimeUnixNano: "1759742329810000000"
+                  timeUnixNano: "1759742352222266712"
+            name: process.cpu.utilization
+            unit: "1"
+          - description: Disk bytes transferred.
+            name: process.disk.io
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "31887"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223006545"
+                  timeUnixNano: "1759742352222266712"
+                - asInt: "4786"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223006545"
+                  timeUnixNano: "1759742352222266712"
+              isMonotonic: true
+            unit: By
+          - description: The amount of physical memory in use.
+            name: process.memory.usage
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "180535296"
+                  startTimeUnixNano: "1759742329810000000"
+                  timeUnixNano: "1759742352222266712"
+            unit: By
+          - description: Virtual memory size.
+            name: process.memory.virtual
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "1600696320"
+                  startTimeUnixNano: "1759742329810000000"
+                  timeUnixNano: "1759742352222266712"
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper
+          version: 0.136.0
+  - resource:
+      attributes:
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 92-F5-4A-97-AE-5A
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: Disk bytes transferred.
+            name: system.disk.io
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "233213952"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "233213952"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+              isMonotonic: true
+            unit: By
+          - description: Time disk spent activated. On Windows, this is calculated as the inverse of disk idle time.
+            name: system.disk.io_time
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0.07699999999999996
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0.10300000000000153
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+              isMonotonic: true
+            unit: s
+          - description: The number of disk reads/writes merged into single physical disk access operations.
+            name: system.disk.merged
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "2031"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "2031"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+              isMonotonic: true
+            unit: "{operations}"
+          - description: Time spent in disk operations.
+            name: system.disk.operation_time
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 2.505999999999972
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 2.505999999999972
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+              isMonotonic: true
+            unit: s
+          - description: Disk operations count.
+            name: system.disk.operations
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "340"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "340"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+              isMonotonic: true
+            unit: "{operations}"
+          - description: The queue size of pending I/O operations.
+            name: system.disk.pending_operations
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222368373"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222368373"
+            unit: "{operations}"
+          - description: Time disk spent activated multiplied by the queue length.
+            name: system.disk.weighted_io_time
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda14
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda15
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: loop0
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sdb1
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 2.505999999999972
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+                - asDouble: 2.505999999999972
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
+                  startTimeUnixNano: "1759742342223078389"
+                  timeUnixNano: "1759742352222368373"
+              isMonotonic: true
+            unit: s
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/diskscraper
+          version: 0.136.0
+  - resource:
+      attributes:
+        - key: host.name
+          value:
+            stringValue: otelcol-q73vtw344d-tnhc7
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+                - stringValue: fe80::90f5:4aff:fe97:ae5a
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 92-F5-4A-97-AE-5A
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
       - metrics:
           - description: The number of connections.
             name: system.network.connections
@@ -2424,69 +2764,9 @@ resourceMetrics:
                         stringValue: tcp
                     - key: state
                       value:
-                        stringValue: CLOSE
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: protocol
-                      value:
-                        stringValue: tcp
-                    - key: state
-                      value:
-                        stringValue: CLOSE_WAIT
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: protocol
-                      value:
-                        stringValue: tcp
-                    - key: state
-                      value:
-                        stringValue: CLOSING
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: protocol
-                      value:
-                        stringValue: tcp
-                    - key: state
-                      value:
-                        stringValue: DELETE
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "1"
-                  attributes:
-                    - key: protocol
-                      value:
-                        stringValue: tcp
-                    - key: state
-                      value:
-                        stringValue: ESTABLISHED
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: protocol
-                      value:
-                        stringValue: tcp
-                    - key: state
-                      value:
                         stringValue: FIN_WAIT_1
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: protocol
-                      value:
-                        stringValue: tcp
-                    - key: state
-                      value:
-                        stringValue: FIN_WAIT_2
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
                 - asInt: "0"
                   attributes:
                     - key: protocol
@@ -2495,8 +2775,68 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: LAST_ACK
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
+                - asInt: "4"
+                  attributes:
+                    - key: protocol
+                      value:
+                        stringValue: tcp
+                    - key: state
+                      value:
+                        stringValue: TIME_WAIT
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
+                - asInt: "0"
+                  attributes:
+                    - key: protocol
+                      value:
+                        stringValue: tcp
+                    - key: state
+                      value:
+                        stringValue: CLOSE_WAIT
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
+                - asInt: "0"
+                  attributes:
+                    - key: protocol
+                      value:
+                        stringValue: tcp
+                    - key: state
+                      value:
+                        stringValue: CLOSE
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
+                - asInt: "0"
+                  attributes:
+                    - key: protocol
+                      value:
+                        stringValue: tcp
+                    - key: state
+                      value:
+                        stringValue: CLOSING
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
+                - asInt: "1"
+                  attributes:
+                    - key: protocol
+                      value:
+                        stringValue: tcp
+                    - key: state
+                      value:
+                        stringValue: ESTABLISHED
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
+                - asInt: "0"
+                  attributes:
+                    - key: protocol
+                      value:
+                        stringValue: tcp
+                    - key: state
+                      value:
+                        stringValue: FIN_WAIT_2
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
                 - asInt: "2"
                   attributes:
                     - key: protocol
@@ -2505,18 +2845,8 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: LISTEN
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: protocol
-                      value:
-                        stringValue: tcp
-                    - key: state
-                      value:
-                        stringValue: SYN_RECV
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
                 - asInt: "0"
                   attributes:
                     - key: protocol
@@ -2525,19 +2855,29 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: SYN_SENT
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "3"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
+                - asInt: "0"
                   attributes:
                     - key: protocol
                       value:
                         stringValue: tcp
                     - key: state
                       value:
-                        stringValue: TIME_WAIT
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: '{connections}'
+                        stringValue: SYN_RECV
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
+                - asInt: "0"
+                  attributes:
+                    - key: protocol
+                      value:
+                        stringValue: tcp
+                    - key: state
+                      value:
+                        stringValue: DELETE
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352222707788"
+            unit: "{connections}"
           - description: The number of packets dropped.
             name: system.network.dropped
             sum:
@@ -2547,22 +2887,12 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: eth0
-                    - key: direction
-                      value:
-                        stringValue: receive
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: eth0
+                        stringValue: lo
                     - key: direction
                       value:
                         stringValue: transmit
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
                 - asInt: "0"
                   attributes:
                     - key: device
@@ -2571,20 +2901,30 @@ resourceMetrics:
                     - key: direction
                       value:
                         stringValue: receive
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
                 - asInt: "0"
                   attributes:
                     - key: device
                       value:
-                        stringValue: lo
+                        stringValue: eth0
                     - key: direction
                       value:
                         stringValue: transmit
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: eth0
+                    - key: direction
+                      value:
+                        stringValue: receive
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
               isMonotonic: true
-            unit: '{packets}'
+            unit: "{packets}"
           - description: The number of errors encountered.
             name: system.network.errors
             sum:
@@ -2594,22 +2934,12 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: eth0
-                    - key: direction
-                      value:
-                        stringValue: receive
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: eth0
+                        stringValue: lo
                     - key: direction
                       value:
                         stringValue: transmit
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
                 - asInt: "0"
                   attributes:
                     - key: device
@@ -2618,55 +2948,35 @@ resourceMetrics:
                     - key: direction
                       value:
                         stringValue: receive
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
                 - asInt: "0"
                   attributes:
                     - key: device
                       value:
-                        stringValue: lo
+                        stringValue: eth0
                     - key: direction
                       value:
                         stringValue: transmit
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: eth0
+                    - key: direction
+                      value:
+                        stringValue: receive
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
               isMonotonic: true
-            unit: '{errors}'
+            unit: "{errors}"
           - description: The number of bytes transmitted and received.
             name: system.network.io
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asInt: "1173"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: eth0
-                    - key: direction
-                      value:
-                        stringValue: receive
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "5535"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: eth0
-                    - key: direction
-                      value:
-                        stringValue: transmit
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: lo
-                    - key: direction
-                      value:
-                        stringValue: receive
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
                 - asInt: "0"
                   attributes:
                     - key: device
@@ -2675,8 +2985,38 @@ resourceMetrics:
                     - key: direction
                       value:
                         stringValue: transmit
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: lo
+                    - key: direction
+                      value:
+                        stringValue: receive
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
+                - asInt: "5594"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: eth0
+                    - key: direction
+                      value:
+                        stringValue: transmit
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
+                - asInt: "1129"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: eth0
+                    - key: direction
+                      value:
+                        stringValue: receive
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
               isMonotonic: true
             unit: By
           - description: The number of packets transferred.
@@ -2684,16 +3024,26 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asInt: "13"
+                - asInt: "0"
                   attributes:
                     - key: device
                       value:
-                        stringValue: eth0
+                        stringValue: lo
+                    - key: direction
+                      value:
+                        stringValue: transmit
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: lo
                     - key: direction
                       value:
                         stringValue: receive
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
                 - asInt: "12"
                   attributes:
                     - key: device
@@ -2702,169 +3052,20 @@ resourceMetrics:
                     - key: direction
                       value:
                         stringValue: transmit
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
+                - asInt: "12"
                   attributes:
                     - key: device
                       value:
-                        stringValue: lo
+                        stringValue: eth0
                     - key: direction
                       value:
                         stringValue: receive
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: lo
-                    - key: direction
-                      value:
-                        stringValue: transmit
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                  startTimeUnixNano: "1759742342223339248"
+                  timeUnixNano: "1759742352222631355"
               isMonotonic: true
-            unit: '{packets}'
+            unit: "{packets}"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper
-          version: 0.136.0
-  - resource:
-      attributes:
-        - key: host.arch
-          value:
-            stringValue: arm64
-        - key: host.ip
-          value:
-            arrayValue:
-              values:
-                - stringValue: 10.244.0.19
-                - stringValue: fe80::7800:4fff:fe7b:af67
-        - key: host.mac
-          value:
-            arrayValue:
-              values:
-                - stringValue: 7A-00-4F-7B-AF-67
-        - key: host.name
-          value:
-            stringValue: otelcol-yv6m7j5s5r-5t5d7
-        - key: os.type
-          value:
-            stringValue: linux
-        - key: process.command
-          value:
-            stringValue: /otelcol-contrib
-        - key: process.command_line
-          value:
-            stringValue: /otelcol-contrib --config=/conf/relay.yaml
-        - key: process.executable.name
-          value:
-            stringValue: otelcol-contrib
-        - key: process.executable.path
-          value:
-            stringValue: /otelcol-contrib
-        - key: process.parent_pid
-          value:
-            intValue: "0"
-        - key: process.pid
-          value:
-            intValue: "1"
-    schemaUrl: https://opentelemetry.io/schemas/1.9.0
-    scopeMetrics:
-      - metrics:
-          - description: Total CPU seconds broken down by different states.
-            name: process.cpu.time
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 0.009999999999999998
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: s
-          - description: Percentage of total CPU time used by the process since last scrape, expressed as a value between 0 and 1. On the first scrape, no data point is emitted for this metric.
-            gauge:
-              dataPoints:
-                - asDouble: 0.0001667015729591647
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: process.cpu.utilization
-            unit: "1"
-          - description: Disk bytes transferred.
-            name: process.disk.io
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asInt: "27499"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: read
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "4755"
-                  attributes:
-                    - key: direction
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: By
-          - description: The amount of physical memory in use.
-            name: process.memory.usage
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "173146112"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: By
-          - description: Virtual memory size.
-            name: process.memory.virtual
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "1580040192"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: By
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper
           version: 0.136.0

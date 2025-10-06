@@ -161,8 +161,9 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 		pmetrictest.IgnoreResourceMetricsOrder(),
 	}
 
+	expectedMerged := testutil.MergeResources(expected)
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(testutil.MergeResources(expected), testutil.MergeResources(metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]),
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged, testutil.MergeResources(metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]),
 			defaultOptions...,
 		),
 		)

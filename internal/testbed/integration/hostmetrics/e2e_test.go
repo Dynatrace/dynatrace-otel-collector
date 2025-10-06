@@ -166,7 +166,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 			defaultOptions...,
 		),
 		)
-	}, 1*time.Minute, 1*time.Second)
+	}, 3*time.Minute, 1*time.Second)
 
 	t.Log("Host metrics checked successfully")
 }

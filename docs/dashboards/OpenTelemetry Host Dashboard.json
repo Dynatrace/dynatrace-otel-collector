@@ -15,7 +15,7 @@
     "0": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_usage = avg(system.cpu.load_average.1m),\n  count = avg(system.cpu.logical.count)\n},\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_usage)*arrayLast(count)\n\n",
+      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization, filter: state != \"idle\")\n},\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_util) * 100\n\n",
       "visualization": "gauge",
       "visualizationSettings": {
         "icon": {
@@ -186,9 +186,10 @@
     "4": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_usage=avg(system.cpu.load_average.1m)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd percentage = cpu_usage[]\n\n",
+      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization, filter: state != \"idle\"),\n  count = avg(system.cpu.logical.count)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd usage = cpu_util[] * count[]\n\n",
       "visualization": "lineChart",
       "visualizationSettings": {
+        "autoSelectVisualization": false,
         "chartSettings": {
           "truncationMode": "middle",
           "legend": {
@@ -202,7 +203,7 @@
           "xAxisScaling": "analyzedTimeframe",
           "fieldMapping": {
             "leftAxisValues": [
-              "percentage"
+              "usage"
             ],
             "timestamp": "timeframe"
           },
@@ -210,10 +211,9 @@
         },
         "dataMapping": {
           "displayedFields": [
-            "percentage"
+            "usage"
           ]
         },
-        "autoSelectVisualization": false,
         "thresholds": [],
         "unitsOverrides": [
           {
@@ -226,7 +226,19 @@
             "delimiter": false,
             "added": 1747811257789
           }
-        ]
+        ],
+        "table": {
+          "columnTypeOverrides": [
+            {
+              "fields": [
+                "cpu_util",
+                "count"
+              ],
+              "value": "sparkline",
+              "id": 1759828499073
+            }
+          ]
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -245,7 +257,7 @@
     "5": {
       "title": "CPU usage per process",
       "type": "data",
-      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name, state },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n//| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: { process.command_line }\n| sort cpu desc",
+      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name, state },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| summarize cpu = sum(cpu1), by: { process.command_line }\n| sort cpu desc",
       "visualization": "table",
       "visualizationSettings": {
         "table": {
@@ -684,7 +696,7 @@
     "16": {
       "title": "Filesystem capacity (root)",
       "type": "data",
-      "query": "timeseries {\n  usage=avg(system.filesystem.usage),\n  utilization=avg(system.filesystem.utilization)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -2m, to: -1m\n| fieldsAdd fs_space = arrayLast(usage)/arrayLast(utilization)",
+      "query": "timeseries {\n  usage=sum(system.filesystem.usage, rollup:avg)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -2m, to: -1m\n| fieldsAdd fs_space = arrayLast(usage)",
       "visualization": "singleValue",
       "visualizationSettings": {
         "autoSelectVisualization": false,
@@ -707,7 +719,7 @@
             "identifier": "fs_space",
             "unitCategory": "data",
             "baseUnit": "byte",
-            "displayUnit": "gibibyte",
+            "displayUnit": "gigabyte",
             "decimals": 2,
             "suffix": "",
             "delimiter": false,

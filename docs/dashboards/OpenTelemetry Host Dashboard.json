@@ -189,7 +189,6 @@
       "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization, filter: state != \"idle\"),\n  count = avg(system.cpu.logical.count)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd usage = cpu_util[] * count[]\n\n",
       "visualization": "lineChart",
       "visualizationSettings": {
-        "autoSelectVisualization": false,
         "chartSettings": {
           "truncationMode": "middle",
           "legend": {
@@ -214,10 +213,11 @@
             "usage"
           ]
         },
+        "autoSelectVisualization": false,
         "thresholds": [],
         "unitsOverrides": [
           {
-            "identifier": "cpu_usage",
+            "identifier": "usage",
             "unitCategory": "unspecified",
             "baseUnit": "core",
             "displayUnit": null,
@@ -226,19 +226,7 @@
             "delimiter": false,
             "added": 1747811257789
           }
-        ],
-        "table": {
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "cpu_util",
-                "count"
-              ],
-              "value": "sparkline",
-              "id": 1759828499073
-            }
-          ]
-        }
+        ]
       },
       "querySettings": {
         "maxResultRecords": 1000,

@@ -26,14 +26,19 @@ collection of host metrics with the required attributes, resource detection, and
 Make sure to also add the receivers and processors to your collector pipeline.
 
 ```yaml
+exporters:
+  debug:
+    verbosity: detailed
+  otlphttp:
+    endpoint: "${env:DT_ENDPOINT}"
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
 receivers:
   hostmetrics:
     collection_interval: 10s
     scrapers:
       paging:
-        metrics:
-          system.paging.utilization:
-            enabled: true
       cpu:
         metrics:
           system.cpu.logical.count:
@@ -62,8 +67,6 @@ receivers:
         metrics:
           process.cpu.utilization:
             enabled: true
-          process.memory.utilization:
-            enabled: true
       system:
 
 processors:
@@ -76,12 +79,15 @@ processors:
           enabled: true
         host.ip:
           enabled: true
+        host.mac:
+          enabled: true
 
 service:
   pipelines:
     metrics:
       receivers: [hostmetrics]
       processors: [resourcedetection, cumulativetodelta]
+      exporters: [otlphttp]
 ```
 
 ### Adding attributes to the allow list

@@ -15,7 +15,7 @@
     "0": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_usage = avg(system.cpu.utilization)\n},\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_usage) * 100\n\n",
+      "query": "timeseries {\n  cpu_usage = avg(system.cpu.load_average.1m),\n  count = avg(system.cpu.logical.count)\n},\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_usage)*arrayLast(count)\n\n",
       "visualization": "gauge",
       "visualizationSettings": {
         "icon": {
@@ -637,7 +637,7 @@
     "15": {
       "title": "Memory",
       "type": "data",
-      "query": "timeseries {\n  val=avg(system.memory.limit)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd value.A = arrayLast(val)\n| fieldsRemove timeframe, interval\n| limit 1",
+      "query": "timeseries {\n  val=sum(system.memory.limit, rollup: avg)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd value.A = arrayLast(val)\n| fieldsRemove timeframe, interval\n| limit 1",
       "visualization": "singleValue",
       "visualizationSettings": {
         "singleValue": {
@@ -684,7 +684,7 @@
     "16": {
       "title": "Filesystem capacity (root)",
       "type": "data",
-      "query": "timeseries {\n  space=sum(system.filesystem.usage, rollup: avg)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -2m, to: -1m\n| fieldsAdd fs_space = arrayLast(space)",
+      "query": "timeseries {\n  usage=avg(system.filesystem.usage),\n  utilization=avg(system.filesystem.utilization)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -2m, to: -1m\n| fieldsAdd fs_space = arrayLast(usage)/arrayLast(utilization)",
       "visualization": "singleValue",
       "visualizationSettings": {
         "autoSelectVisualization": false,

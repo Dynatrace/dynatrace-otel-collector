@@ -2,10 +2,10 @@
   "version": 20,
   "variables": [
     {
-      "version": 2,
       "key": "Hosts",
-      "type": "query",
       "visible": true,
+      "type": "query",
+      "version": 2,
       "editable": true,
       "input": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name }\n| fieldsAdd host.name\n| fieldsRemove timeframe, interval, uptime",
       "multiple": false
@@ -225,73 +225,6 @@
             "suffix": "",
             "delimiter": false,
             "added": 1747811257789
-          }
-        ]
-      },
-      "querySettings": {
-        "maxResultRecords": 1000,
-        "defaultScanLimitGbytes": 500,
-        "maxResultMegaBytes": 1,
-        "defaultSamplingRatio": 10,
-        "enableSampling": false
-      },
-      "davis": {
-        "enabled": false,
-        "davisVisualization": {
-          "isAvailable": true
-        }
-      }
-    },
-    "5": {
-      "title": "CPU usage per process",
-      "type": "data",
-      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name, state },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| summarize cpu = sum(cpu1), by: { process.command_line }\n| sort cpu desc",
-      "visualization": "table",
-      "visualizationSettings": {
-        "table": {
-          "hiddenColumns": [
-            [
-              "process.pid"
-            ]
-          ],
-          "monospacedFontColumns": [
-            [
-              "process.command_line"
-            ]
-          ],
-          "sortBy": [
-            {
-              "columnId": "[\"process.command_line\"]",
-              "direction": "ascending"
-            }
-          ],
-          "columnWidths": {
-            "[\"process.command_line\"]": 488
-          },
-          "columnTypeOverrides": [
-            {
-              "id": 3746186.799999997,
-              "fields": [],
-              "value": "text"
-            }
-          ],
-          "columnOrder": [
-            "[\"process.command_line\"]",
-            "[\"cpu\"]"
-          ]
-        },
-        "autoSelectVisualization": false,
-        "thresholds": [],
-        "unitsOverrides": [
-          {
-            "identifier": "cpu",
-            "unitCategory": "percentage",
-            "baseUnit": "percent",
-            "displayUnit": null,
-            "decimals": 2,
-            "suffix": "",
-            "delimiter": false,
-            "added": 1747734509218
           }
         ]
       },
@@ -905,6 +838,74 @@
           "isAvailable": true
         }
       }
+    },
+    "27": {
+      "title": "CPU usage per process",
+      "type": "data",
+      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: { process.command_line }\n| sort cpu desc",
+      "visualization": "table",
+      "visualizationSettings": {
+        "table": {
+          "hiddenColumns": [
+            [
+              "timeframe",
+              "start"
+            ],
+            [
+              "timeframe",
+              "end"
+            ],
+            [
+              "interval"
+            ]
+          ],
+          "monospacedFontColumns": [
+            [
+              "process.command_line"
+            ]
+          ],
+          "sortBy": [
+            {
+              "columnId": "[\"utilization\"]",
+              "direction": "descending"
+            }
+          ],
+          "columnWidths": {
+            "[\"process.command_line\"]": 526.8
+          },
+          "columnOrder": [
+            "[\"process.command_line\"]",
+            "[\"cpu\"]"
+          ]
+        },
+        "autoSelectVisualization": false,
+        "thresholds": [],
+        "unitsOverrides": [
+          {
+            "identifier": "cpu",
+            "unitCategory": "percentage",
+            "baseUnit": "percent",
+            "displayUnit": null,
+            "decimals": 2,
+            "suffix": "",
+            "delimiter": false,
+            "added": 1747745333530
+          }
+        ]
+      },
+      "querySettings": {
+        "maxResultRecords": 1000,
+        "defaultScanLimitGbytes": 500,
+        "maxResultMegaBytes": 1,
+        "defaultSamplingRatio": 10,
+        "enableSampling": false
+      },
+      "davis": {
+        "enabled": false,
+        "davisVisualization": {
+          "isAvailable": true
+        }
+      }
     }
   },
   "layouts": {
@@ -934,12 +935,6 @@
     },
     "4": {
       "x": 0,
-      "y": 10,
-      "w": 12,
-      "h": 6
-    },
-    "5": {
-      "x": 12,
       "y": 10,
       "w": 12,
       "h": 6
@@ -1033,6 +1028,12 @@
       "y": 8,
       "w": 6,
       "h": 2
+    },
+    "27": {
+      "x": 12,
+      "y": 10,
+      "w": 12,
+      "h": 6
     }
   },
   "importedWithCode": false,

@@ -26,7 +26,6 @@ receivers:
         metrics:
           system.filesystem.utilization:
             enabled: true
-      load:
       memory:
         metrics:
           system.memory.limit:

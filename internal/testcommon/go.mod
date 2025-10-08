@@ -1,8 +1,9 @@
 module testcommon
 
-go 1.25.1
+go 1.25.2
 
 require (
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.136.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.136.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.136.0
 	github.com/stretchr/testify v1.11.1
@@ -105,7 +106,6 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.136.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.136.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.136.0 // indirect
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.136.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza v0.136.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/jaeger v0.136.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.136.0 // indirect

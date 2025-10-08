@@ -52,8 +52,6 @@ receivers:
         metrics:
           system.filesystem.utilization:
             enabled: true
-      load:
-        cpu_average: true
       memory:
         metrics:
           system.memory.limit:

@@ -4,14 +4,15 @@ exporters:
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
 
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
 receivers:
   hostmetrics:
     collection_interval: 10s
     scrapers:
       paging:
-        metrics:
-          system.paging.utilization:
-            enabled: true
       cpu:
         metrics:
           system.cpu.logical.count:
@@ -25,8 +26,6 @@ receivers:
         metrics:
           system.filesystem.utilization:
             enabled: true
-      load:
-        cpu_average: true
       memory:
         metrics:
           system.memory.limit:
@@ -40,15 +39,9 @@ receivers:
         metrics:
           process.cpu.utilization:
             enabled: true
-          process.memory.utilization:
-            enabled: true
       system:
 
 processors:
-  batch:
-    send_batch_size: 3000
-    send_batch_max_size: 3000
-    timeout: 60s
   cumulativetodelta:
   resourcedetection:
     detectors: ["system"]
@@ -62,6 +55,7 @@ processors:
           enabled: true
 
 service:
+  extensions: [health_check]
   pipelines:
     metrics:
       receivers: [hostmetrics]

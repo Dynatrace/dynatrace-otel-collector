@@ -107,6 +107,7 @@ jobs:
           - resource-detection
           - netflow
           - self-monitoring
+          - hostmetrics
           - k8sobjects
           - kubeletstats
           - k8scluster

@@ -1,5 +1,8 @@
 GOCMD?= go
 
+# SRC_ROOT is the top of the source tree.
+SRC_ROOT := $(shell git rev-parse --show-toplevel)
+
 .PHONY: moddownload
 moddownload:
 	$(GOCMD) mod download
@@ -7,3 +10,5 @@ moddownload:
 .PHONY: modtidy
 modtidy:
 	$(GOCMD) mod tidy
+
+# TODO continue moving tools things to the common makefile

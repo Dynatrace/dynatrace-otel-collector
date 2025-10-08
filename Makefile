@@ -1,25 +1,21 @@
 # Tool management logic from:
 # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/820510e537167f621c857caaa0109f0dad021d74/Makefile.Common
+include ./Makefile.Common
 
 BUILD_DIR = build
 DIST_DIR = dist
 BIN_DIR = bin
 
-# SRC_ROOT is the top of the source tree.
-SRC_ROOT := $(shell git rev-parse --show-toplevel)
-
 # ALL_MODULES includes ./* dirs (excludes . dir)
-ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
-# Append root module to all modules
-GOMODULES = $(ALL_MODULES)
+ALL_MODULES := $(shell find . -mindepth 2 \
+				-type f \
+				-name "go.mod" \
+				-exec dirname {} \; | sort )
 
 SOURCES := $(shell find internal/confmap -type f | sort )
 
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
-
-# renovate: datasource=github-releases depName=jstemmer/go-junit-report
-GO_JUNIT_REPORT_VERSION ?= v2.1.0
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
 GORELEASER_PRO_VERSION ?= v2.12.5
@@ -28,16 +24,12 @@ GORELEASER_PRO_VERSION ?= v2.12.5
 CP_FILES = LICENSE README.md
 CP_FILES_DEST = $(addprefix $(BUILD_DIR)/, $(CP_FILES))
 
-TOOLS_MOD_DIR    := $(SRC_ROOT)/internal/tools
-TOOLS_MOD_REGEX  := "\s+_\s+\".*\""
-TOOLS_PKG_NAMES  := $(shell grep -E $(TOOLS_MOD_REGEX) < $(TOOLS_MOD_DIR)/tools.go | tr -d " _\"")
+TOOLS_MOD_DIR   := $(SRC_ROOT)
+TOOLS_MOD_FILE  := $(TOOLS_MOD_DIR)/go.mod
+GO_TOOL         := $(GOCMD) tool -modfile $(TOOLS_MOD_FILE)
 TOOLS_BIN_DIR    := $(SRC_ROOT)/.tools
-TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
 
-GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
-BUILDER    := $(TOOLS_BIN_DIR)/builder
-CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
-COSIGN     := $(TOOLS_BIN_DIR)/cosign
+GORELEASER := .tools/goreleaser
 
 PACKAGE_PATH ?= ""
 ARCH ?= ""
@@ -69,15 +61,9 @@ clean-tools:
 clean-all: clean clean-tools
 components: $(BIN)
 	$(BIN) components
-install-tools: $(TOOLS_BIN_NAMES) install-goreleaser-pro install-go-junit-report
+install-tools: install-goreleaser-pro
 snapshot: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --snapshot --clean --parallelism 2 --skip archive,sbom --fail-fast
-
-$(TOOLS_BIN_DIR):
-	mkdir -p $@
-
-$(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod | $(TOOLS_BIN_DIR)
-	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
 OS := $(shell uname)
 ARCH := $(shell uname -m)
@@ -133,8 +119,8 @@ install-goreleaser-pro:
 $(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN) $(SOURCES)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
-$(MAIN): $(BUILDER) manifest.yaml
-	$(BUILDER) --config manifest.yaml --skip-compilation
+$(MAIN): manifest.yaml
+	$(GO_TOOL) builder --config manifest.yaml --skip-compilation
 
 $(CP_FILES_DEST): $(MAIN)
 	cp $(notdir $@) $@
@@ -160,8 +146,6 @@ chlog-preview: $(CHLOGGEN)
 chlog-update: $(CHLOGGEN)
 	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --version $(VERSION)
 
-SRC_ROOT := $(shell git rev-parse --show-toplevel)
-
 GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
 ifeq ($(GOOS),windows)
@@ -176,19 +160,16 @@ oteltestbedcol: genoteltestbedcol
 # 2. Add pprofextension used for load tests to the test manifest in cmd/oteltestbedcol directory
 # 3. Generate code
 .PHONY: genoteltestbedcol
-genoteltestbedcol: $(BUILDER)
+genoteltestbedcol:
 	awk '{gsub(/\.\.\/internal\/confmap\/provider\/eecprovider/, "../../internal/confmap/provider/eecprovider"); print}' manifest.yaml > cmd/oteltestbedcol/manifest.yaml
 	awk '/healthcheckextension $(OTEL_UPSTREAM_VERSION)/ {print; print "  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension $(OTEL_UPSTREAM_VERSION)"; next}1' cmd/oteltestbedcol/manifest.yaml > cmd/oteltestbedcol/manifest-dev.yaml
-	$(BUILDER) --skip-compilation --config cmd/oteltestbedcol/manifest-dev.yaml --output-path cmd/oteltestbedcol
-
-GOJUNIT = .tools/go-junit-report
+	$(GO_TOOL) builder --skip-compilation --config cmd/oteltestbedcol/manifest-dev.yaml --output-path cmd/oteltestbedcol
 
 .PHONY: run-load-tests
-run-load-tests:
+run-load-tests: oteltestbedcol
 	mkdir -p ./internal/testbed/bin/
 	cp -a ./bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) ./internal/testbed/bin/
-	PWD=$(pwd)
-	GOJUNIT="$(PWD)/$(GOJUNIT)" $(MAKE) --no-print-directory -C internal/testbed/load run-tests
+	$(MAKE) --no-print-directory -C internal/testbed/load run-tests
 
 FIND_MOD_ARGS=-type f -name "go.mod"
 TO_MOD_DIR=dirname {} \; | sort | grep -E '^./'
@@ -208,7 +189,3 @@ for-all-target: $(ALL_MODS)
 .PHONY: gomoddownload
 gomoddownload:
 	$(MAKE) --no-print-directory for-all-target TARGET="moddownload"
-
-.PHONY: install-go-junit-report
-install-go-junit-report:
-	GOBIN=$(TOOLS_BIN_DIR) go install github.com/jstemmer/go-junit-report/v2@$(GO_JUNIT_REPORT_VERSION)

@@ -3,7 +3,8 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/tools
 go 1.25.1
 
 tool (
-	github.com/sigstore/cosign/v3
+	github.com/jstemmer/go-junit-report/v2
+	github.com/sigstore/cosign/v3/cmd/cosign
 	go.opentelemetry.io/build-tools/chloggen
 	go.opentelemetry.io/collector/cmd/builder
 )
@@ -173,6 +174,7 @@ require (
 	github.com/jellydator/ttlcache/v3 v3.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
+	github.com/jstemmer/go-junit-report/v2 v2.1.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/knadh/koanf/maps v0.1.2 // indirect
 	github.com/knadh/koanf/parsers/yaml v1.1.0 // indirect
@@ -229,6 +231,7 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
+	github.com/sigstore/cosign/v2 v2.6.1 // indirect
 	github.com/sigstore/fulcio v1.7.1 // indirect
 	github.com/sigstore/protobuf-specs v0.5.0 // indirect
 	github.com/sigstore/rekor v1.4.2 // indirect
@@ -272,6 +275,8 @@ require (
 	go.mongodb.org/mongo-driver v1.17.4 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
+	go.opentelemetry.io/build-tools/chloggen v0.28.1 // indirect
+	go.opentelemetry.io/collector/cmd/builder v0.136.0 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.38.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.61.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.63.0 // indirect

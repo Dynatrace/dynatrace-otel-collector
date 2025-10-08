@@ -1,11 +1,11 @@
 {
-  "version": 18,
+  "version": 20,
   "variables": [
     {
       "key": "Hosts",
       "visible": true,
       "type": "query",
-      "version": 1,
+      "version": 2,
       "editable": true,
       "input": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name }\n| fieldsAdd host.name\n| fieldsRemove timeframe, interval, uptime",
       "multiple": false
@@ -15,166 +15,22 @@
     "0": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_usage = max(system.cpu.load_average.1m)\n},\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_usage) * 100\n\n",
+      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization, filter: state != \"idle\")\n},\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_util) * 100\n\n",
       "visualization": "gauge",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "auto",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "cpuUsage",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "relative",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host",
-            "interval",
-            "value.A",
-            "cpuUsage"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          },
-          "fieldMapping": {
-            "timestamp": "timeframe",
-            "leftAxisValues": [
-              "cpu_usage"
-            ]
-          }
-        },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "value.A",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {
-            "record": "avg(system.cpu.utilization)"
-          }
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "cpu_usage"
-              ],
-              "value": "sparkline",
-              "id": 1747751625638
-            }
-          ],
-          "columnOrder": [
-            "[\"timeframe\",\"start\"]",
-            "[\"timeframe\",\"end\"]",
-            "[\"interval\"]",
-            "[\"cpu_usage\"]",
-            "[\"usage\"]"
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "cpuUsage"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            },
-            {
-              "valueAxis": "cpuUsage",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "autoSelectVisualization": false,
-        "label": {
-          "showLabel": true,
-          "label": "%"
-        },
         "icon": {
           "showIcon": false,
           "icon": ""
         },
-        "unitsOverrides": [],
-        "dataMapping": {
-          "dimension": "interval",
-          "displayedFields": [
-            "interval",
-            "host.name"
-          ],
-          "value": "usage",
-          "longitude": "interval",
-          "latitude": "cpuUsage"
+        "label": {
+          "label": "%"
         },
-        "tooltip": {
-          "showCustomFields": false
-        }
+        "dataMapping": {
+          "value": "usage"
+        },
+        "autoSelectVisualization": false,
+        "thresholds": [],
+        "unitsOverrides": []
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -200,203 +56,21 @@
     "1": {
       "title": "Memory usage",
       "type": "data",
-      "query": "timeseries {\n\tusage = max(system.memory.utilization)\n},\nby: { host.name },\nfrom: -2m, to: -1m,\nfilter: { state == \"used\" AND host.name == $Hosts }\n| fieldsAdd MemoryUtilization = arrayLast(usage) * 100\n",
+      "query": "timeseries {\n\tusage = avg(system.memory.utilization)\n},\nby: { host.name },\nfrom: -2m, to: -1m,\nfilter: { state == \"used\" AND host.name == $Hosts }\n| fieldsAdd MemoryUtilization = arrayLast(usage) * 100\n",
       "visualization": "gauge",
       "visualizationSettings": {
-        "autoSelectVisualization": false,
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "auto",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "usage",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host.name"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "Memory Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          },
-          "rightYAxisSettings": {
-            "isLabelVisible": false
-          },
-          "seriesOverrides": [
-            {
-              "seriesId": [
-                "total"
-              ],
-              "override": {
-                "geometry": "line"
-              }
-            }
-          ],
-          "fieldMapping": {
-            "timestamp": "timeframe",
-            "leftAxisValues": [
-              "usage"
-            ]
-          }
-        },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "usage",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false,
-            "isRelative": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {
-            "record": "limit",
-            "color": {
-              "Default": "var(--dt-colors-charts-categorical-color-07-default, #438fb1)"
-            },
-            "isVisible": true,
-            "lineType": "linear",
-            "showTicks": false,
-            "variant": "line"
-          }
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [
-            [
-              "timeframe"
-            ],
-            [
-              "interval"
-            ],
-            [
-              "host.name"
-            ],
-            [
-              "avg(system.memory.usage)"
-            ],
-            [
-              "avg(system.memory.limit)"
-            ]
-          ],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "usage"
-              ],
-              "value": "sparkline",
-              "id": 1743143294816
-            }
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "value.usage"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            },
-            {
-              "valueAxis": "value.usage",
-              "rangeAxis": ""
-            },
-            {
-              "valueAxis": "value.total",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": true,
-          "label": "%"
-        },
         "icon": {
-          "showIcon": true,
           "icon": ""
         },
+        "label": {
+          "label": "%"
+        },
         "dataMapping": {
-          "dimension": "interval",
-          "displayedFields": [
-            "interval",
-            "host.name"
-          ],
-          "value": "MemoryUtilization",
-          "longitude": "interval",
-          "latitude": "value.usage"
+          "value": "MemoryUtilization"
         },
-        "tooltip": {
-          "showCustomFields": false
-        },
-        "unitsOverrides": [],
-        "min": "auto",
-        "max": "auto",
-        "colorModeType": {
-          "color": "#438FB1",
-          "customNumericColors": []
-        }
+        "autoSelectVisualization": false,
+        "thresholds": [],
+        "unitsOverrides": []
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -422,169 +96,23 @@
     "2": {
       "title": "Network IO",
       "type": "data",
-      "query": "timeseries avg(system.network.io), by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd NetworkIO = arrayAvg(`avg(system.network.io)`)",
+      "query": "timeseries {val = sum(system.network.io, rollup: avg)},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd NetworkIO = arrayLast(val)",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "auto",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "value.A",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host.name",
-            "interval",
-            "value.A"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "Network Throughput",
-            "max": "auto"
-          },
-          "fieldMapping": {
-            "timestamp": "timeframe",
-            "leftAxisValues": [
-              "avg(system.network.io)"
-            ]
-          },
-          "legend": {
-            "hidden": true
-          }
-        },
         "singleValue": {
-          "showLabel": false,
+          "labelMode": "none",
           "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
           "recordField": "NetworkIO",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": true,
-            "isRelative": false,
-            "label": "",
-            "upward": {
-              "Default": "var(--dt-colors-charts-diverging-red-green-color-10-default, #2a7453)"
-            },
-            "downward": {
-              "Default": "var(--dt-colors-charts-diverging-red-blue-color-02-default, #ae132d)"
-            },
-            "neutral": {
-              "Default": "var(--dt-colors-charts-diverging-red-blue-color-10-default, #134fc9)"
-            },
-            "isLabelVisible": false
-          },
-          "isIconVisible": false,
           "sparklineSettings": {
-            "record": "avg(system.network.io)"
+            "record": "val"
+          },
+          "trend": {
+            "isVisible": true,
+            "isRelative": false
           }
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "avg(system.network.io)"
-              ],
-              "value": "sparkline",
-              "id": 1737358809518
-            }
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "value.A"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            },
-            {
-              "valueAxis": "value.A",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
         },
         "autoSelectVisualization": false,
-        "label": {
-          "showLabel": false,
-          "label": "value.A"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
-        },
-        "dataMapping": {
-          "dimension": "interval",
-          "displayedFields": [
-            "interval",
-            "host.name"
-          ],
-          "value": "value.A",
-          "longitude": "interval",
-          "latitude": "value.A"
-        },
-        "tooltip": {
-          "showCustomFields": false
-        },
+        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "NetworkIO",
@@ -625,144 +153,21 @@
     "3": {
       "title": "Filesystem usage (root)",
       "type": "data",
-      "query": "timeseries avg(system.filesystem.utilization),\nby: { host.name, state },\nfilter: {\n  matchesValue(host.name, $Hosts) and mountpoint == \"/\"\n},\nfrom: -2m, to: -1m\n| fieldsAdd FileSystemUtilization = arrayAvg(`avg(system.filesystem.utilization)`)\n| summarize sum(FileSystemUtilization) * 100",
+      "query": "timeseries {\n  val = avg(system.filesystem.utilization)\n},\nby: { host.name, state },\nfilter: {\n  matchesValue(host.name, $Hosts) and mountpoint == \"/\"\n},\nfrom: -2m, to: -1m\n| fieldsAdd FileSystemUtilization = arraylast(val) * 100",
       "visualization": "gauge",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "auto",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "value.A",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host.name",
-            "interval",
-            "value.A"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "Disk usage",
-            "max": "auto"
-          },
-          "legend": {
-            "position": "auto",
-            "hidden": false
-          }
-        },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "value.A",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {
-            "record": "avg(system.filesystem.usage)"
-          }
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": []
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "value.A"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            },
-            {
-              "valueAxis": "value.A",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "autoSelectVisualization": false,
-        "label": {
-          "showLabel": true,
-          "label": "%"
-        },
         "icon": {
           "showIcon": false,
           "icon": ""
         },
-        "dataMapping": {
-          "dimension": "interval",
-          "displayedFields": [
-            "interval",
-            "host.name"
-          ],
-          "value": "sum(FileSystemUtilization) * 100",
-          "longitude": "interval",
-          "latitude": "value.A"
+        "label": {
+          "label": "%"
         },
-        "tooltip": {
-          "showCustomFields": false
-        }
+        "dataMapping": {
+          "value": "FileSystemUtilization"
+        },
+        "autoSelectVisualization": false,
+        "thresholds": []
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -781,175 +186,42 @@
     "4": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_usage=max(system.cpu.load_average.1m)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd percentage = cpu_usage[] * 100\n\n",
+      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization, filter: state != \"idle\"),\n  count = avg(system.cpu.logical.count)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd usage = cpu_util[] * count[]\n\n",
       "visualization": "lineChart",
       "visualizationSettings": {
-        "thresholds": [],
         "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "never",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "process.command_line,host.name",
-            "valueAxisLabel": "cpu_usage",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
           "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host",
-            "interval",
-            "CPU",
-            "cpu_usage"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto",
-            "min": 0,
-            "scale": "linear"
-          },
-          "fieldMapping": {
-            "timestamp": "timeframe",
-            "leftAxisValues": [
-              "percentage"
-            ]
-          },
           "legend": {
             "hidden": true
           },
-          "bandChartSettings": {
-            "lower": "cpu_usage",
-            "upper": "percentage"
-          }
-        },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "host.name",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false
+          "leftYAxisSettings": {
+            "label": "CPU Cores",
+            "isLabelVisible": true
           },
-          "isIconVisible": false,
-          "sparklineSettings": {
-            "record": "cpu_usage"
-          }
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "cpu_usage",
-                "percentage"
-              ],
-              "value": "sparkline",
-              "id": 1748412085375
-            }
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
+          "xAxisLabel": "timeframe",
+          "xAxisScaling": "analyzedTimeframe",
+          "fieldMapping": {
+            "leftAxisValues": [
+              "usage"
+            ],
+            "timestamp": "timeframe"
           },
-          "displayedFields": [
-            "process.command_line",
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "cpu_usage"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            },
-            {
-              "valueAxis": "cpu_usage",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "process.command_line",
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "autoSelectVisualization": false,
-        "label": {
-          "showLabel": false,
-          "label": "interval"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
+          "pointsDisplay": "never"
         },
         "dataMapping": {
-          "dimension": "interval",
           "displayedFields": [
-            "interval",
-            "process.command_line",
-            "host.name"
-          ],
-          "value": "interval",
-          "longitude": "interval",
-          "latitude": "cpu_usage"
+            "usage"
+          ]
         },
-        "tooltip": {
-          "showCustomFields": false
-        },
+        "autoSelectVisualization": false,
+        "thresholds": [],
         "unitsOverrides": [
           {
-            "identifier": "percentage",
-            "unitCategory": "percentage",
-            "baseUnit": "percent",
+            "identifier": "usage",
+            "unitCategory": "unspecified",
+            "baseUnit": "core",
             "displayUnit": null,
-            "decimals": 0,
+            "decimals": 2,
             "suffix": "",
             "delimiter": false,
             "added": 1747811257789
@@ -970,321 +242,22 @@
         }
       }
     },
-    "5": {
-      "title": "CPU usage per process",
-      "type": "data",
-      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name, state },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: { process.command_line }\n| sort cpu desc",
-      "visualization": "table",
-      "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "auto",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "process.command_line",
-            "valueAxisLabel": "utilization",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          }
-        },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "host.name",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {}
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [
-            [
-              "process.pid"
-            ]
-          ],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [
-            [
-              "process.command_line"
-            ]
-          ],
-          "columnWidths": {
-            "[\"process.command_line\"]": 488
-          },
-          "columnTypeOverrides": [
-            {
-              "id": 3746186.799999997,
-              "fields": [],
-              "value": "text"
-            }
-          ],
-          "sortBy": [
-            {
-              "columnId": "[\"value\"]",
-              "direction": "descending"
-            }
-          ],
-          "columnOrder": [
-            "[\"process.command_line\"]",
-            "[\"cpu\"]"
-          ],
-          "enableThresholdInRow": false
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "process.command_line"
-          ],
-          "dataMappings": {
-            "value": "utilization"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "utilization",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "process.command_line"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "autoSelectVisualization": false,
-        "label": {
-          "showLabel": false,
-          "label": "utilization"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
-        },
-        "unitsOverrides": [
-          {
-            "identifier": "cpu",
-            "unitCategory": "percentage",
-            "baseUnit": "percent",
-            "displayUnit": null,
-            "decimals": 2,
-            "suffix": "",
-            "delimiter": false,
-            "added": 1747734509218
-          }
-        ],
-        "dataMapping": {
-          "dimension": "process.command_line",
-          "displayedFields": [
-            "process.command_line"
-          ],
-          "value": "utilization",
-          "longitude": "utilization"
-        },
-        "tooltip": {
-          "showCustomFields": false
-        }
-      },
-      "querySettings": {
-        "maxResultRecords": 1000,
-        "defaultScanLimitGbytes": 500,
-        "maxResultMegaBytes": 1,
-        "defaultSamplingRatio": 10,
-        "enableSampling": false
-      },
-      "davis": {
-        "enabled": false,
-        "davisVisualization": {
-          "isAvailable": true
-        }
-      }
-    },
     "6": {
       "title": "OS Type",
       "type": "data",
-      "query": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name, os.type }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd host.name, os.type\n| fieldsRemove timeframe, interval, uptime\n| limit 1\n\n",
+      "query": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name, os.type }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd os.type\n| fieldsRemove timeframe, interval, uptime, host.name\n| limit 1\n\n",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name,os.type",
-            "valueAxisLabel": "",
-            "tooltipVariant": "single",
-            "categoryAxis": [
-              "host.name",
-              "os.type"
-            ],
-            "valueAxis": []
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          }
-        },
         "singleValue": {
-          "showLabel": false,
+          "labelMode": "none",
           "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
           "recordField": "os.type",
           "trend": {
-            "trendType": "auto",
             "isVisible": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {}
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": true,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [],
-          "enableThresholdInRow": false
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name",
-            "os.type"
-          ],
-          "dataMappings": {
-            "value": "host.name"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "categorical"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name",
-            "os.type"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
+          }
         },
         "autoSelectVisualization": false,
-        "dataMapping": {
-          "dimension": "host.name",
-          "displayedFields": [
-            "host.name",
-            "os.type"
-          ]
-        },
-        "tooltip": {
-          "showCustomFields": false
-        }
+        "thresholds": []
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -1306,63 +279,11 @@
       "query": "timeseries {\n  usage = sum(process.memory.usage, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd memory = arrayLast(usage)\n| fieldsRemove host.name, usage\n| summarize memory = sum(memory), by: { process.command_line }\n| sort memory desc",
       "visualization": "table",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "process.command_line",
-            "valueAxisLabel": "utilization",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          }
-        },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "host.name",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {}
-        },
         "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
+          "columnOrder": [
+            "[\"process.command_line\"]",
+            "[\"memory\"]"
+          ],
           "hiddenColumns": [
             [
               "timeframe",
@@ -1376,77 +297,23 @@
               "interval"
             ]
           ],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
           "monospacedFontColumns": [
             [
               "process.command_line"
             ]
-          ],
-          "columnWidths": {
-            "[\"process.command_line\"]": 526.8
-          },
-          "columnTypeOverrides": [],
-          "columnOrder": [
-            "[\"process.command_line\"]",
-            "[\"memory\"]"
           ],
           "sortBy": [
             {
               "columnId": "[\"utilization\"]",
               "direction": "descending"
             }
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "process.command_line"
           ],
-          "dataMappings": {
-            "value": "utilization"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "utilization",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "process.command_line"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false,
-          "label": "utilization"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
+          "columnWidths": {
+            "[\"process.command_line\"]": 526.8
+          }
         },
         "autoSelectVisualization": false,
+        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "memory",
@@ -1458,18 +325,7 @@
             "delimiter": false,
             "added": 1747745333530
           }
-        ],
-        "dataMapping": {
-          "dimension": "process.command_line",
-          "displayedFields": [
-            "process.command_line"
-          ],
-          "value": "utilization",
-          "longitude": "utilization"
-        },
-        "tooltip": {
-          "showCustomFields": false
-        }
+        ]
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -1491,151 +347,31 @@
       "query": "timeseries utilization = avg(system.memory.usage),\nfilter: { host.name == $Hosts and state == \"used\"}",
       "visualization": "lineChart",
       "visualizationSettings": {
-        "thresholds": [],
         "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "never",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "interval",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
           "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host",
-            "interval"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": false,
-            "label": "Memory Usage",
-            "max": "auto",
-            "scale": "linear"
-          },
-          "fieldMapping": {
-            "timestamp": "timeframe",
-            "leftAxisValues": [
-              "utilization"
-            ]
-          },
           "legend": {
             "hidden": true
-          }
-        },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "host.name",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false
           },
-          "isIconVisible": false,
-          "sparklineSettings": {
-            "record": "utilization"
-          }
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "utilization"
-              ],
-              "value": "sparkline",
-              "id": 1747652634386
-            }
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
+          "leftYAxisSettings": {
+            "label": "Memory Usage"
           },
+          "xAxisLabel": "timeframe",
+          "xAxisScaling": "analyzedTimeframe",
+          "fieldMapping": {
+            "leftAxisValues": [
+              "utilization"
+            ],
+            "timestamp": "timeframe"
+          },
+          "pointsDisplay": "never"
+        },
+        "dataMapping": {
           "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "host.name"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "categorical",
-          "min": null,
-          "max": null
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
+            "utilization"
           ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false,
-          "label": "interval"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
         },
         "autoSelectVisualization": false,
-        "dataMapping": {
-          "dimension": "interval",
-          "displayedFields": [
-            "interval",
-            "host.name"
-          ],
-          "value": "interval",
-          "longitude": "interval"
-        },
-        "tooltip": {
-          "showCustomFields": false
-        }
+        "thresholds": []
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -1657,154 +393,32 @@
       "query": "timeseries {\n  process_count=avg(system.processes.count)\n}, by: {host.name}\n,filter: { host.name == $Hosts }\n\n",
       "visualization": "lineChart",
       "visualizationSettings": {
-        "thresholds": [],
         "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "never",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "interval",
-            "tooltipVariant": "single",
-            "categoryAxis": [
-              "host.name"
-            ],
-            "valueAxis": [
-              "interval"
-            ]
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
           "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host.name",
-            "interval"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": false,
-            "label": "Process Count",
-            "max": "auto"
-          },
-          "fieldMapping": {
-            "timestamp": "timeframe",
-            "leftAxisValues": [
-              "process_count"
-            ]
-          },
           "legend": {
             "hidden": true
-          }
-        },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "host.name",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false
           },
-          "isIconVisible": false,
-          "sparklineSettings": {
-            "record": "process_count"
-          }
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "process_count"
-              ],
-              "value": "sparkline",
-              "id": 1732206569562
-            }
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
+          "leftYAxisSettings": {
+            "label": "Process Count"
           },
-          "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "host.name"
+          "xAxisLabel": "timeframe",
+          "xAxisScaling": "analyzedTimeframe",
+          "fieldMapping": {
+            "leftAxisValues": [
+              "process_count"
+            ],
+            "timestamp": "timeframe"
           },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "categorical"
+          "pointsDisplay": "never"
         },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false,
-          "label": "interval"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
-        },
-        "autoSelectVisualization": false,
         "dataMapping": {
-          "dimension": "interval",
           "displayedFields": [
             "interval",
             "host.name"
-          ],
-          "value": "interval",
-          "longitude": "interval"
+          ]
         },
-        "tooltip": {
-          "showCustomFields": false
-        },
+        "autoSelectVisualization": false,
+        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "process_count",
@@ -1835,162 +449,31 @@
     "11": {
       "title": "Paging usage",
       "type": "data",
-      "query": "timeseries {\n  paging_usage=avg(system.paging.usage)\n},\nby: {device, state, host.name},\nfilter: { host.name == $Hosts }\n",
+      "query": "timeseries {\n  paging_usage=sum(system.paging.usage, rollup: avg)\n},\nby: {device, state, host.name},\nfilter: { host.name == $Hosts }\n",
       "visualization": "lineChart",
       "visualizationSettings": {
-        "thresholds": [],
         "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "never",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "device,state,host.name",
-            "valueAxisLabel": "interval",
-            "tooltipVariant": "single",
-            "categoryAxis": [
-              "device",
-              "state",
-              "host.name"
-            ],
-            "valueAxis": [
-              "interval"
-            ]
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
           "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host.name",
-            "interval"
-          ],
           "leftYAxisSettings": {
-            "isLabelVisible": false,
-            "label": "Process Count",
-            "max": "auto"
+            "label": "Process Count"
           },
+          "xAxisLabel": "timeframe",
+          "xAxisScaling": "analyzedTimeframe",
           "fieldMapping": {
-            "timestamp": "timeframe",
             "leftAxisValues": [
               "paging_usage"
-            ]
+            ],
+            "timestamp": "timeframe"
           },
-          "legend": {
-            "position": "auto",
-            "hidden": false
-          }
+          "pointsDisplay": "never"
         },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "host.name",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {
-            "record": "paging_usage"
-          }
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "paging_usage"
-              ],
-              "value": "sparkline",
-              "id": 1732203695765
-            }
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
+        "dataMapping": {
           "displayedFields": [
-            "device",
-            "state",
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "device"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "categorical"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
+            "state"
           ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false,
-          "label": "interval"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
         },
         "autoSelectVisualization": false,
-        "dataMapping": {
-          "dimension": "interval",
-          "displayedFields": [
-            "interval",
-            "device",
-            "state",
-            "host.name"
-          ],
-          "value": "interval",
-          "longitude": "interval"
-        },
-        "tooltip": {}
+        "thresholds": []
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -2009,142 +492,23 @@
     "13": {
       "title": "Logical CPUs",
       "type": "data",
-      "query": "timeseries {\n  count = avg(system.cpu.logical.count)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd value.A = arrayAvg(count)\n| fieldsAdd host.name\n| fieldsRemove timeframe, interval\n| limit 1\n\n",
+      "query": "timeseries {\n  count = avg(system.cpu.logical.count)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd value.A = arrayLast(count)\n| fieldsRemove timeframe, interval\n| limit 1\n\n",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "value.A",
-            "tooltipVariant": "single",
-            "categoryAxis": [
-              "host.name"
-            ],
-            "valueAxis": [
-              "value.A"
-            ]
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          }
-        },
         "singleValue": {
-          "showLabel": false,
+          "labelMode": "none",
           "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
           "recordField": "value.A",
-          "trend": {
-            "trendType": "custom",
-            "isVisible": false
-          },
-          "isIconVisible": false,
           "sparklineSettings": {
             "record": "count"
+          },
+          "trend": {
+            "isVisible": false,
+            "trendType": "custom"
           }
         },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": true,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [],
-          "enableThresholdInRow": false
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "value.A"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "value.A",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false,
-          "label": "value.A"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
-        },
         "autoSelectVisualization": false,
-        "dataMapping": {
-          "dimension": "host.name",
-          "displayedFields": [
-            "host.name"
-          ],
-          "value": "value.A",
-          "longitude": "value.A"
-        },
-        "tooltip": {
-          "showCustomFields": false
-        },
+        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "value.A",
@@ -2175,134 +539,19 @@
     "14": {
       "title": "OS Arch",
       "type": "data",
-      "query": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name, host.arch }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd host.name, host.arch\n| fieldsRemove timeframe, interval, uptime\n| limit 1\n\n",
+      "query": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name, host.arch }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd host.arch\n| fieldsRemove timeframe, interval, uptime, host.name\n| limit 1\n\n",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name,host.arch",
-            "valueAxisLabel": "",
-            "tooltipVariant": "single",
-            "categoryAxis": [
-              "host.name",
-              "host.arch"
-            ],
-            "valueAxis": []
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          }
-        },
         "singleValue": {
-          "showLabel": false,
+          "labelMode": "none",
           "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
           "recordField": "host.arch",
           "trend": {
-            "trendType": "auto",
             "isVisible": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {}
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": true,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [],
-          "enableThresholdInRow": false
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name",
-            "host.arch"
-          ],
-          "dataMappings": {
-            "value": "host.name"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "categorical"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name",
-            "host.arch"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
+          }
         },
         "autoSelectVisualization": false,
-        "dataMapping": {
-          "dimension": "host.name",
-          "displayedFields": [
-            "host.name",
-            "host.arch"
-          ]
-        },
-        "tooltip": {
-          "showCustomFields": false
-        }
+        "thresholds": []
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -2321,142 +570,23 @@
     "15": {
       "title": "Memory",
       "type": "data",
-      "query": "timeseries {\n  count=avg(system.memory.limit)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd value.A = arrayAvg(count)\n| fieldsAdd host.name\n| fieldsRemove timeframe, interval\n| limit 1",
+      "query": "timeseries {\n  val=sum(system.memory.limit, rollup: avg)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd value.A = arrayLast(val)\n| fieldsRemove timeframe, interval\n| limit 1",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "value.A",
-            "tooltipVariant": "single",
-            "categoryAxis": [
-              "host.name"
-            ],
-            "valueAxis": [
-              "value.A"
-            ]
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          }
-        },
         "singleValue": {
-          "showLabel": false,
+          "labelMode": "none",
           "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
           "recordField": "value.A",
-          "trend": {
-            "trendType": "custom",
-            "isVisible": false
-          },
-          "isIconVisible": false,
           "sparklineSettings": {
             "record": "count"
+          },
+          "trend": {
+            "isVisible": false,
+            "trendType": "custom"
           }
         },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": true,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [],
-          "enableThresholdInRow": false
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "value.A"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "value.A",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false,
-          "label": "value.A"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
-        },
         "autoSelectVisualization": false,
-        "dataMapping": {
-          "dimension": "host.name",
-          "displayedFields": [
-            "host.name"
-          ],
-          "value": "value.A",
-          "longitude": "value.A"
-        },
-        "tooltip": {
-          "showCustomFields": false
-        },
+        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "value.A",
@@ -2487,178 +617,36 @@
     "16": {
       "title": "Filesystem capacity (root)",
       "type": "data",
-      "query": "timeseries {\n  space=sum(system.filesystem.usage, rollup: avg)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -2m, to: -1m\n| fieldsAdd fs_space = arrayLast(space)",
+      "query": "timeseries {\n  usage=sum(system.filesystem.usage, rollup:avg)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -2m, to: -1m\n| fieldsAdd fs_space = arrayLast(usage)",
       "visualization": "singleValue",
       "visualizationSettings": {
         "autoSelectVisualization": false,
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "auto",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "value.A",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host",
-            "interval",
-            "value.A"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          },
-          "fieldMapping": {
-            "timestamp": "timeframe",
-            "leftAxisValues": [
-              "space"
-            ]
-          }
-        },
         "singleValue": {
-          "showLabel": false,
+          "labelMode": "none",
           "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
           "recordField": "fs_space",
-          "trend": {
-            "trendType": "custom",
+          "sparklineSettings": {
+            "record": "space",
             "isVisible": false
           },
-          "isIconVisible": false,
-          "sparklineSettings": {
-            "record": "space"
+          "trend": {
+            "isVisible": false,
+            "trendType": "custom"
           }
         },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": true,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "space"
-              ],
-              "value": "sparkline",
-              "id": 1737358808509
-            }
-          ],
-          "enableThresholdInRow": false,
-          "columnOrder": [
-            "[\"timeframe\",\"start\"]",
-            "[\"timeframe\",\"end\"]",
-            "[\"interval\"]",
-            "[\"host.name\"]",
-            "[\"space\"]",
-            "[\"fs_space\"]"
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "value.A"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            },
-            {
-              "valueAxis": "value.A",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false,
-          "label": "value.A"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
-        },
+        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "fs_space",
             "unitCategory": "data",
             "baseUnit": "byte",
-            "displayUnit": "gibibyte",
+            "displayUnit": "gigabyte",
             "decimals": 2,
             "suffix": "",
             "delimiter": false,
             "added": 1732273745399
           }
-        ],
-        "dataMapping": {
-          "dimension": "interval",
-          "displayedFields": [
-            "interval",
-            "host.name"
-          ],
-          "value": "value.A",
-          "longitude": "interval",
-          "latitude": "value.A"
-        },
-        "tooltip": {
-          "showCustomFields": false
-        }
+        ]
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -2677,136 +665,23 @@
     "18": {
       "title": "Physical CPUs",
       "type": "data",
-      "query": "timeseries {\n  count=count(system.cpu.physical.count)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd value.A = arrayMax(count)\n| fieldsAdd host.name\n| fieldsRemove timeframe, interval\n| limit 1",
+      "query": "timeseries {\n  count=avg(system.cpu.physical.count)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd value.A = arrayLast(count)\n| fieldsRemove timeframe, interval\n| limit 1",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "value.A",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          }
-        },
+        "autoSelectVisualization": false,
         "singleValue": {
-          "showLabel": false,
+          "labelMode": "none",
           "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
           "recordField": "value.A",
-          "trend": {
-            "trendType": "custom",
-            "isVisible": false
-          },
-          "isIconVisible": false,
           "sparklineSettings": {
             "record": "count"
+          },
+          "trend": {
+            "isVisible": false,
+            "trendType": "custom"
           }
         },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": true,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [],
-          "enableThresholdInRow": false
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "value.A"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "blue"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "value.A",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false,
-          "label": "value.A"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
-        },
-        "autoSelectVisualization": false,
-        "dataMapping": {
-          "dimension": "host.name",
-          "displayedFields": [
-            "host.name"
-          ],
-          "value": "value.A",
-          "longitude": "value.A"
-        },
-        "tooltip": {
-          "showCustomFields": false
-        },
+        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "value.A",
@@ -2849,123 +724,16 @@
       "query": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd host.name\n| fieldsRemove timeframe, interval, uptime\n| limit 1\n\n",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "host.name",
-            "valueAxisLabel": "",
-            "tooltipVariant": "single",
-            "categoryAxis": [
-              "host.name"
-            ],
-            "valueAxis": []
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host"
-          ],
-          "leftYAxisSettings": {
-            "isLabelVisible": true,
-            "label": "CPU Usage",
-            "max": "auto"
-          },
-          "legend": {
-            "hidden": true
-          }
-        },
         "singleValue": {
-          "showLabel": false,
+          "labelMode": "none",
           "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
           "recordField": "host.name",
           "trend": {
-            "trendType": "auto",
             "isVisible": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {}
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": true,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [],
-          "enableThresholdInRow": false
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
-          "displayedFields": [],
-          "dataMappings": {},
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "categorical"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
+          }
         },
         "autoSelectVisualization": false,
-        "dataMapping": {
-          "dimension": "host.name",
-          "displayedFields": [
-            "host.name"
-          ]
-        },
-        "tooltip": {
-          "showCustomFields": false
-        }
+        "thresholds": []
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -2984,154 +752,32 @@
     "25": {
       "title": "Filesystem usage",
       "type": "data",
-      "query": "timeseries {\n  filesystem_usage=sum(system.filesystem.usage, rollup: avg)\n}, by: {mountpoint, host.name}\n,filter: { host.name == $Hosts and state == \"used\" }\n\n",
+      "query": "timeseries {\n  filesystem_usage=avg(system.filesystem.usage)\n}, by: {mountpoint, host.name}\n,filter: { host.name == $Hosts and state == \"used\" }\n\n",
       "visualization": "lineChart",
       "visualizationSettings": {
-        "thresholds": [],
         "chartSettings": {
-          "xAxisScaling": "analyzedTimeframe",
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "never",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "categoryAxisLabel": "mountpoint,host.name",
-            "valueAxisLabel": "interval",
-            "tooltipVariant": "single"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
           "truncationMode": "middle",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host.name",
-            "interval"
-          ],
           "leftYAxisSettings": {
-            "isLabelVisible": true,
             "label": "FileSystem Usage",
-            "max": "auto"
+            "isLabelVisible": true
           },
+          "xAxisLabel": "timeframe",
+          "xAxisScaling": "analyzedTimeframe",
           "fieldMapping": {
-            "timestamp": "timeframe",
             "leftAxisValues": [
               "filesystem_usage"
-            ]
+            ],
+            "timestamp": "timeframe"
           },
-          "legend": {
-            "position": "auto",
-            "hidden": false
-          }
+          "pointsDisplay": "never"
         },
-        "singleValue": {
-          "showLabel": false,
-          "label": "host.name",
-          "prefixIcon": "AnalyticsIcon",
-          "autoscale": true,
-          "alignment": "center",
-          "colorThresholdTarget": "value",
-          "recordField": "host.name",
-          "trend": {
-            "trendType": "auto",
-            "isVisible": false
-          },
-          "isIconVisible": false,
-          "sparklineSettings": {
-            "record": "filesystem_usage"
-          }
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "filesystem_usage"
-              ],
-              "value": "sparkline",
-              "id": 1747653231244
-            }
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto"
-          },
+        "dataMapping": {
           "displayedFields": [
-            "mountpoint",
-            "host.name"
-          ],
-          "dataMappings": {
-            "value": "mountpoint"
-          },
-          "truncationMode": "middle",
-          "colorMode": "color-palette",
-          "colorPalette": "categorical"
-        },
-        "histogram": {
-          "legend": "auto",
-          "yAxis": {
-            "label": "Frequency",
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [
-            {
-              "valueAxis": "interval",
-              "rangeAxis": ""
-            }
-          ],
-          "variant": "single",
-          "truncationMode": "middle",
-          "displayedFields": [
-            "host.name"
+            "mountpoint"
           ]
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
-        },
-        "label": {
-          "showLabel": false,
-          "label": "interval"
-        },
-        "icon": {
-          "showIcon": false,
-          "icon": ""
         },
         "autoSelectVisualization": false,
-        "dataMapping": {
-          "dimension": "interval",
-          "displayedFields": [
-            "interval",
-            "mountpoint",
-            "host.name"
-          ],
-          "value": "interval",
-          "longitude": "interval"
-        },
-        "tooltip": {
-          "showCustomFields": false
-        }
+        "thresholds": []
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -3150,118 +796,22 @@
     "26": {
       "title": "Network Connections",
       "type": "data",
-      "query": "timeseries max(system.network.connections), by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd NetworkIO = arrayAvg(`max(system.network.connections)`)",
+      "query": "timeseries { val = sum(system.network.connections, rollup: avg)}\n, by: { host.name },\nfilter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd NetworkIO = arrayAvg(val)",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "thresholds": [],
-        "chartSettings": {
-          "gapPolicy": "gap",
-          "circleChartSettings": {
-            "groupingThresholdType": "relative",
-            "groupingThresholdValue": 0,
-            "valueType": "relative"
-          },
-          "categoryOverrides": {},
-          "curve": "linear",
-          "pointsDisplay": "auto",
-          "categoricalBarChartSettings": {
-            "layout": "horizontal",
-            "categoryAxisTickLayout": "horizontal",
-            "scale": "absolute",
-            "groupMode": "stacked",
-            "colorPaletteMode": "multi-color",
-            "valueAxisScale": "linear"
-          },
-          "colorPalette": "categorical",
-          "valueRepresentation": "absolute",
-          "truncationMode": "middle",
-          "xAxisScaling": "analyzedTimeframe",
-          "xAxisLabel": "timeframe",
-          "xAxisIsLabelVisible": false,
-          "hiddenLegendFields": [
-            "host",
-            "interval",
-            "NetworkIO",
-            "avg(system.network.io)"
-          ],
-          "leftYAxisSettings": {},
-          "fieldMapping": {
-            "timestamp": "timeframe",
-            "leftAxisValues": [
-              "max(system.network.connections)"
-            ]
-          }
-        },
         "singleValue": {
-          "showLabel": false,
+          "labelMode": "none",
           "label": "NetworkIO",
-          "prefixIcon": "AnalyticsIcon",
-          "isIconVisible": false,
           "recordField": "NetworkIO",
           "sparklineSettings": {
             "record": "max(system.network.connections)"
           },
-          "alignment": "center",
           "trend": {
-            "trendType": "auto",
             "isVisible": true
-          },
-          "colorThresholdTarget": "value"
-        },
-        "table": {
-          "rowDensity": "condensed",
-          "enableSparklines": false,
-          "hiddenColumns": [],
-          "linewrapEnabled": false,
-          "lineWrapIds": [],
-          "monospacedFontEnabled": false,
-          "monospacedFontColumns": [],
-          "columnWidths": {},
-          "columnTypeOverrides": [
-            {
-              "fields": [
-                "max(system.network.connections)"
-              ],
-              "value": "sparkline",
-              "id": 1747648210270
-            }
-          ]
-        },
-        "honeycomb": {
-          "shape": "hexagon",
-          "legend": {
-            "hidden": false,
-            "position": "auto",
-            "ratio": "auto"
-          },
-          "dataMappings": {},
-          "displayedFields": [],
-          "truncationMode": "middle",
-          "labels": {
-            "showLabels": false
-          },
-          "colorMode": "color-palette",
-          "colorPalette": "categorical"
-        },
-        "histogram": {
-          "legend": {
-            "position": "auto"
-          },
-          "yAxis": {
-            "label": "Frequency",
-            "isLabelVisible": true,
-            "scale": "linear"
-          },
-          "colorPalette": "categorical",
-          "dataMappings": [],
-          "variant": "single",
-          "truncationMode": "middle"
-        },
-        "valueBoundaries": {
-          "min": "auto",
-          "max": "auto"
+          }
         },
         "autoSelectVisualization": false,
+        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "NetworkIO",
@@ -3272,6 +822,74 @@
             "suffix": "",
             "delimiter": false,
             "added": 1747652121247
+          }
+        ]
+      },
+      "querySettings": {
+        "maxResultRecords": 1000,
+        "defaultScanLimitGbytes": 500,
+        "maxResultMegaBytes": 1,
+        "defaultSamplingRatio": 10,
+        "enableSampling": false
+      },
+      "davis": {
+        "enabled": false,
+        "davisVisualization": {
+          "isAvailable": true
+        }
+      }
+    },
+    "27": {
+      "title": "CPU usage per process",
+      "type": "data",
+      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: { process.command_line }\n| sort cpu desc",
+      "visualization": "table",
+      "visualizationSettings": {
+        "table": {
+          "hiddenColumns": [
+            [
+              "timeframe",
+              "start"
+            ],
+            [
+              "timeframe",
+              "end"
+            ],
+            [
+              "interval"
+            ]
+          ],
+          "monospacedFontColumns": [
+            [
+              "process.command_line"
+            ]
+          ],
+          "sortBy": [
+            {
+              "columnId": "[\"utilization\"]",
+              "direction": "descending"
+            }
+          ],
+          "columnWidths": {
+            "[\"process.command_line\"]": 526.8
+          },
+          "columnOrder": [
+            "[\"process.command_line\"]",
+            "[\"cpu\"]"
+          ]
+        },
+        "autoSelectVisualization": false,
+        "thresholds": [],
+        "unitsOverrides": [
+          {
+            "identifier": "cpu",
+            "unitCategory": "percentage",
+            "baseUnit": "percent",
+            "displayUnit": null,
+            "decimals": 2,
+            "suffix": "",
+            "delimiter": false,
+            "added": 1747745333530
           }
         ]
       },
@@ -3317,12 +935,6 @@
     },
     "4": {
       "x": 0,
-      "y": 10,
-      "w": 12,
-      "h": 6
-    },
-    "5": {
-      "x": 12,
       "y": 10,
       "w": 12,
       "h": 6
@@ -3416,6 +1028,12 @@
       "y": 8,
       "w": 6,
       "h": 2
+    },
+    "27": {
+      "x": 12,
+      "y": 10,
+      "w": 12,
+      "h": 6
     }
   },
   "importedWithCode": false,

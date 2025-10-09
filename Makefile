@@ -39,7 +39,7 @@ CHLOGGEN_CONFIG := .chloggen/config.yaml
 # renovate: datasource=github-releases depName=open-telemetry/opentelemetry-collector-contrib
 OTEL_UPSTREAM_VERSION=v0.137.0
 
-.PHONY: build generate test package-test clean clean-all components install-tools snapshot install-goreleaser-pro
+.PHONY: build generate test package-test components install-tools snapshot install-goreleaser-pro
 build: $(BIN)
 build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --snapshot --clean
@@ -54,11 +54,6 @@ test: $(BIN)
 	exit $$result;
 package-test:
 	./internal/testbed/linux-services/package-tests.sh $(PACKAGE_PATH) $(ARCH)
-clean:
-	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
-clean-tools:
-	rm -rf $(TOOLS_BIN_DIR)
-clean-all: clean clean-tools
 components: $(BIN)
 	$(BIN) components
 install-tools: install-goreleaser-pro

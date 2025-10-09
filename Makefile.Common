@@ -11,4 +11,12 @@ moddownload:
 modtidy:
 	$(GOCMD) mod tidy
 
-# TODO continue moving tools things to the common makefile
+.PHONY: clean
+clean:
+	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
+.PHONY: clean-tools
+clean-tools:
+	rm -rf $(TOOLS_BIN_DIR)
+
+.PHONY: clean-all
+clean-all: clean clean-tools

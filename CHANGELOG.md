@@ -31,11 +31,6 @@ v0.137.0:
   This change introduces a breaking change, which is now guarded by the feature gate connector.spanmetrics.useSecondAsDefaultMetricsUnit.
   Currently, the feature gate is disabled by default, so the unit will remain ms. After one release cycle, the unit will switch to s and the feature gate will also be enabled by default.
 
-### Unmaintained Components
-These components are marked as Unmaintained and will eventually be removed from our community distributions. If you depend on these components we need your help to support them.
-
-- extension/healthcheck
-
 ### 💡 Enhancements 💡
 
 - `all`: Changelog entries will now have their component field checked against a list of valid components. ([#13924](https://github.com/open-telemetry/opentelemetry-collector/issues/13924))

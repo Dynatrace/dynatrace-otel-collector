@@ -1,5 +1,5 @@
-SRC_ROOT := $(shell git rev-parse --show-toplevel)
+include ../../../Makefile.Common
 
 .PHONY: run-tests
 run-tests:
-	GOJUNIT=$(GOJUNIT) ./runtests.sh
+	GOJUNIT="$(GO_TOOL) go-junit-report" ./runtests.sh

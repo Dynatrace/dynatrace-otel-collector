@@ -17,29 +17,18 @@ SOURCES := $(shell find internal/confmap -type f | sort )
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
 
-# renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
-GORELEASER_PRO_VERSION ?= v2.12.5
-
 # Files to be copied directly from the project root
 CP_FILES = LICENSE README.md
 CP_FILES_DEST = $(addprefix $(BUILD_DIR)/, $(CP_FILES))
 
-TOOLS_MOD_DIR   := $(SRC_ROOT)
-TOOLS_MOD_FILE  := $(TOOLS_MOD_DIR)/go.mod
-GO_TOOL         := $(GOCMD) tool -modfile $(TOOLS_MOD_FILE)
-TOOLS_BIN_DIR    := $(SRC_ROOT)/.tools
-
-GORELEASER := .tools/goreleaser
-
 PACKAGE_PATH ?= ""
-ARCH ?= ""
 
 CHLOGGEN_CONFIG := .chloggen/config.yaml
 
 # renovate: datasource=github-releases depName=open-telemetry/opentelemetry-collector-contrib
 OTEL_UPSTREAM_VERSION=v0.137.0
 
-.PHONY: build generate test package-test components install-tools snapshot install-goreleaser-pro
+.PHONY: build generate test package-test components install-tools snapshot
 build: $(BIN)
 build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --snapshot --clean
@@ -59,57 +48,6 @@ components: $(BIN)
 install-tools: install-goreleaser-pro
 snapshot: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --snapshot --clean --parallelism 2 --skip archive,sbom --fail-fast
-
-OS := $(shell uname)
-ARCH := $(shell uname -m)
-
-ifeq ($(ARCH), 'amd64')
-	ARCH=x86_64
-else ifeq ($(ARCH), 'aarch64')
-	ARCH=arm64
-endif
-
-EXT := tar.gz
-ifeq ($(OS), 'windows')
-	EXT='zip'
-endif
-
-# Construct binary name and URL
-ARCHIVE_NAME := goreleaser-pro_$(OS)_$(ARCH).$(EXT)
-CHECKSUM_NAME := ./checksums.txt
-URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/$(ARCHIVE_NAME)
-CHECKSUM_URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt
-
-install-goreleaser-pro:
-	echo 'Installing GoReleaser Pro...'; \
-	GORELEASER_ACTUAL_VERSION=$$($(GORELEASER) --version 2>&1 | grep '^GitVersion:' | awk '{print $$2}'); \
-	if [ "v$$GORELEASER_ACTUAL_VERSION" = "$(GORELEASER_PRO_VERSION)" ]; then \
-	  	echo "GoReleaser is already installed with the correct version, moving on..."; \
-	else \
-		echo "Downloading $(ARCHIVE_NAME) from $(URL)..."; \
-		curl -sL $(URL) -o $(ARCHIVE_NAME); \
-		\
-		echo "Downloading checksum to verify downloaded binary..." ; \
-		curl -sL $(CHECKSUM_URL) -o $(CHECKSUM_NAME); \
-		\
-		echo "Verifying checksum signature..."; \
-		$(COSIGN) verify-blob \
-          --certificate-identity 'https://github.com/goreleaser/goreleaser-pro-internal/.github/workflows/release-pro.yml@refs/tags/$(GORELEASER_PRO_VERSION)' \
-          --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
-          --cert 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.pem' \
-          --signature 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.sig' \
-          $(CHECKSUM_NAME) \
-		\
-		echo "Verifying checksum..."; \
-		sha256sum --ignore-missing -c $(CHECKSUM_NAME); \
-		echo "Checksum verified successfully."; \
-		rm $(CHECKSUM_NAME); \
-		\
-		if [ "$(EXT)" = "zip" ]; then unzip goreleaser -o "$(ARCHIVE_NAME)"; else tar -xzf "$(ARCHIVE_NAME)" goreleaser; fi; \
-		chmod +x goreleaser; \
-		mv goreleaser $(TOOLS_BIN_DIR); \
-		echo "GoReleaser Pro installed successfully!"; \
-  	fi
 
 $(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN) $(SOURCES)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)

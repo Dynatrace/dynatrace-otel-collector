@@ -4,6 +4,78 @@
 
 <!-- next version -->
 
+## v0.38.0
+
+This release includes version 0.137.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.137.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.137.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.137.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+- `pkg/exporterhelper`: Remove all experimental symbols in exporterhelper ([#11143](https://github.com/open-telemetry/opentelemetry-collector/issues/11143))
+  They have all been moved to xexporterhelper
+- `spanmetricsconnector`: Exclude all resource attributes in spanmetrics ([#42103](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42103))
+  This change aligns with the ServiceGraph implementation and may introduce a breaking change:
+  Users utilizing Prometheus remote write will not experience a breaking change.
+  Users using OTLP/HTTP may encounter a breaking change.
+  The change is currently guarded by the feature gate connector.spanmetrics.excludeResourceMetrics and is disabled by default.
+  It will be enabled by default in the next release.
+- `spanmetricsconnector`: Change default duration metrics unit from ms to s ([#42462](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42462))
+  This change introduces a breaking change, which is now guarded by the feature gate connector.spanmetrics.useSecondAsDefaultMetricsUnit.
+  Currently, the feature gate is disabled by default, so the unit will remain ms. After one release cycle, the unit will switch to s and the feature gate will also be enabled by default.
+
+### Unmaintained Components
+These components are marked as Unmaintained and will eventually be removed from our community distributions. If you depend on these components we need your help to support them.
+
+- extension/healthcheck
+
+### 💡 Enhancements 💡
+
+- `all`: Changelog entries will now have their component field checked against a list of valid components. ([#13924](https://github.com/open-telemetry/opentelemetry-collector/issues/13924))
+  This will ensure a more standardized changelog format which makes it easier to parse.
+- `pkg/pdata`: Mark featuregate pdata.useCustomProtoEncoding as stable ([#13883](https://github.com/open-telemetry/opentelemetry-collector/issues/13883))
+- `pkg/ottl`: Create ctxprofilecommon for common attribute handling in various profiling sub messages ([#42107](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42107))
+- `all`: Mark configoptional as stable ([#13403](https://github.com/open-telemetry/opentelemetry-collector/issues/13403))
+- `all`: Mark configauth module as 1.0 ([#9476](https://github.com/open-telemetry/opentelemetry-collector/issues/9476))
+- `redactionprocessor`: Add support for URL sanitization in the redaction processor. ([#41535](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41535))
+- `receiver/k8seventsreceiver`: Added support for Leader Election into k8seventsreceiver using k8sleaderelector extension. ([#42266](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42266))
+- `receiver/k8sobjectsreceiver`: Switch to standby mode when leader lease is lost instead of shutdown ([#42706](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42706))
+- `processor/resourcedetection`: Add support for DigitalOcean in resourcedetectionprocessor ([#42803](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42803))
+- `processor/resourcedetection`: Add support for upcloud in resourcedetectionprocessor ([#42801](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42801))
+- `hostmetricsreceiver`: Add useMemAvailable feature gate to use the MemAvailable kernel's statistic to compute the "used" memory usage ([#42221](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42221))
+- `tailsamplingprocessor`: Add support for extensions that implement sampling policies. ([#31582](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/31582))
+  Extension support for tailsamplingprocessor is still in development and the interfaces may change at any time.
+
+### 🧰 Bug fixes 🧰
+
+- `receiver/k8seventsreceiver`: Prevent potential panic in the events receiver by safely checking that informer objects are *corev1.Event before handling them. ([#43014](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43014))
+- `processor/k8sattributes`: Use podUID instead podName to determine which pods should be deleted from cache ([#42978](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42978))
+- `statsdreceiver`: Fix a data race in statsdreceiver on shutdown ([#42878](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42878))
+
+###  🚩 Deprecations 🚩
+- `all`: service/telemetry.TracesConfig is deprecated ([#13904](https://github.com/open-telemetry/opentelemetry-collector/issues/13904))
+  This type alias has been added to otelconftelemetry.TracesConfig,
+  where the otelconf-based telemetry implementation now lives.
+
+### 🚀 New components 🚀
+
+- `resourcedetectionprocessor`: Added Oracle Cloud resource detection support to resourcedetectionprocessor, enabling automatic population of Oracle Cloud-specific resource attributes. ([#35091](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35091))
+  This update allows the OpenTelemetry Collector to detect and annotate telemetry with Oracle Cloud resource metadata when running in Oracle Cloud environments.
+  Includes new unit tests and documentation.
+
+---
+
+</details>
+
+<!-- previous-version -->
+
 ## v0.37.0
 
 This release includes version 0.136.0 of the upstream Collector components.
@@ -27,14 +99,14 @@ v0.136.0:
 - `processor/resourcedetectionprocessor`: Add support for Vultr cloud provider in the resourcedetectionprocessor ([#42569](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42569))
 - `spanmetricsconnector`: Supports adding the `collector.instance.id` attribute to data points generated by the spanmetrics connector. ([#40400](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40400))
   This feature currently in alpha stage, user should enable it by feature-gate `--feature-gates=+connector.spanmetrics.includeCollectorInstanceID`
-  
 - `processor/resourcedetectionprocessor`: Add support for Scaleway cloud provider in the resourcedetectionprocessor ([#42664](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42664))
 - `tailsamplingprocessor`: Set a `tailsampling.cached_decision` attribute on traces that were sampled by the decision cache. ([#42535](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42535))
 - `receiver/k8scluster`: Add experimental metric for container status reason ([#32457](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32457))
 - `xpdata`: Add Serialization and Deserialization of AnyValue ([#12826](https://github.com/open-telemetry/opentelemetry-collector/issues/12826))
 - `debugexporter`: add support for batching ([#13791](https://github.com/open-telemetry/opentelemetry-collector/issues/13791))
-  The default queue size is 1
+   The default queue size is 1
 - `configtls`: Add early validation for TLS server configurations to fail fast when certificates are missing instead of failing at runtime. ([#13130](https://github.com/open-telemetry/opentelemetry-collector/issues/13130), [#13245](https://github.com/open-telemetry/opentelemetry-collector/issues/13245))
+
 
 ### 🧰 Bug fixes 🧰
 
@@ -51,7 +123,7 @@ v0.136.0:
 
 ### 💡 Enhancements 💡
 
-- `exporter/loadbalancingexporter`: Add load balancing exporter, including configuration example and tests. (#636)
+- `exporter/loadbalancingexporter`: Add load balancing exporter, including configuration example and tests. ([#636](https://github.com/open-telemetry/opentelemetry-collector/issues/636))
 
 <!-- previous-version -->
 
@@ -92,7 +164,7 @@ v0.135.0:
 
 ### 💡 Enhancements 💡
 
-- `k8seventsreceiver`: Add the k8sevents receiver to the Dynatrace distribution of the OTel collector (#658)
+- `k8seventsreceiver`: Add the k8sevents receiver to the Dynatrace distribution of the OTel collector ([#658](https://github.com/open-telemetry/opentelemetry-collector/issues/658))
 
 <!-- previous-version -->
 

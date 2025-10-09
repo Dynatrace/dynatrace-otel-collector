@@ -28,8 +28,8 @@ These components are marked as Unmaintained and will eventually be removed from 
 - `all`: Changelog entries will now have their component field checked against a list of valid components. ([#13924](https://github.com/open-telemetry/opentelemetry-collector/issues/13924))
   This will ensure a more standardized changelog format which makes it easier to parse.
 - `pkg/pdata`: Mark featuregate pdata.useCustomProtoEncoding as stable ([#13883](https://github.com/open-telemetry/opentelemetry-collector/issues/13883))
-- all: Mark configoptional as stable ([#13403](https://github.com/open-telemetry/opentelemetry-collector/issues/13403))
-- all: Mark configauth module as 1.0 ([#9476](https://github.com/open-telemetry/opentelemetry-collector/issues/9476))
+- `all`: Mark configoptional as stable ([#13403](https://github.com/open-telemetry/opentelemetry-collector/issues/13403))
+- `all`: Mark configauth module as 1.0 ([#9476](https://github.com/open-telemetry/opentelemetry-collector/issues/9476))
 - `pkg/pdata`: Mark featuregate pdata.useCustomProtoEncoding as stable ([#13883](https://github.com/open-telemetry/opentelemetry-collector/issues/13883))
 - `redactionprocessor`: Add support for URL sanitization in the redaction processor. ([#41535](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41535))
 - `receiver/k8seventsreceiver`: Added support for Leader Election into k8seventsreceiver using k8sleaderelector extension. ([#42266](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42266))
@@ -60,7 +60,7 @@ These components are marked as Unmaintained and will eventually be removed from 
   Currently, the feature gate is disabled by default, so the unit will remain ms. After one release cycle, the unit will switch to s and the feature gate will also be enabled by default.
 
 ###  🚩 Deprecations 🚩
-- all: service/telemetry.TracesConfig is deprecated ([#13904](https://github.com/open-telemetry/opentelemetry-collector/issues/13904))
+- `all`: service/telemetry.TracesConfig is deprecated ([#13904](https://github.com/open-telemetry/opentelemetry-collector/issues/13904))
   This type alias has been added to otelconftelemetry.TracesConfig,
   where the otelconf-based telemetry implementation now lives.
 

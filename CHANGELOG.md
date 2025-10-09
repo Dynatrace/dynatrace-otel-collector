@@ -18,6 +18,19 @@ v0.137.0:
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
+### 🛑 Breaking changes 🛑
+- `pkg/exporterhelper`: Remove all experimental symbols in exporterhelper ([#11143](https://github.com/open-telemetry/opentelemetry-collector/issues/11143))
+  They have all been moved to xexporterhelper
+- `spanmetricsconnector`: Exclude all resource attributes in spanmetrics ([#42103](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42103))
+  This change aligns with the ServiceGraph implementation and may introduce a breaking change:
+  Users utilizing Prometheus remote write will not experience a breaking change.
+  Users using OTLP/HTTP may encounter a breaking change.
+  The change is currently guarded by the feature gate connector.spanmetrics.excludeResourceMetrics and is disabled by default.
+  It will be enabled by default in the next release.
+- `spanmetricsconnector`: Change default duration metrics unit from ms to s ([#42462](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42462))
+  This change introduces a breaking change, which is now guarded by the feature gate connector.spanmetrics.useSecondAsDefaultMetricsUnit.
+  Currently, the feature gate is disabled by default, so the unit will remain ms. After one release cycle, the unit will switch to s and the feature gate will also be enabled by default.
+
 ### Unmaintained Components
 These components are marked as Unmaintained and will eventually be removed from our community distributions. If you depend on these components we need your help to support them.
 
@@ -28,9 +41,9 @@ These components are marked as Unmaintained and will eventually be removed from 
 - `all`: Changelog entries will now have their component field checked against a list of valid components. ([#13924](https://github.com/open-telemetry/opentelemetry-collector/issues/13924))
   This will ensure a more standardized changelog format which makes it easier to parse.
 - `pkg/pdata`: Mark featuregate pdata.useCustomProtoEncoding as stable ([#13883](https://github.com/open-telemetry/opentelemetry-collector/issues/13883))
+- `pkg/ottl`: Create ctxprofilecommon for common attribute handling in various profiling sub messages (open-telemetry/opentelemetry-collector-contrib#42107)
 - `all`: Mark configoptional as stable ([#13403](https://github.com/open-telemetry/opentelemetry-collector/issues/13403))
 - `all`: Mark configauth module as 1.0 ([#9476](https://github.com/open-telemetry/opentelemetry-collector/issues/9476))
-- `pkg/pdata`: Mark featuregate pdata.useCustomProtoEncoding as stable ([#13883](https://github.com/open-telemetry/opentelemetry-collector/issues/13883))
 - `redactionprocessor`: Add support for URL sanitization in the redaction processor. ([#41535](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41535))
 - `receiver/k8seventsreceiver`: Added support for Leader Election into k8seventsreceiver using k8sleaderelector extension. ([#42266](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42266))
 - `receiver/k8sobjectsreceiver`: Switch to standby mode when leader lease is lost instead of shutdown ([#42706](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42706))
@@ -45,19 +58,6 @@ These components are marked as Unmaintained and will eventually be removed from 
 - `receiver/k8seventsreceiver`: Prevent potential panic in the events receiver by safely checking that informer objects are *corev1.Event before handling them. ([#43014](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43014))
 - `processor/k8sattributes`: Use podUID instead podName to determine which pods should be deleted from cache ([#42978](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42978))
 - `statsdreceiver`: Fix a data race in statsdreceiver on shutdown ([#42878](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42878))
-
-### 🛑 Breaking changes 🛑
-- `pkg/exporterhelper`: Remove all experimental symbols in exporterhelper ([#11143](https://github.com/open-telemetry/opentelemetry-collector/issues/11143))
-  They have all been moved to xexporterhelper
-- `spanmetricsconnector`: Exclude all resource attributes in spanmetrics ([#42103](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42103))
-  This change aligns with the ServiceGraph implementation and may introduce a breaking change:
-  Users utilizing Prometheus remote write will not experience a breaking change.
-  Users using OTLP/HTTP may encounter a breaking change.
-  The change is currently guarded by the feature gate connector.spanmetrics.excludeResourceMetrics and is disabled by default.
-  It will be enabled by default in the next release.
-- `spanmetricsconnector`: Change default duration metrics unit from ms to s ([#42462](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42462))
-  This change introduces a breaking change, which is now guarded by the feature gate connector.spanmetrics.useSecondAsDefaultMetricsUnit.
-  Currently, the feature gate is disabled by default, so the unit will remain ms. After one release cycle, the unit will switch to s and the feature gate will also be enabled by default.
 
 ###  🚩 Deprecations 🚩
 - `all`: service/telemetry.TracesConfig is deprecated ([#13904](https://github.com/open-telemetry/opentelemetry-collector/issues/13904))

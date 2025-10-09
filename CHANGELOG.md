@@ -93,6 +93,13 @@ v0.136.0:
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
+### Unmaintained Components
+These components are marked as Unmaintained and will eventually be removed from our community distributions. If you depend on these components we need your help to support them.
+
+- extension/healthcheck
+- exporter/carbon
+- receiver/carbon
+
 ### 💡 Enhancements 💡
 
 - `processor/k8sattributesprocessor`: Add support for k8s.cronjob.uid attribute in k8sattributesprocessor ([#42557](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42557))

@@ -18,10 +18,13 @@ v0.137.0:
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
+### Unmaintained Components
+These components are marked as Unmaintained and will eventually be removed from our community distributions. If you depend on these components we need your help to support them.
+
+- extension/healthcheck
+
 ### 💡 Enhancements 💡
-- `cmd/mdatagen`: Improve validation for resource attribute `enabled` field in metadata files ([#12722](https://github.com/open-telemetry/opentelemetry-collector/issues/12722))
-  Resource attributes now require an explicit `enabled` field in metadata.yaml files, while regular attributes
-  are prohibited from having this field. This improves validation and prevents configuration errors.
+
 - `all`: Changelog entries will now have their component field checked against a list of valid components. ([#13924](https://github.com/open-telemetry/opentelemetry-collector/issues/13924))
   This will ensure a more standardized changelog format which makes it easier to parse.
 - `pkg/pdata`: Mark featuregate pdata.useCustomProtoEncoding as stable ([#13883](https://github.com/open-telemetry/opentelemetry-collector/issues/13883))
@@ -36,17 +39,11 @@ v0.137.0:
 - `hostmetricsreceiver`: Add useMemAvailable feature gate to use the MemAvailable kernel's statistic to compute the "used" memory usage ([#42221](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42221))
 - `tailsamplingprocessor`: Add support for extensions that implement sampling policies. ([#31582](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/31582))
   Extension support for tailsamplingprocessor is still in development and the interfaces may change at any time.
-- `telemetrygen`: Add span links support to telemetrygen ([#43007](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43007))
-  The new --span-links flag allows generating spans with links to previously created spans.
-  Each span can link to random existing span contexts, creating relationships between spans for testing
-  distributed tracing scenarios. Links include attributes for link type and index identification.
-- `telemetrygen`: Add load size to telemetrygen metrics and logs. ([#42322](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42322))
 
 ### 🧰 Bug fixes 🧰
 
 - `receiver/k8seventsreceiver`: Prevent potential panic in the events receiver by safely checking that informer objects are *corev1.Event before handling them. ([#43014](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43014))
 - `processor/k8sattributes`: Use podUID instead podName to determine which pods should be deleted from cache ([#42978](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42978))
-- `telemetrygen`: Publish int and bool attributes for logs ([#43090](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43090))
 - `statsdreceiver`: Fix a data race in statsdreceiver on shutdown ([#42878](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42878))
 
 🛑 Breaking changes 🛑
@@ -92,13 +89,6 @@ v0.136.0:
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
-
-### Unmaintained Components
-These components are marked as Unmaintained and will eventually be removed from our community distributions. If you depend on these components we need your help to support them.
-
-- extension/healthcheck
-- exporter/carbon
-- receiver/carbon
 
 ### 💡 Enhancements 💡
 

@@ -41,7 +41,7 @@ These components are marked as Unmaintained and will eventually be removed from 
 - `all`: Changelog entries will now have their component field checked against a list of valid components. ([#13924](https://github.com/open-telemetry/opentelemetry-collector/issues/13924))
   This will ensure a more standardized changelog format which makes it easier to parse.
 - `pkg/pdata`: Mark featuregate pdata.useCustomProtoEncoding as stable ([#13883](https://github.com/open-telemetry/opentelemetry-collector/issues/13883))
-- `pkg/ottl`: Create ctxprofilecommon for common attribute handling in various profiling sub messages (open-telemetry/opentelemetry-collector-contrib#42107)
+- `pkg/ottl`: Create ctxprofilecommon for common attribute handling in various profiling sub messages ([#42107](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42107))
 - `all`: Mark configoptional as stable ([#13403](https://github.com/open-telemetry/opentelemetry-collector/issues/13403))
 - `all`: Mark configauth module as 1.0 ([#9476](https://github.com/open-telemetry/opentelemetry-collector/issues/9476))
 - `redactionprocessor`: Add support for URL sanitization in the redaction processor. ([#41535](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41535))

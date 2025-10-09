@@ -46,7 +46,7 @@ These components are marked as Unmaintained and will eventually be removed from 
 - `processor/k8sattributes`: Use podUID instead podName to determine which pods should be deleted from cache ([#42978](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42978))
 - `statsdreceiver`: Fix a data race in statsdreceiver on shutdown ([#42878](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42878))
 
-🛑 Breaking changes 🛑
+### 🛑 Breaking changes 🛑
 - `pkg/exporterhelper`: Remove all experimental symbols in exporterhelper ([#11143](https://github.com/open-telemetry/opentelemetry-collector/issues/11143))
   They have all been moved to xexporterhelper
 - `spanmetricsconnector`: Exclude all resource attributes in spanmetrics ([#42103](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42103))
@@ -59,12 +59,12 @@ These components are marked as Unmaintained and will eventually be removed from 
   This change introduces a breaking change, which is now guarded by the feature gate connector.spanmetrics.useSecondAsDefaultMetricsUnit.
   Currently, the feature gate is disabled by default, so the unit will remain ms. After one release cycle, the unit will switch to s and the feature gate will also be enabled by default.
 
-  🚩 Deprecations 🚩
+###  🚩 Deprecations 🚩
 - all: service/telemetry.TracesConfig is deprecated ([#13904](https://github.com/open-telemetry/opentelemetry-collector/issues/13904))
   This type alias has been added to otelconftelemetry.TracesConfig,
   where the otelconf-based telemetry implementation now lives.
 
-🚀 New components 🚀
+### 🚀 New components 🚀
 
 - `resourcedetectionprocessor`: Added Oracle Cloud resource detection support to resourcedetectionprocessor, enabling automatic population of Oracle Cloud-specific resource attributes. ([#35091](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35091))
   This update allows the OpenTelemetry Collector to detect and annotate telemetry with Oracle Cloud resource metadata when running in Oracle Cloud environments.

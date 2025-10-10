@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/tools
 
-go 1.25.1
+go 1.25.2
 
 require (
 	github.com/sigstore/cosign/v2 v2.6.1

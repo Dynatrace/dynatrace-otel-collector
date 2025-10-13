@@ -33,7 +33,7 @@ All other required tools are installed automatically by `make`.
 
 ### Installing build tools
 
-Go-based tools and their versions are controlled by [`internal/tools`](./internal/tools/).
+Go-based tools and their versions are controlled by [`go.mod`](./go.mod).
 In order to manually install tools you may run `make install-tools`, but `make` will also install them as-needed during the build process if they are not installed.
 In order to remove them run `make clean-tools` or `make clean-all`.
 

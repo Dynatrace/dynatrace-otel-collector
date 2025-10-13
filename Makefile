@@ -18,9 +18,6 @@ SOURCES := $(shell find internal/confmap -type f | sort )
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
 
-# renovate: datasource=github-releases depName=jstemmer/go-junit-report
-GO_JUNIT_REPORT_VERSION ?= v2.1.0
-
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
 GORELEASER_PRO_VERSION ?= v2.12.5
 
@@ -38,6 +35,7 @@ GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
 BUILDER    := $(TOOLS_BIN_DIR)/builder
 CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
 COSIGN     := $(TOOLS_BIN_DIR)/cosign
+GOJUNIT    := $(TOOLS_BIN_DIR)/v2
 
 PACKAGE_PATH ?= ""
 ARCH ?= ""
@@ -69,7 +67,7 @@ clean-tools:
 clean-all: clean clean-tools
 components: $(BIN)
 	$(BIN) components
-install-tools: $(TOOLS_BIN_NAMES) install-goreleaser-pro install-go-junit-report
+install-tools: $(TOOLS_BIN_NAMES) install-goreleaser-pro
 snapshot: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --snapshot --clean --parallelism 2 --skip archive,sbom --fail-fast
 
@@ -181,8 +179,6 @@ genoteltestbedcol: $(BUILDER)
 	awk '/healthcheckextension $(OTEL_UPSTREAM_VERSION)/ {print; print "  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension $(OTEL_UPSTREAM_VERSION)"; next}1' cmd/oteltestbedcol/manifest.yaml > cmd/oteltestbedcol/manifest-dev.yaml
 	$(BUILDER) --skip-compilation --config cmd/oteltestbedcol/manifest-dev.yaml --output-path cmd/oteltestbedcol
 
-GOJUNIT = .tools/go-junit-report
-
 .PHONY: run-load-tests
 run-load-tests:
 	mkdir -p ./internal/testbed/bin/
@@ -208,7 +204,3 @@ for-all-target: $(ALL_MODS)
 .PHONY: gomoddownload
 gomoddownload:
 	$(MAKE) --no-print-directory for-all-target TARGET="moddownload"
-
-.PHONY: install-go-junit-report
-install-go-junit-report:
-	GOBIN=$(TOOLS_BIN_DIR) go install github.com/jstemmer/go-junit-report/v2@$(GO_JUNIT_REPORT_VERSION)

@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir -p .tools
           make install-tools
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go tool builder --help
+          GOOS=linux GOARCH=amd64 go tool builder --help
 
       - name: Free up disk space
         run: |

@@ -87,7 +87,7 @@ install-goreleaser-pro: $(COSIGN)
           --signature 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.sig'; \
 		\
 		echo "Verifying checksum..."; \
-		sha256sum --ignore-missing -q -c $(CHECKSUM_NAME); \
+		sha256sum --ignore-missing --quiet -c $(CHECKSUM_NAME); \
 		echo "Checksum verified successfully."; \
 		rm $(CHECKSUM_NAME); \
 		\

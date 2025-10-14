@@ -74,10 +74,10 @@ install-goreleaser-pro: $(COSIGN)
 	  	echo "GoReleaser is already installed with the correct version, moving on..."; \
 	else \
 		echo "Downloading $(ARCHIVE_NAME) from $(URL)..."; \
-		curl -sL $(URL) -o $(ARCHIVE_NAME); \
+		curl -L $(URL) -o $(ARCHIVE_NAME); \
 		\
 		echo "Downloading checksum to verify downloaded binary..." ; \
-		curl -sL $(CHECKSUM_URL) -o $(CHECKSUM_NAME); \
+		curl -L $(CHECKSUM_URL) -o $(CHECKSUM_NAME); \
 		\
 		echo "Verifying checksum signature..."; \
 		$(COSIGN) verify-blob $(CHECKSUM_NAME) \
@@ -87,6 +87,7 @@ install-goreleaser-pro: $(COSIGN)
           --signature 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.sig'; \
 		\
 		echo "Verifying checksum..."; \
+		ls -la $(CHECKSUM_NAME); \
 		sha256sum --ignore-missing --quiet -c $(CHECKSUM_NAME); \
 		echo "Checksum verified successfully."; \
 		rm $(CHECKSUM_NAME); \

@@ -1,5 +1,28 @@
 GOCMD?= go
 
+# SRC_ROOT is the top of the source tree.
+SRC_ROOT := $(shell git rev-parse --show-toplevel)
+
+GOOS := $(shell go env GOOS)
+GOARCH := $(shell go env GOARCH)
+OS := $(shell uname)
+ARCH := $(shell uname -m)
+
+TOOLS_MOD_DIR    := $(SRC_ROOT)/internal/tools
+TOOLS_MOD_REGEX  := "\s+_\s+\".*\""
+TOOLS_PKG_NAMES  := $(shell grep -E $(TOOLS_MOD_REGEX) < $(TOOLS_MOD_DIR)/tools.go | tr -d " _\"")
+TOOLS_BIN_DIR    := $(SRC_ROOT)/.tools
+TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
+
+GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
+BUILDER    := $(TOOLS_BIN_DIR)/builder
+CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
+COSIGN     := $(TOOLS_BIN_DIR)/cosign
+GOJUNIT    := $(TOOLS_BIN_DIR)/v2
+
+# renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
+GORELEASER_PRO_VERSION ?= v2.12.5
+
 .PHONY: moddownload
 moddownload:
 	$(GOCMD) mod download
@@ -7,3 +30,85 @@ moddownload:
 .PHONY: modtidy
 modtidy:
 	$(GOCMD) mod tidy
+
+.PHONY: clean-all
+clean-all: clean clean-tools
+
+.PHONY: clean
+clean:
+	rm -rf $(BUILD_DIR) $(DIST_DIR) $(BIN_DIR)
+
+.PHONY: clean-tools
+clean-tools:
+	rm -rf $(TOOLS_BIN_DIR)
+
+FILENAME ?= $(shell git branch --show-current)
+.PHONY: chlog-new
+chlog-new: $(CHLOGGEN)
+	$(CHLOGGEN) new --config $(CHLOGGEN_CONFIG) --filename $(FILENAME)
+
+.PHONY: chlog-validate
+chlog-validate: $(CHLOGGEN)
+	$(CHLOGGEN) validate --config $(CHLOGGEN_CONFIG)
+
+.PHONY: chlog-preview
+chlog-preview: $(CHLOGGEN)
+	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --dry
+
+.PHONY: chlog-update
+chlog-update: $(CHLOGGEN)
+	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --version $(VERSION)
+
+.PHONY: install-tools
+install-tools: $(TOOLS_BIN_DIR) $(TOOLS_BIN_NAMES) install-goreleaser-pro
+
+$(TOOLS_BIN_DIR):
+	mkdir -p $@
+
+ifeq ($(ARCH), 'amd64')
+	ARCH=x86_64
+else ifeq ($(ARCH), 'aarch64')
+	ARCH=arm64
+endif
+
+EXT := tar.gz
+ifeq ($(OS), 'windows')
+	EXT='zip'
+endif
+
+# Construct binary name and URL
+ARCHIVE_NAME := goreleaser-pro_$(OS)_$(ARCH).$(EXT)
+CHECKSUM_NAME := ./checksums.txt
+URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/$(ARCHIVE_NAME)
+CHECKSUM_URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt
+
+ .PHONY: install-goreleaser-pro
+install-goreleaser-pro: $(COSIGN)
+	echo 'Installing GoReleaser Pro...'; \
+	GORELEASER_ACTUAL_VERSION=$$($(GORELEASER) --version 2>&1 | grep '^GitVersion:' | awk '{print $$2}'); \
+	if [ "v$$GORELEASER_ACTUAL_VERSION" = "$(GORELEASER_PRO_VERSION)" ]; then \
+	  	echo "GoReleaser is already installed with the correct version, moving on..."; \
+	else \
+		echo "Downloading $(ARCHIVE_NAME) from $(URL)..."; \
+		curl -sL $(URL) -o $(ARCHIVE_NAME); \
+		\
+		echo "Downloading checksum to verify downloaded binary..." ; \
+		curl -sL $(CHECKSUM_URL) -o $(CHECKSUM_NAME); \
+		\
+		echo "Verifying checksum signature..."; \
+		$(COSIGN) verify-blob $(CHECKSUM_NAME) \
+          --certificate-identity 'https://github.com/goreleaser/goreleaser-pro-internal/.github/workflows/release-pro.yml@refs/tags/$(GORELEASER_PRO_VERSION)' \
+          --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
+          --cert 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.pem' \
+          --signature 'https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt.sig'; \
+		\
+		echo "Verifying checksum..."; \
+		sha256sum --ignore-missing --quiet -c $(CHECKSUM_NAME); \
+		echo "Checksum verified successfully."; \
+		rm $(CHECKSUM_NAME); \
+		\
+		if [ "$(EXT)" = "zip" ]; then unzip goreleaser -o "$(ARCHIVE_NAME)"; else tar -xzf "$(ARCHIVE_NAME)" goreleaser; fi; \
+		chmod +x goreleaser; \
+		mv goreleaser $(TOOLS_BIN_DIR); \
+		echo "GoReleaser Pro installed successfully!"; \
+  	fi

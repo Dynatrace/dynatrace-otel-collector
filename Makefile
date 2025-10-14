@@ -8,9 +8,11 @@ DIST_DIR = dist
 BIN_DIR = bin
 
 # ALL_MODULES includes ./* dirs (excludes . dir)
-ALL_MODULES := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
+ALL_MODS := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
+# INTERNAL_MODS includes only ./internal/* dirs
+INTERNAL_MODS := $(shell find ./internal/* -type f -name "go.mod" -exec dirname {} \; | sort | grep -E '^./' )
 # Append root module to all modules
-GOMODULES = $(ALL_MODULES)
+GOMODULES = $(ALL_MODS)
 
 SOURCES := $(shell find internal/confmap -type f | sort )
 
@@ -110,20 +112,15 @@ run-load-tests:
 	PWD=$(pwd)
 	GOJUNIT="$(PWD)/$(GOJUNIT)" $(MAKE) --no-print-directory -C internal/testbed/load run-tests
 
-FIND_MOD_ARGS=-type f -name "go.mod"
-TO_MOD_DIR=dirname {} \; | sort | grep -E '^./'
-INTERNAL_MODS := $(shell find ./internal/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
-ALL_MODS := $(INTERNAL_MODS)
-
 # Define a delegation target for each module
-.PHONY: $(ALL_MODS)
-$(ALL_MODS):
+.PHONY: $(INTERNAL_MODS)
+$(INTERNAL_MODS):
 	@echo "Running target '$(TARGET)' in module '$@' as part of group '$(GROUP)'"
 	$(MAKE) --no-print-directory -C $@ $(TARGET)
 
 # Trigger each module's delegation target
 .PHONY: for-all-target
-for-all-target: $(ALL_MODS)
+for-all-target: $(INTERNAL_MODS)
 
 .PHONY: gomoddownload
 gomoddownload:

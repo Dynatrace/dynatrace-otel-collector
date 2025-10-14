@@ -66,23 +66,6 @@ $(CP_FILES_DEST): $(MAIN)
 gotidy:
 	$(MAKE) --no-print-directory for-all-target TARGET="modtidy"
 
-FILENAME?=$(shell git branch --show-current)
-.PHONY: chlog-new
-chlog-new: $(CHLOGGEN)
-	$(CHLOGGEN) new --config $(CHLOGGEN_CONFIG) --filename $(FILENAME)
-
-.PHONY: chlog-validate
-chlog-validate: $(CHLOGGEN)
-	$(CHLOGGEN) validate --config $(CHLOGGEN_CONFIG)
-
-.PHONY: chlog-preview
-chlog-preview: $(CHLOGGEN)
-	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --dry
-
-.PHONY: chlog-update
-chlog-update: $(CHLOGGEN)
-	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --version $(VERSION)
-
 ifeq ($(GOOS),windows)
 	EXTENSION := .exe
 endif

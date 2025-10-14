@@ -42,6 +42,23 @@ clean:
 clean-tools:
 	rm -rf $(TOOLS_BIN_DIR)
 
+FILENAME ?= $(shell git branch --show-current)
+.PHONY: chlog-new
+chlog-new: $(CHLOGGEN)
+	$(CHLOGGEN) new --config $(CHLOGGEN_CONFIG) --filename $(FILENAME)
+
+.PHONY: chlog-validate
+chlog-validate: $(CHLOGGEN)
+	$(CHLOGGEN) validate --config $(CHLOGGEN_CONFIG)
+
+.PHONY: chlog-preview
+chlog-preview: $(CHLOGGEN)
+	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --dry
+
+.PHONY: chlog-update
+chlog-update: $(CHLOGGEN)
+	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --version $(VERSION)
+
 .PHONY: install-tools
 install-tools: $(TOOLS_BIN_DIR) $(TOOLS_BIN_NAMES) install-goreleaser-pro
 

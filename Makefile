@@ -11,8 +11,6 @@ BIN_DIR = bin
 ALL_MODS := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
 # INTERNAL_MODS includes only ./internal/* dirs
 INTERNAL_MODS := $(shell find ./internal/* -type f -name "go.mod" -exec dirname {} \; | sort | grep -E '^./' )
-# Append root module to all modules
-GOMODULES = $(ALL_MODS)
 
 SOURCES := $(shell find internal/confmap -type f | sort )
 
@@ -38,7 +36,7 @@ build-all: .goreleaser.yaml $(GORELEASER) $(MAIN)
 generate: $(MAIN) $(CP_FILES_DEST)
 test: $(BIN)
 	@result=0; \
-	for MOD in $(GOMODULES); do \
+	for MOD in $(ALL_MODS); do \
 		cd $${MOD}; \
 		go test -v ./... || result=1; \
 		cd -; \

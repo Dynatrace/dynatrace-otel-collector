@@ -87,7 +87,6 @@ genoteltestbedcol: $(BUILDER)
 run-load-tests:
 	mkdir -p ./internal/testbed/bin/
 	cp -a ./bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) ./internal/testbed/bin/
-	PWD=$(pwd)
 	$(MAKE) --no-print-directory -C internal/testbed/load run-tests
 
 # Define a delegation target for each module

@@ -61,4 +61,4 @@ Once you have completed the above steps, the [Build and Release](../.github/work
 
 **Note:**
 
-After the release is completed, please do not forget to merge the automated renovate version update PRs for `dynatrace-otel-collector` and `opentelemetry-operator` in the dynatrace-docs repository. Please be aware that automatic creation of these PRs by renovate-bot might take a few hours.
+After the release is completed, please do not forget to merge the automated renovate version update PRs for `dynatrace-otel-collector`, `opentelemetry-collector`, `opentelemetry-collector-contrib` and `opentelemetry-operator` in the dynatrace-docs repository. Please be aware that automatic creation of these PRs by renovate-bot might take a few hours.

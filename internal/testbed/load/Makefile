@@ -1,4 +1,4 @@
-include ./Makefile.Common
+include ../../../Makefile.Common
 
 .PHONY: run-tests
 run-tests:

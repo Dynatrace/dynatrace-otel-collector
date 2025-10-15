@@ -7,8 +7,6 @@ on:
     paths-ignore:
       - "**/README.md"
   workflow_dispatch:
-  pull_request:
-    branches: [main]
 
 env:
   # renovate: datasource=golang-version depName=go

@@ -115,8 +115,6 @@ var (
 		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.workload.name", substituteRandomPartWithStar),
 
-		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName),
-
 		pmetrictest.IgnoreDatapointAttributesOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),
@@ -135,6 +133,7 @@ var (
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.name"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.deployment.uid"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.node.name"),
 	}
 
 	templateOriginFilterProc = `  filter:
@@ -375,6 +374,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.name", substituteRandomPartWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.deployment.name", substituteRandomPartWithStar),
+		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
@@ -393,10 +393,9 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	expected, err = golden.ReadMetrics(expectedClusterFile)
 	require.NoError(t, err)
-	expectedMerged := testutil.MergeResources(expected)
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged, testutil.MergeResources(metricsConsumerCluster.AllMetrics()[len(metricsConsumerCluster.AllMetrics())-1]),
+		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerCluster.AllMetrics()[len(metricsConsumerCluster.AllMetrics())-1],
 			metricsCompareOptions...,
 		),
 		)

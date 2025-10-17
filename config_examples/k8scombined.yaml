@@ -3,8 +3,8 @@ extensions:
     endpoint: 0.0.0.0:13133
   k8s_leader_elector:
     auth_type: "serviceAccount"
-    lease_name: foo
-    lease_namespace: e2ek8scombined
+    lease_name: k8smonitoring
+    lease_namespace: ${env:POD_NAMESPACE}
 
 receivers:
   otlp:

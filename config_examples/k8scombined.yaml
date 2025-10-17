@@ -97,8 +97,6 @@ processors:
         statements:
           - set(attributes["k8s.cluster.name"], "${env:CLUSTER_NAME}")
   k8sattributes:
-    filter:
-      node_from_env_var: K8S_NODE_NAME
     extract:
       metadata:
         - k8s.pod.name

@@ -172,6 +172,10 @@ connectors:
   spanmetrics:
 
 extensions:
+  k8s_leader_elector:
+    auth_type: "serviceAccount"
+    lease_name: lease
+    lease_namespace: default
   zpages:
   health_check:
     endpoint: "localhost:13000"

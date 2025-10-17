@@ -22,8 +22,6 @@ spec:
       labels:
         app: telemetrygen-deployment
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: kind-worker
       containers:
         - command:
             - /telemetrygen

@@ -115,6 +115,8 @@ var (
 		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.workload.name", substituteRandomPartWithStar),
 
+		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName),
+
 		pmetrictest.IgnoreDatapointAttributesOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),
@@ -373,7 +375,6 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.name", substituteRandomPartWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.deployment.name", substituteRandomPartWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWorkerNodeName),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
@@ -392,18 +393,14 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	expected, err = golden.ReadMetrics(expectedClusterFile)
 	require.NoError(t, err)
+	expectedMerged := testutil.MergeResources(expected)
 
-	lastCheckedIndex := 0
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		allMetrics := metricsConsumerCluster.AllMetrics()
-		for i := lastCheckedIndex; i < len(allMetrics); i++ {
-			assert.NoError(tt, pmetrictest.CompareMetrics(expected, allMetrics[i],
-				metricsCompareOptions...,
-			),
-			)
-		}
-		lastCheckedIndex = len(allMetrics) - 1
-	}, 3*time.Minute, 3*time.Second)
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged, testutil.MergeResources(metricsConsumerCluster.AllMetrics()[len(metricsConsumerCluster.AllMetrics())-1]),
+			metricsCompareOptions...,
+		),
+		)
+	}, 3*time.Minute, 1*time.Second)
 
 	t.Logf("Cluster metrics checked successfully")
 

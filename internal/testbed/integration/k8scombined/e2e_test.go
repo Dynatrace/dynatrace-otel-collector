@@ -359,7 +359,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	t.Logf("Waiting for node metrics...")
 
-	oteltest.WaitForMetrics(t, 10, metricsConsumerNode)
+	oteltest.WaitForMetrics(t, 1, metricsConsumerNode)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedNodeFile, metricsConsumerNode.AllMetrics()[len(metricsConsumerNode.AllMetrics())-1]))
@@ -393,12 +393,17 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	expected, err = golden.ReadMetrics(expectedClusterFile)
 	require.NoError(t, err)
 
+	lastCheckedIndex := 0
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumerCluster.AllMetrics()[len(metricsConsumerCluster.AllMetrics())-1],
-			metricsCompareOptions...,
-		),
-		)
-	}, 3*time.Minute, 1*time.Second)
+		allMetrics := metricsConsumerCluster.AllMetrics()
+		for i := lastCheckedIndex; i < len(allMetrics); i++ {
+			assert.NoError(tt, pmetrictest.CompareMetrics(expected, allMetrics[i],
+				metricsCompareOptions...,
+			),
+			)
+		}
+		lastCheckedIndex = len(allMetrics) - 1
+	}, 3*time.Minute, 3*time.Second)
 
 	t.Logf("Cluster metrics checked successfully")
 
@@ -492,7 +497,5 @@ func substituteWorkerNodeName(s string) string {
 }
 
 func substituteLocalhostImagePrefix(s string) string {
-	ss := strings.Replace(s, "localhost/", "docker.io/library/", 1)
-	// TODO remove once finished
-	return strings.Replace(ss, "docker.io/otel/opentelemetry-collector", "docker.io/library/dynatrace-otel", 1)
+	return strings.Replace(s, "localhost/", "docker.io/library/", 1)
 }

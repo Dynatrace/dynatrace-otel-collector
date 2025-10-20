@@ -1,0 +1,62 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 100
+  batch:
+    send_batch_size: 5
+    timeout: 5s
+
+receivers:
+  kafka:
+    tls:
+      insecure: true
+    traces:
+    metrics:
+    logs:
+    brokers: ["redpanda.e2ekafka.svc.cluster.local:9092"]
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+exporters:
+  kafka:
+    brokers: ["redpanda.e2ekafka.svc.cluster.local:9092"]
+    tls:
+      insecure: true
+    traces:
+    metrics:
+    logs:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [kafka]
+    traces/receive:
+      receivers: [kafka]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [kafka]
+    metrics/receive:
+      receivers: [kafka]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [kafka]
+    logs/receive:
+      receivers: [kafka]
+      exporters: [otlphttp]

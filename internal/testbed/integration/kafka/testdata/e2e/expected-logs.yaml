@@ -1,0 +1,19 @@
+resourceLogs:
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-logs-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeLogs:
+      - logRecords:
+          - attributes:
+              - key: app
+                value:
+                  stringValue: server
+            body:
+              stringValue: the message
+            severityNumber: 9
+            severityText: Info
+            timeUnixNano: "1760963568965113371"
+        scope: {}

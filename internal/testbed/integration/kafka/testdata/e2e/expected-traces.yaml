@@ -1,0 +1,42 @@
+resourceSpans:
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-traces-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeSpans:
+      - scope:
+          name: telemetrygen
+        spans:
+          - attributes:
+              - key: network.peer.address
+                value:
+                  stringValue: 1.2.3.4
+              - key: peer.service
+                value:
+                  stringValue: telemetrygen-client
+            endTimeUnixNano: "1760963568836268939"
+            flags: 256
+            kind: 2
+            name: okey-dokey-0
+            parentSpanId: 4a4d8af1c7d88f81
+            spanId: 00b37e141115871b
+            startTimeUnixNano: "1760963568836145939"
+            status: {}
+            traceId: b1cde8b469439de3acb60d94389e7c3d
+          - attributes:
+              - key: network.peer.address
+                value:
+                  stringValue: 1.2.3.4
+              - key: peer.service
+                value:
+                  stringValue: telemetrygen-server
+            endTimeUnixNano: "1760963568836268939"
+            flags: 256
+            kind: 3
+            name: lets-go
+            spanId: 4a4d8af1c7d88f81
+            startTimeUnixNano: "1760963568836145939"
+            status: {}
+            traceId: b1cde8b469439de3acb60d94389e7c3d

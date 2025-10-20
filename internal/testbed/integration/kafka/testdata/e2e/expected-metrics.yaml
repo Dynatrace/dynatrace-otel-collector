@@ -1,0 +1,15 @@
+resourceMetrics:
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "25"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}

@@ -59,3 +59,4 @@ providers:
 
 replaces:
   - github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider => ../internal/confmap/provider/eecprovider
+  - github.com/open-telemetry/opentelemetry-collector-contrib => github.com/RealAnna/opentelemetry-collector-contrib 5af9a4ee24cc

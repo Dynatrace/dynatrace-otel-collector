@@ -23,11 +23,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
-<<<<<<< HEAD
-	"go.opentelemetry.io/collector/pdata/ptrace"
-=======
-	"go.opentelemetry.io/collector/pdata/pmetric"
->>>>>>> 64c4969 ([kafka] add Kafka receiver and exporter to the distribution)
 )
 
 var (

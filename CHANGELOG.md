@@ -26,8 +26,6 @@ v0.138.0:
 - `all`: Add unified print-config command with mode support (redacted, unredacted), json support (unstable), and validation support. ([#11775](https://github.com/open-telemetry/opentelemetry-collector/issues/11775))
   This replaces the `print-initial-config` command. See the `service` package README for more details. The original command name `print-initial-config` remains an alias, to be retired with the feature flag.
 
-
-
 ### 💡 Enhancements 💡
 
 - `all`: Add `keep_alives_enabled` option to ServerConfig to control HTTP keep-alives for all components that create an HTTP server. ([#13783](https://github.com/open-telemetry/opentelemetry-collector/issues/13783))
@@ -46,7 +44,6 @@ v0.138.0:
 - `processor/resourcedetection`: Add Azure availability zone to resourcedetectionprocessor ([#40983](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40983))
 - `receiver/hostmetrics`: Add metrics, Linux scraper, and tests to hostmetricsreceiver's nfsscraper ([#40134](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40134))
 - `receiver/syslog`: Promote Syslog receiver to beta stability ([#28551](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/28551))
-
 
 ### 🧰 Bug fixes 🧰
 

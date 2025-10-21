@@ -8,7 +8,7 @@ processors:
     limit_percentage: 100
   batch:
     send_batch_size: 5
-    timeout: 5s
+    timeout: 30s
 
 receivers:
   otlp:

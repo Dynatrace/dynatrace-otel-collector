@@ -62,31 +62,6 @@ service:
     logs:
       receivers: [kafka]
       exporters: [otlphttp/logs]`
-
-	templateExporterOrigin = `pipelines:
-    traces:
-      receivers: [otlp]
-      processors: [memory_limiter, batch]
-      exporters: [kafka]
-    metrics:
-      receivers: [otlp]
-      processors: [memory_limiter, batch]
-      exporters: [kafka]
-    logs:
-      receivers: [otlp]
-      processors: [memory_limiter, batch]
-      exporters: [kafka]`
-
-	templateExporterNew = `pipelines:
-    traces:
-      receivers: [otlp]
-      exporters: [kafka]
-    metrics:
-      receivers: [otlp]
-      exporters: [kafka]
-    logs:
-      receivers: [otlp]
-      exporters: [kafka]`
 )
 
 func TestE2E_Kafka(t *testing.T) {
@@ -211,10 +186,6 @@ func TestE2E_Kafka(t *testing.T) {
 	collectorConfigPathExporter := path.Join(configExamplesDir, "kafka-exporter.yaml")
 	collectorConfigExporter, err := k8stest.GetCollectorConfig(collectorConfigPathExporter, k8stest.ConfigTemplate{
 		Host: host,
-		Templates: []string{
-			templateExporterOrigin,
-			templateExporterNew,
-		},
 	})
 
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)

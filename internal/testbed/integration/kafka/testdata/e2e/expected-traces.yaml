@@ -16,15 +16,15 @@ resourceSpans:
               - key: peer.service
                 value:
                   stringValue: telemetrygen-client
-            endTimeUnixNano: "1760963568836268939"
+            endTimeUnixNano: "1761023144772888670"
             flags: 256
             kind: 2
             name: okey-dokey-0
-            parentSpanId: 4a4d8af1c7d88f81
-            spanId: 00b37e141115871b
-            startTimeUnixNano: "1760963568836145939"
+            parentSpanId: 4f09702832feb187
+            spanId: 03527b0c0157f606
+            startTimeUnixNano: "1761023144772765670"
             status: {}
-            traceId: b1cde8b469439de3acb60d94389e7c3d
+            traceId: 3699896f4e1963d34cf7518740e50bbe
           - attributes:
               - key: network.peer.address
                 value:
@@ -32,11 +32,93 @@ resourceSpans:
               - key: peer.service
                 value:
                   stringValue: telemetrygen-server
-            endTimeUnixNano: "1760963568836268939"
+            endTimeUnixNano: "1761023144772888670"
             flags: 256
             kind: 3
             name: lets-go
-            spanId: 4a4d8af1c7d88f81
-            startTimeUnixNano: "1760963568836145939"
+            spanId: 4f09702832feb187
+            startTimeUnixNano: "1761023144772765670"
             status: {}
-            traceId: b1cde8b469439de3acb60d94389e7c3d
+            traceId: 3699896f4e1963d34cf7518740e50bbe
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-traces-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeSpans:
+      - scope:
+          name: telemetrygen
+        spans:
+          - attributes:
+              - key: network.peer.address
+                value:
+                  stringValue: 1.2.3.4
+              - key: peer.service
+                value:
+                  stringValue: telemetrygen-client
+            endTimeUnixNano: "1761023146772116528"
+            flags: 256
+            kind: 2
+            name: okey-dokey-0
+            parentSpanId: 39db64a5b0991795
+            spanId: cb286bc0f1d6add1
+            startTimeUnixNano: "1761023146771993528"
+            status: {}
+            traceId: 0bffcdefc60e933e5bc6bfce4d20bbf2
+          - attributes:
+              - key: network.peer.address
+                value:
+                  stringValue: 1.2.3.4
+              - key: peer.service
+                value:
+                  stringValue: telemetrygen-server
+            endTimeUnixNano: "1761023146772116528"
+            flags: 256
+            kind: 3
+            name: lets-go
+            spanId: 39db64a5b0991795
+            startTimeUnixNano: "1761023146771993528"
+            status: {}
+            traceId: 0bffcdefc60e933e5bc6bfce4d20bbf2
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-traces-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeSpans:
+      - scope:
+          name: telemetrygen
+        spans:
+          - attributes:
+              - key: network.peer.address
+                value:
+                  stringValue: 1.2.3.4
+              - key: peer.service
+                value:
+                  stringValue: telemetrygen-client
+            endTimeUnixNano: "1761023148773250765"
+            flags: 256
+            kind: 2
+            name: okey-dokey-0
+            parentSpanId: e654fb3a84544fe2
+            spanId: 81f1cb21c63b3c3b
+            startTimeUnixNano: "1761023148773127765"
+            status: {}
+            traceId: b279f96fbe94dcd426031361efcb9e12
+          - attributes:
+              - key: network.peer.address
+                value:
+                  stringValue: 1.2.3.4
+              - key: peer.service
+                value:
+                  stringValue: telemetrygen-server
+            endTimeUnixNano: "1761023148773250765"
+            flags: 256
+            kind: 3
+            name: lets-go
+            spanId: e654fb3a84544fe2
+            startTimeUnixNano: "1761023148773127765"
+            status: {}
+            traceId: b279f96fbe94dcd426031361efcb9e12

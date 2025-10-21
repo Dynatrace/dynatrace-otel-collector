@@ -9,7 +9,63 @@ resourceMetrics:
       - metrics:
           - gauge:
               dataPoints:
-                - asInt: "25"
+                - asInt: "5"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "6"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "7"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "8"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "9"
                   timeUnixNano: "1000000"
             name: gen
         scope: {}

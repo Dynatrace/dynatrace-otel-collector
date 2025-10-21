@@ -19,8 +19,8 @@ spec:
         - name: opentelemetry-collector
           args:
             - --config=/conf/relay.yaml
-          image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
-          #image: otel/opentelemetry-collector-contrib:latest
+          #image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
+          image: otel/opentelemetry-collector-contrib:latest
           livenessProbe:
             httpGet:
               path: /

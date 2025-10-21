@@ -1,0 +1,31 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  kafka:
+    tls:
+      insecure: true
+    traces:
+    metrics:
+    logs:
+    brokers: ["redpanda.e2ekafka.svc.cluster.local:9092"]
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [kafka]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [kafka]
+      exporters: [otlphttp]
+    logs:
+      receivers: [kafka]
+      exporters: [otlphttp]

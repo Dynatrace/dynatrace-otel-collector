@@ -25,8 +25,7 @@ import (
 )
 
 var (
-	templateOrigin = `
-  otlphttp:
+	templateReceiverOrigin = `otlphttp:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -35,27 +34,15 @@ service:
   extensions: [health_check]
   pipelines:
     traces:
-      receivers: [otlp]
-      processors: [memory_limiter, batch]
-      exporters: [kafka]
-    traces/receive:
       receivers: [kafka]
       exporters: [otlphttp]
     metrics:
-      receivers: [otlp]
-      processors: [memory_limiter, batch]
-      exporters: [kafka]
-    metrics/receive:
       receivers: [kafka]
       exporters: [otlphttp]
     logs:
-      receivers: [otlp]
-      processors: [memory_limiter, batch]
-      exporters: [kafka]
-    logs/receive:
       receivers: [kafka]
       exporters: [otlphttp]`
-	templateNew = `
+	templateReceiverNew = `
   otlphttp/traces:
     endpoint: http://%s:4321
   otlphttp/metrics:
@@ -67,23 +54,39 @@ service:
   extensions: [health_check]
   pipelines:
     traces:
-      receivers: [otlp]
-      exporters: [kafka]
-    traces/receive:
       receivers: [kafka]
       exporters: [otlphttp/traces]
     metrics:
-      receivers: [otlp]
-      exporters: [kafka]
-    metrics/receive:
       receivers: [kafka]
       exporters: [otlphttp/metrics]
     logs:
-      receivers: [otlp]
-      exporters: [kafka]
-    logs/receive:
       receivers: [kafka]
       exporters: [otlphttp/logs]`
+
+	templateExporterOrigin = `pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [kafka]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [kafka]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [kafka]`
+
+	templateExporterNew = `pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [kafka]
+    metrics:
+      receivers: [otlp]
+      exporters: [kafka]
+    logs:
+      receivers: [otlp]
+      exporters: [kafka]`
 )
 
 func TestE2E_Kafka(t *testing.T) {
@@ -150,38 +153,6 @@ func TestE2E_Kafka(t *testing.T) {
 		shutdownSinks()
 	}()
 
-	// create collector
-	testID, err := testutil.GenerateRandomString(10)
-	require.NoError(t, err)
-	host := otelk8stest.HostEndpoint(t)
-	collectorConfigPath := path.Join(configExamplesDir, "kafka.yaml")
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host: host,
-		Templates: []string{
-			templateOrigin,
-			fmt.Sprintf(templateNew, host, host, host),
-		},
-	})
-
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs2 := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "collector"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfig,
-		},
-		host,
-	)
-
-	defer func() {
-		for _, obj := range collectorObjs2 {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
 	// create kafka server deployment
 	deploymentFile := filepath.Join(testDir, "testobjects", "kafka-deployment.yaml")
 	buf, err = os.ReadFile(deploymentFile)
@@ -202,12 +173,75 @@ func TestE2E_Kafka(t *testing.T) {
 		}
 	}()
 
+	// create receiver collector
+	testID, err := testutil.GenerateRandomString(10)
+	require.NoError(t, err)
+	host := otelk8stest.HostEndpoint(t)
+	collectorConfigPath := path.Join(configExamplesDir, "kafka-receiver.yaml")
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
+		Host: host,
+		Templates: []string{
+			templateReceiverOrigin,
+			fmt.Sprintf(templateReceiverNew, host, host, host),
+		},
+	})
+
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+	collectorObjs2 := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID,
+		filepath.Join(testDir, "collector-receiver"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfig,
+		},
+		host,
+	)
+
+	defer func() {
+		for _, obj := range collectorObjs2 {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
+	// create exporter collector
+	testIDexporter, err := testutil.GenerateRandomString(10)
+	require.NoError(t, err)
+	collectorConfigPathExporter := path.Join(configExamplesDir, "kafka-exporter.yaml")
+	collectorConfigExporter, err := k8stest.GetCollectorConfig(collectorConfigPathExporter, k8stest.ConfigTemplate{
+		Host: host,
+		Templates: []string{
+			templateExporterOrigin,
+			templateExporterNew,
+		},
+	})
+
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+	collectorObjsExporter := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testIDexporter,
+		filepath.Join(testDir, "collector-exporter"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfigExporter,
+		},
+		host,
+	)
+
+	defer func() {
+		for _, obj := range collectorObjsExporter {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
 	// create telemetrygen deployment
-	deploymentFile = filepath.Join(testDir, "testobjects", "telemetrygen.yaml")
-	buf, err = os.ReadFile(deploymentFile)
-	require.NoErrorf(t, err, "failed to read deployment object file %s", deploymentFile)
+	deploymentFileTelemetryGen := filepath.Join(testDir, "testobjects", "telemetrygen.yaml")
+	buf, err = os.ReadFile(deploymentFileTelemetryGen)
+	require.NoErrorf(t, err, "failed to read deployment object file %s", deploymentFileTelemetryGen)
 	telemetrygenObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s deployment from file %s", deploymentFile)
+	require.NoErrorf(t, err, "failed to create k8s deployment from file %s", deploymentFileTelemetryGen)
 
 	defer func() {
 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, telemetrygenObj), "failed to delete object %s", telemetrygenObj.GetName())

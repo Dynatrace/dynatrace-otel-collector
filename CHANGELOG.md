@@ -34,7 +34,6 @@ v0.138.0:
   contain literal values. When a getter is identified as containing a literal value, OTTL functions can now access that value 
   at build time rather than runtime, improving performance for common use cases like pattern matching with static strings.
 
-- `processor/filter`: Add profiles support ([#42762](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42762))
 - `receiver/hostmetrics`: Add metrics, Linux scraper, and tests to hostmetricsreceiver's nfsscraper ([#40134](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40134))
 - `receiver/k8s_cluster`: Fix for k8sclusterreceiver to handle empty containerID in ContainerStatus ([#43147](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43147))
 - `pkg/ottl`: Add XXH3 Converter function to converts a `value` to a XXH3 hash/digest ([#42792](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42792))

@@ -7,7 +7,7 @@ processors:
     check_interval: 1s
     limit_percentage: 100
   batch:
-    send_batch_size: 5
+    send_batch_size: 500
     timeout: 30s
 
 receivers:

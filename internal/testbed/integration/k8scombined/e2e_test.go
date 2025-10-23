@@ -23,7 +23,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
-	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
 var (
@@ -76,7 +75,12 @@ var (
 			"k8s.node.allocatable_cpu",
 			"k8s.node.allocatable_memory",
 			"k8s.namespace.phase",
+			"k8s.node.condition",
 			"k8s.node.condition_ready",
+			"k8s.node.condition_memory_pressure",
+			"k8s.node.condition_disk_pressure",
+			"k8s.node.condition_pid_pressure",
+			"k8s.node.condition_network_unavailable",
 			"k8s.replicaset.available",
 			"k8s.container.ready",
 			"k8s.replicaset.desired",
@@ -455,8 +459,8 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		gotTraces := tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]
-		maskParentSpanID(expectedTraces)
-		maskParentSpanID(gotTraces)
+		testutil.MaskParentSpanID(expectedTraces)
+		testutil.MaskParentSpanID(gotTraces)
 		assert.NoError(tt,
 			ptracetest.CompareTraces(
 				expectedTraces,
@@ -467,17 +471,6 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	}, 3*time.Minute, 1*time.Second)
 
 	t.Logf("Traces checked successfully")
-}
-
-func maskParentSpanID(traces ptrace.Traces) {
-	for i := 0; i < traces.ResourceSpans().Len(); i++ {
-		scopeSpans := traces.ResourceSpans().At(i).ScopeSpans()
-		for j := 0; j < scopeSpans.Len(); j++ {
-			for k := 0; k < scopeSpans.At(j).Spans().Len(); k++ {
-				scopeSpans.At(j).Spans().At(k).SetParentSpanID(pcommon.NewSpanIDEmpty())
-			}
-		}
-	}
 }
 
 func substituteWithStar(_ string) string { return "*" }

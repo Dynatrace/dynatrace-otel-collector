@@ -1,0 +1,42 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 100
+  batch:
+    send_batch_size: 500
+    timeout: 30s
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+exporters:
+  kafka:
+    brokers: ["${env:BROKER_ADDRESS}"]
+    tls:
+      insecure: true
+    traces:
+    metrics:
+    logs:
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [kafka]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [kafka]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [kafka]

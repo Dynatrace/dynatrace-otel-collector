@@ -112,6 +112,7 @@ jobs:
           - kubeletstats
           - k8scluster
           - loadbalancing
+          - kafka
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

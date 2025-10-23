@@ -15,14 +15,14 @@ spec:
         app.kubernetes.io/instance: {{ .Name }}
     spec:
       serviceAccountName: {{ .Name }}
-      env:
-        - name: BROKER_ADDRESS
-          value: redpanda.e2ekafka.svc.cluster.local:9092
       containers:
         - name: opentelemetry-collector
           args:
             - --config=/conf/relay.yaml
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
+          env:
+            - name: BROKER_ADDRESS
+              value: redpanda.e2ekafka.svc.cluster.local:9092
           livenessProbe:
             httpGet:
               path: /

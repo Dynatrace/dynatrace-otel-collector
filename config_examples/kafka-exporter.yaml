@@ -18,7 +18,7 @@ receivers:
 
 exporters:
   kafka:
-    brokers: ["redpanda.e2ekafka.svc.cluster.local:9092"]
+    brokers: ["${env:BROKER_ADDRESS}"]
     tls:
       insecure: true
     traces:

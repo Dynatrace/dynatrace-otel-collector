@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: busybox-deployment
-  namespace: e2ek8sobjects
+  namespace: e2ek8spodlogs
   labels:
     app: busybox
 spec:

@@ -7,7 +7,7 @@ rules:
     resources: ["namespaces", "events", "pods", "nodes"]
     verbs: ["get", "watch", "list"]
   - apiGroups: ["apps"]
-    resources: ["deployments"]
+    resources: ["deployments", "replicasets"]
     verbs: ["get", "watch", "list"]
   - apiGroups: ["events.k8s.io"]
     resources: ["events"]

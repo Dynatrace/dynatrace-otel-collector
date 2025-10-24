@@ -3,13 +3,10 @@
 package k8sobjects
 
 import (
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/plogtest"
-	"github.com/stretchr/testify/assert"
-	"go.opentelemetry.io/collector/pdata/plog"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -23,7 +20,6 @@ import (
 
 func TestE2E_K8PodLogs(t *testing.T) {
 	testDir := filepath.Join("testdata")
-	expectedFile := testDir + "/e2e/expected.yaml"
 	configExamplesDir := "../../../../config_examples"
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -90,13 +86,24 @@ func TestE2E_K8PodLogs(t *testing.T) {
 		}
 	}()
 
-	oteltest.WaitForLogs(t, 1, logsConsumer)
+	oteltest.WaitForLogs(t, 10, logsConsumer)
 
-	require.Nil(t, golden.WriteLogs(t, expectedFile, logsConsumer.AllLogs()[len(logsConsumer.AllLogs())-1]))
-
-	var expected plog.Logs
-	expected, err = golden.ReadLogs(expectedFile)
-	require.NoError(t, err)
-
-	assert.NoError(t, plogtest.CompareLogs(expected, logsConsumer.AllLogs()[len(logsConsumer.AllLogs())-1]))
+	// search for the log of the test deployment in the logs received by the logsConsumer
+	deplName := deploymentObj.GetName()
+	found := false
+	for _, lastLogs := range logsConsumer.AllLogs() {
+		for i := 0; i < lastLogs.ResourceLogs().Len() && !found; i++ {
+			rl := lastLogs.ResourceLogs().At(i)
+			attrs := rl.Resource().Attributes()
+			if v, ok := attrs.Get("k8s.deployment.name"); ok && v.Str() == deplName {
+				found = true
+				break
+			}
+			if v, ok := attrs.Get("k8s.pod.name"); ok && strings.HasPrefix(v.Str(), deplName) {
+				found = true
+				break
+			}
+		}
+	}
+	require.Truef(t, found, "could not find logs for deployment %s", deplName)
 }

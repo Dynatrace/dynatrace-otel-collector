@@ -1,0 +1,93 @@
+receivers:
+  # configure the filelog receiver to access the pod logs
+  # from the mounted volumes
+  filelog:
+    include:
+      - /var/log/pods/*/*/*.log
+    include_file_name: false
+    include_file_path: true
+    start_at: end
+    operators:
+      - id: container-parser
+        type: container
+
+processors:
+  k8sattributes:
+    extract:
+      metadata:
+        - k8s.pod.name
+        - k8s.pod.uid
+        - k8s.deployment.name
+        - k8s.statefulset.name
+        - k8s.daemonset.name
+        - k8s.cronjob.name
+        - k8s.namespace.name
+        - k8s.node.name
+        - k8s.cluster.uid
+        - k8s.container.name
+    pod_association:
+      - sources:
+          - from: resource_attribute
+            name: k8s.pod.name
+          - from: resource_attribute
+            name: k8s.namespace.name
+      - sources:
+          - from: resource_attribute
+            name: k8s.pod.ip
+      - sources:
+          - from: resource_attribute
+            name: k8s.pod.uid
+      - sources:
+          - from: connection
+
+  transform:
+    error_mode: ignore
+    trace_statements:
+      - context: resource
+        statements: &k8s-statements
+          - set(attributes["k8s.workload.kind"], "job") where IsString(attributes["k8s.job.name"])
+          - set(attributes["k8s.workload.name"], attributes["k8s.job.name"]) where IsString(attributes["k8s.job.name"])
+          - set(attributes["k8s.workload.kind"], "cronjob") where IsString(attributes["k8s.cronjob.name"])
+          - set(attributes["k8s.workload.name"], attributes["k8s.cronjob.name"]) where IsString(attributes["k8s.cronjob.name"])
+          - set(attributes["k8s.workload.kind"], "daemonset") where IsString(attributes["k8s.daemonset.name"])
+          - set(attributes["k8s.workload.name"], attributes["k8s.daemonset.name"]) where IsString(attributes["k8s.daemonset.name"])
+          - set(attributes["k8s.workload.kind"], "statefulset") where IsString(attributes["k8s.statefulset.name"])
+          - set(attributes["k8s.workload.name"], attributes["k8s.statefulset.name"]) where IsString(attributes["k8s.statefulset.name"])
+          - set(attributes["k8s.workload.kind"], "replicaset") where IsString(attributes["k8s.replicaset.name"])
+          - set(attributes["k8s.workload.name"], attributes["k8s.replicaset.name"]) where IsString(attributes["k8s.replicaset.name"])
+          - set(attributes["k8s.workload.kind"], "deployment") where IsString(attributes["k8s.deployment.name"])
+          - set(attributes["k8s.workload.name"], attributes["k8s.deployment.name"]) where IsString(attributes["k8s.deployment.name"])
+          # remove the delete statements if you want to preserve these attributes
+          - delete_key(attributes, "k8s.deployment.name")
+          - delete_key(attributes, "k8s.replicaset.name")
+          - delete_key(attributes, "k8s.statefulset.name")
+          - delete_key(attributes, "k8s.daemonset.name")
+          - delete_key(attributes, "k8s.cronjob.name")
+          - delete_key(attributes, "k8s.job.name")
+      # Set attributes from metadata specified in Dynatrace and set through the Dynatrace Operator.
+      # For more info: https://docs.dynatrace.com/docs/shortlink/k8s-metadata-telemetry-enrichment
+      - context: resource
+        statements:
+          - merge_maps(attributes, ParseJSON(attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(attributes["metadata.dynatrace.com"], "^\\{")
+          - delete_key(attributes, "metadata.dynatrace.com")
+    log_statements:
+      - context: resource
+        statements: &k8s-statements
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  pipelines:
+    logs:
+      receivers: [filelog]
+      processors: [k8sattributes,transform]
+      exporters: [otlphttp]

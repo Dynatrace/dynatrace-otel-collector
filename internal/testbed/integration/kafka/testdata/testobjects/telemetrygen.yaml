@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temeletrygen-deployment
+  namespace: e2ekafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temeletrygen-deployment
+  template:
+    metadata:
+      annotations:
+        workload: deployment
+      labels:
+        app: temeletrygen-deployment
+    spec:
+      containers:
+      - command:
+        - /telemetrygen
+        - traces
+        - --otlp-insecure
+        - --otlp-endpoint=otelcolsvc.e2ekafka.svc.cluster.local:4317
+        - --duration=36000s
+        - --rate=100
+        - --otlp-attributes=service.name="test-traces-deployment"
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+        imagePullPolicy: IfNotPresent
+        name: telemetrygen-traces
+      - command:
+        - /telemetrygen
+        - metrics
+        - --otlp-insecure
+        - --otlp-endpoint=otelcolsvc.e2ekafka.svc.cluster.local:4317
+        - --duration=36000s
+        - --rate=100
+        - --otlp-attributes=service.name="test-metrics-deployment"
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+        imagePullPolicy: IfNotPresent
+        name: telemetrygen-metrics
+      - command:
+        - /telemetrygen
+        - logs
+        - --otlp-insecure
+        - --otlp-endpoint=otelcolsvc.e2ekafka.svc.cluster.local:4317
+        - --duration=36000s
+        - --rate=100
+        - --otlp-attributes=service.name="test-logs-deployment"
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+        imagePullPolicy: IfNotPresent
+        name: telemetrygen-logs
+      restartPolicy: Always

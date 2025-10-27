@@ -1,4 +1,9 @@
 receivers:
+  kafka:
+    traces:
+    metrics:
+    logs:
+    brokers: ["my-cluster-kafka-brokers.kafka.svc.cluster.local:9092"]
   k8s_cluster:
     auth_type: "serviceAccount"
     allocatable_types_to_report:
@@ -154,6 +159,11 @@ processors:
       - set(attributes["dt.test"], "otel-collector")
 
 exporters:
+  kafka:
+    traces:
+    metrics:
+    logs:
+    brokers: ["my-cluster-kafka-brokers.kafka.svc.cluster.local:9092"]
   debug:
     verbosity: detailed
   otlp:
@@ -172,6 +182,10 @@ connectors:
   spanmetrics:
 
 extensions:
+  k8s_leader_elector:
+    auth_type: "serviceAccount"
+    lease_name: lease
+    lease_namespace: default
   zpages:
   health_check:
     endpoint: "localhost:13000"

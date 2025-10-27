@@ -4,6 +4,63 @@
 
 <!-- next version -->
 
+## v0.39.0
+
+This release includes version 0.138.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.138.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.138.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.138.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/exporterhelper`: Add default values for `sending_queue::batch` configuration. ([#13766](https://github.com/open-telemetry/opentelemetry-collector/issues/13766))
+  Setting `sending_queue::batch` to an empty value now results in the same setup as the default batch processor configuration.
+
+- `all`: Add unified print-config command with mode support (redacted, unredacted), json support (unstable), and validation support. ([#11775](https://github.com/open-telemetry/opentelemetry-collector/issues/11775))
+  This replaces the `print-initial-config` command. See the `service` package README for more details. The original command name `print-initial-config` remains an alias, to be retired with the feature flag.
+
+### 💡 Enhancements 💡
+
+- `all`: Add `keep_alives_enabled` option to ServerConfig to control HTTP keep-alives for all components that create an HTTP server. ([#13783](https://github.com/open-telemetry/opentelemetry-collector/issues/13783))
+- `pkg/ottl`: Add support for literal getters ([#40222](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40222))
+  This enhancement introduces the `ottl.GetLiteralValue` function to OTTL, enabling compile-time optimization for getters that 
+  contain literal values. When a getter is identified as containing a literal value, OTTL functions can now access that value 
+  at build time rather than runtime, improving performance for common use cases like pattern matching with static strings.
+
+- `receiver/hostmetrics`: Add metrics, Linux scraper, and tests to hostmetricsreceiver's nfsscraper ([#40134](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40134))
+- `receiver/k8s_cluster`: Fix for k8sclusterreceiver to handle empty containerID in ContainerStatus ([#43147](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43147))
+- `pkg/ottl`: Add XXH3 Converter function to converts a `value` to a XXH3 hash/digest ([#42792](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42792))
+- `pkg/sampling`: Note that pkg/sampling implements the new OpenTelemetry specification ([#43396](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43396))
+- `processor/resourcedetection`: Add Openstack Nova resource detector to gather Openstack instance metadata as resource attributes ([#39117](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39117))
+  The Openstack Nova resource detector has been added to gather metadata such as host name, ID, cloud provider, region, and availability zone as resource attributes, enhancing the observability of Openstack environments.
+- `processor/resourcedetection`: Add Azure availability zone to resourcedetectionprocessor ([#40983](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40983))
+- `receiver/hostmetrics`: Add metrics, Linux scraper, and tests to hostmetricsreceiver's nfsscraper ([#40134](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40134))
+- `receiver/syslog`: Promote Syslog receiver to beta stability ([#28551](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/28551))
+
+### 🧰 Bug fixes 🧰
+
+- `all`: Fix zstd decoder data corruption due to decoder pooling for all components that create an HTTP server. ([#13954](https://github.com/open-telemetry/opentelemetry-collector/issues/13954))
+- `receiver/k8s_cluster`: Fix for k8sclusterreceiver to handle empty containerID in ContainerStatus ([#43147](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43147))
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 🚀 New components 🚀
+
+- `extension/k8sleaderelector`: Add k8sleaderelector extension to the collector distribution ([#681](https://github.com/dynatrace/dynatrace-otel-collector/issues/681))
+
+<!-- previous-version -->
+
 ## v0.38.0
 
 This release includes version 0.137.0 of the upstream Collector components.

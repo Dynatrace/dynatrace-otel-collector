@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}
-  namespace: e2ek8scombined
+  namespace: e2ekafka
 spec:
   selector:
     matchLabels:
@@ -14,31 +14,15 @@ spec:
         app.kubernetes.io/name: opentelemetry-collector
         app.kubernetes.io/instance: {{ .Name }}
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: kind-worker
       serviceAccountName: {{ .Name }}
       containers:
         - name: opentelemetry-collector
-          command:
-            - /dynatrace-otel-collector
+          args:
             - --config=/conf/relay.yaml
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
           env:
-            - name: MY_POD_IP
-              valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: status.podIP
-            - name: K8S_NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: CLUSTER_NAME
-              value: "k8s-testing-cluster"
+            - name: BROKER_ADDRESS
+              value: redpanda.e2ekafka.svc.cluster.local:9092
           livenessProbe:
             httpGet:
               path: /

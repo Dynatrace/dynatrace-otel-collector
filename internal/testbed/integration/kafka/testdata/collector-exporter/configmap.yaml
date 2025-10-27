@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Name }}-agent-config
-  namespace: e2ek8scombined
+  name: {{ .Name }}-config
+  namespace: e2ekafka
 data:
   relay: |
 {{ .CollectorConfig }}

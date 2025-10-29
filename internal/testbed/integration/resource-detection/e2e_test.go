@@ -101,7 +101,7 @@ func TestE2E_ResourceDetectionProcessor(t *testing.T) {
 			attrs: map[string]oteltest.ExpectedValue{
 				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
 				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscaped-host-from-properties"),
+				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-from-properties"),
 			},
 		},
 		{
@@ -110,7 +110,7 @@ func TestE2E_ResourceDetectionProcessor(t *testing.T) {
 			attrs: map[string]oteltest.ExpectedValue{
 				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
 				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
-				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscaped-host-not-overridden"),
+				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-not-overridden"),
 			},
 		},
 		{
@@ -119,7 +119,7 @@ func TestE2E_ResourceDetectionProcessor(t *testing.T) {
 			attrs: map[string]oteltest.ExpectedValue{
 				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
 				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscaped-host-from-properties"),
+				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-from-properties"),
 			},
 		},
 		{
@@ -128,7 +128,7 @@ func TestE2E_ResourceDetectionProcessor(t *testing.T) {
 			attrs: map[string]oteltest.ExpectedValue{
 				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
 				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscaped-host-from-properties"),
+				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-from-properties"),
 			},
 		},
 	}

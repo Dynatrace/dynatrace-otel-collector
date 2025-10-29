@@ -1,0 +1,6 @@
+### github.com/hashicorp/go-uuid v1.0.3
+Upstream repository: https://github.com/hashicorp/go-uuid
+
+Copyright © 2015-2022 HashiCorp, Inc.【1-2-0】
+
+License: Mozilla Public License 2.0 (MPL-2.0) — see LICENSES/MPL-2.0.txt

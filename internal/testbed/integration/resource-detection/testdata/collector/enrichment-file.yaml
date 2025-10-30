@@ -9,3 +9,4 @@ data:
     host.name=my-host-from-properties
     dt.entity.host_group=my-host-group-from-properties
     dt.foo=bar
+    dt.smartscape.host=my-smartscape-host-from-properties

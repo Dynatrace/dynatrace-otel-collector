@@ -99,32 +99,36 @@ func TestE2E_ResourceDetectionProcessor(t *testing.T) {
 			name:    "traces-job",
 			service: "test-traces-job",
 			attrs: map[string]oteltest.ExpectedValue{
-				"dt.entity.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"host.name":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-from-properties"),
 			},
 		},
 		{
 			name:    "traces-statefulset",
 			service: "test-traces-statefulset",
 			attrs: map[string]oteltest.ExpectedValue{
-				"dt.entity.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
-				"host.name":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
+				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
+				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
+				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-not-overridden"),
 			},
 		},
 		{
 			name:    "traces-deployment",
 			service: "test-traces-deployment",
 			attrs: map[string]oteltest.ExpectedValue{
-				"dt.entity.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"host.name":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-from-properties"),
 			},
 		},
 		{
 			name:    "traces-daemonset",
 			service: "test-traces-daemonset",
 			attrs: map[string]oteltest.ExpectedValue{
-				"dt.entity.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"host.name":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
+				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-from-properties"),
 			},
 		},
 	}

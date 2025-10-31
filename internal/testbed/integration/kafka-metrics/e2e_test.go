@@ -74,8 +74,6 @@ func TestE2E_Kafka(t *testing.T) {
 	}()
 
 	metricsConsumer := new(consumertest.MetricsSink)
-	tracesConsumer := new(consumertest.TracesSink)
-	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
 			{

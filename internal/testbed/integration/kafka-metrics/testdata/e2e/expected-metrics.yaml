@@ -1,0 +1,11 @@
+scopeMetrics:
+  - metrics:
+      - name: kafka.brokers
+        description: Total number of Kafka brokers in the cluster
+        sum:
+          dataPoints:
+            - asInt: "1"
+              attributes:
+                - key: cluster
+                  value:
+                    stringValue: kafka-cluster

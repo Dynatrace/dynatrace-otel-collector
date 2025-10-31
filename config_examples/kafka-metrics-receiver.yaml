@@ -1,0 +1,28 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  kafkametrics:
+    brokers: ["${env:BROKER_ADDRESS}"]
+    scrapers:
+      - brokers
+      - topics
+      - consumers
+
+processors:
+  cumulativetodelta:
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [kafkametrics]
+      processors: [cumulativetodelta]
+      exporters: [otlphttp]

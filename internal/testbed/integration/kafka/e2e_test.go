@@ -64,11 +64,38 @@ service:
       exporters: [otlphttp/logs]`
 )
 
+var (
+	templateKafkaReceiverOrigin = `otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [kafkametrics]
+	  processors: [cumulativetodelta]
+      exporters: [otlphttp]`
+	templateKafkaReceiverNew = `
+  otlphttp:
+    endpoint: http://%s:4322
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [kafkametrics]
+	  processors: [cumulativetodelta]	
+      exporters: [otlphttp]`
+)
+
 func TestE2E_Kafka(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	expectedLogsFile := testDir + "/e2e/expected-logs.yaml"
 	expectedTracesFile := testDir + "/e2e/expected-traces.yaml"
 	expectedMetricsFile := testDir + "/e2e/expected-metrics.yaml"
+	expectedKafkaMetricsFile := testDir + "/e2e/expected-kafka-metrics.yaml"
 	configExamplesDir := "../../../../config_examples"
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -90,7 +117,7 @@ func TestE2E_Kafka(t *testing.T) {
 	defer func() {
 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
-
+	kafkametricsConsumer := new(consumertest.MetricsSink)
 	metricsConsumer := new(consumertest.MetricsSink)
 	tracesConsumer := new(consumertest.TracesSink)
 	logsConsumer := new(consumertest.LogsSink)
@@ -108,6 +135,11 @@ func TestE2E_Kafka(t *testing.T) {
 				Consumer: metricsConsumer,
 				Ports: &oteltest.ReceiverPorts{
 					Http: 4320,
+				},
+			}, {
+				Consumer: kafkametricsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4322,
 				},
 			},
 		},
@@ -207,6 +239,37 @@ func TestE2E_Kafka(t *testing.T) {
 		}
 	}()
 
+	// create kafkametrics collector
+	testIDkm, err := testutil.GenerateRandomString(11)
+	require.NoError(t, err)
+	collectorConfigPathMetrics := path.Join(configExamplesDir, "kafka-metrics-receiver.yaml")
+	collectorConfigkm, err := k8stest.GetCollectorConfig(collectorConfigPathMetrics, k8stest.ConfigTemplate{
+		Host: host,
+		Templates: []string{
+			templateKafkaReceiverOrigin,
+			fmt.Sprintf(templateKafkaReceiverNew, host, host, host),
+		},
+	})
+
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+	collectorObjs3 := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testIDkm,
+		filepath.Join(testDir, "collector-kafka"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfigkm,
+		},
+		host,
+	)
+
+	defer func() {
+		for _, obj := range collectorObjs3 {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
 	// create telemetrygen deployment
 	deploymentFileTelemetryGen := filepath.Join(testDir, "testobjects", "telemetrygen.yaml")
 	buf, err = os.ReadFile(deploymentFileTelemetryGen)
@@ -294,4 +357,20 @@ func TestE2E_Kafka(t *testing.T) {
 	}, 3*time.Minute, 1*time.Second)
 
 	t.Logf("Traces checked successfully")
+
+	t.Logf("Checking Kafka metrics...")
+
+	oteltest.WaitForMetrics(t, 1, kafkametricsConsumer)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	require.Nil(t, golden.WriteMetrics(t, expectedKafkaMetricsFile, kafkametricsConsumer.AllMetrics()[len(kafkametricsConsumer.AllMetrics())-1]))
+
+	expectedKMetrics, err := golden.ReadMetrics(expectedMetricsFile)
+	require.NoError(t, err)
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, kafkametricsConsumer.AllMetrics()[len(kafkametricsConsumer.AllMetrics())-1], metricsCompareOptions...))
+	}, 3*time.Minute, 3*time.Second)
+
+	t.Logf("Kafka Metrics checked successfully")
 }

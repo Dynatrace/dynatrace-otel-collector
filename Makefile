@@ -8,7 +8,7 @@ DIST_DIR = dist
 BIN_DIR = bin
 
 # ALL_MODULES includes ./* dirs (excludes . dir)
-ALL_MODS := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -exec dirname {} \; | sort | grep -E '^./' )
+ALL_MODS := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -path "./internal/tools/*" -not -path "./internal/testing-setups/*" -exec dirname {} \; | sort | grep -E '^./' )
 # INTERNAL_MODS includes only ./internal/* dirs
 INTERNAL_MODS := $(shell find ./internal/* -type f -name "go.mod" -exec dirname {} \; | sort | grep -E '^./' )
 

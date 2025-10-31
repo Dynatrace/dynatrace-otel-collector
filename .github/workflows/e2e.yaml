@@ -113,6 +113,7 @@ jobs:
           - k8scluster
           - loadbalancing
           - kafka
+          - kafka-metrics
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

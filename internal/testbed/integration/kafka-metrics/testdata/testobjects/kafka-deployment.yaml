@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redpanda
+  namespace: e2ekafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redpanda
+  template:
+    metadata:
+      labels:
+        app: redpanda
+    spec:
+      containers:
+        - name: redpanda
+          image: docker.redpanda.com/redpandadata/redpanda:v24.2.9
+          args:
+            - redpanda
+            - start
+            - --mode=dev-container
+            - --overprovisioned
+            - --smp=1
+            - --memory=256M
+            - --reserve-memory=0M
+            - --kernel-page-cache=true
+            - --set
+            - redpanda.empty_seed_starts_cluster=true
+            - --kafka-addr=0.0.0.0:9092
+            - --advertise-kafka-addr=redpanda.e2ekafka.svc.cluster.local:9092
+          ports:
+            - containerPort: 9092
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi

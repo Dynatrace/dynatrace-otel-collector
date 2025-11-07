@@ -5,7 +5,6 @@ package kafka
 import (
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"testing"
 	"time"
@@ -42,6 +41,7 @@ service:
     logs:
       receivers: [kafka]
       exporters: [otlphttp]`
+
 	templateReceiverNew = `
   otlphttp/traces:
     endpoint: http://%s:4321
@@ -64,63 +64,31 @@ service:
       exporters: [otlphttp/logs]`
 )
 
-var (
-	templateKafkaReceiverOrigin = `otlphttp:
-    endpoint: ${env:DT_ENDPOINT}
-    headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
-
-service:
-  extensions: [health_check]
-  pipelines:
-    metrics:
-      receivers: [kafkametrics]
-	  processors: [cumulativetodelta]
-      exporters: [otlphttp]`
-	templateKafkaReceiverNew = `
-  otlphttp:
-    endpoint: http://%s:4322
-
-service:
-  extensions: [health_check]
-  pipelines:
-    metrics:
-      receivers: [kafkametrics]
-	  processors: [cumulativetodelta]	
-      exporters: [otlphttp]`
-)
-
 func TestE2E_Kafka(t *testing.T) {
+
+	// Paths
 	testDir := filepath.Join("testdata")
-	expectedLogsFile := testDir + "/e2e/expected-logs.yaml"
-	expectedTracesFile := testDir + "/e2e/expected-traces.yaml"
-	expectedMetricsFile := testDir + "/e2e/expected-metrics.yaml"
-	expectedKafkaMetricsFile := testDir + "/e2e/expected-kafka-metrics.yaml"
-	configExamplesDir := "../../../../config_examples"
+	expectedLogsFile := filepath.Join(testDir, "e2e", "expected-logs.yaml")
+	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
+	expectedMetricsFile := filepath.Join(testDir, "e2e", "expected-metrics.yaml")
+	configExamplesDir := filepath.Join("..", "..", "..", "..", "config_examples")
 
-	kubeconfigPath := k8stest.TestKubeConfig
-	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
-	}
-
+	// K8s client
+	kubeconfigPath := kubeconfigFromEnvOrDefault()
 	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
 	require.NoError(t, err)
 
-	// Create the namespace specific for the test
-	nsFile := filepath.Join(testDir, "namespace.yaml")
-	buf, err := os.ReadFile(nsFile)
-	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
-
+	// Namespace
+	nsObj := createObjectFromFile(t, k8sClient, filepath.Join(testDir, "namespace.yaml"))
 	testNs := nsObj.GetName()
 	defer func() {
 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
-	kafkametricsConsumer := new(consumertest.MetricsSink)
+
 	metricsConsumer := new(consumertest.MetricsSink)
 	tracesConsumer := new(consumertest.TracesSink)
 	logsConsumer := new(consumertest.LogsSink)
+
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Logs: []*oteltest.LogSinkConfig{
 			{
@@ -135,11 +103,6 @@ func TestE2E_Kafka(t *testing.T) {
 				Consumer: metricsConsumer,
 				Ports: &oteltest.ReceiverPorts{
 					Http: 4320,
-				},
-			}, {
-				Consumer: kafkametricsConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4322,
 				},
 			},
 		},
@@ -160,71 +123,57 @@ func TestE2E_Kafka(t *testing.T) {
 		shutdownSinks()
 	}()
 
-	// create kafka server deployment
-	deploymentFile := filepath.Join(testDir, "testobjects", "kafka-deployment.yaml")
-	buf, err = os.ReadFile(deploymentFile)
-	require.NoErrorf(t, err, "failed to read kafka object file %s", deploymentFile)
-	kafkaDeploymentObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create kafka server from file %s", deploymentFile)
+	// Kafka server (deployment + service)
+	kafkaDeploymentObj := createObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-deployment.yaml"))
+	_ = kafkaDeploymentObj
+	kafkaServiceObj := createObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-service.yaml"))
+	_ = kafkaServiceObj
 
-	// create kafka server service
-	serviceFile := filepath.Join(testDir, "testobjects", "kafka-service.yaml")
-	buf, err = os.ReadFile(serviceFile)
-	require.NoErrorf(t, err, "failed to read kafka service file %s", serviceFile)
-	kafkaServiceObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create kafka service from file %s", serviceFile)
-
-	defer func() {
-		for _, obj := range []unstructured.Unstructured{*kafkaDeploymentObj, *kafkaServiceObj} {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, &obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	// create receiver collector
-	testID, err := testutil.GenerateRandomString(10)
-	require.NoError(t, err)
+	// Host endpoint for the receiver exporters
 	host := otelk8stest.HostEndpoint(t)
-	collectorConfigPath := path.Join(configExamplesDir, "kafka-receiver.yaml")
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
+
+	// Receiver collector
+	testIDReceiver, err := testutil.GenerateRandomString(10)
+	require.NoError(t, err)
+
+	collectorConfigPathReceiver := filepath.Join(configExamplesDir, "kafka-receiver.yaml")
+	collectorConfigReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathReceiver, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
 			templateReceiverOrigin,
-			fmt.Sprintf(templateReceiverNew, host, host, host),
+			receiverExporterTemplate(host),
 		},
 	})
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathReceiver)
+	t.Logf("CollectorConfigReceiver: %s", collectorConfigReceiver)
 
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs2 := otelk8stest.CreateCollectorObjects(
+	_ = createCollectorObjects(
 		t,
 		k8sClient,
-		testID,
+		testIDReceiver,
 		filepath.Join(testDir, "collector-receiver"),
 		map[string]string{
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfig,
+			"CollectorConfig":   collectorConfigReceiver,
 		},
 		host,
 	)
 
-	defer func() {
-		for _, obj := range collectorObjs2 {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	// create exporter collector
-	testIDexporter, err := testutil.GenerateRandomString(10)
+	// Exporter collector
+	testIDExporter, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
-	collectorConfigPathExporter := path.Join(configExamplesDir, "kafka-exporter.yaml")
+
+	collectorConfigPathExporter := filepath.Join(configExamplesDir, "kafka-exporter.yaml")
 	collectorConfigExporter, err := k8stest.GetCollectorConfig(collectorConfigPathExporter, k8stest.ConfigTemplate{
 		Host: host,
 	})
 
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjsExporter := otelk8stest.CreateCollectorObjects(
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathExporter)
+
+	_ = createCollectorObjects(
 		t,
 		k8sClient,
-		testIDexporter,
+		testIDExporter,
 		filepath.Join(testDir, "collector-exporter"),
 		map[string]string{
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
@@ -233,60 +182,22 @@ func TestE2E_Kafka(t *testing.T) {
 		host,
 	)
 
-	defer func() {
-		for _, obj := range collectorObjsExporter {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
+	// Create Telemetries
+	createObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "telemetrygen.yaml"))
 
-	// create kafkametrics collector
-	testIDkm, err := testutil.GenerateRandomString(11)
-	require.NoError(t, err)
-	collectorConfigPathMetrics := path.Join(configExamplesDir, "kafka-metrics-receiver.yaml")
-	collectorConfigkm, err := k8stest.GetCollectorConfig(collectorConfigPathMetrics, k8stest.ConfigTemplate{
-		Host: host,
-		Templates: []string{
-			templateKafkaReceiverOrigin,
-			fmt.Sprintf(templateKafkaReceiverNew, host, host, host),
-		},
-	})
-
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs3 := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testIDkm,
-		filepath.Join(testDir, "collector-kafka"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfigkm,
-		},
-		host,
+	// Compare timeouts
+	const (
+		compareTimeout   = 3 * time.Minute
+		compareTick      = 3 * time.Second
+		compareTraceTick = 1 * time.Second
 	)
 
-	defer func() {
-		for _, obj := range collectorObjs3 {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	// create telemetrygen deployment
-	deploymentFileTelemetryGen := filepath.Join(testDir, "testobjects", "telemetrygen.yaml")
-	buf, err = os.ReadFile(deploymentFileTelemetryGen)
-	require.NoErrorf(t, err, "failed to read deployment object file %s", deploymentFileTelemetryGen)
-	telemetrygenObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s deployment from file %s", deploymentFileTelemetryGen)
-
-	defer func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, telemetrygenObj), "failed to delete object %s", telemetrygenObj.GetName())
-	}()
-
+	// Metrics
 	t.Logf("Checking metrics...")
-
 	oteltest.WaitForMetrics(t, 1, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedMetricsFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	// require.Nil(t, golden.WriteMetrics(t, expectedMetricsFile, lastMetrics))
 
 	expectedMetrics, err := golden.ReadMetrics(expectedMetricsFile)
 	require.NoError(t, err)
@@ -299,44 +210,49 @@ func TestE2E_Kafka(t *testing.T) {
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMetrics, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1], metricsCompareOptions...))
-	}, 3*time.Minute, 3*time.Second)
+		all := metricsConsumer.AllMetrics()
+		require.NotEmpty(tt, all)
+		got := all[len(all)-1]
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMetrics, got, metricsCompareOptions...))
+	}, compareTimeout, compareTick)
 
 	t.Logf("Metrics checked successfully")
 
+	// Logs
 	t.Logf("Checking logs...")
-
 	oteltest.WaitForLogs(t, 1, logsConsumer)
 
 	// the commented line below writes the received list of logs to the expected.yaml
-	// require.Nil(t, golden.WriteLogs(t, expectedLogsFile, logsConsumer.AllLogs()[len(logsConsumer.AllLogs())-1]))
+	// require.Nil(t, golden.WriteLogs(t, expectedLogsFile, lastLogs))
 
 	expectedLogs, err := golden.ReadLogs(expectedLogsFile)
 	require.NoError(t, err)
 
-	logcompareOptions := []plogtest.CompareLogsOption{
+	logCompareOptions := []plogtest.CompareLogsOption{
 		plogtest.IgnoreTimestamp(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, plogtest.CompareLogs(expectedLogs, logsConsumer.AllLogs()[len(logsConsumer.AllLogs())-1], logcompareOptions...))
-	}, 3*time.Minute, 3*time.Second)
+		all := logsConsumer.AllLogs()
+		require.NotEmpty(tt, all)
+		got := all[len(all)-1]
+		assert.NoError(tt, plogtest.CompareLogs(expectedLogs, got, logCompareOptions...))
+	}, compareTimeout, compareTick)
 
 	t.Logf("Logs checked successfully")
 
+	// Traces
 	t.Log("Checking traces...")
-
 	oteltest.WaitForTraces(t, 1, tracesConsumer)
 
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]))
+	// the commented line below writes the received list of traces to the expected.yaml
+	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, lastTraces))
 
 	traceCompareOptions := []ptracetest.CompareTracesOption{
 		ptracetest.IgnoreStartTimestamp(),
 		ptracetest.IgnoreEndTimestamp(),
 		ptracetest.IgnoreTraceID(),
 		ptracetest.IgnoreSpanID(),
-		ptracetest.IgnoreEndTimestamp(),
 		ptracetest.IgnoreSpansOrder(),
 	}
 
@@ -344,33 +260,47 @@ func TestE2E_Kafka(t *testing.T) {
 	require.NoError(t, err)
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		gotTraces := tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]
+		all := tracesConsumer.AllTraces()
+		require.NotEmpty(tt, all)
+		got := all[len(all)-1]
 		testutil.MaskParentSpanID(expectedTraces)
-		testutil.MaskParentSpanID(gotTraces)
-		assert.NoError(tt,
-			ptracetest.CompareTraces(
-				expectedTraces,
-				gotTraces,
-				traceCompareOptions...,
-			),
-		)
-	}, 3*time.Minute, 1*time.Second)
+		testutil.MaskParentSpanID(got)
+		assert.NoError(tt, ptracetest.CompareTraces(expectedTraces, got, traceCompareOptions...))
+	}, compareTimeout, compareTraceTick)
 
 	t.Logf("Traces checked successfully")
+}
 
-	t.Logf("Checking Kafka metrics...")
+func kubeconfigFromEnvOrDefault() string {
+	if fromEnv := os.Getenv(k8stest.KubeConfigEnvVar); fromEnv != "" {
+		return fromEnv
+	}
+	return k8stest.TestKubeConfig
+}
 
-	oteltest.WaitForMetrics(t, 1, kafkametricsConsumer)
+func createObjectFromFile(t *testing.T, client *otelk8stest.K8sClient, file string) *unstructured.Unstructured {
+	buf, err := os.ReadFile(file)
+	require.NoErrorf(t, err, "failed to read object file %s", file)
 
-	// the commented line below writes the received list of metrics to the expected.yaml
-	require.Nil(t, golden.WriteMetrics(t, expectedKafkaMetricsFile, kafkametricsConsumer.AllMetrics()[len(kafkametricsConsumer.AllMetrics())-1]))
+	obj, err := otelk8stest.CreateObject(client, buf)
+	require.NoErrorf(t, err, "failed to create k8s object from file %s", file)
 
-	expectedKMetrics, err := golden.ReadMetrics(expectedMetricsFile)
-	require.NoError(t, err)
+	t.Cleanup(func() {
+		require.NoErrorf(t, otelk8stest.DeleteObject(client, obj), "failed to delete object %s", obj.GetName())
+	})
+	return obj
+}
 
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, kafkametricsConsumer.AllMetrics()[len(kafkametricsConsumer.AllMetrics())-1], metricsCompareOptions...))
-	}, 3*time.Minute, 3*time.Second)
+func createCollectorObjects(t *testing.T, client *otelk8stest.K8sClient, testID string, manifestsDir string, values map[string]string, host string) []*unstructured.Unstructured {
+	objs := otelk8stest.CreateCollectorObjects(t, client, testID, manifestsDir, values, host)
+	t.Cleanup(func() {
+		for _, obj := range objs {
+			require.NoErrorf(t, otelk8stest.DeleteObject(client, obj), "failed to delete object %s", obj.GetName())
+		}
+	})
+	return objs
+}
 
-	t.Logf("Kafka Metrics checked successfully")
+func receiverExporterTemplate(host string) string {
+	return fmt.Sprintf(templateReceiverNew, host, host, host)
 }

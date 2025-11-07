@@ -219,19 +219,27 @@ func TestE2E_Kafka(t *testing.T) {
 
 	// KMetrics
 	t.Logf("Checking kafka metrics...")
-	oteltest.WaitForMetrics(t, 1, kmetricsConsumer)
+	oteltest.WaitForMetrics(t, 20, kmetricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	//require.Nil(t, golden.WriteMetrics(t, expectedKMetricsFile, kmetricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	// require.Nil(t, golden.WriteMetrics(t, expectedKMetricsFile, kmetricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	expectedKMetrics, err := golden.ReadMetrics(expectedKMetricsFile)
 	require.NoError(t, err)
+
+	kmetricsCompareOptions := []pmetrictest.CompareMetricsOption{
+		pmetrictest.IgnoreMetricValues("gen"),
+		pmetrictest.IgnoreTimestamp(),
+		pmetrictest.IgnoreStartTimestamp(),
+		pmetrictest.IgnoreScopeVersion(),
+		pmetrictest.IgnoreMetricsOrder(),
+	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		all := kmetricsConsumer.AllMetrics()
 		require.NotEmpty(tt, all)
 		got := all[len(all)-1]
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, got, metricsCompareOptions...))
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...))
 	}, compareTimeout, compareTick)
 
 	t.Logf("Metrics checked successfully")

@@ -222,7 +222,7 @@ func TestE2E_Kafka(t *testing.T) {
 	oteltest.WaitForMetrics(t, 1, kmetricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	require.Nil(t, golden.WriteMetrics(t, expectedKMetricsFile, kmetricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	//require.Nil(t, golden.WriteMetrics(t, expectedKMetricsFile, kmetricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	expectedKMetrics, err := golden.ReadMetrics(expectedKMetricsFile)
 	require.NoError(t, err)

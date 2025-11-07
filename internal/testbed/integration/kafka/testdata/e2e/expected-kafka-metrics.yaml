@@ -1,28 +1,16 @@
-resource_metrics:
-  - resource:
-      attributes:
-        service.instance.id: "51e077b9-193d-426f-8d87-8681fa7d56a7"
-        service.name: "dynatrace-otel-collector"
-        service.version: "0.39.0"
-    schema_url: ""
-    scope_metrics:
-      - scope:
-          name: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver"
-          version: "0.39.0"
-        schema_url: ""
-        metrics:
-          - name: kafka.brokers
-            description: Number of brokers in the cluster.
-            unit: "{brokers}"
-            data_type: Sum
-            is_monotonic: false
-            aggregation_temporality: Cumulative
-            data_points:
-              - start_timestamp: "2025-10-31T09:28:56.598399794Z"
-                timestamp: "2025-11-01T10:11:21.547396968Z"
-                value: 1
-                attributes:
-                  otelcol.component.id: "debug"
-                  otelcol.component.kind: "exporter"
-                  otelcol.signal: "metrics"
-
+resourceMetrics:
+  - resource: {}
+    scopeMetrics:
+      - metrics:
+          - description: Number of brokers in the cluster.
+            name: kafka.brokers
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "1"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{brokers}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver
+          version: 0.39.0

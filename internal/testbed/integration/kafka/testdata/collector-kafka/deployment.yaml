@@ -13,7 +13,7 @@ spec:
       labels:
         app.kubernetes.io/name: opentelemetry-collector
         app.kubernetes.io/instance: {{ .Name }}
-        mine: test
+        type: km-receiver
     spec:
       serviceAccountName: {{ .Name }}
       containers:

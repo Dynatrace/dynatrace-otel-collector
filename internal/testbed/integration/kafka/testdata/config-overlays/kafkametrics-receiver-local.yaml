@@ -1,0 +1,11 @@
+exporters:
+  otlphttp/second:
+    endpoint: http://%s:4322
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [kafkametrics]
+      processors: [cumulativetodelta]
+      exporters: [otlphttp/second]

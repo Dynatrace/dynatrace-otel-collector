@@ -13,6 +13,7 @@ spec:
       labels:
         app.kubernetes.io/name: opentelemetry-collector
         app.kubernetes.io/instance: {{ .Name }}
+        type: exporter
     spec:
       serviceAccountName: {{ .Name }}
       containers:

@@ -23,54 +23,13 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-var (
-	templateReceiverOrigin = `otlphttp:
-    endpoint: ${env:DT_ENDPOINT}
-    headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
-
-service:
-  extensions: [health_check]
-  pipelines:
-    traces:
-      receivers: [kafka]
-      exporters: [otlphttp]
-    metrics:
-      receivers: [kafka]
-      exporters: [otlphttp]
-    logs:
-      receivers: [kafka]
-      exporters: [otlphttp]`
-
-	templateReceiverNew = `
-  otlphttp/traces:
-    endpoint: http://%s:4321
-  otlphttp/metrics:
-    endpoint: http://%s:4320
-  otlphttp/logs:
-    endpoint: http://%s:4319
-
-service:
-  extensions: [health_check]
-  pipelines:
-    traces:
-      receivers: [kafka]
-      exporters: [otlphttp/traces]
-    metrics:
-      receivers: [kafka]
-      exporters: [otlphttp/metrics]
-    logs:
-      receivers: [kafka]
-      exporters: [otlphttp/logs]`
-)
-
 func TestE2E_Kafka(t *testing.T) {
-
 	// Paths
 	testDir := filepath.Join("testdata")
 	expectedLogsFile := filepath.Join(testDir, "e2e", "expected-logs.yaml")
 	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
 	expectedMetricsFile := filepath.Join(testDir, "e2e", "expected-metrics.yaml")
+	expectedKMetricsFile := filepath.Join(testDir, "e2e", "expected-kafka-metrics.yaml")
 	configExamplesDir := filepath.Join("..", "..", "..", "..", "config_examples")
 
 	// K8s client
@@ -86,6 +45,7 @@ func TestE2E_Kafka(t *testing.T) {
 	}()
 
 	metricsConsumer := new(consumertest.MetricsSink)
+	kmetricsConsumer := new(consumertest.MetricsSink)
 	tracesConsumer := new(consumertest.TracesSink)
 	logsConsumer := new(consumertest.LogsSink)
 
@@ -103,6 +63,12 @@ func TestE2E_Kafka(t *testing.T) {
 				Consumer: metricsConsumer,
 				Ports: &oteltest.ReceiverPorts{
 					Http: 4320,
+				},
+			},
+			{
+				Consumer: kmetricsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4322,
 				},
 			},
 		},
@@ -137,15 +103,19 @@ func TestE2E_Kafka(t *testing.T) {
 	require.NoError(t, err)
 
 	collectorConfigPathReceiver := filepath.Join(configExamplesDir, "kafka-receiver.yaml")
+
+	// Read overlays from files
+	envOverlay := mustRead(t, filepath.Join(testDir, "config-overlays", "receiver-env.yaml"))
+	localOverlay := fmt.Sprintf(mustRead(t, filepath.Join(testDir, "config-overlays", "receiver-local.yaml")), host)
+
 	collectorConfigReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathReceiver, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			templateReceiverOrigin,
-			receiverExporterTemplate(host),
+			envOverlay,
+			localOverlay,
 		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathReceiver)
-	t.Logf("CollectorConfigReceiver: %s", collectorConfigReceiver)
 
 	_ = createCollectorObjects(
 		t,
@@ -159,6 +129,36 @@ func TestE2E_Kafka(t *testing.T) {
 		host,
 	)
 
+	// KafkaMetrics Receiver collector
+	testIDKMReceiver, err := testutil.GenerateRandomString(10)
+	require.NoError(t, err)
+	collectorConfigPathKMReceiver := filepath.Join(configExamplesDir, "kafka-metrics-receiver.yaml")
+
+	// Read overlays from files
+	envOverlay = mustRead(t, filepath.Join(testDir, "config-overlays", "kafkametrics-receiver-env.yaml"))
+	localOverlay = fmt.Sprintf(mustRead(t, filepath.Join(testDir, "config-overlays", "kafkametrics-receiver-local.yaml")), host)
+
+	collectorConfigKMReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathKMReceiver, k8stest.ConfigTemplate{
+		Host: host,
+		Templates: []string{
+			envOverlay,
+			localOverlay,
+		},
+	})
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathKMReceiver)
+
+	_ = createCollectorObjects(
+		t,
+		k8sClient,
+		testIDKMReceiver,
+		filepath.Join(testDir, "collector-kafka"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfigKMReceiver,
+		},
+		host,
+	)
+
 	// Exporter collector
 	testIDExporter, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
@@ -167,7 +167,6 @@ func TestE2E_Kafka(t *testing.T) {
 	collectorConfigExporter, err := k8stest.GetCollectorConfig(collectorConfigPathExporter, k8stest.ConfigTemplate{
 		Host: host,
 	})
-
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathExporter)
 
 	_ = createCollectorObjects(
@@ -197,7 +196,7 @@ func TestE2E_Kafka(t *testing.T) {
 	oteltest.WaitForMetrics(t, 1, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedMetricsFile, lastMetrics))
+	// require.Nil(t, golden.WriteMetrics(t, expectedMetricsFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	expectedMetrics, err := golden.ReadMetrics(expectedMetricsFile)
 	require.NoError(t, err)
@@ -218,12 +217,31 @@ func TestE2E_Kafka(t *testing.T) {
 
 	t.Logf("Metrics checked successfully")
 
+	// KMetrics
+	t.Logf("Checking kafka metrics...")
+	oteltest.WaitForMetrics(t, 1, kmetricsConsumer)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	require.Nil(t, golden.WriteMetrics(t, expectedKMetricsFile, kmetricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+
+	expectedKMetrics, err := golden.ReadMetrics(expectedKMetricsFile)
+	require.NoError(t, err)
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		all := kmetricsConsumer.AllMetrics()
+		require.NotEmpty(tt, all)
+		got := all[len(all)-1]
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, got, metricsCompareOptions...))
+	}, compareTimeout, compareTick)
+
+	t.Logf("Metrics checked successfully")
+
 	// Logs
 	t.Logf("Checking logs...")
 	oteltest.WaitForLogs(t, 1, logsConsumer)
 
 	// the commented line below writes the received list of logs to the expected.yaml
-	// require.Nil(t, golden.WriteLogs(t, expectedLogsFile, lastLogs))
+	// require.Nil(t, golden.WriteLogs(t, expectedLogsFile, logsConsumer.AllLogs()[len(logsConsumer.AllLogs())-1]))
 
 	expectedLogs, err := golden.ReadLogs(expectedLogsFile)
 	require.NoError(t, err)
@@ -245,8 +263,8 @@ func TestE2E_Kafka(t *testing.T) {
 	t.Log("Checking traces...")
 	oteltest.WaitForTraces(t, 1, tracesConsumer)
 
-	// the commented line below writes the received list of traces to the expected.yaml
-	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, lastTraces))
+	// the commented line below writes the received list of metrics to the expected.yaml
+	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]))
 
 	traceCompareOptions := []ptracetest.CompareTracesOption{
 		ptracetest.IgnoreStartTimestamp(),
@@ -301,6 +319,9 @@ func createCollectorObjects(t *testing.T, client *otelk8stest.K8sClient, testID 
 	return objs
 }
 
-func receiverExporterTemplate(host string) string {
-	return fmt.Sprintf(templateReceiverNew, host, host, host)
+// Helper to read overlay file content as string
+func mustRead(t *testing.T, p string) string {
+	b, err := os.ReadFile(p)
+	require.NoErrorf(t, err, "read file %s", p)
+	return string(b)
 }

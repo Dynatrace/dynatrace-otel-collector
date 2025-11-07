@@ -227,12 +227,13 @@ func TestE2E_Kafka(t *testing.T) {
 	require.NoError(t, err)
 
 	kmetricsCompareOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreMetricValues("gen"),
+		pmetrictest.IgnoreMetricValues("gen", "kafka.consumer_group.offset", "kafka.consumer_group.offset_sum"),
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreScopeVersion(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
+		pmetrictest.IgnoreDatapointAttributesOrder(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

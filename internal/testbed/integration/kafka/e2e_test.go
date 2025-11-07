@@ -1,4 +1,4 @@
-//go:build e2e
+////go:build e2e
 
 package kafka
 
@@ -20,7 +20,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 func TestE2E_Kafka(t *testing.T) {
@@ -33,12 +32,12 @@ func TestE2E_Kafka(t *testing.T) {
 	configExamplesDir := filepath.Join("..", "..", "..", "..", "config_examples")
 
 	// K8s client
-	kubeconfigPath := kubeconfigFromEnvOrDefault()
+	kubeconfigPath := k8stest.KubeconfigFromEnvOrDefault()
 	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
 	require.NoError(t, err)
 
 	// Namespace
-	nsObj := createObjectFromFile(t, k8sClient, filepath.Join(testDir, "namespace.yaml"))
+	nsObj := k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "namespace.yaml"))
 	testNs := nsObj.GetName()
 	defer func() {
 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
@@ -90,9 +89,9 @@ func TestE2E_Kafka(t *testing.T) {
 	}()
 
 	// Kafka server (deployment + service)
-	kafkaDeploymentObj := createObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-deployment.yaml"))
+	kafkaDeploymentObj := k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-deployment.yaml"))
 	_ = kafkaDeploymentObj
-	kafkaServiceObj := createObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-service.yaml"))
+	kafkaServiceObj := k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-service.yaml"))
 	_ = kafkaServiceObj
 
 	// Host endpoint for the receiver exporters
@@ -105,8 +104,8 @@ func TestE2E_Kafka(t *testing.T) {
 	collectorConfigPathReceiver := filepath.Join(configExamplesDir, "kafka-receiver.yaml")
 
 	// Read overlays from files
-	envOverlay := mustRead(t, filepath.Join(testDir, "config-overlays", "receiver-env.yaml"))
-	localOverlay := fmt.Sprintf(mustRead(t, filepath.Join(testDir, "config-overlays", "receiver-local.yaml")), host)
+	envOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "receiver-env.yaml"))
+	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "receiver-local.yaml")), host)
 
 	collectorConfigReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathReceiver, k8stest.ConfigTemplate{
 		Host: host,
@@ -117,7 +116,7 @@ func TestE2E_Kafka(t *testing.T) {
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathReceiver)
 
-	_ = createCollectorObjects(
+	_ = otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testIDReceiver,
@@ -135,8 +134,8 @@ func TestE2E_Kafka(t *testing.T) {
 	collectorConfigPathKMReceiver := filepath.Join(configExamplesDir, "kafka-metrics-receiver.yaml")
 
 	// Read overlays from files
-	envOverlay = mustRead(t, filepath.Join(testDir, "config-overlays", "kafkametrics-receiver-env.yaml"))
-	localOverlay = fmt.Sprintf(mustRead(t, filepath.Join(testDir, "config-overlays", "kafkametrics-receiver-local.yaml")), host)
+	envOverlay = k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "kafkametrics-receiver-env.yaml"))
+	localOverlay = fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "kafkametrics-receiver-local.yaml")), host)
 
 	collectorConfigKMReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathKMReceiver, k8stest.ConfigTemplate{
 		Host: host,
@@ -147,7 +146,7 @@ func TestE2E_Kafka(t *testing.T) {
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathKMReceiver)
 
-	_ = createCollectorObjects(
+	_ = k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testIDKMReceiver,
@@ -169,7 +168,7 @@ func TestE2E_Kafka(t *testing.T) {
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathExporter)
 
-	_ = createCollectorObjects(
+	_ = otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testIDExporter,
@@ -182,7 +181,7 @@ func TestE2E_Kafka(t *testing.T) {
 	)
 
 	// Create Telemetries
-	createObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "telemetrygen.yaml"))
+	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "telemetrygen.yaml"))
 
 	// Compare timeouts
 	const (
@@ -232,7 +231,7 @@ func TestE2E_Kafka(t *testing.T) {
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreMetricsOrder(),
+		pmetrictest.IgnoreScopeMetricsOrder(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
@@ -295,41 +294,4 @@ func TestE2E_Kafka(t *testing.T) {
 	}, compareTimeout, compareTraceTick)
 
 	t.Logf("Traces checked successfully")
-}
-
-func kubeconfigFromEnvOrDefault() string {
-	if fromEnv := os.Getenv(k8stest.KubeConfigEnvVar); fromEnv != "" {
-		return fromEnv
-	}
-	return k8stest.TestKubeConfig
-}
-
-func createObjectFromFile(t *testing.T, client *otelk8stest.K8sClient, file string) *unstructured.Unstructured {
-	buf, err := os.ReadFile(file)
-	require.NoErrorf(t, err, "failed to read object file %s", file)
-
-	obj, err := otelk8stest.CreateObject(client, buf)
-	require.NoErrorf(t, err, "failed to create k8s object from file %s", file)
-
-	t.Cleanup(func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(client, obj), "failed to delete object %s", obj.GetName())
-	})
-	return obj
-}
-
-func createCollectorObjects(t *testing.T, client *otelk8stest.K8sClient, testID string, manifestsDir string, values map[string]string, host string) []*unstructured.Unstructured {
-	objs := otelk8stest.CreateCollectorObjects(t, client, testID, manifestsDir, values, host)
-	t.Cleanup(func() {
-		for _, obj := range objs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(client, obj), "failed to delete object %s", obj.GetName())
-		}
-	})
-	return objs
-}
-
-// Helper to read overlay file content as string
-func mustRead(t *testing.T, p string) string {
-	b, err := os.ReadFile(p)
-	require.NoErrorf(t, err, "read file %s", p)
-	return string(b)
 }

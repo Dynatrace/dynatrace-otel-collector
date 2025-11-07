@@ -7,6 +7,11 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"testing"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/stretchr/testify/require"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 type ConfigTemplate struct {
@@ -50,4 +55,41 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 	}
 
 	return res, nil
+}
+
+func KubeconfigFromEnvOrDefault() string {
+	if fromEnv := os.Getenv(KubeConfigEnvVar); fromEnv != "" {
+		return fromEnv
+	}
+	return TestKubeConfig
+}
+
+func CreateObjectFromFile(t *testing.T, client *xk8stest.K8sClient, file string) *unstructured.Unstructured {
+	buf, err := os.ReadFile(file)
+	require.NoErrorf(t, err, "failed to read object file %s", file)
+
+	obj, err := xk8stest.CreateObject(client, buf)
+	require.NoErrorf(t, err, "failed to create k8s object from file %s", file)
+
+	t.Cleanup(func() {
+		require.NoErrorf(t, xk8stest.DeleteObject(client, obj), "failed to delete object %s", obj.GetName())
+	})
+	return obj
+}
+
+func CreateCollectorObjects(t *testing.T, client *xk8stest.K8sClient, testID string, manifestsDir string, values map[string]string, host string) []*unstructured.Unstructured {
+	objs := xk8stest.CreateCollectorObjects(t, client, testID, manifestsDir, values, host)
+	t.Cleanup(func() {
+		for _, obj := range objs {
+			require.NoErrorf(t, xk8stest.DeleteObject(client, obj), "failed to delete object %s", obj.GetName())
+		}
+	})
+	return objs
+}
+
+// Helper to read overlay file content as string
+func MustRead(t *testing.T, p string) string {
+	b, err := os.ReadFile(p)
+	require.NoErrorf(t, err, "read file %s", p)
+	return string(b)
 }

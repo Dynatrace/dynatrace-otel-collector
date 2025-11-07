@@ -26,8 +26,6 @@ spec:
             - --reserve-memory=0M
             - --kernel-page-cache=true
             - --set
-            - redpanda.auto_create_topics_enabled=true
-            - --set
             - redpanda.empty_seed_starts_cluster=true
             - --kafka-addr=0.0.0.0:9092
             - --advertise-kafka-addr=redpanda.e2ekafka.svc.cluster.local:9092

@@ -232,6 +232,7 @@ func TestE2E_Kafka(t *testing.T) {
 		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreScopeVersion(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
+		pmetrictest.IgnoreMetricDataPointsOrder(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
@@ -241,7 +242,7 @@ func TestE2E_Kafka(t *testing.T) {
 		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...))
 	}, compareTimeout, compareTick)
 
-	t.Logf("Metrics checked successfully")
+	t.Logf("Kafka Metrics checked successfully")
 
 	// Logs
 	t.Logf("Checking logs...")

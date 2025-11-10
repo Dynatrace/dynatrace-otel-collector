@@ -894,7 +894,7 @@ resourceMetrics:
           name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
           version: 0.62.0
       - metrics:
-          - description: Total CPU user and system time in seconds [alpha]
+          - description: Total CPU user and system time in seconds [Alpha]
             name: otelcol_process_cpu_seconds
             sum:
               aggregationTemporality: 1
@@ -904,7 +904,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: s
-          - description: Total physical memory (resident set size) [alpha]
+          - description: Total physical memory (resident set size) [Alpha]
             gauge:
               dataPoints:
                 - asInt: "181248000"
@@ -912,7 +912,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_process_memory_rss
             unit: By
-          - description: Bytes of allocated heap objects (see 'go doc runtime.MemStats.HeapAlloc') [alpha]
+          - description: Bytes of allocated heap objects (see 'go doc runtime.MemStats.HeapAlloc') [Alpha]
             gauge:
               dataPoints:
                 - asInt: "18196216"
@@ -920,7 +920,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_process_runtime_heap_alloc_bytes
             unit: By
-          - description: Cumulative bytes allocated for heap objects (see 'go doc runtime.MemStats.TotalAlloc') [alpha]
+          - description: Cumulative bytes allocated for heap objects (see 'go doc runtime.MemStats.TotalAlloc') [Alpha]
             name: otelcol_process_runtime_total_alloc_bytes
             sum:
               aggregationTemporality: 1
@@ -930,7 +930,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: By
-          - description: Total bytes of memory obtained from the OS (see 'go doc runtime.MemStats.Sys') [alpha]
+          - description: Total bytes of memory obtained from the OS (see 'go doc runtime.MemStats.Sys') [Alpha]
             gauge:
               dataPoints:
                 - asInt: "35738888"
@@ -938,7 +938,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_process_runtime_total_sys_memory_bytes
             unit: By
-          - description: Uptime of the process [alpha]
+          - description: Uptime of the process [Alpha]
             name: otelcol_process_uptime
             sum:
               aggregationTemporality: 1
@@ -951,7 +951,7 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/service
       - metrics:
-          - description: Number of units in the batch
+          - description: Number of units in the batch [Development]
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -1014,7 +1014,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_batch_send_size
             unit: '{units}'
-          - description: Number of bytes in batch that was sent. Only available on detailed level.
+          - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -1061,7 +1061,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_batch_send_size_bytes
             unit: By
-          - description: Fixed capacity of the retry queue (in batches). [alpha]
+          - description: Fixed capacity of the retry queue (in batches). [Alpha]
             gauge:
               dataPoints:
                 - asInt: "1000"
@@ -1076,7 +1076,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_capacity
             unit: '{batches}'
-          - description: Current size of the retry queue (in batches). [alpha]
+          - description: Current size of the retry queue (in batches). [Alpha]
             gauge:
               dataPoints:
                 - asInt: "0"
@@ -1091,7 +1091,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_size
             unit: '{batches}'
-          - description: Number of log records in failed attempts to send to destination. [alpha]
+          - description: Number of log records in failed attempts to send to destination. [Alpha]
             name: otelcol_exporter_send_failed_log_records
             sum:
               aggregationTemporality: 1
@@ -1114,7 +1114,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{records}'
-          - description: Number of metric points in failed attempts to send to destination. [alpha]
+          - description: Number of metric points in failed attempts to send to destination. [Alpha]
             name: otelcol_exporter_send_failed_metric_points
             sum:
               aggregationTemporality: 1
@@ -1137,7 +1137,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{datapoints}'
-          - description: Number of spans in failed attempts to send to destination. [alpha]
+          - description: Number of spans in failed attempts to send to destination. [Alpha]
             name: otelcol_exporter_send_failed_spans
             sum:
               aggregationTemporality: 1
@@ -1176,7 +1176,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{spans}'
-          - description: Number of log record successfully sent to destination. [alpha]
+          - description: Number of log record successfully sent to destination. [Alpha]
             name: otelcol_exporter_sent_log_records
             sum:
               aggregationTemporality: 1
@@ -1199,7 +1199,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{records}'
-          - description: Number of metric points successfully sent to destination. [alpha]
+          - description: Number of metric points successfully sent to destination. [Alpha]
             name: otelcol_exporter_sent_metric_points
             sum:
               aggregationTemporality: 1
@@ -1222,7 +1222,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{datapoints}'
-          - description: Number of spans successfully sent to destination. [alpha]
+          - description: Number of spans successfully sent to destination. [Alpha]
             name: otelcol_exporter_sent_spans
             sum:
               aggregationTemporality: 1
@@ -1264,7 +1264,7 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/exporter/exporterhelper
       - metrics:
-          - description: Number of metric data points dropped by the filter processor
+          - description: Number of metric data points dropped by the filter processor [Development]
             name: otelcol_processor_filter_datapoints.filtered
             sum:
               aggregationTemporality: 1
@@ -1299,7 +1299,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: "1"
-          - description: Number of logs dropped by the filter processor
+          - description: Number of logs dropped by the filter processor [Development]
             name: otelcol_processor_filter_logs.filtered
             sum:
               aggregationTemporality: 1
@@ -1334,7 +1334,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: "1"
-          - description: Number of spans dropped by the filter processor
+          - description: Number of spans dropped by the filter processor [Development]
             name: otelcol_processor_filter_spans.filtered
             sum:
               aggregationTemporality: 1
@@ -1372,7 +1372,7 @@ resourceMetrics:
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor
       - metrics:
-          - description: Number of log records successfully pushed into the pipeline. [alpha]
+          - description: Number of log records successfully pushed into the pipeline. [Alpha]
             name: otelcol_receiver_accepted_log_records
             sum:
               aggregationTemporality: 1
@@ -1410,7 +1410,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{records}'
-          - description: Number of metric points successfully pushed into the pipeline. [alpha]
+          - description: Number of metric points successfully pushed into the pipeline. [Alpha]
             name: otelcol_receiver_accepted_metric_points
             sum:
               aggregationTemporality: 1
@@ -1448,7 +1448,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{datapoints}'
-          - description: Number of spans successfully pushed into the pipeline. [alpha]
+          - description: Number of spans successfully pushed into the pipeline. [Alpha]
             name: otelcol_receiver_accepted_spans
             sum:
               aggregationTemporality: 1
@@ -1486,7 +1486,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{spans}'
-          - description: The number of log records that failed to be processed by the receiver due to internal errors. [alpha]
+          - description: The number of log records that failed to be processed by the receiver due to internal errors. [Alpha]
             name: otelcol_receiver_failed_log_records
             sum:
               aggregationTemporality: 1
@@ -1524,7 +1524,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{records}'
-          - description: The number of metric points that failed to be processed by the receiver due to internal errors. [alpha]
+          - description: The number of metric points that failed to be processed by the receiver due to internal errors. [Alpha]
             name: otelcol_receiver_failed_metric_points
             sum:
               aggregationTemporality: 1
@@ -1562,7 +1562,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{datapoints}'
-          - description: The number of spans that failed to be processed by the receiver due to internal errors. [alpha]
+          - description: The number of spans that failed to be processed by the receiver due to internal errors. [Alpha]
             name: otelcol_receiver_failed_spans
             sum:
               aggregationTemporality: 1
@@ -1600,7 +1600,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{spans}'
-          - description: Number of log records that could not be pushed into the pipeline. [alpha]
+          - description: Number of log records that could not be pushed into the pipeline. [Alpha]
             name: otelcol_receiver_refused_log_records
             sum:
               aggregationTemporality: 1
@@ -1638,7 +1638,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{records}'
-          - description: Number of metric points that could not be pushed into the pipeline. [alpha]
+          - description: Number of metric points that could not be pushed into the pipeline. [Alpha]
             name: otelcol_receiver_refused_metric_points
             sum:
               aggregationTemporality: 1
@@ -1676,7 +1676,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{datapoints}'
-          - description: Number of spans that could not be pushed into the pipeline. [alpha]
+          - description: Number of spans that could not be pushed into the pipeline. [Alpha]
             name: otelcol_receiver_refused_spans
             sum:
               aggregationTemporality: 1
@@ -1867,7 +1867,7 @@ resourceMetrics:
           name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
           version: 0.62.0
       - metrics:
-          - description: Number of units in the batch
+          - description: Number of units in the batch [Development]
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -1930,7 +1930,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_processor_batch_batch_send_size
             unit: '{units}'
-          - description: Number of bytes in batch that was sent. Only available on detailed level.
+          - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -2027,7 +2027,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_processor_batch_batch_send_size_bytes
             unit: By
-          - description: Number of times the batch was sent due to a size trigger
+          - description: Number of times the batch was sent due to a size trigger [Development]
             name: otelcol_processor_batch_batch_size_trigger_send
             sum:
               aggregationTemporality: 1
@@ -2041,7 +2041,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{times}'
-          - description: Number of distinct metadata value combinations being processed
+          - description: Number of distinct metadata value combinations being processed [Development]
             name: otelcol_processor_batch_metadata_cardinality
             sum:
               aggregationTemporality: 2
@@ -2054,7 +2054,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: '{combinations}'
-          - description: Number of times the batch was sent due to a timeout trigger
+          - description: Number of times the batch was sent due to a timeout trigger [Development]
             name: otelcol_processor_batch_timeout_trigger_send
             sum:
               aggregationTemporality: 1
@@ -2071,7 +2071,7 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/processor/batchprocessor
       - metrics:
-          - description: Number of items passed to the processor. [alpha]
+          - description: Number of items passed to the processor. [Alpha]
             name: otelcol_processor_incoming_items
             sum:
               aggregationTemporality: 1
@@ -2171,7 +2171,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{items}'
-          - description: Duration of time taken to process a batch of telemetry data through the processor. [alpha]
+          - description: Duration of time taken to process a batch of telemetry data through the processor. [Alpha]
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -2330,7 +2330,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_processor_internal_duration
             unit: s
-          - description: Number of items emitted from the processor. [alpha]
+          - description: Number of items emitted from the processor. [Alpha]
             name: otelcol_processor_outgoing_items
             sum:
               aggregationTemporality: 1

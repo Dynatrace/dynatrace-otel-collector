@@ -951,7 +951,7 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/service
       - metrics:
-          - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
+          - description: Number of units in the batch [Development]
             histogram:
               aggregationTemporality: 1
               dataPoints:
@@ -960,6 +960,7 @@ resourceMetrics:
                       value:
                         stringValue: debug
                   bucketCounts:
+                    - "6"
                     - "0"
                     - "0"
                     - "0"
@@ -967,8 +968,15 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "4"
-                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
                     - "0"
                     - "0"
                     - "0"
@@ -991,25 +999,41 @@ resourceMetrics:
                     - 4000
                     - 5000
                     - 6000
-                  max: 816
-                  min: 605
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                  max: 6
+                  min: 4
                   startTimeUnixNano: "1000000"
-                  sum: 4292
+                  sum: 30
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: exporter
                       value:
                         stringValue: otlphttp
                   bucketCounts:
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
                     - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
                     - "0"
                     - "0"
                     - "0"
@@ -1032,13 +1056,21 @@ resourceMetrics:
                     - 4000
                     - 5000
                     - 6000
-                  max: 816
-                  min: 816
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                  max: 6
+                  min: 4
                   startTimeUnixNano: "1000000"
-                  sum: 1632
+                  sum: 10
                   timeUnixNano: "2000000"
-            name: otelcol_exporter_queue_batch_send_size_bytes
-            unit: By
+            name: otelcol_exporter_queue_batch_send_size
+            unit: '{units}'
           - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
             histogram:
               aggregationTemporality: 1
@@ -1056,8 +1088,8 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "4"
-                    - "2"
-                    - "0"
+                    - "1"
+                    - "1"
                     - "0"
                     - "0"
                     - "0"
@@ -1079,10 +1111,10 @@ resourceMetrics:
                     - 4000
                     - 5000
                     - 6000
-                  max: 816
+                  max: 1224
                   min: 605
                   startTimeUnixNano: "1000000"
-                  sum: 4292
+                  sum: 4700
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: exporter
@@ -1097,8 +1129,8 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "2"
-                    - "0"
+                    - "1"
+                    - "1"
                     - "0"
                     - "0"
                     - "0"
@@ -1120,10 +1152,10 @@ resourceMetrics:
                     - 4000
                     - 5000
                     - 6000
-                  max: 816
+                  max: 1224
                   min: 816
                   startTimeUnixNano: "1000000"
-                  sum: 1632
+                  sum: 2040
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_batch_send_size_bytes
             unit: By

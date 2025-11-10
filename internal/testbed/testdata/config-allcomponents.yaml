@@ -4,6 +4,11 @@ receivers:
     metrics:
     logs:
     brokers: ["my-cluster-kafka-brokers.kafka.svc.cluster.local:9092"]
+  kafkametrics:
+    scrapers:
+      - brokers
+      - topics
+      - consumers
   k8s_cluster:
     auth_type: "serviceAccount"
     allocatable_types_to_report:

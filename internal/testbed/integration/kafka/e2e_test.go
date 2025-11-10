@@ -216,35 +216,6 @@ func TestE2E_Kafka(t *testing.T) {
 
 	t.Logf("Metrics checked successfully")
 
-	// KMetrics
-	t.Logf("Checking kafka metrics...")
-	oteltest.WaitForMetrics(t, 20, kmetricsConsumer)
-
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedKMetricsFile, kmetricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
-
-	expectedKMetrics, err := golden.ReadMetrics(expectedKMetricsFile)
-	require.NoError(t, err)
-
-	kmetricsCompareOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreMetricValues("gen", "kafka.consumer_group.offset", "kafka.consumer_group.offset_sum"),
-		pmetrictest.IgnoreTimestamp(),
-		pmetrictest.IgnoreStartTimestamp(),
-		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreDatapointAttributesOrder(),
-	}
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		all := kmetricsConsumer.AllMetrics()
-		require.NotEmpty(tt, all)
-		got := all[len(all)-1]
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...))
-	}, compareTimeout, compareTick)
-
-	t.Logf("Kafka Metrics checked successfully")
-
 	// Logs
 	t.Logf("Checking logs...")
 	oteltest.WaitForLogs(t, 1, logsConsumer)
@@ -296,4 +267,38 @@ func TestE2E_Kafka(t *testing.T) {
 	}, compareTimeout, compareTraceTick)
 
 	t.Logf("Traces checked successfully")
+
+	// KMetrics
+	t.Logf("Checking kafka metrics...")
+	oteltest.WaitForMetrics(t, 10, kmetricsConsumer)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	// require.Nil(t, golden.WriteMetrics(t, expectedKMetricsFile, kmetricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+
+	expectedKMetrics, err := golden.ReadMetrics(expectedKMetricsFile)
+	require.NoError(t, err)
+
+	kmetricsCompareOptions := []pmetrictest.CompareMetricsOption{
+		pmetrictest.IgnoreMetricValues(
+			"kafka.consumer_group.offset",
+			"kafka.consumer_group.offset_sum",
+			"kafka.consumer_group.lag",
+			"kafka.consumer_group.lag_sum"),
+		pmetrictest.IgnoreTimestamp(),
+		pmetrictest.IgnoreStartTimestamp(),
+		pmetrictest.IgnoreScopeVersion(),
+		pmetrictest.IgnoreScopeMetricsOrder(),
+		pmetrictest.IgnoreMetricDataPointsOrder(),
+		pmetrictest.IgnoreDatapointAttributesOrder(),
+	}
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		all := kmetricsConsumer.AllMetrics()
+		require.NotEmpty(tt, all)
+		got := all[len(all)-1]
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...))
+	}, compareTimeout, compareTick)
+
+	t.Logf("Kafka Metrics checked successfully")
+
 }

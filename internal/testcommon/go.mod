@@ -1,6 +1,6 @@
 module testcommon
 
-go 1.25.3
+go 1.25.4
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.139.0

@@ -89,10 +89,8 @@ func TestE2E_Kafka(t *testing.T) {
 	}()
 
 	// Kafka server (deployment + service)
-	kafkaDeploymentObj := k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-deployment.yaml"))
-	_ = kafkaDeploymentObj
-	kafkaServiceObj := k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-service.yaml"))
-	_ = kafkaServiceObj
+	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-deployment.yaml"))
+	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-service.yaml"))
 
 	// Host endpoint for the receiver exporters
 	host := otelk8stest.HostEndpoint(t)
@@ -146,7 +144,7 @@ func TestE2E_Kafka(t *testing.T) {
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathKMReceiver)
 
-	_ = k8stest.CreateCollectorObjects(
+	k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testIDKMReceiver,
@@ -168,7 +166,7 @@ func TestE2E_Kafka(t *testing.T) {
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathExporter)
 
-	_ = otelk8stest.CreateCollectorObjects(
+	otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testIDExporter,

@@ -951,69 +951,6 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/service
       - metrics:
-          - description: Number of units in the batch [Development]
-            histogram:
-              aggregationTemporality: 1
-              dataPoints:
-                - attributes:
-                    - key: exporter
-                      value:
-                        stringValue: otlphttp
-                  bucketCounts:
-                    - "2"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "2"
-                  explicitBounds:
-                    - 10
-                    - 25
-                    - 50
-                    - 75
-                    - 100
-                    - 250
-                    - 500
-                    - 750
-                    - 1000
-                    - 2000
-                    - 3000
-                    - 4000
-                    - 5000
-                    - 6000
-                    - 7000
-                    - 8000
-                    - 9000
-                    - 10000
-                    - 20000
-                    - 30000
-                    - 50000
-                    - 100000
-                  max: 6
-                  min: 4
-                  startTimeUnixNano: "1000000"
-                  sum: 10
-                  timeUnixNano: "2000000"
-            name: otelcol_exporter_queue_batch_send_size
-            unit: '{units}'
           - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
             histogram:
               aggregationTemporality: 1
@@ -1021,6 +958,47 @@ resourceMetrics:
                 - attributes:
                     - key: exporter
                       value:
+                        stringValue: debug
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "4"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "6"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                  max: 816
+                  min: 605
+                  startTimeUnixNano: "1000000"
+                  sum: 4292
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: exporter
+                      value:
                         stringValue: otlphttp
                   bucketCounts:
                     - "0"
@@ -1031,8 +1009,8 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "1"
-                    - "1"
+                    - "2"
+                    - "0"
                     - "0"
                     - "0"
                     - "0"
@@ -1054,16 +1032,134 @@ resourceMetrics:
                     - 4000
                     - 5000
                     - 6000
-                  max: 1224
+                  max: 816
                   min: 816
                   startTimeUnixNano: "1000000"
-                  sum: 2040
+                  sum: 1632
+                  timeUnixNano: "2000000"
+            name: otelcol_exporter_queue_batch_send_size_bytes
+            unit: By
+          - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "4"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "6"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                  max: 816
+                  min: 605
+                  startTimeUnixNano: "1000000"
+                  sum: 4292
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlphttp
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                  max: 816
+                  min: 816
+                  startTimeUnixNano: "1000000"
+                  sum: 1632
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_batch_send_size_bytes
             unit: By
           - description: Fixed capacity of the retry queue (in batches). [Alpha]
             gauge:
               dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: logs
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: traces
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
                 - asInt: "1000"
                   attributes:
                     - key: data_type
@@ -1079,6 +1175,36 @@ resourceMetrics:
           - description: Current size of the retry queue (in batches). [Alpha]
             gauge:
               dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: logs
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: traces
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
                 - asInt: "0"
                   attributes:
                     - key: data_type

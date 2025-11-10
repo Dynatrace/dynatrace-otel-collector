@@ -1,3 +1,3 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/mockeec
 
-go 1.25.3
+go 1.25.4

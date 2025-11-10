@@ -1,0 +1,20 @@
+exporters:
+  otlphttp/traces:
+    endpoint: http://%[1]s:4321
+  otlphttp/metrics:
+    endpoint: http://%[1]s:4320
+  otlphttp/logs:
+    endpoint: http://%[1]s:4319
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [kafka]
+      exporters: [otlphttp/traces]
+    metrics:
+      receivers: [kafka]
+      exporters: [otlphttp/metrics]
+    logs:
+      receivers: [kafka]
+      exporters: [otlphttp/logs]

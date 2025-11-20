@@ -15,4 +15,4 @@ issues: [738]
 # (Optional) One or more lines of additional information to render under the primary note.
 # These lines will be padded with 2 spaces and then inserted directly into the document.
 # Use pipe (|) for multiline entries.
-subtext: "The processor will cleanup unused cached entries after the duration specified by `max_staleness`. If `max_staleness` is not set, cached entries may persist indefinitely, leading to potential memory bloat over time."
+subtext: "The processor will clean up unused cached entries after the duration specified by `max_staleness`. If `max_staleness` is not set, cached entries may persist indefinitely, leading to potential memory bloat over time."

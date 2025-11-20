@@ -13,6 +13,7 @@ receivers:
 
 processors:
   cumulativetodelta:
+    max_staleness: 5m
 
 exporters:
   otlphttp:

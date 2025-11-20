@@ -51,6 +51,7 @@ receivers:
 
 processors:
   cumulativetodelta:
+    max_staleness: 5m
   filter:
     error_mode: ignore
     metrics:

@@ -132,7 +132,7 @@ v0.140.1:
 ### 💡 Enhancements 💡
 
 - `processor/resourcedetection`: Add the `dt.smartscape.host` resource attribute to data enriched with the Dynatrace detector ([#43650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43650))
-- `processor/resourcedetectionprocessor`: Adds tests for resource detection of property dt.smartscape.host (#709)
+- `processor/resourcedetectionprocessor`: Adds tests for resource detection of property dt.smartscape.host ([#709](https://github.com/Dynatrace/dynatrace-otel-collector/pull/709))
 
 <!-- previous-version -->
 

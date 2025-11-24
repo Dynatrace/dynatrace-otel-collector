@@ -34,7 +34,7 @@ jobs:
           # Remove leading 'v' from version
           export VERSION=$(echo -n ${TAG_NAME} | cut -c 2-)
           grep "version: ${VERSION}" manifest.yaml || (echo "value of 'dist.version' in manifest.yaml does not match tag version ${VERSION}, please update it" && exit 1)
-      - uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+      - uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
         with:
           go-version: ${{ env.GO_VERSION }}
       - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0

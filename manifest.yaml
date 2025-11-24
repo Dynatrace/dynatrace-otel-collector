@@ -63,4 +63,3 @@ providers:
 
 replaces:
   - github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider => ../internal/confmap/provider/eecprovider
-  - github.com/open-telemetry/opentelemetry-collector-contrib/exporter/loadbalancingexporter => github.com/odubajDT/opentelemetry-collector-contrib/exporter/loadbalancingexporter v0.0.0-20251110101045-1620dbbcebb9

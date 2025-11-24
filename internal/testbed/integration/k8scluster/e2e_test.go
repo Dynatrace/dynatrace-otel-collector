@@ -155,7 +155,7 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 func substituteWithStar(_ string) string { return "*" }
 
 func substituteRandomPartWithStar(s string) string {
-	re := regexp.MustCompile(`(-[a-z0-9]{10})?(-[a-z0-9]{8,10})?(-[a-z0-9]{5})?$`)
+	re := regexp.MustCompile(`(-[a-z0-9]{8,10})?(-[a-z0-9]+)?(-[a-z0-9]{5})?$`)
 	return re.ReplaceAllString(s, "-*")
 }
 

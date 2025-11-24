@@ -120,14 +120,14 @@ v0.140.1:
 
 ### 🛑 Breaking changes 🛑
 
-- `processor/cumulativetodelta`: It's recommended to have the `max_staleness` setting configured when using the `cumulativetodelta` processor in order to avoid increased memory consumption when processing metrics. (#738)
+- `processor/cumulativetodelta`: It's recommended to have the `max_staleness` setting configured when using the `cumulativetodelta` processor in order to avoid increased memory consumption when processing metrics. ([#738](https://github.com/Dynatrace/dynatrace-otel-collector/pull/738))
   The processor will clean up unused cached entries after the duration specified by `max_staleness`. If `max_staleness` is not set, cached entries may persist indefinitely, leading to potential memory bloat over time.
 
 ### 🚀 New components 🚀
 
-- `kafka`: Add Kafka exporter to the distribution. (#710)
-- `kafka`: Add Kafka receiver to the distribution. (#710)
-- `kafkametricsreceiver`: Add Kafka metrics receiver to the distribution. (#722)
+- `kafka`: Add Kafka exporter to the distribution. ([#710](https://github.com/Dynatrace/dynatrace-otel-collector/pull/710))
+- `kafka`: Add Kafka receiver to the distribution. ([#710](https://github.com/Dynatrace/dynatrace-otel-collector/pull/710))
+- `kafkametricsreceiver`: Add Kafka metrics receiver to the distribution. ([#722](https://github.com/Dynatrace/dynatrace-otel-collector/pull/722))
 
 ### 💡 Enhancements 💡
 

@@ -69,7 +69,7 @@ receivers:
 
 processors:
   cumulativetodelta:
-    max_staleness: 5m
+    max_staleness: 25h
   resourcedetection:
     detectors: ["system"]
     system:

@@ -4,6 +4,138 @@
 
 <!-- next version -->
 
+## v0.40.0
+
+This release includes versions 0.139, 0.140.0 and 0.140.1 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.139.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.139.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.139.0>
+
+v0.140.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.140.0>
+
+v0.140.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.140.1>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `all`: Change type of `configgrpc.ClientConfig.Headers`, `confighttp.ClientConfig.Headers`, and `confighttp.ServerConfig.ResponseHeaders` ([#13930](https://github.com/open-telemetry/opentelemetry-collector/issues/13930))
+  `configopaque.MapList` is a new alternative to `map[string]configopaque.String` which can unmarshal
+  both maps and lists of name/value pairs.
+  
+  For example, if `headers` is a field of type `configopaque.MapList`,
+  then the following YAML configs will unmarshal to the same thing:
+  ```yaml
+  headers:
+    "foo": "bar"
+  
+  headers:
+  - name: "foo"
+    value: "bar"
+  ```
+
+- `all`: Latest supported k8s version is moved from 1.17 to 1.21. ([#43891](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43891))
+- `processor/tail_sampling`: Replace policy latency metric with total time spent executing specific sampling policy. ([#42620](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42620))
+  The existing latency metric was misleading and expensive to compute. The new cpu time metric can be used to find expensive policies instead.
+- `receiver/prometheus`: The prometheus receiver no longer adjusts the start time of metrics by default. ([#43656](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43656))
+  Disable the receiver.prometheusreceiver.RemoveStartTimeAdjustment | feature gate to temporarily re-enable this functionality. Users that need | this functionality should migrate to the metricstarttime processor, | and use the true_reset strategy for equivalent behavior.
+
+### 💡 Enhancements 💡
+
+- `connector/forward`: Add support for Profiles to Profiles ([#14092](https://github.com/open-telemetry/opentelemetry-collector/issues/14092))
+- `exporter/debug`: Disable sending queue by default ([#14138](https://github.com/open-telemetry/opentelemetry-collector/issues/14138))
+  The recently added sending queue configuration in Debug exporter was enabled by default and had a problematic default size of 1.
+  This change disables the sending queue by default.
+  Users can enable and configure the sending queue if needed.
+  
+- `pkg/config/configoptional`: Mark `configoptional.AddEnabledField` as beta ([#14021](https://github.com/open-telemetry/opentelemetry-collector/issues/14021))
+- `pkg/pdata`: Upgrade the OTLP protobuf definitions to version 1.9.0 ([#14128](https://github.com/open-telemetry/opentelemetry-collector/issues/14128))
+- `all`: Add FIPS and non-FIPS implementations for allowed TLS curves ([#13990](https://github.com/open-telemetry/opentelemetry-collector/issues/13990))
+- `cmd/builder`: Set CGO_ENABLED=0 by default, add the `cgo_enabled` configuration to enable it. ([#10028](https://github.com/open-telemetry/opentelemetry-collector/issues/10028))
+- `pkg/config/configgrpc`: Errors of type status.Status returned from an Authenticator extension are being propagated as is to the upstream client. ([#14005](https://github.com/open-telemetry/opentelemetry-collector/issues/14005))
+- `pkg/config/configoptional`: Adds new `configoptional.AddEnabledField` feature gate that allows users to explicitly disable a `configoptional.Optional` through a new `enabled` field. ([#14021](https://github.com/open-telemetry/opentelemetry-collector/issues/14021))
+- `pkg/exporterhelper`: Replace usage of gogo proto for persistent queue metadata ([#14079](https://github.com/open-telemetry/opentelemetry-collector/issues/14079))
+- `pkg/pdata`: Remove usage of gogo proto and generate the structs with pdatagen ([#14078](https://github.com/open-telemetry/opentelemetry-collector/issues/14078))
+- `connector/spanmetrics`: Add `add_resource_attributes` opt-in config option to keep resource attributes in generated metrics ([#43394](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43394))
+  This configuration option allows users to override the `connector.spanmetrics.excludeResourceMetrics` feature gate
+  and restore the old behavior of including resource attributes in metrics. This is needed for customers whose
+  existing dashboards depend on resource attributes being present in the generated metrics.
+
+- `pkg/ottl`: Support taking match patterns from runtime data in the `replace_all_patterns` and `replace_pattern` functions. ([#43555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43555))
+- `pkg/ottl`: Add TrimPrefix and TrimSuffix to OTTL ([#43883](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43883))
+  This is a much optimal way to remove prefix/suffix compare with `replace_pattern(name, "^prefixed", "")`
+- `pkg/ottl`: Added support for dynamic delimiter in Split() function in OTTL. ([#43555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43555))
+- `pkg/ottl`: Added support for dynamic delimiter in Concat() function in OTTL. ([#43555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43555))
+- `pkg/ottl`: Added support for dynamic prefix/suffix in HasPrefix and HasSuffix functions in OTTL. ([#43555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43555))
+- `pkg/ottl`: Remove unnecessary regexp compilation every execution ([#43915](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43915))
+- `pkg/ottl`: Support taking match patterns from runtime data in the `replace_all_matches` and `replace_match` functions. ([#43555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43555))
+- `pkg/ottl`: Support taking match patterns from runtime data in the `IsMatch` function. ([#43555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43555))
+- `pkg/ottl`: Remove unnecessary full copy of maps/slices when setting value on sub-map ([#43949](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43949))
+- `pkg/ottl`: Add XXH128 Converter function to converts a `value` to a XXH128 hash/digest ([#42792](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42792))
+- `pkg/ottl`: Support dynamic keys in the `delete_key` and `delete_matching_keys` functions, allowing the key to be specified at runtime. ([#43081](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43081))
+- `pkg/ottl`: Support paths and expressions as keys in `keep_keys` and `keep_matching_keys` ([#43555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43555))
+- `pkg/ottl`: Support dynamic pattern keys in `ExtractPatterns` and `ExtractGrokPatterns` functions, allowing the keys to be specified at runtime. ([#43555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43555))
+- `pkg/ottl`: Added support for dynamic encoding in Decode() function in OTTL. ([#43555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43555))
+- `processor/filter`: Allow setting OTTL conditions to filter out whole resources ([#43968](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43968))
+  If any conditions set under the `resource` key for any signals match, the resource is dropped.
+- `processor/k8sattributes`: Support extracting deployment name purely from the owner reference ([#42530](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42530))
+- `processor/redaction`: Extend database query obfuscation to span names. Previously, database query obfuscation (SQL, Redis, MongoDB) was only applied to span attributes and log bodies. Now it also redacts sensitive data in span names. ([#43778](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43778))
+- `processor/resourcedetection`: Add the `dt.smartscape.host` resource attribute to data enriched with the Dynatrace detector ([#43650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43650))
+- `exporter/kafka`: Adds a new configuration option to the Kafka exporter to control the linger time for the producer. ([#44075](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44075))
+  Since `franz-go` now defaults to `10ms`, it's best to allow users to configure this option to suit their needs.
+
+### 🧰 Bug fixes 🧰
+
+- `all`: Ensure service service.instance.id is the same for all the signals when it is autogenerated. ([#14140](https://github.com/open-telemetry/opentelemetry-collector/issues/14140))
+- `exporter/debug`: add queue configuration ([#14101](https://github.com/open-telemetry/opentelemetry-collector/issues/14101))
+- `exporter/kafka`: franz-go: Fix underreported kafka_exporter_write_latency metric ([#43803](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43803))
+- `exporter/loadbalancing`: Fix high cardinality issue in loadbalancing exporter by moving endpoint from exporter ID to attributes ([#43719](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43719))
+  Previously, the exporter created unique IDs for each backend endpoint by appending the endpoint
+  to the exporter ID (e.g., loadbalancing_10.11.68.62:4317). This caused high cardinality in metrics,
+  especially in dynamic environments. Now the endpoint is added as an attribute instead.
+  
+- `processor/tail_sampling`: Fix panic when invalid regex was sent to string_attribute sampler ([#43735](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43735))
+- `receiver/hostmetrics`: Allow process metrics to be recorded if the host does not have cgroup functionality ([#43640](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43640))
+- `receiver/kafka`: Corrected the documentation for the Kafka receiver to accurately the supported/default group balancer strategies. ([#43892](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43892))
+- `receiver/prometheus`: Fix missing staleness tracking leading to missing no recorded value data points. ([#43893](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43893))
+- `exporter/loadbalancing`: Ensure loadbalancing child exporters use the OTLP type so backend creation succeeds ([#43950](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43950))
+- `processor/k8sattributes`: The fix is on k8sattributes processor to only set k8s.pod.ip attribute when it is requested in the extract.metadata configuration. ([#43862](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43862))
+  Previously, the `k8s.pod.ip` attribute was always populated, even if it was not included in the `extract.metadata` list. 
+  This fix ensures that `k8s.pod.ip` is set only when explicitly requested, aligning the processor behavior with configuration expectations.
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 🛑 Breaking changes 🛑
+
+- `processor/cumulativetodelta`: It's recommended to have the `max_staleness` setting configured when using the `cumulativetodelta` processor in order to avoid increased memory consumption when processing metrics. ([#746](https://github.com/Dynatrace/dynatrace-otel-collector/pull/746))
+  The processor will clean up unused cached entries after the duration specified by `max_staleness`. If `max_staleness` is not set, cached entries may persist indefinitely, leading to potential memory bloat over time.
+
+### 🚀 New components 🚀
+
+- `kafka`: Add Kafka exporter to the distribution. ([#710](https://github.com/Dynatrace/dynatrace-otel-collector/pull/710))
+- `kafka`: Add Kafka receiver to the distribution. ([#710](https://github.com/Dynatrace/dynatrace-otel-collector/pull/710))
+- `kafkametricsreceiver`: Add Kafka metrics receiver to the distribution. ([#722](https://github.com/Dynatrace/dynatrace-otel-collector/pull/722))
+
+### 💡 Enhancements 💡
+
+- `processor/resourcedetection`: Add the `dt.smartscape.host` resource attribute to data enriched with the Dynatrace detector ([#43650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43650))
+- `processor/resourcedetectionprocessor`: Adds tests for resource detection of property dt.smartscape.host ([#709](https://github.com/Dynatrace/dynatrace-otel-collector/pull/709))
+
+<!-- previous-version -->
+
 ## v0.39.0
 
 This release includes version 0.138.0 of the upstream Collector components.

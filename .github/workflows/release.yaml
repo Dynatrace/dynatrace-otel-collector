@@ -17,7 +17,7 @@ env:
 jobs:
   build:
     name: Release
-    runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04
+    runs-on: ubuntu-24.04
     permissions:
       id-token: write
       contents: write
@@ -87,6 +87,7 @@ jobs:
           rm -r /opt/hostedtoolcache/PyPy
           rm -r /opt/hostedtoolcache/Ruby
           rm -r /opt/hostedtoolcache/node
+          rm -r $ANDROID_HOME
           df -h
 
       - name: Create release for version tag

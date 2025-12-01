@@ -61,7 +61,7 @@ jobs:
           rm -r /opt/hostedtoolcache/PyPy
           rm -r /opt/hostedtoolcache/Ruby
           rm -r /opt/hostedtoolcache/node
-          rm -r $ANDROID_HOME
+          sudo rm -r $ANDROID_HOME
           df -h
 
       - name: Run GoReleaser

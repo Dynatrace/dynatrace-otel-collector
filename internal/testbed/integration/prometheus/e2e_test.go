@@ -14,8 +14,10 @@ import (
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 )
 
 // TestE2E_PrometheusNodeExporter tests the "Scrape data from Prometheus" use case
@@ -94,6 +96,8 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 		"node_procs_running", "node_memory_MemAvailable_bytes",
 	}
 	oteltest.ScanForServiceMetrics(t, metricsConsumer, "node-exporter", expectedPromMetrics)
+
+	checkStartTimeStampPresent(t, metricsConsumer)
 }
 
 func installPrometheusNodeExporter() error {
@@ -110,4 +114,45 @@ func installPrometheusNodeExporter() error {
 	fmt.Print(string(cmd))
 
 	return nil
+}
+
+func checkStartTimeStampPresent(t *testing.T, ms *consumertest.MetricsSink) {
+	// Skip the first two payloads, which may not have the start timestamp
+	// correctly set
+	require.True(t, len(ms.AllMetrics()) >= 2, "Expected at least 2 metrics payloads")
+
+	for i := 2; i < len(ms.AllMetrics()); i++ {
+		r := ms.AllMetrics()[i]
+
+		for _, rm := range r.ResourceMetrics().All() {
+			for _, sm := range rm.ScopeMetrics().All() {
+				for _, m := range sm.Metrics().All() {
+					switch m.Type() {
+					case pmetric.MetricTypeExponentialHistogram:
+						for _, dp := range m.ExponentialHistogram().DataPoints().All() {
+							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+						}
+					case pmetric.MetricTypeGauge:
+						for _, dp := range m.Gauge().DataPoints().All() {
+							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+						}
+					case pmetric.MetricTypeHistogram:
+						for _, dp := range m.Histogram().DataPoints().All() {
+							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+						}
+					case pmetric.MetricTypeSum:
+						for _, dp := range m.Sum().DataPoints().All() {
+							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+						}
+					case pmetric.MetricTypeSummary:
+						for _, dp := range m.Summary().DataPoints().All() {
+							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+						}
+					default:
+						t.Errorf("unexpected metric type %s for metric %s", m.Type().String(), m.Name())
+					}
+				}
+			}
+		}
+	}
 }

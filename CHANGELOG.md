@@ -122,6 +122,7 @@ v0.140.1:
 
 - `processor/cumulativetodelta`: It's recommended to have the `max_staleness` setting configured when using the `cumulativetodelta` processor in order to avoid increased memory consumption when processing metrics. ([#746](https://github.com/Dynatrace/dynatrace-otel-collector/pull/746))
   The processor will clean up unused cached entries after the duration specified by `max_staleness`. If `max_staleness` is not set, cached entries may persist indefinitely, leading to potential memory bloat over time.
+- `receiver/prometheus`: It is recommended to run the Collector with `--feature-gates=-receiver.prometheusreceiver.RemoveStartTimeAdjustment` in order to keep adjusting start times in the Prometheus Receiver. In future Dynatrace distribution releases, it will instead be suggested to use the Metric Start Time Processor.
 
 ### 🚀 New components 🚀
 

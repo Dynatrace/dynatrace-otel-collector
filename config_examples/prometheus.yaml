@@ -5,8 +5,12 @@ receivers:
   prometheus:
     config:
       scrape_configs:
+        - job_name: 'node-exporter'
+          scrape_interval: 60s
+          static_configs:
+            - targets: ['prometheus-node-exporter:9100']
         - job_name: opentelemetry-collector
-          scrape_interval: 1s
+          scrape_interval: 60s
           static_configs:
             - targets:
                 - 127.0.0.1:8888
@@ -17,8 +21,10 @@ processors:
   metricstarttime:
 
 exporters:
-  debug:
-    verbosity: detailed
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
 
 service:
   extensions: [health_check]
@@ -26,4 +32,4 @@ service:
     metrics:
       receivers: [prometheus]
       processors: [metricstarttime, cumulativetodelta]
-      exporters: [debug]
+      exporters: [otlphttp]

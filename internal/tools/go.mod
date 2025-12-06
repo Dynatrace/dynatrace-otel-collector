@@ -6,7 +6,7 @@ require (
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	github.com/sigstore/cosign/v3 v3.0.2
 	go.opentelemetry.io/build-tools/chloggen v0.29.0
-	go.opentelemetry.io/collector/cmd/builder v0.140.0
+	go.opentelemetry.io/collector/cmd/builder v0.141.0
 )
 
 require (
@@ -280,12 +280,12 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
+	go.uber.org/zap v1.27.1 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
-	golang.org/x/mod v0.29.0 // indirect
+	golang.org/x/mod v0.30.0 // indirect
 	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/oauth2 v0.31.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect

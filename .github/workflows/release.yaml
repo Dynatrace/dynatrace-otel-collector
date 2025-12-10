@@ -8,7 +8,7 @@ on:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.25.4"
+  GO_VERSION: "1.25.5"
   # renovate: datasource=go depName=github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod
   CYCLONEDX_VERSION: "v1.9.0"
   # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro

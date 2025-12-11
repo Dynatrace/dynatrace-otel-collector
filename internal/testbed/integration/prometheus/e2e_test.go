@@ -117,6 +117,8 @@ func installPrometheusNodeExporter() error {
 }
 
 func checkStartTimeStampPresent(t *testing.T, ms *consumertest.MetricsSink) {
+	const errMsg = "StartTimestamp should be non-zero for metric %s"
+
 	// Skip the first two payloads, which may not have the start timestamp
 	// correctly set
 	require.True(t, len(ms.AllMetrics()) >= 2, "Expected at least 2 metrics payloads")
@@ -130,23 +132,23 @@ func checkStartTimeStampPresent(t *testing.T, ms *consumertest.MetricsSink) {
 					switch m.Type() {
 					case pmetric.MetricTypeExponentialHistogram:
 						for _, dp := range m.ExponentialHistogram().DataPoints().All() {
-							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+							assert.NotZero(t, dp.StartTimestamp(), errMsg, m.Name())
 						}
 					case pmetric.MetricTypeGauge:
 						for _, dp := range m.Gauge().DataPoints().All() {
-							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+							assert.NotZero(t, dp.StartTimestamp(), errMsg, m.Name())
 						}
 					case pmetric.MetricTypeHistogram:
 						for _, dp := range m.Histogram().DataPoints().All() {
-							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+							assert.NotZero(t, dp.StartTimestamp(), errMsg, m.Name())
 						}
 					case pmetric.MetricTypeSum:
 						for _, dp := range m.Sum().DataPoints().All() {
-							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+							assert.NotZero(t, dp.StartTimestamp(), errMsg, m.Name())
 						}
 					case pmetric.MetricTypeSummary:
 						for _, dp := range m.Summary().DataPoints().All() {
-							assert.NotZero(t, dp.StartTimestamp(), "StartTimestamp should be non-zero for metric %s", m.Name())
+							assert.NotZero(t, dp.StartTimestamp(), errMsg, m.Name())
 						}
 					default:
 						t.Errorf("unexpected metric type %s for metric %s", m.Type().String(), m.Name())

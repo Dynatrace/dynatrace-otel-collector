@@ -19,7 +19,7 @@ resourceMetrics:
         - key: service.version
           value:
             stringValue: 0.34.0
-    schemaUrl: https://opentelemetry.io/schemas/1.26.0
+    schemaUrl: https://opentelemetry.io/schemas/1.37.0
     scopeMetrics:
       - metrics:
           - description: Measures the duration of inbound RPC.

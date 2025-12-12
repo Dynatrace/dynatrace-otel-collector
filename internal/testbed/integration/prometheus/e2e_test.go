@@ -119,52 +119,47 @@ func installPrometheusNodeExporter() error {
 }
 
 func checkStartTimeStampPresent(t *testing.T, ms *consumertest.MetricsSink) {
-	passingTest := false
+	seenOne := false
+	allHaveStartTime := true
 
-	for _, m := range ms.AllMetrics() {
-		seenOne := false
-		allHaveStartTime := true
+	// We only care about the last payload, as earlier payloads may not have the
+	// start time correctly set.
+	m := ms.AllMetrics()[len(ms.AllMetrics())-1]
 
-		for _, rm := range m.ResourceMetrics().All() {
-			for _, sm := range rm.ScopeMetrics().All() {
-				for _, m := range sm.Metrics().All() {
-					switch m.Type() {
-					case pmetric.MetricTypeExponentialHistogram:
-						for _, dp := range m.ExponentialHistogram().DataPoints().All() {
-							allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
-							seenOne = true
-						}
-					case pmetric.MetricTypeHistogram:
-						for _, dp := range m.Histogram().DataPoints().All() {
-							allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
-							seenOne = true
-						}
-					case pmetric.MetricTypeSum:
-						for _, dp := range m.Sum().DataPoints().All() {
-							allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
-							seenOne = true
-						}
-					case pmetric.MetricTypeSummary:
-						for _, dp := range m.Summary().DataPoints().All() {
-							allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
-							seenOne = true
-						}
-					case pmetric.MetricTypeGauge:
-						// Gauges don't need a starting timestamp: they have no
-						// aggregation temporality and are not processed by the
-						// metricstarttime processor.
-					default:
-						t.Errorf("unexpected metric type %s for metric %s", m.Type().String(), m.Name())
+	for _, rm := range m.ResourceMetrics().All() {
+		for _, sm := range rm.ScopeMetrics().All() {
+			for _, m := range sm.Metrics().All() {
+				switch m.Type() {
+				case pmetric.MetricTypeExponentialHistogram:
+					for _, dp := range m.ExponentialHistogram().DataPoints().All() {
+						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						seenOne = true
 					}
-					if !allHaveStartTime {
-						break
+				case pmetric.MetricTypeHistogram:
+					for _, dp := range m.Histogram().DataPoints().All() {
+						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						seenOne = true
 					}
+				case pmetric.MetricTypeSum:
+					for _, dp := range m.Sum().DataPoints().All() {
+						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						seenOne = true
+					}
+				case pmetric.MetricTypeSummary:
+					for _, dp := range m.Summary().DataPoints().All() {
+						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						seenOne = true
+					}
+				case pmetric.MetricTypeGauge:
+					// Gauges don't need a starting timestamp: they have no
+					// aggregation temporality and are not processed by the
+					// metricstarttime processor.
+				default:
+					t.Errorf("unexpected metric type %s for metric %s", m.Type().String(), m.Name())
 				}
 			}
 		}
-
-		passingTest = passingTest || (seenOne && allHaveStartTime)
 	}
 
-	require.True(t, passingTest, "No metric payloads found where all data points have non-zero StartTimestamp")
+	require.True(t, seenOne && allHaveStartTime, "No metric payloads found where all data points have non-zero StartTimestamp")
 }

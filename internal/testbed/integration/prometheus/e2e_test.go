@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
@@ -16,6 +17,7 @@ import (
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 )
 
 // TestE2E_PrometheusNodeExporter tests the "Scrape data from Prometheus" use case
@@ -64,6 +66,8 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 	})
+	// Lower the scrape interval to speed up test runs
+	collectorConfig = strings.ReplaceAll(collectorConfig, "scrape_interval: 60s", "scrape_interval: 5s")
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,
@@ -94,6 +98,8 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 		"node_procs_running", "node_memory_MemAvailable_bytes",
 	}
 	oteltest.ScanForServiceMetrics(t, metricsConsumer, "node-exporter", expectedPromMetrics)
+
+	checkStartTimeStampPresent(t, metricsConsumer)
 }
 
 func installPrometheusNodeExporter() error {
@@ -110,4 +116,50 @@ func installPrometheusNodeExporter() error {
 	fmt.Print(string(cmd))
 
 	return nil
+}
+
+func checkStartTimeStampPresent(t *testing.T, ms *consumertest.MetricsSink) {
+	seenOne := false
+	allHaveStartTime := true
+
+	// We only care about the last payload, as earlier payloads may not have the
+	// start time correctly set.
+	m := ms.AllMetrics()[len(ms.AllMetrics())-1]
+
+	for _, rm := range m.ResourceMetrics().All() {
+		for _, sm := range rm.ScopeMetrics().All() {
+			for _, m := range sm.Metrics().All() {
+				switch m.Type() {
+				case pmetric.MetricTypeExponentialHistogram:
+					for _, dp := range m.ExponentialHistogram().DataPoints().All() {
+						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						seenOne = true
+					}
+				case pmetric.MetricTypeHistogram:
+					for _, dp := range m.Histogram().DataPoints().All() {
+						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						seenOne = true
+					}
+				case pmetric.MetricTypeSum:
+					for _, dp := range m.Sum().DataPoints().All() {
+						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						seenOne = true
+					}
+				case pmetric.MetricTypeSummary:
+					for _, dp := range m.Summary().DataPoints().All() {
+						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						seenOne = true
+					}
+				case pmetric.MetricTypeGauge:
+					// Gauges don't need a starting timestamp: they have no
+					// aggregation temporality and are not processed by the
+					// metricstarttime processor.
+				default:
+					t.Errorf("unexpected metric type %s for metric %s", m.Type().String(), m.Name())
+				}
+			}
+		}
+	}
+
+	require.True(t, seenOne && allHaveStartTime, "No metric payloads found where all data points have non-zero StartTimestamp")
 }

@@ -86,7 +86,7 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 		}
 	}()
 
-	wantEntries := 2 // Minimal number of metric requests to wait for.
+	wantEntries := 5 // Minimal number of metric requests to wait for.
 	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
 
 	expectedColMetrics := []string{
@@ -119,9 +119,9 @@ func installPrometheusNodeExporter() error {
 }
 
 func checkStartTimeStampPresent(t *testing.T, ms *consumertest.MetricsSink) {
+	const errMsg = "StartTimestamp should be non-zero for metric %s"
+	const noDataPointsMsg = "no data points for metric %s"
 	seenOne := false
-	allHaveStartTime := true
-
 	// We only care about the last payload, as earlier payloads may not have the
 	// start time correctly set.
 	m := ms.AllMetrics()[len(ms.AllMetrics())-1]
@@ -131,23 +131,27 @@ func checkStartTimeStampPresent(t *testing.T, ms *consumertest.MetricsSink) {
 			for _, m := range sm.Metrics().All() {
 				switch m.Type() {
 				case pmetric.MetricTypeExponentialHistogram:
+					require.Greater(t, m.ExponentialHistogram().DataPoints().Len(), 0, noDataPointsMsg, m.Name())
 					for _, dp := range m.ExponentialHistogram().DataPoints().All() {
-						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						require.NotZero(t, dp.StartTimestamp(), errMsg, m.Name())
 						seenOne = true
 					}
 				case pmetric.MetricTypeHistogram:
+					require.Greater(t, m.Histogram().DataPoints().Len(), 0, noDataPointsMsg, m.Name())
 					for _, dp := range m.Histogram().DataPoints().All() {
-						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						require.NotZero(t, dp.StartTimestamp(), errMsg, m.Name())
 						seenOne = true
 					}
 				case pmetric.MetricTypeSum:
+					require.Greater(t, m.Sum().DataPoints().Len(), 0, noDataPointsMsg, m.Name())
 					for _, dp := range m.Sum().DataPoints().All() {
-						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						require.NotZero(t, dp.StartTimestamp(), errMsg, m.Name())
 						seenOne = true
 					}
 				case pmetric.MetricTypeSummary:
+					require.Greater(t, m.Summary().DataPoints().Len(), 0, noDataPointsMsg, m.Name())
 					for _, dp := range m.Summary().DataPoints().All() {
-						allHaveStartTime = allHaveStartTime && dp.StartTimestamp() != 0
+						require.NotZero(t, dp.StartTimestamp(), errMsg, m.Name())
 						seenOne = true
 					}
 				case pmetric.MetricTypeGauge:
@@ -161,5 +165,5 @@ func checkStartTimeStampPresent(t *testing.T, ms *consumertest.MetricsSink) {
 		}
 	}
 
-	require.True(t, seenOne && allHaveStartTime, "No metric payloads found where all data points have non-zero StartTimestamp")
+	require.True(t, seenOne, "at least one metric with one data point has zero StartTimestamp")
 }

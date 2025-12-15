@@ -19,6 +19,7 @@ processors:
   cumulativetodelta:
     max_staleness: 25h
   metricstarttime:
+    strategy: subtract_initial_point
 
 exporters:
   otlphttp:

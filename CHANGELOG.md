@@ -4,6 +4,100 @@
 
 <!-- next version -->
 
+## v0.41.0
+
+This release includes version 0.141.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.141.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.141.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.141.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `connector/spanmetrics`: Add a feature gate to use the latest semantic conventions for the status code attribute on generated metrics.
+
+  This feature gate will replace the `status.code` attribute on the generated RED metrics with `otel.status_code`. It will also replace the values `STATUS_CODE_ERROR` and `STATUS_CODE_OK` with `ERROR` and `OK` to align with the latest conventions. ([#42103](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42103))
+  This change is made to align with [the latest semantic conventions](https://opentelemetry.io/docs/specs/semconv/registry/attributes/otel/#otel-status-code). The feature gate is disabled by default, but can be enabled with `--feature-gates spanmetrics.statusCodeConvention.useOtelPrefix` or explicitly disabled with `--feature-gates -spanmetrics.statusCodeConvention.useOtelPrefix`.
+- `exporter/kafka`: `exporter.kafkaexporter.UseFranzGo` feature gate moved to Stable and is now always enabled ([#44565](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44565))
+  The franz-go client is now the default and only Kafka client library for the Kafka exporter.
+  The feature gate `exporter.kafkaexporter.UseFranzGo` has been promoted to Stable status and cannot be disabled.
+  Users can no longer opt out of using the franz-go client in favor of the legacy Sarama client.
+  The Sarama client and the feature gate will be removed completely after v0.143.0.
+  
+- `extension/docker_observer`: Upgrading Docker API version default from 1.24 to 1.44 ([#44279](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44279))
+- `pkg/ottl`: Type of field profile.duration changes from time.Time to int64. ([#44397](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44397))
+- `receiver/azureeventhub`: Promote Feature Gate `receiver.azureeventhubreceiver.UseAzeventhubs` to Beta ([#44335](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44335))
+- `receiver/k8slog`: Update k8slogreceiver code-owners status and mark as unmaintained ([#44078](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44078))
+- `receiver/kafka`: Remove deprecated topic and encoding ([#44568](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44568))
+- `receiver/kafka`: `receiver.kafkareceiver.UseFranzGo` feature gate moved to Stable and is now always enabled ([#44564](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44564))
+  The franz-go client is now the default and only Kafka client library for the Kafka receiver.
+  The feature gate `receiver.kafkareceiver.UseFranzGo` has been promoted to Stable status and cannot be disabled.
+  Users can no longer opt out of using the franz-go client in favor of the legacy Sarama client.
+  The Sarama code and the feature gate will be removed completely after v0.143.0.
+
+### 💡 Enhancements 💡
+
+- `pkg/config/confighttp`: Setting `compression_algorithms` to an empty list now disables automatic decompression, ignoring Content-Encoding ([#14131](https://github.com/open-telemetry/opentelemetry-collector/issues/14131))
+- `pkg/service`: Update semantic conventions from internal telemetry to v1.37.0 ([#14232](https://github.com/open-telemetry/opentelemetry-collector/issues/14232))
+- `pkg/ottl`: Add `ParseSeverity` function to define mappings for log severity levels. ([#35778](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35778))
+- `pkg/ottl`: Introduce `CommunityID` function to generate network hash (20-byte SHA1 digest) flow from the given source and destination {IP, port}, optionally protocol and seed values. ([#34062](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/34062))
+- `pkg/ottl`: Expand usage of literal into typed getters and avoid unnecessary work ([#44201](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44201))
+- `pkg/ottl`: SliceToMap: add support to convert slices with non-map elements to maps ([#43099](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43099))
+- `processor/cumulativetodelta`: Add support for exponential histograms ([#44106](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44106))
+- `processor/resourcedetection`: Use `osProfile.computerName` for setting `host.name` in Azure resource detection processor ([#43959](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43959))
+- `receiver/k8s_events`: Allow more event types like Error and Critical which are typically used by applications when creating events. ([#43401](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43401))
+  k8seventsreceiver allows event types Error and Critical in addition to the current Normal and Warning event types.
+- `receiver/kafka`: Add support for exclude topics when consuming topics with a regex pattern ([#43782](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43782))
+- `receiver/prometheus`: Support JWT Profile for Authorization Grant (RFC 7523 3.1) ([#44381](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44381))
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/ottl`: Fixed OTTL grammar to treat the string literal "nil" as ordinary text instead of a nil value. ([#44374](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44374))
+- `pkg/ottl`: Return errors when OTTL context setters receive values of the wrong type ([#40198](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40198))
+  Introduces `ctxutil.ExpectType` and updates log, metric, and scope setters to surface type assertion failures.
+  
+- `pkg/ottl`: Fix TrimPrefix/TrimSuffix function name. ([#44630](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44630))
+  This change also adds a featuregate "ottl.PanicDuplicateName" to control the behavior of panicing when duplicate
+  names are registered for the same function.
+  
+- `processor/k8sattributes`: `k8sattributesprocessor` now respects semantic convention resolution order for `service.namespace` ([#43919](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43919))
+  Previously, when `service.namespace` was included in the extract metadata configuration, the processor
+  would incorrectly allow `k8s.namespace.name` to override explicitly configured service namespace values
+  from OpenTelemetry annotations (e.g., `resource.opentelemetry.io/service.namespace`). Now the processor
+  correctly follows the semantic convention resolution order, where annotation values take precedence over
+  inferred Kubernetes namespace names.
+  
+- `processor/k8sattributes`: Fix incorrect pod metadata assignment when `host.name` contains a non-IP hostname ([#43938](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43938))
+  The processor now correctly validates that `host.name` contains an IP address before using it for pod association.
+  Previously, textual hostnames were incorrectly used for pod lookups, causing spans and metrics from one workload
+  to receive metadata from unrelated pods that shared the same hostname.
+
+### 🚩 Deprecations 🚩
+
+- `receiver/prometheus`: Add feature gate for extra scrape metrics in Prometheus receiver ([#44181](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44181))
+  deprecation of extra scrape metrics in Prometheus receiver will be removed eventually.
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `metricstarttimeprocessor`: Add the Metric Start Time Processor to the distribution (#752)
+  It is recommended to use this processor in any pipelines that use the
+  Prometheus receiver.
+  
+
+<!-- previous-version -->
+
 ## v0.40.0
 
 This release includes versions 0.139, 0.140.0 and 0.140.1 of the upstream Collector components.

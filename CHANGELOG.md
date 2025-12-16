@@ -86,6 +86,13 @@ v0.141.0:
 
 #### Dynatrace distribution changelog:
 
+### 🛑 Breaking changes 🛑
+
+- `receiver/prometheus`: It is now required to use the `metricstarttime`
+  processor in all pipelines using the Prometheus Receiver. Please [see our
+  documentation](https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-prometheus)
+  for more information.
+
 ### 💡 Enhancements 💡
 
 - `metricstarttimeprocessor`: Add the Metric Start Time Processor to the distribution (#752)

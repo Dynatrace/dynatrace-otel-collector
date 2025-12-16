@@ -30,10 +30,7 @@ v0.141.0:
   Users can no longer opt out of using the franz-go client in favor of the legacy Sarama client.
   The Sarama client and the feature gate will be removed completely after v0.143.0.
   
-- `extension/docker_observer`: Upgrading Docker API version default from 1.24 to 1.44 ([#44279](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44279))
 - `pkg/ottl`: Type of field profile.duration changes from time.Time to int64. ([#44397](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44397))
-- `receiver/azureeventhub`: Promote Feature Gate `receiver.azureeventhubreceiver.UseAzeventhubs` to Beta ([#44335](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44335))
-- `receiver/k8slog`: Update k8slogreceiver code-owners status and mark as unmaintained ([#44078](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44078))
 - `receiver/kafka`: Remove deprecated topic and encoding ([#44568](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44568))
 - `receiver/kafka`: `receiver.kafkareceiver.UseFranzGo` feature gate moved to Stable and is now always enabled ([#44564](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44564))
   The franz-go client is now the default and only Kafka client library for the Kafka receiver.

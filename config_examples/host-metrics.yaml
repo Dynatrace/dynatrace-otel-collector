@@ -12,7 +12,7 @@ extensions:
 
 receivers:
   hostmetrics:
-    collection_interval: 60s # was 10s
+    collection_interval: 10s
     scrapers:
       paging:
       cpu:
@@ -89,4 +89,4 @@ service:
     metrics:
       receivers: [hostmetrics]
       processors: [resourcedetection, cumulativetodelta]
-      exporters: [otlphttp]
+      exporters: [otlphttp, debug]

@@ -1,4 +1,6 @@
 exporters:
+  debug:
+    verbosity: detailed
   otlphttp:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
@@ -10,7 +12,7 @@ extensions:
 
 receivers:
   hostmetrics:
-    collection_interval: 10s
+    collection_interval: 60s # was 10s
     scrapers:
       paging:
       cpu:
@@ -26,6 +28,8 @@ receivers:
         metrics:
           system.filesystem.utilization:
             enabled: true
+      load:
+        cpu_average: true
       memory:
         metrics:
           system.memory.limit:
@@ -48,11 +52,35 @@ processors:
     detectors: ["system"]
     system:
       resource_attributes:
+        os.type:
+          enabled: true
+        os.name:
+          enabled: true
+        os.version:
+          enabled: true
+        os.description:
+          enabled: true
+        os.build.id:
+          enabled: true
+        host.id:
+          enabled: true
         host.arch:
           enabled: true
         host.ip:
           enabled: true
         host.mac:
+          enabled: true
+        host.cpu.family:
+          enabled: true
+        host.cpu.model.id:
+          enabled: true
+        host.cpu.model.name:
+          enabled: true
+        host.cpu.stepping:
+          enabled: true
+        host.cpu.vendor.id:
+          enabled: true
+        host.interface:
           enabled: true
 
 service:

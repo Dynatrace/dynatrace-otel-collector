@@ -1,6 +1,6 @@
 exporters:
   debug:
-    verbosity: detailed
+    verbosity: normal
   otlphttp:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
@@ -15,6 +15,9 @@ receivers:
     collection_interval: 10s
     scrapers:
       paging:
+        metrics:
+          system.paging.usage:
+            enabled: true
       cpu:
         metrics:
           system.cpu.logical.count:
@@ -23,27 +26,39 @@ receivers:
             enabled: true
           system.cpu.utilization:
             enabled: true
-      disk:
       filesystem:
         metrics:
-          system.filesystem.utilization:
+          system.filesystem.usage:
             enabled: true
-      load:
-        cpu_average: true
       memory:
         metrics:
           system.memory.limit:
             enabled: true
           system.memory.utilization:
             enabled: true
+          system.memory.usage:
+            enabled: true
       network:
+        metrics:
+          system.network.io:
+            enabled: true
+          system.network.connections:
+            enabled: true
       processes:
+        metrics:
+          system.processes.count:
+            enabled: true
       process:
         mute_process_all_errors: true
         metrics:
           process.cpu.utilization:
             enabled: true
+          process.memory.usage:
+            enabled: true
       system:
+        metrics:
+          system.uptime:
+            enabled: true
 
 processors:
   cumulativetodelta:

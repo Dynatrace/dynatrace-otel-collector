@@ -1,0 +1,73 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+exporters:
+  debug:
+    verbosity: detailed
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+receivers:
+  hostmetrics:
+    collection_interval: 10s
+    scrapers:
+      paging:
+        metrics:
+          system.paging.utilization:
+            enabled: true
+      cpu:
+        metrics:
+          system.cpu.logical.count:
+            enabled: true
+          system.cpu.physical.count:
+            enabled: true
+          system.cpu.utilization:
+            enabled: true
+      disk:
+      filesystem:
+        metrics:
+          system.filesystem.utilization:
+            enabled: true
+      load:
+        cpu_average: true
+      memory:
+        metrics:
+          system.memory.limit:
+            enabled: true
+          system.memory.utilization:
+            enabled: true
+      network:
+      processes:
+      process:
+        mute_process_all_errors: true
+        metrics:
+          process.cpu.utilization:
+            enabled: true
+          process.memory.utilization:
+            enabled: true
+      system:
+
+processors:
+  resourcedetection:
+    detectors: ["system"]
+    system:
+      resource_attributes:
+        host.arch:
+          enabled: true
+        host.ip:
+          enabled: true
+  resource:
+    attributes:
+      - key: service.name
+        value: hostmon
+        action: insert
+
+service:
+  pipelines:
+    metrics:
+      receivers: [hostmetrics]
+      processors: [resourcedetection, resource]
+      exporters: [otlphttp]

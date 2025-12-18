@@ -30,7 +30,6 @@ v0.141.0:
   Users can no longer opt out of using the franz-go client in favor of the legacy Sarama client.
   The Sarama client and the feature gate will be removed completely after v0.143.0.
   
-- `pkg/ottl`: Type of field profile.duration changes from time.Time to int64. ([#44397](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44397))
 - `receiver/kafka`: Remove deprecated topic and encoding ([#44568](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44568))
 - `receiver/kafka`: `receiver.kafkareceiver.UseFranzGo` feature gate moved to Stable and is now always enabled ([#44564](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44564))
   The franz-go client is now the default and only Kafka client library for the Kafka receiver.
@@ -96,7 +95,7 @@ v0.141.0:
 ### 💡 Enhancements 💡
 
 - `metricstarttimeprocessor`: Add the Metric Start Time Processor to the distribution (#752)
-  It is recommended to use this processor in any pipelines that use the
+  It is required to use this processor in any pipelines that use the
   Prometheus receiver.
   
 

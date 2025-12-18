@@ -4,7 +4,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -22,7 +22,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -40,7 +40,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -58,7 +58,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -76,7 +76,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -94,7 +94,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -112,7 +112,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -130,7 +130,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -148,7 +148,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -166,7 +166,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -184,7 +184,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -202,7 +202,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -220,7 +220,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -238,7 +238,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -256,7 +256,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -274,7 +274,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -292,7 +292,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -310,7 +310,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -328,7 +328,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -346,7 +346,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -364,7 +364,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -382,7 +382,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -400,7 +400,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -418,7 +418,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -436,7 +436,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -454,7 +454,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -472,7 +472,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -490,7 +490,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -508,7 +508,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -526,7 +526,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -544,7 +544,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -562,7 +562,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -580,7 +580,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -598,7 +598,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -616,7 +616,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -634,7 +634,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -652,7 +652,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -670,7 +670,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -688,7 +688,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -706,7 +706,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -724,7 +724,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -742,7 +742,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -760,7 +760,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -778,7 +778,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -796,7 +796,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -814,7 +814,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -832,7 +832,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -850,7 +850,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -868,7 +868,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -886,7 +886,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -904,7 +904,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -922,7 +922,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -940,7 +940,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -958,7 +958,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -976,7 +976,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -994,7 +994,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1012,7 +1012,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1030,7 +1030,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1048,7 +1048,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1066,7 +1066,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1084,7 +1084,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1102,7 +1102,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1120,7 +1120,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1138,7 +1138,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1156,7 +1156,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1174,7 +1174,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1192,7 +1192,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1210,7 +1210,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1228,7 +1228,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1246,7 +1246,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1264,7 +1264,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1282,7 +1282,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1300,7 +1300,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1318,7 +1318,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1336,7 +1336,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1354,7 +1354,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1372,7 +1372,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1390,7 +1390,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1408,7 +1408,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1426,7 +1426,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1444,7 +1444,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1462,7 +1462,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1480,7 +1480,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1498,7 +1498,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1516,7 +1516,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1534,7 +1534,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1552,7 +1552,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1570,7 +1570,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1588,7 +1588,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1606,7 +1606,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1624,7 +1624,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1642,7 +1642,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1660,7 +1660,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1678,7 +1678,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1696,7 +1696,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1714,7 +1714,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1732,7 +1732,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1750,7 +1750,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1768,7 +1768,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1786,7 +1786,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1804,7 +1804,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1822,7 +1822,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1840,7 +1840,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1858,7 +1858,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1876,7 +1876,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1894,7 +1894,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1912,7 +1912,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1930,7 +1930,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1948,7 +1948,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1966,7 +1966,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -1984,7 +1984,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2002,7 +2002,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2020,7 +2020,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2038,7 +2038,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2056,7 +2056,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2074,7 +2074,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2092,7 +2092,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2110,7 +2110,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2128,7 +2128,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2146,7 +2146,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2164,7 +2164,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2182,7 +2182,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2200,7 +2200,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2218,7 +2218,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2236,7 +2236,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2254,7 +2254,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2272,7 +2272,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2290,7 +2290,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2308,7 +2308,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2326,7 +2326,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2344,7 +2344,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2362,7 +2362,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2380,7 +2380,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2398,7 +2398,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2416,7 +2416,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2434,7 +2434,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2452,7 +2452,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2470,7 +2470,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2488,7 +2488,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2506,7 +2506,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2524,7 +2524,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2542,7 +2542,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2560,7 +2560,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2578,7 +2578,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2596,7 +2596,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2614,7 +2614,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2632,7 +2632,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2650,7 +2650,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2668,7 +2668,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2686,7 +2686,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2704,7 +2704,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2722,7 +2722,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2740,7 +2740,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2758,7 +2758,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2776,7 +2776,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2794,7 +2794,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2812,7 +2812,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2830,7 +2830,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2848,7 +2848,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2866,7 +2866,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2884,7 +2884,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2902,7 +2902,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2920,7 +2920,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2938,7 +2938,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2956,7 +2956,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2974,7 +2974,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -2992,7 +2992,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3010,7 +3010,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3028,7 +3028,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3046,7 +3046,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3064,7 +3064,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3082,7 +3082,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3100,7 +3100,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3118,7 +3118,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3136,7 +3136,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3154,7 +3154,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3172,7 +3172,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3190,7 +3190,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3208,7 +3208,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3226,7 +3226,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3244,7 +3244,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3262,7 +3262,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3280,7 +3280,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3298,7 +3298,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3316,7 +3316,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3334,7 +3334,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3352,7 +3352,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3370,7 +3370,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3388,7 +3388,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3406,7 +3406,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3424,7 +3424,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3442,7 +3442,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3460,7 +3460,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3478,7 +3478,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3496,7 +3496,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3514,7 +3514,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3532,7 +3532,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3550,7 +3550,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3568,7 +3568,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3586,7 +3586,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3604,7 +3604,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3622,7 +3622,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3640,7 +3640,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3658,7 +3658,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3676,7 +3676,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3694,7 +3694,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3712,7 +3712,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3730,7 +3730,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3748,7 +3748,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3766,7 +3766,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3784,7 +3784,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3802,7 +3802,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3820,7 +3820,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3838,7 +3838,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3856,7 +3856,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3874,7 +3874,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3892,7 +3892,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3910,7 +3910,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3928,7 +3928,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3946,7 +3946,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3964,7 +3964,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -3982,7 +3982,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4000,7 +4000,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4018,7 +4018,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4036,7 +4036,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4054,7 +4054,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4072,7 +4072,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4090,7 +4090,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4108,7 +4108,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4126,7 +4126,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4144,7 +4144,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4162,7 +4162,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4180,7 +4180,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4198,7 +4198,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4216,7 +4216,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4234,7 +4234,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4252,7 +4252,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4270,7 +4270,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4288,7 +4288,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4306,7 +4306,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4324,7 +4324,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4342,7 +4342,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4360,7 +4360,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4378,7 +4378,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4396,7 +4396,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4414,7 +4414,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4432,7 +4432,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4450,7 +4450,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4468,7 +4468,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4486,7 +4486,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4504,7 +4504,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4522,7 +4522,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4540,7 +4540,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4558,7 +4558,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4576,7 +4576,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4594,7 +4594,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4612,7 +4612,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4630,7 +4630,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4648,7 +4648,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4666,7 +4666,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4684,7 +4684,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4702,7 +4702,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4720,7 +4720,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4738,7 +4738,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4756,7 +4756,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4774,7 +4774,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4792,7 +4792,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4810,7 +4810,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4828,7 +4828,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4846,7 +4846,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4864,7 +4864,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4882,7 +4882,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4900,7 +4900,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4918,7 +4918,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4936,7 +4936,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4954,7 +4954,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4972,7 +4972,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -4990,7 +4990,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5008,7 +5008,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5026,7 +5026,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5044,7 +5044,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5062,7 +5062,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5080,7 +5080,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5098,7 +5098,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5116,7 +5116,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5134,7 +5134,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5152,7 +5152,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5170,7 +5170,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5188,7 +5188,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5206,7 +5206,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5224,7 +5224,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5242,7 +5242,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5260,7 +5260,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5278,7 +5278,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5296,7 +5296,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5314,7 +5314,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5332,7 +5332,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5350,7 +5350,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5368,7 +5368,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5386,7 +5386,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5404,7 +5404,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5422,7 +5422,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5440,7 +5440,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5458,7 +5458,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5476,7 +5476,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5494,7 +5494,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5512,7 +5512,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5530,7 +5530,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5548,7 +5548,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5566,7 +5566,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5584,7 +5584,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5602,7 +5602,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5620,7 +5620,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5638,7 +5638,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5656,7 +5656,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5674,7 +5674,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5692,7 +5692,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5710,7 +5710,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5728,7 +5728,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5746,7 +5746,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5764,7 +5764,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5782,7 +5782,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5800,7 +5800,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5818,7 +5818,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5836,7 +5836,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5854,7 +5854,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5872,7 +5872,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5890,7 +5890,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5908,7 +5908,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5926,7 +5926,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5944,7 +5944,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5962,7 +5962,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5980,7 +5980,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -5998,7 +5998,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6016,7 +6016,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6034,7 +6034,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6052,7 +6052,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6070,7 +6070,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6088,7 +6088,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6106,7 +6106,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6124,7 +6124,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6142,7 +6142,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6160,7 +6160,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6178,7 +6178,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6196,7 +6196,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6214,7 +6214,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6232,7 +6232,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6250,7 +6250,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6268,7 +6268,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6286,7 +6286,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6304,7 +6304,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6322,7 +6322,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6340,7 +6340,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6358,7 +6358,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6376,7 +6376,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6394,7 +6394,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6412,7 +6412,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6430,7 +6430,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6448,7 +6448,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6466,7 +6466,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6484,7 +6484,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6502,7 +6502,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6520,7 +6520,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6538,7 +6538,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6556,7 +6556,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6574,7 +6574,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6592,7 +6592,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6610,7 +6610,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6628,7 +6628,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6646,7 +6646,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6664,7 +6664,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6682,7 +6682,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6700,7 +6700,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6718,7 +6718,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6736,7 +6736,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6754,7 +6754,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6772,7 +6772,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6790,7 +6790,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6808,7 +6808,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6826,7 +6826,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6844,7 +6844,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6862,7 +6862,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6880,7 +6880,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6898,7 +6898,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6916,7 +6916,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6934,7 +6934,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6952,7 +6952,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6970,7 +6970,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -6988,7 +6988,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7006,7 +7006,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7024,7 +7024,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7042,7 +7042,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7060,7 +7060,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7078,7 +7078,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7096,7 +7096,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7114,7 +7114,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7132,7 +7132,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7150,7 +7150,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7168,7 +7168,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7186,7 +7186,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7204,7 +7204,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7222,7 +7222,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7240,7 +7240,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7258,7 +7258,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7276,7 +7276,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7294,7 +7294,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7312,7 +7312,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7330,7 +7330,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7348,7 +7348,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7366,7 +7366,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7384,7 +7384,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7402,7 +7402,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7420,7 +7420,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7438,7 +7438,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7456,7 +7456,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7474,7 +7474,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7492,7 +7492,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7510,7 +7510,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7528,7 +7528,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7546,7 +7546,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7564,7 +7564,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7582,7 +7582,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7600,7 +7600,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7618,7 +7618,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7636,7 +7636,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7654,7 +7654,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7672,7 +7672,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7690,7 +7690,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7708,7 +7708,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7726,7 +7726,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7744,7 +7744,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7762,7 +7762,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7780,7 +7780,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7798,7 +7798,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7816,7 +7816,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7834,7 +7834,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7852,7 +7852,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7870,7 +7870,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7888,7 +7888,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7906,7 +7906,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7924,7 +7924,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7942,7 +7942,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7960,7 +7960,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7978,7 +7978,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -7996,7 +7996,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8014,7 +8014,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8032,7 +8032,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8050,7 +8050,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8068,7 +8068,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8086,7 +8086,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8104,7 +8104,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8122,7 +8122,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8140,7 +8140,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8158,7 +8158,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8176,7 +8176,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8194,7 +8194,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8212,7 +8212,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8230,7 +8230,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8248,7 +8248,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8266,7 +8266,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8284,7 +8284,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8302,7 +8302,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8320,7 +8320,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8338,7 +8338,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8356,7 +8356,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8374,7 +8374,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8392,7 +8392,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8410,7 +8410,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8428,7 +8428,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8446,7 +8446,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8464,7 +8464,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8482,7 +8482,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8500,7 +8500,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8518,7 +8518,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8536,7 +8536,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8554,7 +8554,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8572,7 +8572,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8590,7 +8590,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8608,7 +8608,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8626,7 +8626,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8644,7 +8644,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8662,7 +8662,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8680,7 +8680,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8698,7 +8698,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8716,7 +8716,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8734,7 +8734,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8752,7 +8752,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8770,7 +8770,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8788,7 +8788,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8806,7 +8806,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8824,7 +8824,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8842,7 +8842,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8860,7 +8860,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8878,7 +8878,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8896,7 +8896,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8914,7 +8914,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8932,7 +8932,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8950,7 +8950,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8968,7 +8968,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:
@@ -8986,7 +8986,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeLogs:
       - logRecords:
           - attributes:

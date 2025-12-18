@@ -4,7 +4,7 @@ resourceSpans:
         - key: service.name
           value:
             stringValue: test-traces-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeSpans:
       - scope:
           name: telemetrygen
@@ -1564,7 +1564,7 @@ resourceSpans:
         - key: service.name
           value:
             stringValue: test-traces-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeSpans:
       - scope:
           name: telemetrygen
@@ -3124,7 +3124,7 @@ resourceSpans:
         - key: service.name
           value:
             stringValue: test-traces-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeSpans:
       - scope:
           name: telemetrygen
@@ -4684,7 +4684,7 @@ resourceSpans:
         - key: service.name
           value:
             stringValue: test-traces-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeSpans:
       - scope:
           name: telemetrygen
@@ -6244,7 +6244,7 @@ resourceSpans:
         - key: service.name
           value:
             stringValue: test-traces-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeSpans:
       - scope:
           name: telemetrygen

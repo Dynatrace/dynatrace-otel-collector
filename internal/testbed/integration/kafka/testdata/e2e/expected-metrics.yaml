@@ -4,7 +4,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -18,7 +18,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -32,7 +32,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -46,7 +46,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -60,7 +60,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -74,7 +74,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -88,7 +88,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -102,7 +102,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -116,7 +116,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -130,7 +130,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -144,7 +144,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -158,7 +158,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -172,7 +172,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -186,7 +186,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -200,7 +200,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -214,7 +214,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -228,7 +228,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -242,7 +242,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -256,7 +256,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -270,7 +270,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -284,7 +284,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -298,7 +298,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -312,7 +312,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -326,7 +326,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -340,7 +340,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -354,7 +354,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -368,7 +368,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -382,7 +382,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -396,7 +396,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -410,7 +410,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -424,7 +424,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -438,7 +438,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -452,7 +452,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -466,7 +466,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -480,7 +480,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -494,7 +494,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -508,7 +508,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -522,7 +522,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -536,7 +536,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -550,7 +550,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -564,7 +564,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -578,7 +578,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -592,7 +592,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -606,7 +606,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -620,7 +620,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -634,7 +634,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -648,7 +648,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -662,7 +662,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -676,7 +676,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -690,7 +690,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -704,7 +704,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -718,7 +718,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -732,7 +732,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -746,7 +746,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -760,7 +760,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -774,7 +774,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -788,7 +788,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -802,7 +802,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -816,7 +816,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -830,7 +830,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -844,7 +844,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -858,7 +858,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -872,7 +872,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -886,7 +886,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -900,7 +900,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -914,7 +914,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -928,7 +928,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -942,7 +942,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -956,7 +956,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -970,7 +970,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -984,7 +984,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -998,7 +998,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1012,7 +1012,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1026,7 +1026,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1040,7 +1040,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1054,7 +1054,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1068,7 +1068,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1082,7 +1082,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1096,7 +1096,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1110,7 +1110,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1124,7 +1124,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1138,7 +1138,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1152,7 +1152,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1166,7 +1166,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1180,7 +1180,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1194,7 +1194,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1208,7 +1208,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1222,7 +1222,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1236,7 +1236,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1250,7 +1250,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1264,7 +1264,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1278,7 +1278,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1292,7 +1292,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1306,7 +1306,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1320,7 +1320,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1334,7 +1334,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1348,7 +1348,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1362,7 +1362,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1376,7 +1376,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1390,7 +1390,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1404,7 +1404,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1418,7 +1418,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1432,7 +1432,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1446,7 +1446,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1460,7 +1460,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1474,7 +1474,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1488,7 +1488,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1502,7 +1502,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1516,7 +1516,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1530,7 +1530,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1544,7 +1544,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1558,7 +1558,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1572,7 +1572,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1586,7 +1586,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1600,7 +1600,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1614,7 +1614,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1628,7 +1628,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1642,7 +1642,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1656,7 +1656,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1670,7 +1670,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1684,7 +1684,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1698,7 +1698,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1712,7 +1712,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1726,7 +1726,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1740,7 +1740,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1754,7 +1754,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1768,7 +1768,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1782,7 +1782,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1796,7 +1796,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1810,7 +1810,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1824,7 +1824,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1838,7 +1838,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1852,7 +1852,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1866,7 +1866,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1880,7 +1880,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1894,7 +1894,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1908,7 +1908,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1922,7 +1922,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1936,7 +1936,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1950,7 +1950,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1964,7 +1964,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1978,7 +1978,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -1992,7 +1992,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2006,7 +2006,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2020,7 +2020,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2034,7 +2034,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2048,7 +2048,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2062,7 +2062,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2076,7 +2076,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2090,7 +2090,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2104,7 +2104,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2118,7 +2118,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2132,7 +2132,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2146,7 +2146,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2160,7 +2160,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2174,7 +2174,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2188,7 +2188,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2202,7 +2202,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2216,7 +2216,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2230,7 +2230,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2244,7 +2244,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2258,7 +2258,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2272,7 +2272,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2286,7 +2286,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2300,7 +2300,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2314,7 +2314,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2328,7 +2328,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2342,7 +2342,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2356,7 +2356,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2370,7 +2370,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2384,7 +2384,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2398,7 +2398,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2412,7 +2412,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2426,7 +2426,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2440,7 +2440,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2454,7 +2454,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2468,7 +2468,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2482,7 +2482,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2496,7 +2496,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2510,7 +2510,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2524,7 +2524,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2538,7 +2538,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2552,7 +2552,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2566,7 +2566,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2580,7 +2580,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2594,7 +2594,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2608,7 +2608,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2622,7 +2622,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2636,7 +2636,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2650,7 +2650,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2664,7 +2664,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2678,7 +2678,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2692,7 +2692,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2706,7 +2706,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2720,7 +2720,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2734,7 +2734,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2748,7 +2748,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2762,7 +2762,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2776,7 +2776,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2790,7 +2790,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2804,7 +2804,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2818,7 +2818,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2832,7 +2832,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2846,7 +2846,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2860,7 +2860,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2874,7 +2874,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2888,7 +2888,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2902,7 +2902,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2916,7 +2916,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2930,7 +2930,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2944,7 +2944,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2958,7 +2958,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2972,7 +2972,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -2986,7 +2986,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3000,7 +3000,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3014,7 +3014,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3028,7 +3028,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3042,7 +3042,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3056,7 +3056,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3070,7 +3070,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3084,7 +3084,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3098,7 +3098,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3112,7 +3112,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3126,7 +3126,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3140,7 +3140,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3154,7 +3154,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3168,7 +3168,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3182,7 +3182,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3196,7 +3196,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3210,7 +3210,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3224,7 +3224,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3238,7 +3238,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3252,7 +3252,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3266,7 +3266,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3280,7 +3280,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3294,7 +3294,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3308,7 +3308,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3322,7 +3322,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3336,7 +3336,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3350,7 +3350,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3364,7 +3364,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3378,7 +3378,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3392,7 +3392,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3406,7 +3406,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3420,7 +3420,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3434,7 +3434,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3448,7 +3448,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3462,7 +3462,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3476,7 +3476,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3490,7 +3490,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3504,7 +3504,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3518,7 +3518,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3532,7 +3532,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3546,7 +3546,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3560,7 +3560,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3574,7 +3574,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3588,7 +3588,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3602,7 +3602,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3616,7 +3616,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3630,7 +3630,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3644,7 +3644,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3658,7 +3658,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3672,7 +3672,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3686,7 +3686,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3700,7 +3700,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3714,7 +3714,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3728,7 +3728,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3742,7 +3742,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3756,7 +3756,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3770,7 +3770,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3784,7 +3784,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3798,7 +3798,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3812,7 +3812,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3826,7 +3826,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3840,7 +3840,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3854,7 +3854,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3868,7 +3868,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3882,7 +3882,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3896,7 +3896,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3910,7 +3910,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3924,7 +3924,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3938,7 +3938,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3952,7 +3952,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3966,7 +3966,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3980,7 +3980,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -3994,7 +3994,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4008,7 +4008,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4022,7 +4022,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4036,7 +4036,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4050,7 +4050,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4064,7 +4064,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4078,7 +4078,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4092,7 +4092,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4106,7 +4106,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4120,7 +4120,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4134,7 +4134,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4148,7 +4148,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4162,7 +4162,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4176,7 +4176,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4190,7 +4190,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4204,7 +4204,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4218,7 +4218,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4232,7 +4232,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4246,7 +4246,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4260,7 +4260,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4274,7 +4274,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4288,7 +4288,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4302,7 +4302,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4316,7 +4316,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4330,7 +4330,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4344,7 +4344,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4358,7 +4358,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4372,7 +4372,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4386,7 +4386,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4400,7 +4400,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4414,7 +4414,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4428,7 +4428,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4442,7 +4442,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4456,7 +4456,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4470,7 +4470,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4484,7 +4484,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4498,7 +4498,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4512,7 +4512,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4526,7 +4526,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4540,7 +4540,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4554,7 +4554,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4568,7 +4568,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4582,7 +4582,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4596,7 +4596,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4610,7 +4610,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4624,7 +4624,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4638,7 +4638,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4652,7 +4652,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4666,7 +4666,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4680,7 +4680,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4694,7 +4694,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4708,7 +4708,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4722,7 +4722,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4736,7 +4736,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4750,7 +4750,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4764,7 +4764,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4778,7 +4778,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4792,7 +4792,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4806,7 +4806,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4820,7 +4820,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4834,7 +4834,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4848,7 +4848,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4862,7 +4862,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4876,7 +4876,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4890,7 +4890,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4904,7 +4904,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4918,7 +4918,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4932,7 +4932,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4946,7 +4946,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4960,7 +4960,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4974,7 +4974,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -4988,7 +4988,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5002,7 +5002,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5016,7 +5016,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5030,7 +5030,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5044,7 +5044,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5058,7 +5058,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5072,7 +5072,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5086,7 +5086,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5100,7 +5100,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5114,7 +5114,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5128,7 +5128,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5142,7 +5142,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5156,7 +5156,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5170,7 +5170,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5184,7 +5184,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5198,7 +5198,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5212,7 +5212,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5226,7 +5226,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5240,7 +5240,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5254,7 +5254,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5268,7 +5268,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5282,7 +5282,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5296,7 +5296,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5310,7 +5310,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5324,7 +5324,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5338,7 +5338,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5352,7 +5352,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5366,7 +5366,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5380,7 +5380,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5394,7 +5394,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5408,7 +5408,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5422,7 +5422,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5436,7 +5436,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5450,7 +5450,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5464,7 +5464,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5478,7 +5478,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5492,7 +5492,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5506,7 +5506,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5520,7 +5520,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5534,7 +5534,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5548,7 +5548,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5562,7 +5562,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5576,7 +5576,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5590,7 +5590,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5604,7 +5604,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5618,7 +5618,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5632,7 +5632,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5646,7 +5646,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5660,7 +5660,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5674,7 +5674,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5688,7 +5688,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5702,7 +5702,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5716,7 +5716,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5730,7 +5730,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5744,7 +5744,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5758,7 +5758,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5772,7 +5772,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5786,7 +5786,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5800,7 +5800,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5814,7 +5814,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5828,7 +5828,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5842,7 +5842,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5856,7 +5856,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5870,7 +5870,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5884,7 +5884,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5898,7 +5898,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5912,7 +5912,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5926,7 +5926,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5940,7 +5940,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5954,7 +5954,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5968,7 +5968,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5982,7 +5982,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -5996,7 +5996,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6010,7 +6010,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6024,7 +6024,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6038,7 +6038,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6052,7 +6052,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6066,7 +6066,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6080,7 +6080,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6094,7 +6094,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6108,7 +6108,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6122,7 +6122,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6136,7 +6136,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6150,7 +6150,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6164,7 +6164,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6178,7 +6178,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6192,7 +6192,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6206,7 +6206,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6220,7 +6220,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6234,7 +6234,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6248,7 +6248,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6262,7 +6262,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6276,7 +6276,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6290,7 +6290,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6304,7 +6304,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6318,7 +6318,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6332,7 +6332,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6346,7 +6346,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6360,7 +6360,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6374,7 +6374,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6388,7 +6388,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6402,7 +6402,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6416,7 +6416,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6430,7 +6430,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6444,7 +6444,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6458,7 +6458,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6472,7 +6472,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6486,7 +6486,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6500,7 +6500,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6514,7 +6514,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6528,7 +6528,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6542,7 +6542,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6556,7 +6556,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6570,7 +6570,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6584,7 +6584,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6598,7 +6598,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6612,7 +6612,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6626,7 +6626,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6640,7 +6640,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6654,7 +6654,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6668,7 +6668,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6682,7 +6682,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6696,7 +6696,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6710,7 +6710,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6724,7 +6724,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6738,7 +6738,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6752,7 +6752,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6766,7 +6766,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6780,7 +6780,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6794,7 +6794,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6808,7 +6808,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6822,7 +6822,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6836,7 +6836,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6850,7 +6850,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6864,7 +6864,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6878,7 +6878,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6892,7 +6892,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6906,7 +6906,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6920,7 +6920,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6934,7 +6934,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6948,7 +6948,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6962,7 +6962,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6976,7 +6976,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:
@@ -6990,7 +6990,7 @@ resourceMetrics:
         - key: service.name
           value:
             stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.37.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
     scopeMetrics:
       - metrics:
           - gauge:

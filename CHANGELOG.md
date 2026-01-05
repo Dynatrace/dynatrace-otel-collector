@@ -21,8 +21,6 @@ v0.142.0:
 ### 🛑 Breaking changes 🛑
 
 - `pkg/exporterhelper`: Use `configoptional.Optional` for the `exporterhelper.QueueBatchConfig` ([#14155](https://github.com/open-telemetry/opentelemetry-collector/issues/14155))
-  It's recommended to change the field type in your component configuration to be `configoptional.Optional[exporterhelper.QueueBatchConfig]` to keep the `enabled` subfield. Use configoptional.Some(exporterhelper.NewDefaultQueueConfig()) to enable by default. Use configoptional.Default(exporterhelper.NewDefaultQueueConfig()) to disable by default.
-
 - `all`: It's recommended to change the field type in your component configuration to be `configoptional.Optional[exporterhelper.QueueBatchConfig]` to keep the `enabled` subfield. Use configoptional.Some(exporterhelper.NewDefaultQueueConfig()) to enable by default. Use configoptional.Default(exporterhelper.NewDefaultQueueConfig()) to disable by default. ([#44320](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44320))
 
 - `pkg/stanza`: Allow `max_batch_size` of 0 for unlimited batching in `recombine` operator ([#43982](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43982))

@@ -20,9 +20,6 @@ v0.142.0:
 
 ### 🛑 Breaking changes 🛑
 
-- `pkg/exporterhelper`: Use `configoptional.Optional` for the `exporterhelper.QueueBatchConfig` ([#14155](https://github.com/open-telemetry/opentelemetry-collector/issues/14155))
-- `all`: It's recommended to change the field type in your component configuration to be `configoptional.Optional[exporterhelper.QueueBatchConfig]` to keep the `enabled` subfield. Use configoptional.Some(exporterhelper.NewDefaultQueueConfig()) to enable by default. Use configoptional.Default(exporterhelper.NewDefaultQueueConfig()) to disable by default. ([#44320](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44320))
-
 - `pkg/stanza`: Allow `max_batch_size` of 0 for unlimited batching in `recombine` operator ([#43982](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43982))
   The recombine operator now supports setting `max_batch_size: 0` to disable batch size limits.
   This allows unlimited batching, letting entries be combined based only on `max_log_size` and matching conditions.
@@ -52,43 +49,6 @@ v0.142.0:
   
 ### 🚩 Deprecations 🚩
 
-- `pkg/service`: Deprecate Settings.LoggingOptions and telemetry.LoggerSettings.ZapOptions, add telemetry.LoggerSettings.BuildZapLogger ([#14002](https://github.com/open-telemetry/opentelemetry-collector/issues/14002))
-  BuildZapLogger provides a more flexible way to build the Zap logger,
-  since the function will have access to the zap.Config. This is used
-  in otelcol to install a Windows Event Log output when the zap config
-  does not specify any file output.
-
-- `pkg/ottl`: Use pointer when passing TransformContext around or calling into. ([#44541](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44541))
-  Change Expr/Parser/Getter/Setter and all ottl related funcs to accept pointers to avoid unnecessary copy of a large
-  TransformContext(96B). Avoid allocating a new pcommon.Map every time a new context is created by using a Borrow/Return
-  pattern and reuse objects between calls. Deprecated funcs are:
-  - `ottldatapoint.NewTransformContext` in favor of `ottldatapoint.NewTransformContextPtr`;
-  - `ottllog.NewTransformContext` in favor of `ottllog.NewTransformContextPtr`;
-  - `ottlmetric.NewTransformContext` in favor of `ottlmetric.NewTransformContextPtr`;
-  - `ottlspan.NewTransformContext` in favor of `ottlspan.NewTransformContextPtr`;
-  - `ottlspanevent.NewTransformContext` in favor of `ottlspanevent.NewTransformContextPtr`;
-  - `filterprocessor.WithResourceFunctions` in favor of `filterprocessor.WithResourceFunctionsNew`
-  - `filterprocessor.DefaultDataPointFunctions` in favor of `filtermprocessor.DefaultDataPointFunctionsNew`
-  - `filterprocessor.WithDataPointFunctions` in favor of `filterprocessor.WithDataPointFunctionsNew`
-  - `filterprocessor.DefaultLogFunctions` in favor of `filterprocessor.DefaultLogFunctionsNew`
-  - `filterprocessor.WithLogFunctions` in favor of `filterprocessor.WithLogFunctionsNew`
-  - `filterprocessor.DefaultMetricFunctions` in favor of `filterprocessor.DefaultMetricFunctionsNew`
-  - `filterprocessor.WithMetricFunctions` in favor of `filterprocessor.WithMetricFunctionsNew`
-  - `filterprocessor.DefaultSpanFunctions` in favor of `filterprocessor.DefaultSpanFunctionsNew`
-  - `filterprocessor.WithSpanFunctions` in favor of `filterprocessor.WithSpanFunctionsNew`
-  - `filtermprocessor.DefaultSpanEventFunctions` in favor of `filtermprocessor.DefaultSpanEventFunctionsNew`
-  - `filtermprocessor.WithSpanEventFunctions` in favor of `filtermprocessor.WithSpanEventFunctionsNew`
-  - `transformprocessor.DefaultDataPointFunctions` in favor of `transformprocessor.DefaultDataPointFunctionsNew`
-  - `transformprocessor.WithDataPointFunctions` in favor of `transformprocessor.WithDataPointFunctionsNew`
-  - `transformprocessor.DefaultLogFunctions` in favor of `transformprocessor.DefaultLogFunctionsNew`
-  - `transformprocessor.WithLogFunctions` in favor of `transformprocessor.WithLogFunctionsNew`
-  - `transformprocessor.DefaultMetricFunctions` in favor of `transformprocessor.DefaultMetricFunctionsNew`
-  - `transformprocessor.WithMetricFunctions` in favor of `transformprocessor.WithMetricFunctionsNew`
-  - `transformprocessor.DefaultSpanFunctions` in favor of `transformprocessor.DefaultSpanFunctionsNew`
-  - `transformprocessor.WithSpanFunctions` in favor of `transformprocessor.WithSpanFunctionsNew`
-  - `transformprocessor.DefaultSpanEventFunctions` in favor of `transformprocessor.DefaultSpanEventFunctionsNew`
-  - `transformprocessor.WithSpanEventFunctions` in favor of `transformprocessor.WithSpanEventFunctionsNew`
-
 - `processor/k8sattributes`: Removes stable k8sattr.fieldExtractConfigRegex.disallow feature gate ([#44694](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44694))
 - `receiver/kafka`: Deprecate `default_fetch_size` parameter for franz-go client ([#43104](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43104))
   The `default_fetch_size` parameter is now deprecated for the franz-go Kafka client and will only be used with the legacy Sarama client.
@@ -99,9 +59,6 @@ v0.142.0:
 - `receiver/prometheus`: Deprecate `use_start_time_metric` and `start_time_metric_regex` config in favor of the processor `metricstarttime` ([#44180](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44180))
 
 ### 🧰 Bug fixes 🧰
-
-- `pkg/confmap`: Ensure that embedded structs are not overwritten after Unmarshal is called ([#14213](https://github.com/open-telemetry/opentelemetry-collector/issues/14213))
-  This allows embedding structs which implement Unmarshal and contain a configopaque.String.
 
 - `processor/cumulativetodelta`: Check whether bucket bounds are the same when verifying whether histograms are comparable ([#44793](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44793))
 - `processor/cumulativetodelta`: Fix logic handling ZeroThreshold increases for exponential histograms ([#44793](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44793))
@@ -125,12 +82,9 @@ v0.142.0:
 - `exporter/debug`: Add logging of dropped attributes, events, and links counts in detailed verbosity ([#14202](https://github.com/open-telemetry/opentelemetry-collector/issues/14202))
 - `extension/memory_limiter`: The memorylimiter extension can be used as an HTTP/GRPC middleware. ([#14081](https://github.com/open-telemetry/opentelemetry-collector/issues/14081))
 - `pkg/config/configgrpc`: Statically validate gRPC endpoint ([#10451](https://github.com/open-telemetry/opentelemetry-collector/issues/10451))
-  This validation was already done in the OTLP exporter. It will now be applied to any gRPC client.
-  
 - `pkg/service`: Add support to disabling adding resource attributes as zap fields in internal logging ([#13869](https://github.com/open-telemetry/opentelemetry-collector/issues/13869))
   Note that this does not affect logs exported through OTLP.
 
-- `pkg/ottl`: Add PSliceGetSetter interface to allow OTTL functions to accept typed accessors for `pcommon.Slice` paths. ([#44421](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44421))
 - `exporter/kafka`: Adds server.address attribute to all Kafka exporter metrics. ([#44649](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44649))
 - `extension/health_check`: Added extension.healthcheck.useComponentStatus feature gate to enable v2 component status reporting in healthcheckextension while maintaining backward compatibility by default. ([#42256](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42256))
 - `pkg/ottl`: Accept string trace/span/profile IDs for `TraceID()`, `SpanID()`, and `ProfileID()` in OTTL. ([#43429](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43429))

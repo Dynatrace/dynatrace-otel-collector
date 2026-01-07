@@ -6,7 +6,7 @@
 
 ## v0.42.0
 
-This release includes version 0.142.0 and 0.143.0 of the upstream Collector components.
+This release includes versions 0.142.0 and 0.143.0 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
@@ -94,7 +94,7 @@ v0.143.0:
 - `receiver/fluentforward`: Ensure all established connections are properly closed on shutdown in the fluentforward receiver. The shutdown process now reliably closes all active connections. ([#44433](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44433))
   - Fixes shutdown behavior so that all existing connections are closed cleanly.
   - Adds tests to verify proper connection closure.
-  
+
 - `receiver/kafka`: Fix deprecated field migration logic for metrics, traces, and profiles topic configuration ([#45215](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45215))
   Fixed bug where deprecated `topic` and `exclude_topic` fields for metrics, traces, and profiles
   were incorrectly checking logs configuration instead of their respective signal type's configuration.

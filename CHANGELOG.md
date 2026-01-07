@@ -6,7 +6,7 @@
 
 ## v0.42.0
 
-This release includes version 0.142.0 of the upstream Collector components.
+This release includes version 0.142.0 and 0.143.0 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
@@ -14,6 +14,11 @@ v0.142.0:
 
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.142.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.142.0>
+
+v0.143.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.143.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.143.0>
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
@@ -46,6 +51,14 @@ v0.142.0:
   To enable scraping of native histograms, you must configure `scrape_native_histograms: true` in your Prometheus
   scrape configuration (either globally or per-job). Additionally, the protobuf scrape protocol must be enabled
   by setting `scrape_protocols` to include `PrometheusProto`.
+
+- `processor/tail_sampling`: Add support for caching the policy name involved in a sampling decision. ([#45040](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45040))
+  This change allows the `tailsampling.policy` attribute to be set on the spans in a trace when a sampling decision is cached.
+
+- `receiver/prometheus`: Remove deprecated `use_start_time_metric` and `start_time_metric_regex` configuration options. ([#44180](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44180))
+  The `use_start_time_metric` and `start_time_metric_regex` configuration options have been removed after being deprecated in v0.142.0.
+  Users who have these options set in their configuration will experience collector startup failures after upgrading.
+  To migrate, remove these configuration options and use the `metricstarttime` processor instead for equivalent functionality.
   
 ### 🚩 Deprecations 🚩
 
@@ -76,6 +89,18 @@ v0.142.0:
   potentially causing HTTP connection exhaustion.
   
 - `receiver/prometheus`: Fixes yaml marshaling of prometheus/common/config.Secret types ([#44445](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44445))
+- `exporter/kafka`: Wrap non-retriable errors from franzgo with consumererror::permanent ([#44918](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44918))
+- `exporter/loadbalancing`: Fix k8s resolver parsing so loadbalancing exporter works with service FQDNs ([#44472](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44472))
+- `receiver/fluentforward`: Ensure all established connections are properly closed on shutdown in the fluentforward receiver. The shutdown process now reliably closes all active connections. ([#44433](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44433))
+  - Fixes shutdown behavior so that all existing connections are closed cleanly.
+  - Adds tests to verify proper connection closure.
+  
+- `receiver/kafka`: Fix deprecated field migration logic for metrics, traces, and profiles topic configuration ([#45215](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45215))
+  Fixed bug where deprecated `topic` and `exclude_topic` fields for metrics, traces, and profiles
+  were incorrectly checking logs configuration instead of their respective signal type's configuration.
+  This prevented proper migration from deprecated fields unless logs.topics was empty.
+  Also fixed validation error message typo for traces.exclude_topic and corrected profiles validation
+  to check ExcludeTopic fields instead of Topic fields.
 
 ### 💡 Enhancements 💡
 
@@ -109,6 +134,14 @@ v0.142.0:
 
 - `receiver/kafka`: Make `session_timeout`, `heartbeat_interval`, `max_partition_fetch_size`, and `max_fetch_wait` unconditional in franz-go consumer ([#44839](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44839))
 - `receiver/kafka`: Validate that `exclude_topics` entries in kafkareceiver config are non-empty. ([#44920](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44920))
+- `all`: Update semconv import to 1.38.0 ([#14305](https://github.com/open-telemetry/opentelemetry-collector/issues/14305))
+- `exporter/kafka`: Make `max_message_bytes` and `flush_max_messages` unconditional in franz-go producer. Changed `flush_max_messages` default from 0 to 10000 to match franz-go default. ([#44840](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44840))
+- `pkg/ottl`: Add `Bool` function for converting values to boolean ([#44770](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44770))
+- `receiver/filelog`: gzip files are auto detected based on their header ([#39682](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39682))
+- `receiver/prometheus`: Add `receiver.prometheusreceiver.RemoveReportExtraScrapeMetricsConfig` feature gate to disable the `report_extra_scrape_metrics` config option. ([#44181](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44181))
+  When enabled, the `report_extra_scrape_metrics` configuration option is ignored, and extra scrape metrics are
+  controlled solely by the `receiver.prometheusreceiver.EnableReportExtraScrapeMetrics` feature gate.
+  This mimics Prometheus behavior where extra scrape metrics are controlled by a feature flag.
 
 ---
 

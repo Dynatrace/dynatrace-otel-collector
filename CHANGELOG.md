@@ -4,6 +4,151 @@
 
 <!-- next version -->
 
+## v0.42.0
+
+This release includes versions 0.142.0 and 0.143.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.142.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.142.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.142.0>
+
+v0.143.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.143.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.143.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/stanza`: Allow `max_batch_size` of 0 for unlimited batching in `recombine` operator ([#43982](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43982))
+  The recombine operator now supports setting `max_batch_size: 0` to disable batch size limits.
+  This allows unlimited batching, letting entries be combined based only on `max_log_size` and matching conditions.
+  If you have `max_batch_size: 0` in your config and want to keep the behavior unchanged, change the configuration to `max_batch_size: 1`.
+  
+- `processor/cumulativetodelta`: Change default `max_staleness` from 0 (infinite) to 1 hour ([#44427](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44427))
+  The processor now defaults to a `max_staleness` of 1 hour instead of 0 (infinite retention).
+  This prevents unbounded memory growth in long-running collector instances, especially when tracking metrics with high cardinality or frequently changing attribute values.
+  To restore the previous behavior of infinite retention, explicitly set `max_staleness: 0` in your configuration.
+  
+- `processor/resourcedetection`: Promote `processor.resourcedetection.propagateerrors` feature gate to beta ([#44609](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44609))
+- `processor/resourcedetection`: Remove deprecated `attributes` configuration option ([#44610](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44610))
+- `receiver/filelog`: Move `filelog.decompressFingerprint` to stable stage ([#44570](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44570))
+- `receiver/prometheus`: Promote the receiver.prometheusreceiver.RemoveStartTimeAdjustment feature gate to stable and remove in-receiver metric start time adjustment in favor of the metricstarttime processor, including disabling the created-metric feature gate. ([#44180](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44180))
+  Previously, users could disable the RemoveStartTimeAdjustment feature gate to temporarily keep the legacy start time adjustment behavior in the Prometheus receiver.
+  With this promotion to stable and bounded registration, that gate can no longer be disabled; the receiver will no longer set StartTime on metrics based on process_start_time_seconds, and users should migrate to the metricstarttime processor for equivalent functionality.
+  This change also disables the receiver.prometheusreceiver.UseCreatedMetric feature gate, which previously used the `<metric>_created` series to derive start timestamps for counters, summaries, and histograms when scraping non OpenMetrics protocols.
+  However, this does not mean that the `_created` series is always ignored: when using the OpenMetrics 1.0 protocol, Prometheus itself continues to interpret the `_created` series as the start timestamp, so only the receiver-side handling for other scrape protocols has been removed.
+  
+- `receiver/prometheus`: Native histogram scraping and ingestion is now controlled by the scrape configuration option `scrape_native_histograms`. ([#44861](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44861))
+  The feature gate `receiver.prometheusreceiver.EnableNativeHistograms` is now stable and enabled by default.
+  Native histograms scraped from Prometheus will automatically be converted to OpenTelemetry exponential histograms.
+  
+  To enable scraping of native histograms, you must configure `scrape_native_histograms: true` in your Prometheus
+  scrape configuration (either globally or per-job). Additionally, the protobuf scrape protocol must be enabled
+  by setting `scrape_protocols` to include `PrometheusProto`.
+
+- `processor/tail_sampling`: Add support for caching the policy name involved in a sampling decision. ([#45040](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45040))
+  This change allows the `tailsampling.policy` attribute to be set on the spans in a trace when a sampling decision is cached.
+
+- `receiver/prometheus`: Remove deprecated `use_start_time_metric` and `start_time_metric_regex` configuration options. ([#44180](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44180))
+  The `use_start_time_metric` and `start_time_metric_regex` configuration options have been removed after being deprecated in v0.142.0.
+  Users who have these options set in their configuration will experience collector startup failures after upgrading.
+  To migrate, remove these configuration options and use the `metricstarttime` processor instead for equivalent functionality.
+  
+### 🚩 Deprecations 🚩
+
+- `processor/k8sattributes`: Removes stable k8sattr.fieldExtractConfigRegex.disallow feature gate ([#44694](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44694))
+- `receiver/kafka`: Deprecate `default_fetch_size` parameter for franz-go client ([#43104](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43104))
+  The `default_fetch_size` parameter is now deprecated for the franz-go Kafka client and will only be used with the legacy Sarama client.
+  Users should configure `max_fetch_size` instead when using franz-go.
+  This deprecation is marked as of v0.142.0.
+  
+- `receiver/kafka`: Support configuring a list of topics and exclude_topics; deprecate topic and exclude_topic ([#44477](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44477))
+- `receiver/prometheus`: Deprecate `use_start_time_metric` and `start_time_metric_regex` config in favor of the processor `metricstarttime` ([#44180](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44180))
+
+### 🧰 Bug fixes 🧰
+
+- `processor/cumulativetodelta`: Check whether bucket bounds are the same when verifying whether histograms are comparable ([#44793](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44793))
+- `processor/cumulativetodelta`: Fix logic handling ZeroThreshold increases for exponential histograms ([#44793](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44793))
+- `processor/filter`: Fix context initialization for metric/datapoint context ([#44813](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44813))
+- `processor/k8sattributes`: Fix `k8sattr.labelsAnnotationsSingular.allow` feature gate to affect config default tag names in addition to runtime extraction ([#39774](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39774))
+- `processor/tail_sampling`: Fix a memory leak introduced in 0.141.0 of the tail sampling processor when not blocking on overflow. ([#44884](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44884))  
+- `receiver/kafka`: Use `max_fetch_size` instead of `default_fetch_size` in franz-go client ([#43104](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43104))
+  The franz-go Kafka consumer was incorrectly using `default_fetch_size` (a Sarama-specific setting) instead of `max_fetch_size` when configuring `kgo.FetchMaxBytes`.
+  This fix ensures the correct parameter is used and adds validation to prevent `max_fetch_size` from being less than `min_fetch_size`.
+  The default value for `max_fetch_size` has been changed from 0 (unlimited) to 1048576 (1 MiB) to maintain backward compatibility with the previous (incorrect) behavior.
+  
+- `receiver/prometheus`: Fix HTTP response body leak in target allocator when fetching scrape configs fails ([#44921](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44921))
+  The getScrapeConfigsResponse function did not close resp.Body on error paths.
+  If io.ReadAll or yaml.Unmarshal failed, the response body would leak,
+  potentially causing HTTP connection exhaustion.
+  
+- `receiver/prometheus`: Fixes yaml marshaling of prometheus/common/config.Secret types ([#44445](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44445))
+- `exporter/kafka`: Wrap non-retriable errors from franzgo with consumererror::permanent ([#44918](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44918))
+- `exporter/loadbalancing`: Fix k8s resolver parsing so loadbalancing exporter works with service FQDNs ([#44472](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44472))
+- `receiver/fluentforward`: Ensure all established connections are properly closed on shutdown in the fluentforward receiver. The shutdown process now reliably closes all active connections. ([#44433](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44433))
+  - Fixes shutdown behavior so that all existing connections are closed cleanly.
+  - Adds tests to verify proper connection closure.
+
+- `receiver/kafka`: Fix deprecated field migration logic for metrics, traces, and profiles topic configuration ([#45215](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45215))
+  Fixed bug where deprecated `topic` and `exclude_topic` fields for metrics, traces, and profiles
+  were incorrectly checking logs configuration instead of their respective signal type's configuration.
+  This prevented proper migration from deprecated fields unless logs.topics was empty.
+  Also fixed validation error message typo for traces.exclude_topic and corrected profiles validation
+  to check ExcludeTopic fields instead of Topic fields.
+
+### 💡 Enhancements 💡
+
+- `exporter/debug`: Add logging of dropped attributes, events, and links counts in detailed verbosity ([#14202](https://github.com/open-telemetry/opentelemetry-collector/issues/14202))
+- `extension/memory_limiter`: The memorylimiter extension can be used as an HTTP/GRPC middleware. ([#14081](https://github.com/open-telemetry/opentelemetry-collector/issues/14081))
+- `pkg/config/configgrpc`: Statically validate gRPC endpoint ([#10451](https://github.com/open-telemetry/opentelemetry-collector/issues/10451))
+- `pkg/service`: Add support to disabling adding resource attributes as zap fields in internal logging ([#13869](https://github.com/open-telemetry/opentelemetry-collector/issues/13869))
+  Note that this does not affect logs exported through OTLP.
+
+- `exporter/kafka`: Adds server.address attribute to all Kafka exporter metrics. ([#44649](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44649))
+- `extension/health_check`: Added extension.healthcheck.useComponentStatus feature gate to enable v2 component status reporting in healthcheckextension while maintaining backward compatibility by default. ([#42256](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42256))
+- `pkg/ottl`: Accept string trace/span/profile IDs for `TraceID()`, `SpanID()`, and `ProfileID()` in OTTL. ([#43429](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43429))
+  This change allows for a more straightforward use of string values to set trace, span, and profile IDs in OTTL.
+- `pkg/stanza`: New featuregate `filelog.windows.caseInsensitive` introduced. It will make glob matching is case-insensitive on Windows. ([#40685](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40685))
+  Previously, any `include` pattern that included some manner of wildcard (`*` or `**`) would
+  be case-sensitive on Windows, but Windows filepaths are by default case-insensitive. This meant
+  that in a directory with the files `a.log` and `b.LOG`, the pattern `*.log` would previously only
+  match `a.log`. With the `filelog.windows.caseInsensitive` featuregate enabled, it will match both `a.log`
+  and `b.LOG` when on Windows. The behaviour is the same as always on other operating systems, as all other
+  currently supported platforms for the Collector have case-sensitive filesystems.
+  
+- `processor/k8sattributes`: Updates semconv version to v1.37.0 ([#44696](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44696))
+- `processor/resourcedetection`: Add support for dynamic refresh resource attributes with refresh_interval parameter ([#42663](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42663))
+- `processor/resourcedetection`: Update semconv dependency to 1.37.0 which updates the schema url in the data, but no other impact is expected. ([#44726](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44726))
+- `processor/transform`: New Transform Processor function `set_semconv_span_name()` to overwrite the span name with the semantic conventions for HTTP, RPC, messaging, and database spans. ([#43124](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43124))
+  In other cases, the original `span.name` is unchanged.
+  The primary use of `set_semconv_span_name()` is alongside the
+  [Span Metrics Connector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/spanmetricsconnector)
+  to address high-cardinality issues in span metrics when `span.name` does not comply with the OTel requirement
+  that span names be low cardinality.
+
+- `receiver/kafka`: Make `session_timeout`, `heartbeat_interval`, `max_partition_fetch_size`, and `max_fetch_wait` unconditional in franz-go consumer ([#44839](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44839))
+- `receiver/kafka`: Validate that `exclude_topics` entries in kafkareceiver config are non-empty. ([#44920](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44920))
+- `all`: Update semconv import to 1.38.0 ([#14305](https://github.com/open-telemetry/opentelemetry-collector/issues/14305))
+- `exporter/kafka`: Make `max_message_bytes` and `flush_max_messages` unconditional in franz-go producer. Changed `flush_max_messages` default from 0 to 10000 to match franz-go default. ([#44840](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44840))
+- `pkg/ottl`: Add `Bool` function for converting values to boolean ([#44770](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44770))
+- `receiver/filelog`: gzip files are auto detected based on their header ([#39682](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39682))
+- `receiver/prometheus`: Add `receiver.prometheusreceiver.RemoveReportExtraScrapeMetricsConfig` feature gate to disable the `report_extra_scrape_metrics` config option. ([#44181](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44181))
+  When enabled, the `report_extra_scrape_metrics` configuration option is ignored, and extra scrape metrics are
+  controlled solely by the `receiver.prometheusreceiver.EnableReportExtraScrapeMetrics` feature gate.
+  This mimics Prometheus behavior where extra scrape metrics are controlled by a feature flag.
+
+---
+
+</details>
+
+<!-- previous-version -->
+
 ## v0.41.0
 
 This release includes version 0.141.0 of the upstream Collector components.

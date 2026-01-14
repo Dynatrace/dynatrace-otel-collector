@@ -1,6 +1,6 @@
 exporters:
   debug:
-    verbosity: normal
+    verbosity: basic
   otlphttp:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
@@ -31,7 +31,7 @@ receivers:
           system.filesystem.usage:
             enabled: true
           system.filesystem.utilization:
-            enabled: true
+            enabled: false
       memory:
         metrics:
           system.memory.limit:
@@ -63,7 +63,11 @@ receivers:
             enabled: false
   hostmetrics/5m:
     collection_interval: 5m
-    scrapers: {}
+    scrapers:
+      filesystem:
+        metrics:
+          system.filesystem.utilization:
+            enabled: true
   hostmetrics/1h:
     collection_interval: 1h
     scrapers:

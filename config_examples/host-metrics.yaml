@@ -30,6 +30,8 @@ receivers:
         metrics:
           system.filesystem.usage:
             enabled: true
+          system.filesystem.utilization:
+            enabled: true
       memory:
         metrics:
           system.memory.limit:

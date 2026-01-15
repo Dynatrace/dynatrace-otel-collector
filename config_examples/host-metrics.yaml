@@ -31,7 +31,7 @@ receivers:
           system.filesystem.usage:
             enabled: true
           system.filesystem.utilization:
-            enabled: false
+            enabled: true
       memory:
         metrics:
           system.memory.limit:
@@ -61,13 +61,13 @@ receivers:
         metrics:
           system.uptime:
             enabled: false
-  hostmetrics/5m:
-    collection_interval: 5m
-    scrapers:
-      filesystem:
-        metrics:
-          system.filesystem.utilization:
-            enabled: true
+#  hostmetrics/5m:
+#    collection_interval: 5m
+#    scrapers:
+#      filesystem:
+#        metrics:
+#          system.filesystem.utilization:
+#            enabled: true
   hostmetrics/1h:
     collection_interval: 1h
     scrapers:
@@ -77,6 +77,65 @@ receivers:
             enabled: true
 
 processors:
+  transform:
+    error_mode: ignore
+    metric_statements:
+      - context: datapoint
+        statements:
+          # For process.* metrics, delete all resource attributes except process.command_line and process.pid
+          # These are the only process attributes needed by the OpenTelemetry Host Dashboard
+          - delete_key(resource.attributes, "process.cgroup") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.command") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.executable.name") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.executable.path") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.owner") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.parent_pid") where IsMatch(metric.name, "^process\\..*")
+          # Delete empty device attributes
+          - delete_key(attributes, "device") where attributes["device"] == ""
+
+          # Delete resource attributes not used by the OpenTelemetry Host Dashboard
+          # Keep only: host.name (default), host.arch, os.type
+          - delete_key(resource.attributes, "os.name")
+          - delete_key(resource.attributes, "os.version")
+          - delete_key(resource.attributes, "os.description")
+          - delete_key(resource.attributes, "os.build.id")
+          - delete_key(resource.attributes, "host.id")
+          - delete_key(resource.attributes, "host.ip")
+          - delete_key(resource.attributes, "host.mac")
+          - delete_key(resource.attributes, "host.cpu.family")
+          - delete_key(resource.attributes, "host.cpu.model.id")
+          - delete_key(resource.attributes, "host.cpu.model.name")
+          - delete_key(resource.attributes, "host.cpu.stepping")
+          - delete_key(resource.attributes, "host.cpu.vendor.id")
+          - delete_key(resource.attributes, "host.interface")
+
+          # Delete datapoint attributes not used by the OpenTelemetry Host Dashboard
+          # CPU metrics: Dashboard aggregates all cores, doesn't use per-core 'cpu' attribute
+          - delete_key(attributes, "cpu") where IsMatch(metric.name, "^system\\.cpu\\..*")
+
+          # Network metrics: Dashboard aggregates all interfaces and directions
+          - delete_key(attributes, "device") where IsMatch(metric.name, "^system\\.network\\..*")
+          - delete_key(attributes, "direction") where IsMatch(metric.name, "^system\\.network\\..*")
+          - delete_key(attributes, "protocol") where IsMatch(metric.name, "^system\\.network\\..*")
+
+          # Disk metrics: Dashboard doesn't use disk I/O metrics at all (not in dashboard)
+          - delete_key(attributes, "device") where IsMatch(metric.name, "^system\\.disk\\..*")
+          - delete_key(attributes, "direction") where IsMatch(metric.name, "^system\\.disk\\..*")
+
+          # Filesystem metrics: Dashboard uses mountpoint and state, but not device, mode, or type
+          - delete_key(attributes, "device") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(attributes, "mode") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(attributes, "type") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+
+          # Paging metrics: Dashboard uses device and state - keep both
+          # Note: device and state are used in the "by:" clause in paging query
+
+      - context: resource
+        statements:
+          - replace_pattern(attributes["process.command_line"], " ", "_")
+
+  batch:
+    send_batch_size: 100
   cumulativetodelta:
     max_staleness: 25h
   resourcedetection:
@@ -118,6 +177,7 @@ service:
   extensions: [health_check]
   pipelines:
     metrics:
-      receivers: [hostmetrics/10s, hostmetrics/5m, hostmetrics/1h]
-      processors: [resourcedetection, cumulativetodelta]
+#      receivers: [hostmetrics/10s, hostmetrics/5m, hostmetrics/1h]
+      receivers: [hostmetrics/10s, hostmetrics/1h]
+      processors: [resourcedetection, transform, cumulativetodelta, batch]
       exporters: [otlphttp, debug]

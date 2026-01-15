@@ -94,7 +94,7 @@ processors:
           - delete_key(attributes, "device") where attributes["device"] == ""
 
           # Delete datapoint attributes not used by the OpenTelemetry Host Dashboard
-          # CPU metrics: Dashboard aggregates all cores, doesn't use per-core 'cpu' attribute
+          # CPU metrics: Dashboard aggregates all CPUs, doesn't use per-cpu 'cpu' attribute
           - delete_key(attributes, "cpu") where IsMatch(metric.name, "^system\\.cpu\\..*")
 
           # Network metrics: Dashboard aggregates all interfaces and directions

@@ -114,13 +114,7 @@ processors:
           - delete_key(attributes, "cpu") where IsMatch(metric.name, "^system\\.cpu\\..*")
 
           # Network metrics: Dashboard aggregates all interfaces and directions
-          - delete_key(attributes, "device") where IsMatch(metric.name, "^system\\.network\\..*")
-          - delete_key(attributes, "direction") where IsMatch(metric.name, "^system\\.network\\..*")
           - delete_key(attributes, "protocol") where IsMatch(metric.name, "^system\\.network\\..*")
-
-          # Disk metrics: Dashboard doesn't use disk I/O metrics at all (not in dashboard)
-          - delete_key(attributes, "device") where IsMatch(metric.name, "^system\\.disk\\..*")
-          - delete_key(attributes, "direction") where IsMatch(metric.name, "^system\\.disk\\..*")
 
           # Filesystem metrics: Dashboard uses mountpoint and state, but not device, mode, or type
           - delete_key(attributes, "device") where IsMatch(metric.name, "^system\\.filesystem\\..*")

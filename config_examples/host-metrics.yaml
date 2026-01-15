@@ -93,22 +93,6 @@ processors:
           # Delete empty device attributes
           - delete_key(attributes, "device") where attributes["device"] == ""
 
-          # Delete resource attributes not used by the OpenTelemetry Host Dashboard
-          # Keep only: host.name (default), host.arch, os.type
-          - delete_key(resource.attributes, "os.name")
-          - delete_key(resource.attributes, "os.version")
-          - delete_key(resource.attributes, "os.description")
-          - delete_key(resource.attributes, "os.build.id")
-          - delete_key(resource.attributes, "host.id")
-          - delete_key(resource.attributes, "host.ip")
-          - delete_key(resource.attributes, "host.mac")
-          - delete_key(resource.attributes, "host.cpu.family")
-          - delete_key(resource.attributes, "host.cpu.model.id")
-          - delete_key(resource.attributes, "host.cpu.model.name")
-          - delete_key(resource.attributes, "host.cpu.stepping")
-          - delete_key(resource.attributes, "host.cpu.vendor.id")
-          - delete_key(resource.attributes, "host.interface")
-
           # Delete datapoint attributes not used by the OpenTelemetry Host Dashboard
           # CPU metrics: Dashboard aggregates all cores, doesn't use per-core 'cpu' attribute
           - delete_key(attributes, "cpu") where IsMatch(metric.name, "^system\\.cpu\\..*")
@@ -121,9 +105,6 @@ processors:
           - delete_key(attributes, "mode") where IsMatch(metric.name, "^system\\.filesystem\\..*")
           - delete_key(attributes, "type") where IsMatch(metric.name, "^system\\.filesystem\\..*")
 
-          # Paging metrics: Dashboard uses device and state - keep both
-          # Note: device and state are used in the "by:" clause in paging query
-
       - context: resource
         statements:
           - replace_pattern(attributes["process.command_line"], " ", "_")
@@ -134,38 +115,6 @@ processors:
     max_staleness: 25h
   resourcedetection:
     detectors: ["system"]
-    system:
-      resource_attributes:
-        os.type:
-          enabled: true
-        os.name:
-          enabled: true
-        os.version:
-          enabled: true
-        os.description:
-          enabled: true
-        os.build.id:
-          enabled: true
-        host.id:
-          enabled: true
-        host.arch:
-          enabled: true
-        host.ip:
-          enabled: true
-        host.mac:
-          enabled: true
-        host.cpu.family:
-          enabled: true
-        host.cpu.model.id:
-          enabled: true
-        host.cpu.model.name:
-          enabled: true
-        host.cpu.stepping:
-          enabled: true
-        host.cpu.vendor.id:
-          enabled: true
-        host.interface:
-          enabled: true
 
 service:
   extensions: [health_check]

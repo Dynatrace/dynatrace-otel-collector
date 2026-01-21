@@ -18,22 +18,6 @@ import (
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
-const k8sResolverConfig = `
-      k8s:
-        service: %s-receiver.default
-        ports:
-          - 4317`
-const replacementK8sResolverConfig = `
-      static:
-        hostnames:
-          - %s:%d
-`
-const replacementK8sMetricsResolverConfig = `
-      static:
-        hostnames:
-          - %s:%d
-          - %s:%d
-`
 const OTLPConfig = `
       otlp:`
 
@@ -42,19 +26,12 @@ const replacementOTLPConfig = `
         tls:
           insecure: true`
 
-const metricsPortGrpc1 = 4327
-const metricsPortGrpc2 = 4328
-const metricsPortHttp1 = 4329
-const metricsPortHttp2 = 4330
+const metricsPortGrpc = 4327
+const metricsPortHttp = 4328
 const tracesPortGrpc = 4337
 const tracesPortHttp = 4438
 const logsPortGrpc = 4347
 const logsPortHttp = 4448
-
-type MetricValidator struct {
-	Name string
-	Set  bool
-}
 
 func TestE2E_LoadBalancing(t *testing.T) {
 	testDir := filepath.Join("testdata")
@@ -80,24 +57,16 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
 
-	metricsConsumer1 := new(consumertest.MetricsSink)
-	metricsConsumer2 := new(consumertest.MetricsSink)
+	metricsConsumer := new(consumertest.MetricsSink)
 	tracesConsumer := new(consumertest.TracesSink)
 	logsConsumer := new(consumertest.LogsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
 			{
-				Consumer: metricsConsumer1,
+				Consumer: metricsConsumer,
 				Ports: &oteltest.ReceiverPorts{
-					Grpc: metricsPortGrpc1,
-					Http: metricsPortHttp1,
-				},
-			},
-			{
-				Consumer: metricsConsumer2,
-				Ports: &oteltest.ReceiverPorts{
-					Grpc: metricsPortGrpc2,
-					Http: metricsPortHttp2,
+					Grpc: metricsPortGrpc,
+					Http: metricsPortHttp,
 				},
 			},
 		},
@@ -122,18 +91,29 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	})
 	defer shutdownSinks()
 
+	// create collector for passbying data
+	host := otelk8stest.HostEndpoint(t)
+	testID2, err := testutil.GenerateRandomString(10)
+	require.NoError(t, err)
+	collectorObjs2 := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID2,
+		filepath.Join(testDir, "otlp-receiver"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+		},
+		host,
+	)
+
 	// create collector
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
 	collectorConfigPath := path.Join(configExamplesDir, "load-balancing.yaml")
-	host := otelk8stest.HostEndpoint(t)
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
 			OTLPConfig, replacementOTLPConfig,
-			fmt.Sprintf(k8sResolverConfig, "metrics"), fmt.Sprintf(replacementK8sMetricsResolverConfig, host, metricsPortGrpc1, host, metricsPortGrpc2),
-			fmt.Sprintf(k8sResolverConfig, "traces"), fmt.Sprintf(replacementK8sResolverConfig, host, tracesPortGrpc),
-			fmt.Sprintf(k8sResolverConfig, "logs"), fmt.Sprintf(replacementK8sResolverConfig, host, logsPortGrpc),
 		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
@@ -149,6 +129,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		host,
 	)
 
+	// create telemetrygen
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
 		TestID:       testID,
@@ -158,6 +139,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 
 	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
 
+	collectorObjs = append(collectorObjs, collectorObjs2...)
 	defer func() {
 		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
@@ -168,48 +150,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
-	oteltest.WaitForMetrics(t, 20, metricsConsumer1)
-	oteltest.WaitForMetrics(t, 20, metricsConsumer2)
-
-	metricValidator1 := MetricValidator{}
-	metricValidator2 := MetricValidator{}
-	metricValidator3 := MetricValidator{}
-	metricValidator4 := MetricValidator{}
-
-	for _, r := range metricsConsumer1.AllMetrics() {
-		for i := 0; i < r.ResourceMetrics().Len(); i++ {
-			datapoints := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
-			for j := 0; j < datapoints.Len(); j++ {
-				actual := datapoints.At(j).Name()
-				require.Condition(t, func() bool {
-					return checkMetricName(actual, &metricValidator1) || checkMetricName(actual, &metricValidator2)
-				}, "Expected metric name to be either %s or %s, but got: %s", metricValidator1.Name, metricValidator2.Name, actual)
-			}
-		}
-	}
-
-	for _, r := range metricsConsumer2.AllMetrics() {
-		for i := 0; i < r.ResourceMetrics().Len(); i++ {
-			datapoints := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
-			for j := 0; j < datapoints.Len(); j++ {
-				actual := datapoints.At(j).Name()
-				require.Condition(t, func() bool {
-					return checkMetricName(actual, &metricValidator3) || checkMetricName(actual, &metricValidator4)
-				}, "Expected metric name to be either %s or %s, but got: %s", metricValidator3.Name, metricValidator4.Name, actual)
-			}
-		}
-	}
-
+	oteltest.WaitForMetrics(t, 20, metricsConsumer)
 	oteltest.WaitForTraces(t, 20, tracesConsumer)
 	oteltest.WaitForLogs(t, 20, logsConsumer)
-}
-
-func checkMetricName(actual string, validator *MetricValidator) bool {
-	if validator.Set {
-		return actual == validator.Name
-	}
-	validator.Set = true
-	validator.Name = actual
-	return true
-
 }

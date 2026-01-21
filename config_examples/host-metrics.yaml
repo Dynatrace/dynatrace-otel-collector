@@ -66,7 +66,7 @@ receivers:
       system:
         metrics:
           system.uptime:
-            enabled: false
+            enabled: true
 #  hostmetrics/5m:
 #    collection_interval: 5m
 #    scrapers:
@@ -121,9 +121,10 @@ processors:
     max_staleness: 25h
   resourcedetection:
     detectors: ["system"]
-    resource_attributes:
-      host.arch:
-        enabled: true
+    system:
+      resource_attributes:
+        host.arch:
+          enabled: true
 
 service:
   extensions: [health_check]

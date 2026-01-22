@@ -125,6 +125,8 @@ processors:
       resource_attributes:
         host.arch:
           enabled: true
+        host.id:
+          enabled: true
 
 service:
   extensions: [health_check]

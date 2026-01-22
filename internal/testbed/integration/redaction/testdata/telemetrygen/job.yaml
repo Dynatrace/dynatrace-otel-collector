@@ -20,6 +20,6 @@ spec:
             - --rate=1
             - --duration=36000s
             - --otlp-attributes=service.name="test-{{ .DataType }}-job"
-          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.143.0
           name: telemetrygen
       restartPolicy: OnFailure

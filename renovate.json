@@ -48,6 +48,21 @@
   "customManagers": [
     {
       "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "fileMatch": [
+        "(^|\\/)Makefile$",
+        "(^|\\/)Dockerfile",
+        "(^|\\/).*\\.ya?ml$",
+        "(^|\\/).*\\.toml$",
+        "(^|\\/).*\\.sh$"
+      ],
+      "depNameTemplate": "open-telemetry/opentelemetry-collector-contrib",
+      "matchStrings": [
+        "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:\\s?\\\"*(?<currentValue>\\d+\\.\\d+\\.\\d+)?"
+      ]
+    },
+    {
+      "customType": "regex",
       "fileMatch": [
         "(^|\\/)Makefile$",
         "(^|\\/)Dockerfile",

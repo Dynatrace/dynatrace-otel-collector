@@ -14,7 +14,7 @@ exporters:
       otlp:
     resolver:
       k8s:
-        service: traces-receiver.default
+        service: otlp-receiver
         ports:
           - 4317
   loadbalancing/logs:
@@ -22,7 +22,7 @@ exporters:
       otlp:
     resolver:
       k8s:
-        service: logs-receiver.default
+        service: otlp-receiver
         ports:
           - 4317
   loadbalancing/metrics:
@@ -40,7 +40,7 @@ exporters:
       otlp:
     resolver:
       k8s:
-        service: metrics-receiver.default
+        service: otlp-receiver
         ports:
           - 4317
 

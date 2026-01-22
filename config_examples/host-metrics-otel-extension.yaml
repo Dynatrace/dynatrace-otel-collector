@@ -1,0 +1,229 @@
+# OpenTelemetry Collector Configuration for Host Metrics
+#
+# This configuration is tailored for the Dynatrace OpenTelemetry Host Extension (custom:opentelemetry).
+# Only metrics used by the extension are enabled to minimize data volume and cardinality.
+#
+# Metrics enabled (27 total):
+#   - System CPU: utilization, time, load_average (1m, 5m, 15m)
+#   - Memory: utilization, usage
+#   - Paging: usage, operations, faults
+#   - Network: io, packets, errors, dropped, connections
+#   - Disk: io, operations, io_time, operation_time
+#   - Filesystem: usage, utilization, inodes.usage
+#   - System: processes.count, processes.created, uptime
+#   - Process: cpu.utilization, cpu.time, memory.usage, memory.virtual, disk.io
+#
+# See METRICS_LIST.md for complete metric documentation.
+
+exporters:
+  debug:
+    verbosity: basic
+  otlphttp:
+    endpoint: "${env:DT_ENDPOINT}"
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  hostmetrics/10s:
+    collection_interval: 10s
+    scrapers:
+      # CPU metrics
+      cpu:
+        metrics:
+          system.cpu.logical.count:
+            enabled: false
+          system.cpu.physical.count:
+            enabled: false
+          system.cpu.utilization:
+            enabled: true
+          system.cpu.time:
+            enabled: true
+          system.cpu.frequency:
+            enabled: false
+      # Load average metrics
+      load:
+        metrics:
+          system.cpu.load_average.1m:
+            enabled: true
+          system.cpu.load_average.5m:
+            enabled: true
+          system.cpu.load_average.15m:
+            enabled: true
+      # Memory metrics
+      memory:
+        metrics:
+          system.memory.limit:
+            enabled: false
+          system.memory.utilization:
+            enabled: true
+          system.memory.usage:
+            enabled: true
+      # Paging/Swap metrics
+      paging:
+        metrics:
+          system.paging.usage:
+            enabled: true
+          system.paging.operations:
+            enabled: true
+          system.paging.faults:
+            enabled: true
+      # Network metrics
+      network:
+        metrics:
+          system.network.io:
+            enabled: true
+          system.network.packets:
+            enabled: true
+          system.network.errors:
+            enabled: true
+          system.network.connections:
+            enabled: true
+          system.network.dropped:
+            enabled: true
+      # Disk metrics
+      disk:
+        metrics:
+          system.disk.io:
+            enabled: true
+          system.disk.operations:
+            enabled: true
+          system.disk.io_time:
+            enabled: true
+          system.disk.operation_time:
+            enabled: true
+          system.disk.pending_operations:
+            enabled: false
+          system.disk.merged:
+            enabled: false
+          system.disk.weighted_io_time:
+            enabled: false
+      # Filesystem metrics
+      filesystem:
+        metrics:
+          system.filesystem.usage:
+            enabled: true
+          system.filesystem.utilization:
+            enabled: true
+          system.filesystem.inodes.usage:
+            enabled: true
+      # Process count and system metrics
+      processes:
+        metrics:
+          system.processes.count:
+            enabled: true
+          system.processes.created:
+            enabled: true
+      # Per-process metrics
+      process:
+        mute_process_all_errors: true
+        metrics:
+          process.cpu.utilization:
+            enabled: true
+          process.cpu.time:
+            enabled: true
+          process.memory.usage:
+            enabled: true
+          process.memory.virtual:
+            enabled: true
+          process.disk.io:
+            enabled: true
+          process.threads:
+            enabled: false
+          process.open_file_descriptors:
+            enabled: false
+          process.signals_pending:
+            enabled: false
+          process.context_switches:
+            enabled: false
+          process.paging.faults:
+            enabled: false
+  # System uptime collected less frequently
+  hostmetrics/1h:
+    collection_interval: 1h
+    scrapers:
+      system:
+        metrics:
+          system.uptime:
+            enabled: true
+
+processors:
+  transform:
+    error_mode: ignore
+    metric_statements:
+      - context: datapoint
+        statements:
+          # For process.* metrics, keep only the attributes needed by the OpenTelemetry Host extension:
+          # - process.command_line (for entity identification and display)
+          # - process.pid (for entity attributes)
+          # - process.executable.name (for entity display name)
+          - delete_key(resource.attributes, "process.cgroup") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.command") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.executable.path") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.owner") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.parent_pid") where IsMatch(metric.name, "^process\\..*")
+
+          # Delete empty device attributes
+          - delete_key(attributes, "device") where attributes["device"] == ""
+
+          # Delete datapoint attributes not used by the OpenTelemetry Host extension
+          # Network metrics: Dashboard aggregates all interfaces and protocols
+          - delete_key(attributes, "protocol") where IsMatch(metric.name, "^system\\.network\\..*")
+
+          # Filesystem metrics: Extension uses mountpoint and state, but not device, mode, or type
+          - delete_key(attributes, "device") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(attributes, "mode") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(attributes, "type") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+
+      - context: resource
+        statements:
+          # Replace spaces in process command line with underscores for cleaner entity IDs
+          - replace_pattern(attributes["process.command_line"], " ", "_")
+
+  batch:
+    send_batch_size: 100
+  cumulativetodelta:
+    max_staleness: 25h
+  resourcedetection:
+    detectors: ["system"]
+    system:
+      resource_attributes:
+        # Host attributes used by the extension
+        host.arch:
+          enabled: true
+        host.id:
+          enabled: true
+        host.name:
+          enabled: true
+        host.ip:
+          enabled: true
+        host.cpu.model.name:
+          enabled: true
+        host.cpu.vendor.id:
+          enabled: false
+        host.cpu.family:
+          enabled: false
+        host.cpu.model.id:
+          enabled: false
+        host.cpu.stepping:
+          enabled: false
+        host.cpu.cache.l2.size:
+          enabled: false
+        # OS attributes used by the extension
+        os.type:
+          enabled: true
+        os.description:
+          enabled: true
+        # Note: os.name and os.version are automatically included by the system detector
+        # Note: os.build.id is not available from the system detector
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [hostmetrics/10s, hostmetrics/1h]
+      processors: [resourcedetection, transform, cumulativetodelta, batch]
+      exporters: [otlphttp, debug]

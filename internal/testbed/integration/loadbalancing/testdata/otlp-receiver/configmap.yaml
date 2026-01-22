@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otlp-receiver-config
+  namespace: e2eloadbalancing
+data:
+  relay: |
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+
+    exporters:
+      otlp/metrics:
+        endpoint: {{ .HostEndpoint }}:4327
+        tls:
+          insecure: true
+
+      otlp/traces:
+        endpoint: {{ .HostEndpoint }}:4337
+        tls:
+          insecure: true
+
+      otlp/logs:
+        endpoint: {{ .HostEndpoint }}:4347
+        tls:
+          insecure: true
+
+    service:
+      extensions: [health_check]
+      pipelines:
+        metrics:
+          receivers: [otlp]
+          exporters: [otlp/metrics]
+        traces:
+          receivers: [otlp]
+          exporters: [otlp/traces]
+        logs:
+          receivers: [otlp]
+          exporters: [otlp/logs]

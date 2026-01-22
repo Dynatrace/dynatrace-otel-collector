@@ -22,7 +22,8 @@ spec:
         - --otlp-insecure
         - --otlp-endpoint=otelcolsvc.e2ekafka.svc.cluster.local:4317
         - --duration=36000s
-        - --rate=100
+        - --rate=1
+        - --batch=false
         - --otlp-attributes=service.name="test-traces-deployment"
         image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
         imagePullPolicy: IfNotPresent
@@ -33,7 +34,8 @@ spec:
         - --otlp-insecure
         - --otlp-endpoint=otelcolsvc.e2ekafka.svc.cluster.local:4317
         - --duration=36000s
-        - --rate=100
+        - --rate=1
+        - --batch=false
         - --otlp-attributes=service.name="test-metrics-deployment"
         image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
         imagePullPolicy: IfNotPresent
@@ -44,7 +46,8 @@ spec:
         - --otlp-insecure
         - --otlp-endpoint=otelcolsvc.e2ekafka.svc.cluster.local:4317
         - --duration=36000s
-        - --rate=100
+        - --rate=1
+        - --batch=false
         - --otlp-attributes=service.name="test-logs-deployment"
         image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
         imagePullPolicy: IfNotPresent

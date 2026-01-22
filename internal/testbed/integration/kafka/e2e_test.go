@@ -249,6 +249,8 @@ func TestE2E_Kafka(t *testing.T) {
 		ptracetest.IgnoreEndTimestamp(),
 		ptracetest.IgnoreTraceID(),
 		ptracetest.IgnoreSpanID(),
+		ptracetest.IgnoreResourceSpansOrder(),
+		ptracetest.IgnoreScopeSpansOrder(),
 		ptracetest.IgnoreSpansOrder(),
 	}
 

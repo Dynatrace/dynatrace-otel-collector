@@ -25,7 +25,7 @@ spec:
             - --rate=5000
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --severity-text="loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongText"
-          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.143.0
           imagePullPolicy: IfNotPresent
           name: telemetrygen-logs
         - command:
@@ -45,7 +45,7 @@ spec:
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey8="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey9="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey10="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
-          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.143.0
           imagePullPolicy: IfNotPresent
           name: telemetrygen-metrics
         - command:
@@ -65,7 +65,7 @@ spec:
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey8="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey9="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey10="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
-          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.143.0
           imagePullPolicy: IfNotPresent
           name: telemetrygen-traces
       restartPolicy: Always

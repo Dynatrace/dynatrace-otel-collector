@@ -10,7 +10,7 @@ on:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.25.5"
+  GO_VERSION: "1.25.6"
 
 jobs:
   setup-environment:

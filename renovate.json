@@ -19,6 +19,7 @@
     {
       "matchPackageNames": [
         "open-telemetry/opentelemetry-collector-contrib",
+        "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen",
         "/^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)//"
       ],
       "groupName": "OpenTelemetry Collector",
@@ -46,7 +47,7 @@
     "managerFilePatterns": ["manifest.yaml"]
   },
   "kubernetes": {
-    "managerFilePatterns": ["(^|\\/).*\\.ya?ml$"]
+    "managerFilePatterns": ["internal/testbed/integration/.*/testdata/.*\\.ya?ml$"]
   },
   "customManagers": [
     {

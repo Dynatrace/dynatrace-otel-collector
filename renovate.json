@@ -46,10 +46,16 @@
   "ocb": {
     "managerFilePatterns": ["manifest.yaml"]
   },
-  "kubernetes": {
-    "managerFilePatterns": ["internal/testbed/integration/.*/testdata/.*\\.ya?ml$"]
-  },
   "customManagers": [
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "fileMatch": ["internal/testbed/integration/.*/testdata/.*\\.ya?ml$"],
+      "depNameTemplate": "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen",
+      "matchStrings": [
+        "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:\\s?\\\"*(?<currentValue>\\d+\\.\\d+\\.\\d+)?"
+      ]
+    },
     {
       "customType": "regex",
       "fileMatch": [

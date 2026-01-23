@@ -6,7 +6,9 @@
     "customManagers:githubActionsVersions",
     "customManagers:makefileVersions"
   ],
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "prConcurrentLimit": 25,
   "minimumReleaseAge": "3 days",
   "timezone": "Europe/Vienna",
@@ -26,11 +28,15 @@
       "minimumReleaseAge": "4 days"
     },
     {
-      "matchDatasources": ["golang-version"],
+      "matchDatasources": [
+        "golang-version"
+      ],
       "rangeStrategy": "bump"
     },
     {
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "groupName": "github-actions deps"
     },
     {
@@ -44,13 +50,17 @@
     }
   ],
   "ocb": {
-    "managerFilePatterns": ["manifest.yaml"]
+    "managerFilePatterns": [
+      "manifest.yaml"
+    ]
   },
   "customManagers": [
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
-      "fileMatch": ["internal/testbed/integration/.*/testdata/.*\\.ya?ml$"],
+      "managerFilePatterns": [
+        "/internal/testbed/integration/.*/testdata/.*\\.ya?ml$/"
+      ],
       "depNameTemplate": "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen",
       "matchStrings": [
         "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:\\s?\\\"*(?<currentValue>\\d+\\.\\d+\\.\\d+)?"
@@ -58,12 +68,12 @@
     },
     {
       "customType": "regex",
-      "fileMatch": [
-        "(^|\\/)Makefile$",
-        "(^|\\/)Dockerfile",
-        "(^|\\/).*\\.ya?ml$",
-        "(^|\\/).*\\.toml$",
-        "(^|\\/).*\\.sh$"
+      "managerFilePatterns": [
+        "/(^|\\/)Makefile$/",
+        "/(^|\\/)Dockerfile/",
+        "/(^|\\/).*\\.ya?ml$/",
+        "/(^|\\/).*\\.toml$/",
+        "/(^|\\/).*\\.sh$/"
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\s.*(:|=|\\?=|:=|\\+=) ?\\\"?(?<currentValue>.+?)?\\\"?\\s"

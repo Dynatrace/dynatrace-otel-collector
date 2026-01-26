@@ -15,11 +15,18 @@
     "gomodTidy",
     "gomodMassage"
   ],
+  "ignoreDeps": [
+    "docker.redpanda.com/redpandadata/redpanda",
+    "ghcr.io/openzipkin/brave-example",
+    "networkstatic/nflow-generator",
+    "rockylinux"
+  ],
   "packageRules": [
     {
       "matchPackageNames": [
         "open-telemetry/opentelemetry-collector-contrib",
-        "/^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)//"
+        "/^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)//",
+        "/ghcr\\.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen/"
       ],
       "groupName": "OpenTelemetry Collector",
       "minimumReleaseAge": "4 days"

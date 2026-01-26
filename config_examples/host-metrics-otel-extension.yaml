@@ -132,8 +132,8 @@ receivers:
             enabled: false
           process.paging.faults:
             enabled: false
-  hostmetrics/10s:
-    collection_interval: 10s
+  hostmetrics/1m:
+    collection_interval: 1m
     scrapers:
       # Load average metrics
       load:
@@ -227,6 +227,6 @@ service:
   extensions: [health_check]
   pipelines:
     metrics:
-      receivers: [hostmetrics/10s, hostmetrics/5m, hostmetrics/1h]
+      receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
       processors: [resourcedetection, transform, cumulativetodelta, batch]
       exporters: [otlphttp, debug]

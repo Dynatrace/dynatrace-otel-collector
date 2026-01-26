@@ -203,6 +203,10 @@ processors:
           enabled: true
         host.ip:
           enabled: true
+        host.interface:
+          enabled: true
+        host.mac:
+          enabled: true
         host.cpu.model.name:
           enabled: true
         host.cpu.vendor.id:
@@ -220,8 +224,12 @@ processors:
           enabled: true
         os.description:
           enabled: true
-        # Note: os.name and os.version are automatically included by the system detector
-        # Note: os.build.id is not available from the system detector
+        os.name:
+          enabled: true
+        os.version:
+          enabled: true
+        os.build.id:
+          enabled: true
 
 service:
   extensions: [health_check]

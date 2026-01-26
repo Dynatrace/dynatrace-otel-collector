@@ -45,8 +45,8 @@
   "ocb": {
     "managerFilePatterns": ["manifest.yaml"]
   },
-    "kubernetes": {
-    "managerFilePatterns": ["internal/testbed/integration/.*/testdata/.*\\.ya?ml$"]
+  "kubernetes": {
+    "managerFilePatterns": ["/internal/testbed/integration/.*/testdata/.*\\.ya?ml$/"]
   },
   "customManagers": [
     {

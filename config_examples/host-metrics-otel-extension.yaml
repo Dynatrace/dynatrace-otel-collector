@@ -5,8 +5,6 @@
 
 
 exporters:
-  debug:
-    verbosity: basic
   otlphttp:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
@@ -226,4 +224,4 @@ service:
     metrics:
       receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
       processors: [resourcedetection, transform, cumulativetodelta, batch]
-      exporters: [otlphttp, debug]
+      exporters: [otlphttp]

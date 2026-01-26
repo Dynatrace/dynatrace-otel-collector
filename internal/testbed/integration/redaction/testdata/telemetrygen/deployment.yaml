@@ -24,7 +24,7 @@ spec:
             - --duration=36000s
             - --rate=1
             - --otlp-attributes=service.name="test-{{ .DataType }}-deployment"
-          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.143.0
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.143.0@sha256:378202967d0e1245093c051b2ee8ea3bf76f72acf23bb73cd2bea665ada29c1c
           imagePullPolicy: IfNotPresent
           name: telemetrygen
       restartPolicy: Always

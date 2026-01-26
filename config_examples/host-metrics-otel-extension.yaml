@@ -28,8 +28,8 @@ extensions:
     endpoint: 0.0.0.0:13133
 
 receivers:
-  hostmetrics/10s:
-    collection_interval: 10s
+  hostmetrics/5m:
+    collection_interval: 5m
     scrapers:
       # CPU metrics
       cpu:
@@ -44,15 +44,6 @@ receivers:
             enabled: true
           system.cpu.frequency:
             enabled: false
-      # Load average metrics
-      load:
-        metrics:
-          system.cpu.load_average.1m:
-            enabled: true
-          system.cpu.load_average.5m:
-            enabled: true
-          system.cpu.load_average.15m:
-            enabled: true
       # Memory metrics
       memory:
         metrics:
@@ -141,6 +132,18 @@ receivers:
             enabled: false
           process.paging.faults:
             enabled: false
+  hostmetrics/10s:
+    collection_interval: 10s
+    scrapers:
+      # Load average metrics
+      load:
+        metrics:
+          system.cpu.load_average.1m:
+            enabled: true
+          system.cpu.load_average.5m:
+            enabled: true
+          system.cpu.load_average.15m:
+            enabled: true
   # System uptime collected less frequently
   hostmetrics/1h:
     collection_interval: 1h
@@ -224,6 +227,6 @@ service:
   extensions: [health_check]
   pipelines:
     metrics:
-      receivers: [hostmetrics/10s, hostmetrics/1h]
+      receivers: [hostmetrics/10s, hostmetrics/5m, hostmetrics/1h]
       processors: [resourcedetection, transform, cumulativetodelta, batch]
       exporters: [otlphttp, debug]

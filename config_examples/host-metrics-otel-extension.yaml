@@ -1,19 +1,8 @@
-# OpenTelemetry Collector Configuration for Host Metrics
+# OpenTelemetry Collector Configuration for Host Extension
 #
 # This configuration is tailored for the Dynatrace OpenTelemetry Host Extension (custom:opentelemetry).
 # Only metrics used by the extension are enabled to minimize data volume and cardinality.
-#
-# Metrics enabled (27 total):
-#   - System CPU: utilization, time, load_average (1m, 5m, 15m)
-#   - Memory: utilization, usage
-#   - Paging: usage, operations, faults
-#   - Network: io, packets, errors, dropped, connections
-#   - Disk: io, operations, io_time, operation_time
-#   - Filesystem: usage, utilization, inodes.usage
-#   - System: processes.count, processes.created, uptime
-#   - Process: cpu.utilization, cpu.time, memory.usage, memory.virtual, disk.io
-#
-# See METRICS_LIST.md for complete metric documentation.
+
 
 exporters:
   debug:

@@ -31,6 +31,7 @@ receivers:
             enabled: true
           system.cpu.frequency:
             enabled: false
+
       # Memory metrics
       memory:
         metrics:
@@ -40,6 +41,7 @@ receivers:
             enabled: false
           system.memory.usage:
             enabled: true
+
       # Paging/Swap metrics
       paging:
         metrics:
@@ -49,6 +51,7 @@ receivers:
             enabled: true
           system.paging.faults:
             enabled: true
+
       # Network metrics
       network:
         metrics:
@@ -62,6 +65,7 @@ receivers:
             enabled: true
           system.network.dropped:
             enabled: true
+
       # Load average metrics
       load:
         metrics:
@@ -71,6 +75,7 @@ receivers:
             enabled: true
           system.cpu.load_average.15m:
             enabled: true
+
       # Disk metrics
       disk:
         metrics:
@@ -88,6 +93,7 @@ receivers:
             enabled: false
           system.disk.weighted_io_time:
             enabled: false
+
       # Filesystem metrics
       filesystem:
         metrics:
@@ -97,13 +103,15 @@ receivers:
             enabled: true
           system.filesystem.inodes.usage:
             enabled: true
-      # Process count and system metrics
+
+      # Process count metrics
       processes:
         metrics:
           system.processes.count:
             enabled: true
           system.processes.created:
             enabled: true
+
       # Per-process metrics
       process:
         mute_process_all_errors: true
@@ -118,19 +126,26 @@ receivers:
             enabled: true
           process.disk.io:
             enabled: true
-          process.threads:
-            enabled: false
-          process.open_file_descriptors:
-            enabled: false
-          process.signals_pending:
-            enabled: false
-          process.context_switches:
-            enabled: false
-          process.paging.faults:
-            enabled: false
+
   hostmetrics/1m:
     collection_interval: 1m
     scrapers:
+      # CPU metrics
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+          system.cpu.time:
+            enabled: false
+
+      # Memory metrics
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+          system.memory.usage:
+            enabled: false
+
       # Load average metrics
       load:
         metrics:
@@ -140,28 +155,7 @@ receivers:
             enabled: false
           system.cpu.load_average.15m:
             enabled: false
-      cpu:
-        metrics:
-          system.cpu.logical.count:
-            enabled: false
-          system.cpu.physical.count:
-            enabled: false
-          system.cpu.utilization:
-            enabled: true
-          system.cpu.time:
-            enabled: false
-          system.cpu.frequency:
-            enabled: false
-      # Memory metrics
-      memory:
-        metrics:
-          system.memory.limit:
-            enabled: false
-          system.memory.utilization:
-            enabled: true
-          system.memory.usage:
-            enabled: false
-  # System uptime collected less frequently
+
   hostmetrics/1h:
     collection_interval: 1h
     scrapers:

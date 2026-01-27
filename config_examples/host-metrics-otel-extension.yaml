@@ -26,7 +26,7 @@ receivers:
           system.cpu.physical.count:
             enabled: false
           system.cpu.utilization:
-            enabled: true
+            enabled: false
           system.cpu.time:
             enabled: true
           system.cpu.frequency:
@@ -37,7 +37,7 @@ receivers:
           system.memory.limit:
             enabled: false
           system.memory.utilization:
-            enabled: true
+            enabled: false
           system.memory.usage:
             enabled: true
       # Paging/Swap metrics
@@ -61,6 +61,15 @@ receivers:
           system.network.connections:
             enabled: true
           system.network.dropped:
+            enabled: true
+      # Load average metrics
+      load:
+        metrics:
+          system.cpu.load_average.1m:
+            enabled: false
+          system.cpu.load_average.5m:
+            enabled: true
+          system.cpu.load_average.15m:
             enabled: true
       # Disk metrics
       disk:
@@ -128,9 +137,30 @@ receivers:
           system.cpu.load_average.1m:
             enabled: true
           system.cpu.load_average.5m:
-            enabled: true
+            enabled: false
           system.cpu.load_average.15m:
+            enabled: false
+      cpu:
+        metrics:
+          system.cpu.logical.count:
+            enabled: false
+          system.cpu.physical.count:
+            enabled: false
+          system.cpu.utilization:
             enabled: true
+          system.cpu.time:
+            enabled: false
+          system.cpu.frequency:
+            enabled: false
+      # Memory metrics
+      memory:
+        metrics:
+          system.memory.limit:
+            enabled: false
+          system.memory.utilization:
+            enabled: true
+          system.memory.usage:
+            enabled: false
   # System uptime collected less frequently
   hostmetrics/1h:
     collection_interval: 1h

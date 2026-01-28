@@ -27,7 +27,6 @@ The individual upstream Collector changelogs can be found here:
 - **pkg/service**: Remove deprecated `telemetry.disableHighCardinalityMetrics` feature gate. ([#14373](https://github.com/open-telemetry/opentelemetry-collector/pull/14373))
 - **pkg/service**: Remove deprecated `service.noopTracerProvider` feature gate. ([#14374](https://github.com/open-telemetry/opentelemetry-collector/pull/14374))
 - **processor/tail_sampling**: Deprecated invert decisions disabled by default (use drop policies). ([#44132](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44132))
-- **processor/resourcedetection**: Adapt to `confighttp.ServerConfig` change (NetAddr/transport). ([#45308](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45308))
 - **exporter/kafka**: Remove Sarama producer; Franz-go now required. ([#44565](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44565))
 - **receiver/kafka**: Remove Sarama consumer and `default_fetch_size`; Franz-go now required. ([#44564](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44564))
 
@@ -43,10 +42,8 @@ The individual upstream Collector changelogs can be found here:
 - **processor/tail_sampling**: New `decision_wait_after_root_received` option. ([#43876](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43876))
 - **processor/k8sattributes**: Bump `semconv` to v1.39.0. ([#45447](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45447))
 - **processor/redaction**: Added `sanitize_span_name` and `ignored_key_patterns`. ([#44228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44228), [#44657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44657))
-- **processor/resourcedetection**: Performance improvements for `MergeResource`/`detectedResource`. ([#45251](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45251))
-- **processor/resourcedetection**: Added `container.image.name` and `container.name`. ([#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898))
-- **processor/resourcedetection**: Improved E2E tests for generic, Heroku, and GCP. ([#44712](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44712))
-- **processor/resourcedetection**: Bump `mapstructure` to v2.5.0. ([#45441](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45441))
+- **processor/resourcedetection**: Add optional docker attributes([#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898)
+  Add `container.image.name` and `container.name` optional resource attributes with the docker detector.
 - **receiver/prometheus**: Associate scraped `_created` per OpenMetricsText spec; add troubleshooting/best-practices guide. ([#45291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45291), [#44925](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44925))
 - **receiver/prometheusremotewrite**: Reduce allocations with optimized `labels.Map()` iteration. ([#45166](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45166))
 
@@ -54,8 +51,8 @@ The individual upstream Collector changelogs can be found here:
 
 ### 🧰 **Bug Fixes** 🧰
 - **pkg/exporterhelper**: Fix partition batcher refcount. ([#14444](https://github.com/open-telemetry/opentelemetry-collector/pull/14444))
-- **processor/resourcedetection**: Prevent panic on zero-valued `pdata` resource. ([#41934](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41934))
-- **processor/resourcedetection**: Fix nil pointer exception during HTTP client creation. ([#45220](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45220))
+- **processor/resourcedetection**:  Prevent the resource detection processor from panicking when detectors return a zero-valued pdata resource.([#41934](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41934))
+- **processor/resourcedetection**: Fix nil pointer panic when HTTP client creation fails in Start method. ([#45220](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45220))
 
 ---
 

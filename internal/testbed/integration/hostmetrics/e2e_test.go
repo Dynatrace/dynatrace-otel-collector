@@ -194,7 +194,7 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test
-	nsFile := filepath.Join(testDir, "namespace.yaml")
+	nsFile := filepath.Join(testDir, "namespace-extension.yaml")
 	buf, err := os.ReadFile(nsFile)
 	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
 	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)

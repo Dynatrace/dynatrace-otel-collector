@@ -1,16 +1,10 @@
 exporters:
   otlphttp/1:
-    endpoint: "${env:DT_ENDPOINT}"
-    headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+    endpoint: http://%[1]s:4320
   otlphttp/2:
-    endpoint: "${env:DT_ENDPOINT}"
-    headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+    endpoint: http://%[1]s:4321
   otlphttp/3:
-    endpoint: "${env:DT_ENDPOINT}"
-    headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+    endpoint: http://%[1]s:4322
 service:
   extensions: [health_check]
   pipelines:

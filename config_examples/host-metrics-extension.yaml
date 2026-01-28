@@ -3,13 +3,6 @@
 # This configuration is tailored for the Dynatrace OpenTelemetry Host Extension (custom:opentelemetry).
 # Only metrics used by the extension are enabled to minimize data volume and cardinality.
 
-
-exporters:
-  otlphttp:
-    endpoint: "${env:DT_ENDPOINT}"
-    headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
-
 extensions:
   health_check:
     endpoint: 0.0.0.0:13133
@@ -241,6 +234,12 @@ processors:
           enabled: true
         os.build.id:
           enabled: true
+
+exporters:
+  otlphttp:
+    endpoint: "${env:DT_ENDPOINT}"
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
 
 service:
   extensions: [health_check]

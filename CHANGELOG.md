@@ -4,6 +4,105 @@
 
 <!-- next version -->
 
+## v0.43.0
+
+This release includes version 0.144.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.144.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.144.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.144.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+🛑 Breaking changes 🛑
+- pkg/exporterhelper: Change verbosity level for otelcol_exporter_queue_batch_send_size metric to detailed. ([#14278](https://github.com/open-telemetry/opentelemetry-collector/pull/14278))
+- pkg/service: Remove deprecated telemetry.disableHighCardinalityMetrics feature gate. ([#14373](https://github.com/open-telemetry/opentelemetry-collector/pull/14373))
+- pkg/service: Remove deprecated service.noopTracerProvider feature gate. ([#14374](https://github.com/open-telemetry/opentelemetry-collector/pull/14374))
+- pkg/config/confighttp: Replace ServerConfig.Endpoint with NetAddr (transport tcp/unix). ([#14187](https://github.com/open-telemetry/opentelemetry-collector/pull/14187), [#8752](https://github.com/open-telemetry/opentelemetry-collector/pull/8752))
+- All HTTP server components: add unix socket support (configure transport: unix; YAML unchanged). ([#45308](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45308))
+- exporter/kafka: Remove Sarama producer; Franz-go only. ([#44565](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44565))
+- receiver/kafka: Remove Sarama consumer and default_fetch_size; Franz-go only. ([#44564](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44564))
+- processor/tail_sampling: Deprecated invert decisions disabled by default (use drop policies). ([#44132](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44132))
+- exporter/elasticsearch: Remove ECS mode enrichments for span.action, span.message.queue.name, transaction.message.queue.name. ([#45014](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45014))
+
+🚩 Deprecations 🚩
+- exporter/otlp_grpc: Rename otlp → otlp_grpc; add deprecated alias otlp. ([#14403](https://github.com/open-telemetry/opentelemetry-collector/pull/14403))
+- exporter/otlp_http: Rename otlphttp → otlp_http; add deprecated alias otlphttp. ([#14396](https://github.com/open-telemetry/opentelemetry-collector/pull/14396))
+- pkg/scraperhelper: Deprecate AddScraper method. ([#14428](https://github.com/open-telemetry/opentelemetry-collector/pull/14428))
+- exporter/elasticsearch: Deprecate mapping::mode config option. ([#45246](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45246))
+
+🚀 New components 🚀
+- pkg/xscraperhelper: Add xscraperhelper for experimental profiling signal. ([#14235](https://github.com/open-telemetry/opentelemetry-collector/pull/14235))
+- processor/lookup: Initial skeleton for external lookup enrichment processor. ([#41816](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41816))
+
+💡 Enhancements 💡
+- cmd/builder: Avoid duplicate CLI error logging via cobra. ([#14317](https://github.com/open-telemetry/opentelemetry-collector/pull/14317))
+- cmd/mdatagen: Disable attributes/re-aggregate; add display_name/description; validate stability. ([#10726](https://github.com/open-telemetry/opentelemetry-collector/pull/10726), [#14114](https://github.com/open-telemetry/opentelemetry-collector/pull/14114), [#14425](https://github.com/open-telemetry/opentelemetry-collector/pull/14425))
+- All: Support deprecated component type aliases in factories. ([#14208](https://github.com/open-telemetry/opentelemetry-collector/pull/14208))
+- pkg/xexporterhelper: Reenable batching for profiles. ([#14313](https://github.com/open-telemetry/opentelemetry-collector/pull/14313))
+- pkg/consumer/consumertest: Add ProfileCount(). ([#14251](https://github.com/open-telemetry/opentelemetry-collector/pull/14251))
+- pkg/exporterhelper: Add support for profile samples metrics. ([#14423](https://github.com/open-telemetry/opentelemetry-collector/pull/14423))
+- pkg/receiverhelper: Add support for profile samples metrics. ([#14226](https://github.com/open-telemetry/opentelemetry-collector/pull/14226))
+- pkg/scraperhelper: Introduce AddMetricsScraper. ([#14428](https://github.com/open-telemetry/opentelemetry-collector/pull/14428))
+- receiver/otlp: Metrics for received/refused/failed profile samples. ([#14226](https://github.com/open-telemetry/opentelemetry-collector/pull/14226))
+- cmd/schemagen (contrib): Handle external refs; fix receiver schema issues. ([#42214](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/42214))
+- cmd/telemetrygen: Add batching to metrics/traces; match batch flag. ([#42322](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/42322))
+- exporter/azureblob: Timezone option for blob names. ([#43752](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43752))
+- exporter/elasticsearch: Remove go-elasticsearch to reduce binary size. ([#45104](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45104))
+- exporter/googlecloudstorage: Time partitioning support. ([#44889](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44889))
+- exporter/opensearch: Multiple variables for index names. ([#42585](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/42585))
+- exporter/sumologic: decompose_otlp_summaries option. ([#44737](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44737))
+- extension/awslogs_encoding: Optimize CloudTrail logs unmarshaling. ([#45180](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45180))
+- processor/k8sattributes: Bump semconv to v1.39.0. ([#45447](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45447))
+- processor/redaction: sanitize_span_name; ignored_key_patterns. ([#44228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44228), [#44657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44657))
+- processor/resourcedetection: Optional docker attributes (flagged in releases repo as not in v0.144.0 binaries; coming in v0.145.0). ([#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898))
+- processor/tail_sampling: decision_wait_after_root_received option. ([#43876](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43876))
+- receiver/azureeventhub: Azure auth with feature gate. ([#40711](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/40711))
+- receiver/prometheus: Associate scraped _created per OpenMetricsText spec; add troubleshooting/best-practices guide. ([#45291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45291), [#44925](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44925))
+- receiver/prometheusremotewrite: Reduce allocations by replacing labels.Map() iteration. ([#45166](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45166))
+
+🧰 Bug fixes 🧰
+- pkg/exporterhelper: Fix partition batcher refcount. ([#14444](https://github.com/open-telemetry/opentelemetry-collector/pull/14444))
+- pkg/xconnector: Validate component ID type in xconnector Create methods. ([#14357](https://github.com/open-telemetry/opentelemetry-collector/pull/14357))
+- exporter/kafka: Exclude non-produce metrics from latency metrics. ([#45258](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45258))
+- exporter/opensearch: Fix dynamic log index routing. ([#43183](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43183))
+- exporter/prometheusremotewrite: Prevent duplicate samples by allowing empty WAL. ([#41785](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41785))
+- extension/datadog: Better handling of active components and missing version info. ([#45358](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45358), [#45460](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45460))
+- extension/file_storage: Use sha256 for too-long filenames. ([#44039](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44039))
+- extension/text_encoding: Avoid spurious marshalling separators; fix ignored separators. ([#42797](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/42797))
+- pkg/kafka/configkafka: Fix consumer group rebalance validation. ([#45268](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45268))
+- pkg/ottl: Fix unary sign parsing; handle floats like “3.”. ([#45222](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45222))
+- pkg/stanza: Fix Windows UNC paths in filelog; respect if/on_error in container parser. ([#44401](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44401), [#41508](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41508))
+- processor/resourcedetection: Prevent panic on zero-valued pdata resource; fix nil pointer on HTTP client creation failure (availability note to v0.145.0 binaries). ([#41934](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41934), [#45220](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45220))
+- receiver/awslambda: Fix S3 key usage. ([#45364](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45364))
+- receiver/datadog: Handle array/single object payloads for service check. ([#44986](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44986))
+- receiver/jmx: Enable initial_delay and collection_interval via scraper helper. ([#44492](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44492))
+- receiver/libhoney: Improve msgpack decoding for ints/uints. ([#45273](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45273))
+- receiver/postgresql: Use raw query with $N placeholders for EXPLAIN. ([#45190](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45190))
+- receiver/prometheusremotewrite: Return 400/500 per spec instead of 204 on consumer failure. ([#45151](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45151))
+- receiver/sqlserver: Improve top-query metrics accuracy. ([#45228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45228))
+
+Unmaintained components
+- exporter/alibabacloudlogservice (contrib)
+- receiver/carbon (contrib)
+
+processor/resourcedetection – v0.144.0 (details)
+- Breaking: adapt to confighttp.ServerConfig change (NetAddr/transport). ([#45308](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45308))
+- Enhancements: performance improvements for MergeResource/detectedResource; add container.image.name and container.name; E2E tests (generic, heroku, gcp); bump mapstructure v2.5.0. ([#45251](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45251), [#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898), [#44712](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44712), [#45441](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45441), [#45418](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45418), [#45430](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45430))
+- Bug fixes: avoid panic on zero-valued pdata resource; fix NPE on HTTP client creation failure. ([#45405](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45405), [#45221](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45221))
+- Docs: docker socket permission notes; comment fixes. ([#44923](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44923), [#45218](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45218))
+- Chore/Deps: regular dependency updates and release prep. ([#45476](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45476), [#45446](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45446), [#45517](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45517), [#45386](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45386), [#45330](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45330), [#45524](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45524), [#45501](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45501), [#45507](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45507), [#45391](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45391))
+
+---
+
+</details>
+
+<!-- previous-version -->
+
 ## v0.42.0
 
 This release includes versions 0.142.0 and 0.143.0 of the upstream Collector components.

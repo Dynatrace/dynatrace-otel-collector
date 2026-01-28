@@ -1,0 +1,28 @@
+exporters:
+  otlphttp/1:
+    endpoint: "${env:DT_ENDPOINT}"
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+  otlphttp/2:
+    endpoint: "${env:DT_ENDPOINT}"
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+  otlphttp/3:
+    endpoint: "${env:DT_ENDPOINT}"
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics/1m:
+      receivers: [hostmetrics/1m]
+      processors: [resourcedetection, transform, cumulativetodelta, batch]
+      exporters: [otlphttp/1]
+    metrics/5m:
+      receivers: [hostmetrics/5m]
+      processors: [resourcedetection, transform, cumulativetodelta, batch]
+      exporters: [otlphttp/2]
+    metrics/1h:
+      receivers: [hostmetrics/1h]
+      processors: [resourcedetection, transform, cumulativetodelta, batch]
+      exporters: [otlphttp/3]

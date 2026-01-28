@@ -3,6 +3,7 @@
 package hostmetrics
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -246,7 +247,7 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 
 	// Read overlay from file
 	envOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-env.yaml"))
-	localOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-local.yaml"))
+	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-local.yaml")), host)
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
@@ -348,7 +349,7 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 	oteltest.WaitForMetrics(t, 1, metricsConsumer1m)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
+	//require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
 
 	expectedMetrics1m, err := golden.ReadMetrics(expectedFile1m)
 	require.NoError(t, err)
@@ -366,7 +367,7 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 	oteltest.WaitForMetrics(t, 1, metricsConsumer5m)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
+	//require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
 
 	expectedMetrics5m, err := golden.ReadMetrics(expectedFile5m)
 	require.NoError(t, err)
@@ -386,7 +387,7 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 	oteltest.WaitForMetrics(t, 1, metricsConsumer1h)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
+	//require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
 
 	expectedMetrics1h, err := golden.ReadMetrics(expectedFile1h)
 	require.NoError(t, err)

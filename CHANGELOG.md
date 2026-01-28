@@ -4,8 +4,6 @@
 
 <!-- next version -->
 
-Thanks for providing the list of **Dynatrace-supported components**. I'll now filter the changelog to ensure it only reflects relevant changes for the components **included in the Dynatrace Distro**. Here's the revised changelog:
-
 ---
 
 ## v0.43.0

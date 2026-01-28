@@ -323,6 +323,7 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("host.mac", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.cpu.model.name", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("host.interface", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("os.type", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("os.description", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("os.build.id", substituteWithStar),

@@ -262,7 +262,7 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 		t,
 		k8sClient,
 		testID,
-		filepath.Join(testDir, "collector"),
+		filepath.Join(testDir, "collector-extension"),
 		map[string]string{
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 			"CollectorConfig":   collectorConfig,

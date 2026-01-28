@@ -245,14 +245,15 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 	host := otelk8stest.HostEndpoint(t)
 
 	// Read overlay from file
-	serviceOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service.yaml"))
+	envOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-env.yaml"))
+	localOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-local.yaml"))
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			serviceOverlay,
+			envOverlay,
+			localOverlay,
 		},
-		Namespace: testNs,
 	})
 
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)

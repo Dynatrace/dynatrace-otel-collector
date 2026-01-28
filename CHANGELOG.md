@@ -4,8 +4,6 @@
 
 <!-- next version -->
 
----
-
 ## v0.43.0
 
 This release includes version **0.144.0** of the upstream Collector components.

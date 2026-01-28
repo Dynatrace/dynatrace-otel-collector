@@ -1,0 +1,58 @@
+resourceMetrics:
+  - resource:
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: ""
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.15
+                - stringValue: fe80::ec82:4eff:fe51:b15e
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: EE-82-4E-51-B1-5E
+        - key: host.name
+          value:
+            stringValue: otelcol-u0vsihk2v8-lqrq2
+        - key: os.build.id
+          value:
+            stringValue: 6.8.8-300.fc40.aarch64
+        - key: os.description
+          value:
+            stringValue: 'Linux otelcol-u0vsihk2v8-lqrq2 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+        - key: os.name
+          value:
+            stringValue: ""
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: ""
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: The time the system has been running
+            gauge:
+              dataPoints:
+                - asDouble: 24686
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: system.uptime
+            unit: s
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/systemscraper
+          version: 0.42.0

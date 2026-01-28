@@ -145,10 +145,10 @@ func setupReceiverPorts(cfg *otlpreceiver.Config, ports *ReceiverPorts) {
 
 	if ports != nil {
 		cfg.GRPC.Get().NetAddr.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Grpc)
-		cfg.HTTP.Get().ServerConfig.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Http)
+		cfg.HTTP.Get().ServerConfig.NetAddr.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Http)
 	} else {
 		cfg.GRPC.Get().NetAddr.Endpoint = "0.0.0.0:4317"
-		cfg.HTTP.Get().ServerConfig.Endpoint = "0.0.0.0:4318"
+		cfg.HTTP.Get().ServerConfig.NetAddr.Endpoint = "0.0.0.0:4318"
 	}
 }
 

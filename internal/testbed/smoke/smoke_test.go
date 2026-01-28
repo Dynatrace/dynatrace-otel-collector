@@ -18,6 +18,11 @@ import (
 
 var execPath = "../../../bin/dynatrace-otel-collector"
 
+var duplicateAliasExporters = []string{
+	"otlp",
+	"otlphttp",
+}
+
 func TestCollectorStarts(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -113,7 +118,7 @@ func TestCollectorIsBuiltFromManifest(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, len(components.Connectors), len(manifestComponents.Connectors))
-	assert.Equal(t, len(components.Exporters), len(manifestComponents.Exporters))
+	assert.Equal(t, len(components.Exporters), len(manifestComponents.Exporters)+len(duplicateAliasExporters))
 	assert.Equal(t, len(components.Extensions), len(manifestComponents.Extensions))
 	assert.Equal(t, len(components.Processors), len(manifestComponents.Processors))
 	assert.Equal(t, len(components.Receivers), len(manifestComponents.Receivers))

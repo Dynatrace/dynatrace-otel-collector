@@ -18,8 +18,6 @@ v0.144.0:
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
-Here's the **fully merged and reorganized list** with the processor-related entries integrated into their respective categories:
-
 ---
 
 🛑 **Breaking Changes** 🛑
@@ -63,12 +61,10 @@ Here's the **fully merged and reorganized list** with the processor-related entr
 - **extension/awslogs_encoding**: Optimize CloudTrail logs unmarshaling. ([#45180](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45180))
 - **processor/k8sattributes**: Bump `semconv` to v1.39.0. ([#45447](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45447))
 - **processor/redaction**: Added `sanitize_span_name` and `ignored_key_patterns`. ([#44228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44228), [#44657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44657))
-- **processor/resourcedetection**:
-  - Performance improvements for `MergeResource`/`detectedResource`.
-  - Added `container.image.name` and `container.name`.
-  - Improved E2E tests for generic, Heroku, and GCP.
-  - Bumped `mapstructure` to v2.5.0.  
-    ([#45251](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45251), [#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898), [#44712](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44712))
+- **processor/resourcedetection**: Performance improvements for `MergeResource`/`detectedResource`. ([#45251](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45251))
+- **processor/resourcedetection**: Added `container.image.name` and `container.name`. ([#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898))
+- **processor/resourcedetection**: Improved E2E tests for generic, Heroku, and GCP. ([#44712](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44712))
+- **processor/resourcedetection**: Bump `mapstructure` to v2.5.0. ([#45441](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45441))
 - **processor/tail_sampling**: New `decision_wait_after_root_received` option. ([#43876](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43876))
 - **receiver/azureeventhub**: Add Azure auth with feature gate. ([#40711](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/40711))
 - **receiver/prometheus**: Associate scraped `_created` per OpenMetricsText spec; add troubleshooting/best-practices guide. ([#45291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45291), [#44925](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44925))
@@ -78,10 +74,8 @@ Here's the **fully merged and reorganized list** with the processor-related entr
 
 🧰 **Bug Fixes** 🧰
 - **pkg/exporterhelper**: Fix partition batcher refcount. ([#14444](https://github.com/open-telemetry/opentelemetry-collector/pull/14444))
-- **processor/resourcedetection**:
-  - Prevent panic on zero-valued `pdata` resource.
-  - Fix nil pointer exception during HTTP client creation.  
-    ([#41934](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41934), [#45220](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45220))
+- **processor/resourcedetection**: Prevent panic on zero-valued `pdata` resource. ([#41934](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41934))
+- **processor/resourcedetection**: Fix nil pointer exception during HTTP client creation. ([#45220](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45220))
 - **receiver/jmx**: Enable `initial_delay` and `collection_interval` using scraper helper. ([#44492](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44492))
 - **receiver/libhoney**: Improve MessagePack decoding for `ints`/`uints`. ([#45273](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45273))
 - **receiver/postgresql**: Use raw query with `$N` placeholders for `EXPLAIN`. ([#45190](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45190))

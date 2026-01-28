@@ -179,7 +179,9 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 
 func TestE2E_HostMetricsExtension(t *testing.T) {
 	testDir := filepath.Join("testdata")
-	expectedFile := testDir + "/e2e/expected.yaml"
+	expectedFile1m := testDir + "/e2e/expected-host-extension-1m.yaml"
+	expectedFile5m := testDir + "/e2e/expected-host-extension-5m.yaml"
+	expectedFile1h := testDir + "/e2e/expected-host-extension-1h.yaml"
 	configExamplesDir := "../../../../config_examples"
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -202,25 +204,57 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
 	}()
 
-	metricsConsumer := new(consumertest.MetricsSink)
+	metricsConsumer1m := new(consumertest.MetricsSink)
+	metricsConsumer5m := new(consumertest.MetricsSink)
+	metricsConsumer1h := new(consumertest.MetricsSink)
+
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
 			{
-				Consumer: metricsConsumer,
+				Consumer: metricsConsumer1m,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4320,
+				},
+			},
+			{
+				Consumer: metricsConsumer5m,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4321,
+				},
+			},
+			{
+				Consumer: metricsConsumer1h,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4322,
+				},
 			},
 		},
 	})
-	defer shutdownSinks()
+
+	defer func() {
+		// give some more time to the collector to finish exporting before stopping the sinks
+		// so we do not have any dropped data after the test is finished
+		time.Sleep(10 * time.Second)
+		shutdownSinks()
+	}()
 
 	// create collector
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
 	collectorConfigPath := path.Join(configExamplesDir, "host-metrics-extension.yaml")
 	host := otelk8stest.HostEndpoint(t)
+
+	// Read overlay from file
+	serviceOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service.yaml"))
+
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host:      host,
+		Host: host,
+		Templates: []string{
+			serviceOverlay,
+		},
 		Namespace: testNs,
 	})
+
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,
@@ -240,18 +274,11 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 		}
 	}()
 
-	t.Log("Waiting for host metrics...")
-
-	oteltest.WaitForMetrics(t, 3, metricsConsumer)
-
-	t.Log("Checking host metrics...")
-
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
-
-	var expected pmetric.Metrics
-	expected, err = golden.ReadMetrics(expectedFile)
-	require.NoError(t, err)
+	// Compare timeouts
+	const (
+		compareTimeout   = 3 * time.Minute
+		compareTick      = 5 * time.Second
+	)
 
 	defaultOptions := []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreTimestamp(),
@@ -313,13 +340,63 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 		pmetrictest.IgnoreSubsequentDataPoints(),
 	}
 
-	expectedMerged := testutil.MergeResources(expected)
+	t.Log("Checking host metrics...")
+
+	// 1m Metrics
+	t.Logf("Checking 1m metrics...")
+	oteltest.WaitForMetrics(t, 1, metricsConsumer1m)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
+
+	expectedMetrics1m, err := golden.ReadMetrics(expectedFile1m)
+	require.NoError(t, err)
+
+	expectedMerged1m := testutil.MergeResources(expectedMetrics1m)
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged, testutil.MergeResources(metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]),
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged1m, testutil.MergeResources(metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]),
 			defaultOptions...,
 		),
 		)
-	}, 3*time.Minute, 5*time.Second)
+	}, compareTimeout, compareTick)
+
+	// 5m Metrics
+	t.Logf("Checking 5m metrics...")
+	oteltest.WaitForMetrics(t, 1, metricsConsumer5m)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
+
+	expectedMetrics5m, err := golden.ReadMetrics(expectedFile5m)
+	require.NoError(t, err)
+
+	expectedMerged5m := testutil.MergeResources(expectedMetrics5m)
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged5m, testutil.MergeResources(metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]),
+			defaultOptions...,
+		),
+		)
+	}, compareTimeout, compareTick)
+
+	t.Log("Host metrics checked successfully")
+
+	// 1h Metrics
+	t.Logf("Checking 1h metrics...")
+	oteltest.WaitForMetrics(t, 1, metricsConsumer1h)
+
+	// the commented line below writes the received list of metrics to the expected.yaml
+	require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
+
+	expectedMetrics1h, err := golden.ReadMetrics(expectedFile1h)
+	require.NoError(t, err)
+
+	expectedMerged1h := testutil.MergeResources(expectedMetrics1h)
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged1h, testutil.MergeResources(metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]),
+			defaultOptions...,
+		),
+		)
+	}, compareTimeout, compareTick)
 
 	t.Log("Host metrics checked successfully")
 }

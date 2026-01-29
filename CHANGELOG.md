@@ -19,7 +19,7 @@ The individual upstream Collector changelogs can be found here:
 ---
 
 ### 🛑 **Breaking Changes** 🛑
-- `pkg/config/confighttp`: Replace `ServerConfig.Endpoint` with `NetAddr confignet.AddrConfig`, enabling more flexible transport configuration. ([#14187](https://github.com/open-telemetry/opentelemetry-collector/pull/14187), [#8752](https://github.com/open-telemetry/opentelemetry-collector/pull/8752))
+- **pkg/config/confighttp**: Replace `ServerConfig.Endpoint` with `NetAddr confignet.AddrConfig`, enabling more flexible transport configuration. ([#14187](https://github.com/open-telemetry/opentelemetry-collector/pull/14187), [#8752](https://github.com/open-telemetry/opentelemetry-collector/pull/8752))
   This change adds "transport" as a configuration option, allowing users to specify
   different transport protocols (e.g., "tcp", "unix").
 - **pkg/exporterhelper**: Change verbosity level for `otelcol_exporter_queue_batch_send_size` metric to detailed. ([#14278](https://github.com/open-telemetry/opentelemetry-collector/pull/14278))

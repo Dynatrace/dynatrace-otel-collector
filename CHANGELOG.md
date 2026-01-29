@@ -41,7 +41,7 @@ The individual upstream Collector changelogs can be found here:
 - **processor/tail_sampling**: New `decision_wait_after_root_received` option. ([#43876](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43876))
 - **processor/k8sattributes**: Bump `semconv` to v1.39.0. ([#45447](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45447))
 - **processor/redaction**: Added `sanitize_span_name` and `ignored_key_patterns`. ([#44228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44228).
-- processor/redaction: Add ignored_key_patterns configuration option to allow ignoring keys by regex pattern [#44657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44657)).
+- **processor/redaction**: Add ignored_key_patterns configuration option to allow ignoring keys by regex pattern [#44657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44657)).
 - **processor/resourcedetection**: Add optional docker attributes([#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898)
   Add `container.image.name` and `container.name` optional resource attributes with the docker detector.
 - **receiver/prometheus**: Associate scraped `_created` per OpenMetricsText spec; add troubleshooting/best-practices guide. ([#45291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45291),

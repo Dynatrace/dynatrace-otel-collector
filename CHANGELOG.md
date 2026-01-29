@@ -25,6 +25,9 @@ The individual upstream Collector changelogs can be found here:
 - **processor/tail_sampling**: Deprecated invert decisions disabled by default (use drop policies). ([#44132](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44132))
 - **exporter/kafka**: Remove Sarama producer; Franz-go now required. ([#44565](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44565))
 - **receiver/kafka**: Remove Sarama consumer and `default_fetch_size`; Franz-go now required. ([#44564](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44564))
+- **all**: Add Unix socket support to HTTP server components. [#45308](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45308)  
+  HTTP server components (namely receivers) now support listening on Unix domain sockets in addition to TCP addresses, by configuring `transport: unix` and setting `endpoint` to a Unix socket path.  
+  This is a breaking change to the config structs, but is not breaking for end users. Existing YAML configuration options remain unchanged.
 
 ---
 
@@ -37,19 +40,41 @@ The individual upstream Collector changelogs can be found here:
 ### 💡 **Enhancements** 💡
 - **processor/tail_sampling**: New `decision_wait_after_root_received` option. ([#43876](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43876))
 - **processor/k8sattributes**: Bump `semconv` to v1.39.0. ([#45447](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45447))
-- **processor/redaction**: Added `sanitize_span_name` and `ignored_key_patterns`. ([#44228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44228), [#44657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44657))
+- **processor/redaction**: Added `sanitize_span_name` and `ignored_key_patterns`. ([#44228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44228).
+- processor/redaction: Add ignored_key_patterns configuration option to allow ignoring keys by regex pattern [#44657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44657)).
 - **processor/resourcedetection**: Add optional docker attributes([#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898)
   Add `container.image.name` and `container.name` optional resource attributes with the docker detector.
-- **receiver/prometheus**: Associate scraped `_created` per OpenMetricsText spec; add troubleshooting/best-practices guide. ([#45291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45291), [#44925](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44925))
+- **receiver/prometheus**: Associate scraped `_created` per OpenMetricsText spec; add troubleshooting/best-practices guide. ([#45291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45291),
+- **receiver/prometheus**: Add comprehensive troubleshooting and best practices guide to Prometheus receiver README [#44925](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44925))
 - **receiver/prometheusremotewrite**: Reduce allocations with optimized `labels.Map()` iteration. ([#45166](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45166))
 
 ---
 
 ### 🧰 **Bug Fixes** 🧰
 - **pkg/exporterhelper**: Fix partition batcher refcount. ([#14444](https://github.com/open-telemetry/opentelemetry-collector/pull/14444))
+- **exporter/kafka**: franz-go: Exclude non-produce metrics from kafka_exporter_write_latency and kafka_exporter_latency ([#45258](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45258))
+- **exporter/prometheusremotewrite**: Prevent duplicate samples by allowing the WAL to be empty ([#41785](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41785))
+- **extension/file_storage**: Handle filename too long error in file storage extension by using the sha256 of the attempted filename instead. [#44039](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44039)
+- **extension/text_encoding**: Avoid spurious marshalling separators at end of lines [#42797](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/42797)  
+  Previously, text_encoding would append the marshalling separator to the end of each log record, potentially resulting in double-newlines between blocks of records.
+- **extension/text_encoding**: Fix an issue where marshalling/unmarshalling separators were ignored [#42797](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/42797)
+- **pkg/kafka/configkafka**: Fix consumer group rebalance strategy validation [#45268](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45268)
+- **pkg/ottl**: Fix numeric parsing to correctly handle signed numbers in math expressions. [#45222](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45222)  
+  The OTTL math expression parser did not correctly handle unary signs for plus and minus. Expressions like 3-5 would not parse correctly without inserting spaces to make it 3 - 5. This change moves the sign handling out of the lexer and into the parser.
+- **pkg/ottl**: Handle floating constants with decimal point but no fraction. [#45222](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45222)  
+  Floating point constants that had a decimal point but no fractional digits (e.g., "3.") were not handled properly and could crash the parser. These are now parsed as valid floating point numbers.
+- **pkg/stanza**: Fix Windows UNC network path handling in filelog receiver [#44401](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44401)  
+  The filelog receiver now correctly handles Windows UNC network paths (e.g., \\server\share\logs*.log). Previously, the receiver could list files from network shares but failed to open them due to path corruption during normalization. This fix converts UNC paths to Windows extended-length format (\\?\UNC\server\share\path) which is more reliable and not affected by filepath.Clean() issues.
+- **pkg/stanza**: Ensure container parser respects the if condition and on_error settings when format detection fails [#41508](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41508)
 - **processor/resourcedetection**:  Prevent the resource detection processor from panicking when detectors return a zero-valued pdata resource.([#41934](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41934))
 - **processor/resourcedetection**: Fix nil pointer panic when HTTP client creation fails in Start method. ([#45220](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45220))
-
+- **receiver/jmx**: Enable `initial_delay` and `collection_interval` settings via scraper helper. [#44492](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44492)
+- **receiver/postgresql**: Fix query plan `EXPLAIN` to use raw query with `$N` placeholders instead of obfuscated `?` placeholders. [#45190](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45190)  
+  Previously, the `EXPLAIN` query was using obfuscated queries with `?` placeholders, which PostgreSQL does not recognize. Now uses the raw query with `$1`, `$2` placeholders that PostgreSQL expects.
+- **receiver/prometheusremotewrite**: Fix silent data loss when consumer fails by returning appropriate HTTP error codes instead of `204 No Content`. [#45151](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45151)  
+  The receiver was sending HTTP `204 No Content` before calling `ConsumeMetrics()`, causing clients to believe data was successfully delivered even when the consumer failed. Now returns `400 Bad Request` for permanent errors and `500 Internal Server Error` for retryable errors, as per the Prometheus Remote Write 2.0 specification.
+- **receiver/sqlserver**: Accuracy improvements for top-query metrics. [#45228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45228)  
+  SQLServer metrics reporting is improved by reducing the warm-up delay and providing accurate insights sooner.
 ---
 
 </details>

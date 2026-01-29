@@ -68,13 +68,6 @@ The individual upstream Collector changelogs can be found here:
 - **pkg/stanza**: Ensure container parser respects the if condition and on_error settings when format detection fails [#41508](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41508)
 - **processor/resourcedetection**:  Prevent the resource detection processor from panicking when detectors return a zero-valued pdata resource.([#41934](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41934))
 - **processor/resourcedetection**: Fix nil pointer panic when HTTP client creation fails in Start method. ([#45220](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45220))
-- **receiver/jmx**: Enable `initial_delay` and `collection_interval` settings via scraper helper. [#44492](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44492)
-- **receiver/postgresql**: Fix query plan `EXPLAIN` to use raw query with `$N` placeholders instead of obfuscated `?` placeholders. [#45190](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45190)  
-  Previously, the `EXPLAIN` query was using obfuscated queries with `?` placeholders, which PostgreSQL does not recognize. Now uses the raw query with `$1`, `$2` placeholders that PostgreSQL expects.
-- **receiver/prometheusremotewrite**: Fix silent data loss when consumer fails by returning appropriate HTTP error codes instead of `204 No Content`. [#45151](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45151)  
-  The receiver was sending HTTP `204 No Content` before calling `ConsumeMetrics()`, causing clients to believe data was successfully delivered even when the consumer failed. Now returns `400 Bad Request` for permanent errors and `500 Internal Server Error` for retryable errors, as per the Prometheus Remote Write 2.0 specification.
-- **receiver/sqlserver**: Accuracy improvements for top-query metrics. [#45228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45228)  
-  SQLServer metrics reporting is improved by reducing the warm-up delay and providing accurate insights sooner.
 ---
 
 </details>

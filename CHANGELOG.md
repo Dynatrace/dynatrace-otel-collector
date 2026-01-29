@@ -53,7 +53,6 @@ The individual upstream Collector changelogs can be found here:
 ### 🧰 **Bug Fixes** 🧰
 - **pkg/exporterhelper**: Fix partition batcher refcount. ([#14444](https://github.com/open-telemetry/opentelemetry-collector/pull/14444))
 - **exporter/kafka**: franz-go: Exclude non-produce metrics from kafka_exporter_write_latency and kafka_exporter_latency ([#45258](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45258))
-- **exporter/prometheusremotewrite**: Prevent duplicate samples by allowing the WAL to be empty ([#41785](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41785))
 - **extension/file_storage**: Handle filename too long error in file storage extension by using the sha256 of the attempted filename instead. [#44039](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44039)
 - **extension/text_encoding**: Avoid spurious marshalling separators at end of lines [#42797](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/42797)  
   Previously, text_encoding would append the marshalling separator to the end of each log record, potentially resulting in double-newlines between blocks of records.

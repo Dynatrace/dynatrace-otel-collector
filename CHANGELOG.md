@@ -46,7 +46,6 @@ The individual upstream Collector changelogs can be found here:
   Add `container.image.name` and `container.name` optional resource attributes with the docker detector.
 - **receiver/prometheus**: Associate scraped `_created` per OpenMetricsText spec; add troubleshooting/best-practices guide. ([#45291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45291),
 - **receiver/prometheus**: Add comprehensive troubleshooting and best practices guide to Prometheus receiver README [#44925](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44925))
-- **receiver/prometheusremotewrite**: Reduce allocations with optimized `labels.Map()` iteration. ([#45166](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45166))
 
 ---
 

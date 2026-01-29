@@ -34,12 +34,12 @@ spec:
             httpGet:
               path: /
               port: 13133
-            initialDelaySeconds: 3
+            initialDelaySeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: 13133
-            initialDelaySeconds: 3
+            initialDelaySeconds: 5
           resources:
             limits:
               cpu: 128m

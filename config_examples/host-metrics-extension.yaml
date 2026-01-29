@@ -157,7 +157,22 @@ receivers:
           system.uptime:
             enabled: true
 
+  hostmetrics/test:
+    collection_interval: 10s
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+          system.cpu.time:
+            enabled: false
+
 processors:
+  filter:
+    metrics:
+      datapoint:
+        - metric.name == "system.cpu.utilization" and attributes["state"] == "idle"
+
   transform:
     error_mode: ignore
     metric_statements:
@@ -189,6 +204,12 @@ processors:
         statements:
           # Replace spaces in process command line with underscores for cleaner entity IDs
           - replace_pattern(attributes["process.command_line"], " ", "_")
+
+      - context: metric
+        statements:
+          - aggregate_on_attributes("sum", ["cpu"]) where name == "system.cpu.utilization"
+          # Average remaining datapoints (one per core) into a single host-level value
+          - aggregate_on_attributes("mean") where name == "system.cpu.utilization"
 
   batch:
     send_batch_size: 100
@@ -236,6 +257,8 @@ processors:
           enabled: true
 
 exporters:
+  debug:
+    verbosity: detailed
   otlphttp:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
@@ -245,6 +268,6 @@ service:
   extensions: [health_check]
   pipelines:
     metrics:
-      receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
-      processors: [resourcedetection, transform, cumulativetodelta, batch]
-      exporters: [otlphttp]
+      receivers: [hostmetrics/test]
+      processors: [filter, resourcedetection, transform, cumulativetodelta]
+      exporters: [debug, otlphttp]

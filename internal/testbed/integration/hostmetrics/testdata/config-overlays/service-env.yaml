@@ -1,0 +1,13 @@
+exporters:
+  otlphttp:
+    endpoint: "${env:DT_ENDPOINT}"
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
+      processors: [resourcedetection, transform, cumulativetodelta, batch]
+      exporters: [otlphttp]

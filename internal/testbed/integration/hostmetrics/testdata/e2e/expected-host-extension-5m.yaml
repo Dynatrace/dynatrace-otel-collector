@@ -1,0 +1,805 @@
+resourceMetrics:
+  - resource:
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: ""
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.15
+                - stringValue: fe80::ec82:4eff:fe51:b15e
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: EE-82-4E-51-B1-5E
+        - key: host.name
+          value:
+            stringValue: otelcol-u0vsihk2v8-lqrq2
+        - key: os.build.id
+          value:
+            stringValue: 6.8.8-300.fc40.aarch64
+        - key: os.description
+          value:
+            stringValue: 'Linux otelcol-u0vsihk2v8-lqrq2 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+        - key: os.name
+          value:
+            stringValue: ""
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: ""
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: The number of connections.
+            name: system.network.connections
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: CLOSE
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: CLOSE_WAIT
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: CLOSING
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: DELETE
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: ESTABLISHED
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: FIN_WAIT_1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: FIN_WAIT_2
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: LAST_ACK
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "2"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: LISTEN
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: SYN_RECV
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: SYN_SENT
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: TIME_WAIT
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{connections}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper
+          version: 0.42.0
+  - resource:
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: ""
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.15
+                - stringValue: fe80::ec82:4eff:fe51:b15e
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: EE-82-4E-51-B1-5E
+        - key: host.name
+          value:
+            stringValue: otelcol-u0vsihk2v8-lqrq2
+        - key: os.build.id
+          value:
+            stringValue: 6.8.8-300.fc40.aarch64
+        - key: os.description
+          value:
+            stringValue: 'Linux otelcol-u0vsihk2v8-lqrq2 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+        - key: os.name
+          value:
+            stringValue: ""
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: ""
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: FileSystem inodes used.
+            name: system.filesystem.inodes.usage
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "51904033"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /conf
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "262047"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /conf
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "51904033"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "262047"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "51904033"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "262047"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "51904033"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hosts
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "262047"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hosts
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "51904033"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/resolv.conf
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "262047"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/resolv.conf
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{inodes}'
+          - description: Filesystem bytes used.
+            name: system.filesystem.usage
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "87833059328"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /conf
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /conf
+                    - key: state
+                      value:
+                        stringValue: reserved
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "18936074240"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /conf
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "87833059328"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: state
+                      value:
+                        stringValue: reserved
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "18936074240"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "87833059328"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: state
+                      value:
+                        stringValue: reserved
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "18936074240"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "87833059328"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hosts
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hosts
+                    - key: state
+                      value:
+                        stringValue: reserved
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "18936074240"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hosts
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "87833059328"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/resolv.conf
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/resolv.conf
+                    - key: state
+                      value:
+                        stringValue: reserved
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "18936074240"
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/resolv.conf
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
+          - description: Fraction of filesystem bytes used.
+            gauge:
+              dataPoints:
+                - asDouble: 0.17735532365203505
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /conf
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.17735532365203505
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /dev/termination-log
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.17735532365203505
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hostname
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.17735532365203505
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/hosts
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.17735532365203505
+                  attributes:
+                    - key: mountpoint
+                      value:
+                        stringValue: /etc/resolv.conf
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: system.filesystem.utilization
+            unit: "1"
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/filesystemscraper
+          version: 0.42.0
+  - resource:
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: ""
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.15
+                - stringValue: fe80::ec82:4eff:fe51:b15e
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: EE-82-4E-51-B1-5E
+        - key: host.name
+          value:
+            stringValue: otelcol-u0vsihk2v8-lqrq2
+        - key: os.build.id
+          value:
+            stringValue: 6.8.8-300.fc40.aarch64
+        - key: os.description
+          value:
+            stringValue: 'Linux otelcol-u0vsihk2v8-lqrq2 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+        - key: os.name
+          value:
+            stringValue: ""
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: ""
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: Total number of processes in each state.
+            name: system.processes.count
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: status
+                      value:
+                        stringValue: blocked
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "2"
+                  attributes:
+                    - key: status
+                      value:
+                        stringValue: running
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: status
+                      value:
+                        stringValue: sleeping
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{processes}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processesscraper
+          version: 0.42.0
+  - resource:
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: ""
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.15
+                - stringValue: fe80::ec82:4eff:fe51:b15e
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: EE-82-4E-51-B1-5E
+        - key: host.name
+          value:
+            stringValue: otelcol-u0vsihk2v8-lqrq2
+        - key: os.build.id
+          value:
+            stringValue: 6.8.8-300.fc40.aarch64
+        - key: os.description
+          value:
+            stringValue: 'Linux otelcol-u0vsihk2v8-lqrq2 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+        - key: os.name
+          value:
+            stringValue: ""
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: ""
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: Bytes of memory in use.
+            name: system.memory.usage
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "2109440"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: buffered
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "4391014400"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: cached
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "11036225536"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "72728576"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: slab_reclaimable
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "112050176"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: slab_unreclaimable
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1151582208"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper
+          version: 0.42.0
+  - resource:
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: ""
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.15
+                - stringValue: fe80::ec82:4eff:fe51:b15e
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: EE-82-4E-51-B1-5E
+        - key: host.name
+          value:
+            stringValue: otelcol-u0vsihk2v8-lqrq2
+        - key: os.build.id
+          value:
+            stringValue: 6.8.8-300.fc40.aarch64
+        - key: os.description
+          value:
+            stringValue: 'Linux otelcol-u0vsihk2v8-lqrq2 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+        - key: os.name
+          value:
+            stringValue: ""
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: ""
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: Average CPU Load over 15 minutes.
+            gauge:
+              dataPoints:
+                - asDouble: 0.28
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: system.cpu.load_average.15m
+            unit: '{thread}'
+          - description: Average CPU Load over 5 minutes.
+            gauge:
+              dataPoints:
+                - asDouble: 0.36
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: system.cpu.load_average.5m
+            unit: '{thread}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/loadscraper
+          version: 0.42.0
+  - resource:
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: ""
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.15
+                - stringValue: fe80::ec82:4eff:fe51:b15e
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: EE-82-4E-51-B1-5E
+        - key: host.name
+          value:
+            stringValue: otelcol-u0vsihk2v8-lqrq2
+        - key: os.build.id
+          value:
+            stringValue: 6.8.8-300.fc40.aarch64
+        - key: os.description
+          value:
+            stringValue: 'Linux otelcol-u0vsihk2v8-lqrq2 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+        - key: os.name
+          value:
+            stringValue: ""
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: ""
+        - key: process.command_line
+          value:
+            stringValue: /dynatrace-otel-collector_--config=/conf/relay.yaml
+        - key: process.executable.name
+          value:
+            stringValue: dynatrace-otel-collector
+        - key: process.pid
+          value:
+            intValue: "1"
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: The amount of physical memory in use.
+            name: process.memory.usage
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "164450304"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
+          - description: Virtual memory size.
+            name: process.memory.virtual
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "2068791296"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper
+          version: 0.42.0

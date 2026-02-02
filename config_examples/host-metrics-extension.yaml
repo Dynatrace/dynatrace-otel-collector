@@ -157,16 +157,6 @@ receivers:
           system.uptime:
             enabled: true
 
-  hostmetrics/test:
-    collection_interval: 10s
-    scrapers:
-      cpu:
-        metrics:
-          system.cpu.utilization:
-            enabled: true
-          system.cpu.time:
-            enabled: false
-
 processors:
   filter:
     metrics:
@@ -208,6 +198,13 @@ processors:
       - context: metric
         statements:
           - aggregate_on_attributes("sum", ["cpu"]) where name == "system.cpu.utilization"
+
+      - context: datapoint
+        statements:
+          - delete_key(attributes, "cpu") where metric.name == "system.cpu.utilization"
+
+      - context: metric
+        statements:
           # Average remaining datapoints (one per core) into a single host-level value
           - aggregate_on_attributes("mean") where name == "system.cpu.utilization"
 
@@ -219,7 +216,6 @@ processors:
     detectors: ["system"]
     system:
       resource_attributes:
-        # Host attributes used by the extension
         host.arch:
           enabled: true
         host.id:
@@ -244,7 +240,6 @@ processors:
           enabled: false
         host.cpu.cache.l2.size:
           enabled: false
-        # OS attributes used by the extension
         os.type:
           enabled: true
         os.description:
@@ -257,8 +252,6 @@ processors:
           enabled: true
 
 exporters:
-  debug:
-    verbosity: detailed
   otlphttp:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
@@ -268,6 +261,6 @@ service:
   extensions: [health_check]
   pipelines:
     metrics:
-      receivers: [hostmetrics/test]
+      receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
       processors: [filter, resourcedetection, transform, cumulativetodelta]
-      exporters: [debug, otlphttp]
+      exporters: [otlphttp]

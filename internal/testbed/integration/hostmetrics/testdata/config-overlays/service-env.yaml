@@ -9,5 +9,5 @@ service:
   pipelines:
     metrics:
       receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
-      processors: [resourcedetection, transform, cumulativetodelta, batch]
+      processors: [filter, resourcedetection, transform, cumulativetodelta]
       exporters: [otlphttp]

@@ -358,11 +358,14 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 		pmetrictest.IgnoreSubsequentDataPoints(),
 	}
 
-	t.Log("Checking host metrics...")
+	t.Log("Waiting for host metrics...")
+	oteltest.WaitForMetrics(t, 1, metricsConsumer1m)
+	oteltest.WaitForMetrics(t, 1, metricsConsumer5m)
+	oteltest.WaitForMetrics(t, 1, metricsConsumer1h)
+	t.Logf("Received metrics on all consumers...")
 
 	// 1m Metrics
 	t.Logf("Checking 1m metrics...")
-	oteltest.WaitForMetrics(t, 1, metricsConsumer1m)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
@@ -380,7 +383,6 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 
 	// 5m Metrics
 	t.Logf("Checking 5m metrics...")
-	oteltest.WaitForMetrics(t, 1, metricsConsumer5m)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
@@ -400,7 +402,6 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 
 	// 1h Metrics
 	t.Logf("Checking 1h metrics...")
-	oteltest.WaitForMetrics(t, 1, metricsConsumer1h)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))

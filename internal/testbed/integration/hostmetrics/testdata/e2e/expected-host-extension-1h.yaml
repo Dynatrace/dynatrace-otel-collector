@@ -17,22 +17,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.15
-                - stringValue: fe80::ec82:4eff:fe51:b15e
+                - stringValue: 10.244.0.11
+                - stringValue: fe80::d03e:5ff:fe66:e025
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: EE-82-4E-51-B1-5E
+                - stringValue: D2-3E-05-66-E0-25
         - key: host.name
           value:
-            stringValue: otelcol-u0vsihk2v8-lqrq2
+            stringValue: otelcol-7qp6f7m91s-dnrn6
         - key: os.build.id
           value:
             stringValue: 6.8.8-300.fc40.aarch64
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-u0vsihk2v8-lqrq2 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -48,11 +48,11 @@ resourceMetrics:
           - description: The time the system has been running
             gauge:
               dataPoints:
-                - asDouble: 24686
+                - asDouble: 3427
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: system.uptime
             unit: s
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/systemscraper
-          version: 0.42.0
+          version: 0.43.0

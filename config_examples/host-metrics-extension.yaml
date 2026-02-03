@@ -209,7 +209,9 @@ processors:
           - aggregate_on_attributes("mean") where metric.name == "system.cpu.utilization"
 
   batch:
-    send_batch_size: 100
+    send_batch_size: 3000
+    send_batch_max_size: 3000
+    timeout: 60s
   cumulativetodelta:
     max_staleness: 25h
   resourcedetection:

@@ -6,7 +6,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -17,22 +17,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -48,7 +48,7 @@ resourceMetrics:
           - description: The time the system has been running
             gauge:
               dataPoints:
-                - asDouble: 3427
+                - asDouble: 235
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: system.uptime

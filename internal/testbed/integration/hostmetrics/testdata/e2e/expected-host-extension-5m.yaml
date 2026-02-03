@@ -6,7 +6,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -17,22 +17,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -50,42 +50,42 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "2109440"
+                - asInt: "129691648"
                   attributes:
                     - key: state
                       value:
                         stringValue: buffered
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "2927890432"
+                - asInt: "8172601344"
                   attributes:
                     - key: state
                       value:
                         stringValue: cached
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "12525764608"
+                - asInt: "7275786240"
                   attributes:
                     - key: state
                       value:
                         stringValue: free
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "60755968"
+                - asInt: "378417152"
                   attributes:
                     - key: state
                       value:
                         stringValue: slab_reclaimable
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "104689664"
+                - asInt: "117600256"
                   attributes:
                     - key: state
                       value:
                         stringValue: slab_unreclaimable
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "1119166464"
+                - asInt: "1617158144"
                   attributes:
                     - key: state
                       value:
@@ -103,7 +103,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -114,22 +114,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -147,7 +147,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 8.070000000000164
+                - asDouble: 9.659999999999997
                   attributes:
                     - key: cpu
                       value:
@@ -157,7 +157,7 @@ resourceMetrics:
                         stringValue: idle
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 0.14000000000000057
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -175,173 +175,13 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.020000000000000462
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu0
-                    - key: state
-                      value:
-                        stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu0
-                    - key: state
-                      value:
-                        stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08999999999999986
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu0
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.19000000000000483
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu0
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu0
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 8.16000000000031
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.11999999999999744
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.020000000000000462
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.08999999999999986
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.14999999999999858
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: user
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asDouble: 0.010000000000000009
                   attributes:
                     - key: cpu
                       value:
-                        stringValue: cpu1
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 8.059999999999945
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu2
-                    - key: state
-                      value:
-                        stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.13000000000000256
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu2
-                    - key: state
-                      value:
-                        stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu2
-                    - key: state
-                      value:
-                        stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.020000000000000462
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu2
+                        stringValue: cpu0
                     - key: state
                       value:
                         stringValue: softirq
@@ -351,7 +191,7 @@ resourceMetrics:
                   attributes:
                     - key: cpu
                       value:
-                        stringValue: cpu2
+                        stringValue: cpu0
                     - key: state
                       value:
                         stringValue: steal
@@ -361,17 +201,17 @@ resourceMetrics:
                   attributes:
                     - key: cpu
                       value:
-                        stringValue: cpu2
+                        stringValue: cpu0
                     - key: state
                       value:
                         stringValue: system
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 0.23000000000000398
+                - asDouble: 0.12999999999999545
                   attributes:
                     - key: cpu
                       value:
-                        stringValue: cpu2
+                        stringValue: cpu0
                     - key: state
                       value:
                         stringValue: user
@@ -381,13 +221,173 @@ resourceMetrics:
                   attributes:
                     - key: cpu
                       value:
+                        stringValue: cpu0
+                    - key: state
+                      value:
+                        stringValue: wait
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 9.709999999999994
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: idle
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: interrupt
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: nice
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.010000000000000009
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: softirq
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: steal
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.08999999999999986
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.10000000000000853
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu1
+                    - key: state
+                      value:
+                        stringValue: wait
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 9.669999999999987
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: idle
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: interrupt
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: nice
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.009999999999999953
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: softirq
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: steal
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.08999999999999986
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.12000000000000455
+                  attributes:
+                    - key: cpu
+                      value:
+                        stringValue: cpu2
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.010000000000000231
+                  attributes:
+                    - key: cpu
+                      value:
                         stringValue: cpu2
                     - key: state
                       value:
                         stringValue: wait
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 8.150000000000091
+                - asDouble: 9.670000000000002
                   attributes:
                     - key: cpu
                       value:
@@ -397,7 +397,7 @@ resourceMetrics:
                         stringValue: idle
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 0.11999999999999744
+                - asDouble: 0
                   attributes:
                     - key: cpu
                       value:
@@ -417,7 +417,7 @@ resourceMetrics:
                         stringValue: nice
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 0.020000000000000462
+                - asDouble: 0.009999999999999898
                   attributes:
                     - key: cpu
                       value:
@@ -447,7 +447,7 @@ resourceMetrics:
                         stringValue: system
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 0.13000000000000256
+                - asDouble: 0.11999999999999034
                   attributes:
                     - key: cpu
                       value:
@@ -455,173 +455,13 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu3
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 8.139999999999873
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.11999999999999744
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: nice
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.020000000000000462
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.10000000000000142
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.14000000000000057
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu4
-                    - key: state
-                      value:
-                        stringValue: wait
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 8.110000000000127
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: idle
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.13000000000000256
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: interrupt
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: nice
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asDouble: 0.009999999999999787
                   attributes:
                     - key: cpu
                       value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: softirq
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: steal
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.10999999999999943
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: system
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.17999999999999972
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
-                    - key: state
-                      value:
-                        stringValue: user
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.010000000000000009
-                  attributes:
-                    - key: cpu
-                      value:
-                        stringValue: cpu5
+                        stringValue: cpu3
                     - key: state
                       value:
                         stringValue: wait
@@ -639,7 +479,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -650,22 +490,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -683,7 +523,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "51908319"
+                - asInt: "18482121"
                   attributes:
                     - key: mountpoint
                       value:
@@ -693,7 +533,7 @@ resourceMetrics:
                         stringValue: free
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "257761"
+                - asInt: "1047607"
                   attributes:
                     - key: mountpoint
                       value:
@@ -709,7 +549,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "88735207424"
+                - asInt: "92696625152"
                   attributes:
                     - key: mountpoint
                       value:
@@ -719,7 +559,7 @@ resourceMetrics:
                         stringValue: free
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "0"
+                - asInt: "16777216"
                   attributes:
                     - key: mountpoint
                       value:
@@ -729,7 +569,7 @@ resourceMetrics:
                         stringValue: reserved
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "18033926144"
+                - asInt: "62180786176"
                   attributes:
                     - key: mountpoint
                       value:
@@ -743,7 +583,7 @@ resourceMetrics:
           - description: Fraction of filesystem bytes used.
             gauge:
               dataPoints:
-                - asDouble: 0.16890580209227235
+                - asDouble: 0.4014838938927852
                   attributes:
                     - key: mountpoint
                       value:
@@ -762,7 +602,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -773,22 +613,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -804,7 +644,7 @@ resourceMetrics:
           - description: Average CPU Load over 15 minutes.
             gauge:
               dataPoints:
-                - asDouble: 0.23
+                - asDouble: 1.22
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: system.cpu.load_average.15m
@@ -812,7 +652,7 @@ resourceMetrics:
           - description: Average CPU Load over 5 minutes.
             gauge:
               dataPoints:
-                - asDouble: 0.22
+                - asDouble: 3.04
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: system.cpu.load_average.5m
@@ -827,7 +667,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -838,22 +678,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -875,17 +715,17 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda
+                        stringValue: loop0
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "213504"
+                - asInt: "0"
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda
+                        stringValue: loop0
                     - key: direction
                       value:
                         stringValue: write
@@ -895,17 +735,17 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda1
+                        stringValue: sda
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "0"
+                - asInt: "872448"
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda1
+                        stringValue: sda
                     - key: direction
                       value:
                         stringValue: write
@@ -915,17 +755,17 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda2
+                        stringValue: sda1
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "0"
+                - asInt: "872448"
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda2
+                        stringValue: sda1
                     - key: direction
                       value:
                         stringValue: write
@@ -935,7 +775,7 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda3
+                        stringValue: sda14
                     - key: direction
                       value:
                         stringValue: read
@@ -945,7 +785,7 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda3
+                        stringValue: sda14
                     - key: direction
                       value:
                         stringValue: write
@@ -955,17 +795,37 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda4
+                        stringValue: sda15
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "213504"
+                - asInt: "0"
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda4
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
                     - key: direction
                       value:
                         stringValue: write
@@ -978,39 +838,46 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 0.03399999999999892
+                - asDouble: 0
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda
+                        stringValue: loop0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.013000000000001677
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0.014000000000002899
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda1
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asDouble: 0
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda1
+                        stringValue: sda14
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asDouble: 0
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda2
+                        stringValue: sda15
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asDouble: 0
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda3
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0.03399999999999892
-                  attributes:
-                    - key: device
-                      value:
-                        stringValue: vda4
+                        stringValue: sda16
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -1024,17 +891,17 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda
+                        stringValue: loop0
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 0.02599999999999625
+                - asDouble: 0
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda
+                        stringValue: loop0
                     - key: direction
                       value:
                         stringValue: write
@@ -1044,17 +911,17 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda1
+                        stringValue: sda
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 0
+                - asDouble: 0.028999999999996362
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda1
+                        stringValue: sda
                     - key: direction
                       value:
                         stringValue: write
@@ -1064,17 +931,17 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda2
+                        stringValue: sda1
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 0
+                - asDouble: 0.028999999999996362
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda2
+                        stringValue: sda1
                     - key: direction
                       value:
                         stringValue: write
@@ -1084,7 +951,7 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda3
+                        stringValue: sda14
                     - key: direction
                       value:
                         stringValue: read
@@ -1094,7 +961,7 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda3
+                        stringValue: sda14
                     - key: direction
                       value:
                         stringValue: write
@@ -1104,17 +971,37 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda4
+                        stringValue: sda15
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 0.02599999999999625
+                - asDouble: 0
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda4
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
                     - key: direction
                       value:
                         stringValue: write
@@ -1131,17 +1018,17 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda
+                        stringValue: loop0
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "75"
+                - asInt: "0"
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda
+                        stringValue: loop0
                     - key: direction
                       value:
                         stringValue: write
@@ -1151,17 +1038,17 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda1
+                        stringValue: sda
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "0"
+                - asInt: "127"
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda1
+                        stringValue: sda
                     - key: direction
                       value:
                         stringValue: write
@@ -1171,17 +1058,17 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda2
+                        stringValue: sda1
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "0"
+                - asInt: "127"
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda2
+                        stringValue: sda1
                     - key: direction
                       value:
                         stringValue: write
@@ -1191,7 +1078,7 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda3
+                        stringValue: sda14
                     - key: direction
                       value:
                         stringValue: read
@@ -1201,7 +1088,7 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda3
+                        stringValue: sda14
                     - key: direction
                       value:
                         stringValue: write
@@ -1211,17 +1098,37 @@ resourceMetrics:
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda4
+                        stringValue: sda15
                     - key: direction
                       value:
                         stringValue: read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "75"
+                - asInt: "0"
                   attributes:
                     - key: device
                       value:
-                        stringValue: vda4
+                        stringValue: sda15
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: sda16
                     - key: direction
                       value:
                         stringValue: write
@@ -1239,7 +1146,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -1250,22 +1157,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -1360,7 +1267,7 @@ resourceMetrics:
                         stringValue: SYN_SENT
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "0"
+                - asInt: "1"
                   attributes:
                     - key: state
                       value:
@@ -1467,7 +1374,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asInt: "3179"
+                - asInt: "1673"
                   attributes:
                     - key: device
                       value:
@@ -1477,7 +1384,7 @@ resourceMetrics:
                         stringValue: receive
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "7656"
+                - asInt: "5646"
                   attributes:
                     - key: device
                       value:
@@ -1514,7 +1421,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asInt: "25"
+                - asInt: "17"
                   attributes:
                     - key: device
                       value:
@@ -1524,7 +1431,7 @@ resourceMetrics:
                         stringValue: receive
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "26"
+                - asInt: "19"
                   attributes:
                     - key: device
                       value:
@@ -1566,7 +1473,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -1577,22 +1484,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -1652,7 +1559,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -1663,22 +1570,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -1703,7 +1610,7 @@ resourceMetrics:
                         stringValue: major
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "524288"
+                - asInt: "1540096"
                   attributes:
                     - key: type
                       value:
@@ -1747,7 +1654,7 @@ resourceMetrics:
                         stringValue: major
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "757760"
+                - asInt: "3489792"
                   attributes:
                     - key: direction
                       value:
@@ -1759,6 +1666,32 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{operations}'
+          - description: Swap (unix) or pagefile (windows) usage.
+            name: system.paging.usage
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "3221221376"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /swapfile
+                    - key: state
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: device
+                      value:
+                        stringValue: /swapfile
+                    - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/pagingscraper
           version: 0.43.0
@@ -1769,7 +1702,7 @@ resourceMetrics:
             stringValue: amd64
         - key: host.cpu.model.name
           value:
-            stringValue: ""
+            stringValue: AMD EPYC 7763 64-Core Processor
         - key: host.interface
           value:
             arrayValue:
@@ -1780,22 +1713,22 @@ resourceMetrics:
           value:
             arrayValue:
               values:
-                - stringValue: 10.244.0.11
-                - stringValue: fe80::d03e:5ff:fe66:e025
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
         - key: host.mac
           value:
             arrayValue:
               values:
-                - stringValue: D2-3E-05-66-E0-25
+                - stringValue: CA-13-24-D1-B0-E9
         - key: host.name
           value:
-            stringValue: otelcol-7qp6f7m91s-dnrn6
+            stringValue: otelcol-4tpeuus6av-7lgcr
         - key: os.build.id
           value:
-            stringValue: 6.8.8-300.fc40.aarch64
+            stringValue: 6.11.0-1018-azure
         - key: os.description
           value:
-            stringValue: 'Linux otelcol-7qp6f7m91s-dnrn6 6.8.8-300.fc40.aarch64 #1 SMP PREEMPT_DYNAMIC Sat Apr 27 18:11:03 UTC 2024 x86_64'
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
         - key: os.name
           value:
             stringValue: ""
@@ -1817,10 +1750,38 @@ resourceMetrics:
     schemaUrl: https://opentelemetry.io/schemas/1.9.0
     scopeMetrics:
       - metrics:
+          - description: Total CPU seconds broken down by different states.
+            name: process.cpu.time
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0.02
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: wait
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: s
           - description: Percentage of total CPU time used by the process since last scrape, expressed as a value between 0 and 1. On the first scrape, no data point is emitted for this metric.
             gauge:
               dataPoints:
-                - asDouble: 0
+                - asDouble: 0.0004999802127830989
                   attributes:
                     - key: state
                       value:
@@ -1843,12 +1804,33 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: process.cpu.utilization
             unit: "1"
+          - description: Disk bytes transferred.
+            name: process.disk.io
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "30653"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "4396"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: By
           - description: The amount of physical memory in use.
             name: process.memory.usage
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "173481984"
+                - asInt: "101388288"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: By
@@ -1857,7 +1839,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "2069188608"
+                - asInt: "1430163456"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: By

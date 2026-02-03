@@ -178,6 +178,9 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	t.Log("Host metrics checked successfully")
 }
 
+// TestE2E_HostMetricsExtension validates the Host Metrics Extension functionality
+// against expected data collected from a GitHub runner machine. Therefore, local test results can vary based on
+// different metrics being produced based on the underlying OS.
 func TestE2E_HostMetricsExtension(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	expectedFile1m := testDir + "/e2e/expected-host-extension-1m.yaml"

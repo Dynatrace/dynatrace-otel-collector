@@ -371,55 +371,37 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
-
-	expectedMetrics1m, err := golden.ReadMetrics(expectedFile1m)
-	require.NoError(t, err)
-
-	expectedMerged1m := testutil.MergeResources(expectedMetrics1m)
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged1m, testutil.MergeResources(metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]),
-			defaultOptions...,
-		),
-		)
-	}, compareTimeout, compareTick)
+	checkMetrics(t, expectedFile1m, metricsConsumer1m, defaultOptions, compareTimeout, compareTick)
 
 	// 5m Metrics
 	t.Logf("Checking 5m metrics...")
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
+	checkMetrics(t, expectedFile5m, metricsConsumer5m, defaultOptions, compareTimeout, compareTick)
 
-	expectedMetrics5m, err := golden.ReadMetrics(expectedFile5m)
-	require.NoError(t, err)
-
-	expectedMerged5m := testutil.MergeResources(expectedMetrics5m)
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged5m, testutil.MergeResources(metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]),
-			defaultOptions...,
-		),
-		)
-	}, compareTimeout, compareTick)
-
-	t.Log("Host metrics checked successfully")
 
 	// 1h Metrics
 	t.Logf("Checking 1h metrics...")
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
-
-	expectedMetrics1h, err := golden.ReadMetrics(expectedFile1h)
-	require.NoError(t, err)
-
-	expectedMerged1h := testutil.MergeResources(expectedMetrics1h)
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged1h, testutil.MergeResources(metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]),
-			defaultOptions...,
-		),
-		)
-	}, compareTimeout, compareTick)
+	checkMetrics(t, expectedFile1h, metricsConsumer1h, defaultOptions, compareTimeout, compareTick)
 
 	t.Log("Host metrics checked successfully")
+}
+
+func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.MetricsSink, options []pmetrictest.CompareMetricsOption, timeout, tick time.Duration) {
+	expectedMetrics, err := golden.ReadMetrics(expectedFile)
+	require.NoError(t, err)
+
+	expectedMerged := testutil.MergeResources(expectedMetrics)
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged, testutil.MergeResources(consumer.AllMetrics()[len(consumer.AllMetrics())-1]),
+			options...,
+		),
+		)
+	}, timeout, tick)
 }
 
 func substituteWithStar(_ string) string { return "*" }

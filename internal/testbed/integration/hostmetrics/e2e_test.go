@@ -349,6 +349,7 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 		pmetrictest.ChangeDatapointAttributeValue("cpu", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("state", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("interface", substituteWithStar),
+		pmetrictest.ChangeDatapointAttributeValue("device", substituteWithStar),
 
 		pmetrictest.IgnoreDatapointAttributesOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),

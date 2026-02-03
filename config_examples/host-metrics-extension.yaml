@@ -179,34 +179,34 @@ processors:
           - delete_key(resource.attributes, "process.parent_pid") where IsMatch(metric.name, "^process\\..*")
 
           # Delete empty device attributes
-          - delete_key(attributes, "device") where attributes["device"] == ""
+          - delete_key(datapoint.attributes, "device") where datapoint.attributes["device"] == ""
 
           # Delete datapoint attributes not used by the OpenTelemetry Host extension
           # Network metrics: Dashboard aggregates all interfaces and protocols
-          - delete_key(attributes, "protocol") where IsMatch(metric.name, "^system\\.network\\..*")
+          - delete_key(datapoint.attributes, "protocol") where IsMatch(metric.name, "^system\\.network\\..*")
 
           # Filesystem metrics: Extension uses mountpoint and state, but not device, mode, or type
-          - delete_key(attributes, "device") where IsMatch(metric.name, "^system\\.filesystem\\..*")
-          - delete_key(attributes, "mode") where IsMatch(metric.name, "^system\\.filesystem\\..*")
-          - delete_key(attributes, "type") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(datapoint.attributes, "device") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(datapoint.attributes, "mode") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(datapoint.attributes, "type") where IsMatch(metric.name, "^system\\.filesystem\\..*")
 
       - context: resource
         statements:
           # Replace spaces in process command line with underscores for cleaner entity IDs
-          - replace_pattern(attributes["process.command_line"], " ", "_")
+          - replace_pattern(resource.attributes["process.command_line"], " ", "_")
 
       - context: metric
         statements:
-          - aggregate_on_attributes("sum", ["cpu"]) where name == "system.cpu.utilization"
+          - aggregate_on_attributes("sum", ["cpu"]) where metric.name == "system.cpu.utilization"
 
       - context: datapoint
         statements:
-          - delete_key(attributes, "cpu") where metric.name == "system.cpu.utilization"
+          - delete_key(datapoint.attributes, "cpu") where metric.name == "system.cpu.utilization"
 
       - context: metric
         statements:
           # Average remaining datapoints (one per core) into a single host-level value
-          - aggregate_on_attributes("mean") where name == "system.cpu.utilization"
+          - aggregate_on_attributes("mean") where metric.name == "system.cpu.utilization"
 
   batch:
     send_batch_size: 100

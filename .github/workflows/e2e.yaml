@@ -129,12 +129,6 @@ jobs:
           cd internal/testbed/integration/${{ matrix.usecase }}
           go test -v --tags=e2e
 
-      - name: Cat out expected files
-        if: always()
-        run: |
-          pwd
-          cat internal/testbed/integration/${{ matrix.usecase }}/testdata/e2e/expected-host-extension-*
-
   combined-load-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04

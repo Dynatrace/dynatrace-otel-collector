@@ -132,7 +132,8 @@ jobs:
       - name: Cat out expected files
         if: always()
         run: |
-          cat testdata/e2e/expected-host-extension-*
+          pwd
+          cat internal/testbed/integration/${{ matrix.usecase }}/testdata/e2e/expected-host-extension-*
 
   combined-load-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

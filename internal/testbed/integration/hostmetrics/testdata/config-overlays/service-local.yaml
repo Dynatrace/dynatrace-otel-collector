@@ -1,0 +1,22 @@
+exporters:
+  otlphttp/1:
+    endpoint: http://%[1]s:4320
+  otlphttp/2:
+    endpoint: http://%[1]s:4321
+  otlphttp/3:
+    endpoint: http://%[1]s:4322
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics/1m:
+      receivers: [hostmetrics/1m]
+      processors: [filter, resourcedetection, transform, cumulativetodelta]
+      exporters: [otlphttp/1]
+    metrics/5m:
+      receivers: [hostmetrics/5m]
+      processors: [filter, resourcedetection, transform, cumulativetodelta]
+      exporters: [otlphttp/2]
+    metrics/1h:
+      receivers: [hostmetrics/1h]
+      processors: [filter, resourcedetection, transform, cumulativetodelta]
+      exporters: [otlphttp/3]

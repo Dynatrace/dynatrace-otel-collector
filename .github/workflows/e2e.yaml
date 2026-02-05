@@ -61,6 +61,8 @@ jobs:
           push: false
           load: true
           tags: dynatrace-otel-collector:e2e-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: export image to tar
         run: |

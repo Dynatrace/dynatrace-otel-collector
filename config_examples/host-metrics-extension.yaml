@@ -175,10 +175,7 @@ processors:
 
       - context: datapoint
         statements:
-          # For process.* metrics, keep only the attributes needed by the OpenTelemetry Host extension:
-          # - process.command_line (for entity identification and display)
-          # - process.pid (for entity attributes)
-          # - process.executable.name (for entity display name)
+          # For process.* metrics, keep only the attributes needed by the OpenTelemetry Host extension and remove the rest
           - delete_key(resource.attributes, "process.cgroup") where IsMatch(metric.name, "^process\\..*")
           - delete_key(resource.attributes, "process.command") where IsMatch(metric.name, "^process\\..*")
           - delete_key(resource.attributes, "process.executable.path") where IsMatch(metric.name, "^process\\..*")
@@ -188,8 +185,6 @@ processors:
           # Delete empty device attributes
           - delete_key(datapoint.attributes, "device") where datapoint.attributes["device"] == ""
 
-          # Delete datapoint attributes not used by the OpenTelemetry Host extension
-          # Network metrics: Dashboard aggregates all interfaces and protocols
           - delete_key(datapoint.attributes, "protocol") where IsMatch(metric.name, "^system\\.network\\..*")
 
           # Filesystem metrics: Extension uses mountpoint and state, but not device, mode, or type

@@ -166,6 +166,11 @@ processors:
   transform:
     error_mode: ignore
     metric_statements:
+      - context: resource
+        statements:
+          # Convert host.ip from array to first value of array to avoid the metric being dropped
+          - set(resource.attributes["host.ip"], resource.attributes["host.ip"][0]) where resource.attributes["host.ip"] != nil
+
       - context: datapoint
         statements:
           # For process.* metrics, keep only the attributes needed by the OpenTelemetry Host extension:

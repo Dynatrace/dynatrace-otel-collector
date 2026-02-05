@@ -1,4 +1,6 @@
 exporters:
+  debug:
+    verbosity: basic
   otlphttp:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
@@ -9,10 +11,13 @@ extensions:
     endpoint: 0.0.0.0:13133
 
 receivers:
-  hostmetrics:
+  hostmetrics/10s:
     collection_interval: 10s
     scrapers:
       paging:
+        metrics:
+          system.paging.usage:
+            enabled: true
       cpu:
         metrics:
           system.cpu.logical.count:
@@ -21,9 +26,10 @@ receivers:
             enabled: true
           system.cpu.utilization:
             enabled: true
-      disk:
       filesystem:
         metrics:
+          system.filesystem.usage:
+            enabled: true
           system.filesystem.utilization:
             enabled: true
       memory:
@@ -32,16 +38,85 @@ receivers:
             enabled: true
           system.memory.utilization:
             enabled: true
+          system.memory.usage:
+            enabled: true
       network:
+        metrics:
+          system.network.io:
+            enabled: true
+          system.network.connections:
+            enabled: true
       processes:
+        metrics:
+          system.processes.count:
+            enabled: true
       process:
         mute_process_all_errors: true
         metrics:
           process.cpu.utilization:
             enabled: true
+          process.memory.usage:
+            enabled: true
+          process.cpu.time:
+            enabled: false
+          process.disk.io:
+            enabled: false
+          process.memory.virtual:
+            enabled: false
       system:
+        metrics:
+          system.uptime:
+            enabled: true
+#  hostmetrics/5m:
+#    collection_interval: 5m
+#    scrapers:
+#      filesystem:
+#        metrics:
+#          system.filesystem.utilization:
+#            enabled: true
+  hostmetrics/1h:
+    collection_interval: 1h
+    scrapers:
+      system:
+        metrics:
+          system.uptime:
+            enabled: true
 
 processors:
+  transform:
+    error_mode: ignore
+    metric_statements:
+      - context: datapoint
+        statements:
+          # For process.* metrics, delete all resource attributes except process.command_line and process.pid
+          # These are the only process attributes needed by the OpenTelemetry Host Dashboard
+          - delete_key(resource.attributes, "process.cgroup") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.command") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.executable.name") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.executable.path") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.owner") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.parent_pid") where IsMatch(metric.name, "^process\\..*")
+          # Delete empty device attributes
+          - delete_key(attributes, "device") where attributes["device"] == ""
+
+          # Delete datapoint attributes not used by the OpenTelemetry Host Dashboard
+          # CPU metrics: Dashboard aggregates all CPUs, doesn't use per-cpu 'cpu' attribute
+          - delete_key(attributes, "cpu") where IsMatch(metric.name, "^system\\.cpu\\..*")
+
+          # Network metrics: Dashboard aggregates all interfaces and directions
+          - delete_key(attributes, "protocol") where IsMatch(metric.name, "^system\\.network\\..*")
+
+          # Filesystem metrics: Dashboard uses mountpoint and state, but not device, mode, or type
+          - delete_key(attributes, "device") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(attributes, "mode") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(attributes, "type") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+
+      - context: resource
+        statements:
+          - replace_pattern(attributes["process.command_line"], " ", "_")
+
+  batch:
+    send_batch_size: 100
   cumulativetodelta:
     max_staleness: 25h
   resourcedetection:
@@ -50,15 +125,14 @@ processors:
       resource_attributes:
         host.arch:
           enabled: true
-        host.ip:
-          enabled: true
-        host.mac:
+        host.id:
           enabled: true
 
 service:
   extensions: [health_check]
   pipelines:
     metrics:
-      receivers: [hostmetrics]
-      processors: [resourcedetection, cumulativetodelta]
-      exporters: [otlphttp]
+#      receivers: [hostmetrics/10s, hostmetrics/5m, hostmetrics/1h]
+      receivers: [hostmetrics/10s, hostmetrics/1h]
+      processors: [resourcedetection, transform, cumulativetodelta, batch]
+      exporters: [otlphttp, debug]

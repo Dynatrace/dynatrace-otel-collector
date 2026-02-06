@@ -94,7 +94,7 @@ service:
             interval: 10000
             timeout: 5000
             exporter:
-              otlp_grpc:
+              otlp:
                 protocol: http/protobuf
                 temporality_preference: delta
                 endpoint: http://${env:MY_POD_IP}:4318

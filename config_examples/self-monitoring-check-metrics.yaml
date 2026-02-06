@@ -72,7 +72,7 @@ service:
             interval: 10000
             timeout: 5000
             exporter:
-              otlp_grpc:
+              otlp:
                 protocol: http/protobuf
                 temporality_preference: delta
                 endpoint: ${env:DT_ENDPOINT}

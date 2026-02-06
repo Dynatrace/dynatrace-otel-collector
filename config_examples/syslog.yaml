@@ -34,7 +34,7 @@ receivers:
     protocol: rfc5424
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -43,4 +43,4 @@ service:
   pipelines:
     logs:
       receivers: [syslog/f5, syslog/host, syslog/udp]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

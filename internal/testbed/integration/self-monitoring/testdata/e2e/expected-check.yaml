@@ -958,7 +958,7 @@ resourceMetrics:
                 - attributes:
                     - key: exporter
                       value:
-                        stringValue: otlphttp
+                        stringValue: otlp_http
                   bucketCounts:
                     - "2"
                     - "0"
@@ -1021,7 +1021,7 @@ resourceMetrics:
                 - attributes:
                     - key: exporter
                       value:
-                        stringValue: otlphttp
+                        stringValue: otlp_http
                   bucketCounts:
                     - "0"
                     - "0"
@@ -1071,7 +1071,7 @@ resourceMetrics:
                         stringValue: traces
                     - key: exporter
                       value:
-                        stringValue: otlphttp
+                        stringValue: otlp_http
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_capacity
@@ -1086,7 +1086,7 @@ resourceMetrics:
                         stringValue: traces
                     - key: exporter
                       value:
-                        stringValue: otlphttp
+                        stringValue: otlp_http
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_size
@@ -1162,7 +1162,7 @@ resourceMetrics:
                   attributes:
                     - key: exporter
                       value:
-                        stringValue: otlphttp
+                        stringValue: otlp_http
                   exemplars:
                     - asInt: "6"
                       spanId: 35302924b77f65e5
@@ -1247,7 +1247,7 @@ resourceMetrics:
                   attributes:
                     - key: exporter
                       value:
-                        stringValue: otlphttp
+                        stringValue: otlp_http
                   exemplars:
                     - asInt: "0"
                       spanId: 35302924b77f65e5

@@ -4,7 +4,7 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:4317
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -30,12 +30,12 @@ service:
     traces:
       receivers: [otlp]
       processors: [transform]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
     metrics:
       receivers: [otlp]
       processors: [transform]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
     logs:
       receivers: [otlp]
       processors: [transform]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

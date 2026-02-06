@@ -5,7 +5,7 @@ receivers:
         endpoint: 0.0.0.0:14250
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -14,4 +14,4 @@ service:
   pipelines:
     traces:
       receivers: [jaeger]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

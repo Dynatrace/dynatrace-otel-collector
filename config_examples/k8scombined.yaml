@@ -136,7 +136,7 @@ processors:
           - from: connection
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -155,7 +155,7 @@ service:
         - transform
         - cumulativetodelta
       exporters:
-        - otlphttp
+        - otlp_http
     metrics:
       receivers:
         - k8s_cluster
@@ -164,14 +164,14 @@ service:
         - transform
         - cumulativetodelta
       exporters:
-        - otlphttp
+        - otlp_http
     logs:
       receivers:
         - k8s_events
       processors:
         - transform
       exporters:
-        - otlphttp
+        - otlp_http
     traces:
       receivers:
         - otlp
@@ -179,4 +179,4 @@ service:
         - k8sattributes
         - transform
       exporters:
-        - otlphttp
+        - otlp_http

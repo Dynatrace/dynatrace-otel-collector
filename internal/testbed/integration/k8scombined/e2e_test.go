@@ -158,7 +158,7 @@ var (
         - 'resource.attributes["k8s.volume.type"] == "secret"'`
 
 	templateOrigin = `
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -177,7 +177,7 @@ service:
         - transform
         - cumulativetodelta
       exporters:
-        - otlphttp
+        - otlp_http
     metrics:
       receivers:
         - k8s_cluster
@@ -186,14 +186,14 @@ service:
         - transform
         - cumulativetodelta
       exporters:
-        - otlphttp
+        - otlp_http
     logs:
       receivers:
         - k8s_events
       processors:
         - transform
       exporters:
-        - otlphttp
+        - otlp_http
     traces:
       receivers:
         - otlp
@@ -201,15 +201,15 @@ service:
         - k8sattributes
         - transform
       exporters:
-        - otlphttp`
+        - otlp_http`
 	templateNew = `
-  otlphttp/node:
+  otlp_http/node:
     endpoint: http://%s:4321
-  otlphttp/cluster:
+  otlp_http/cluster:
     endpoint: http://%s:4320
-  otlphttp/traces:
+  otlp_http/traces:
     endpoint: http://%s:4322
-  otlphttp/logs:
+  otlp_http/logs:
     endpoint: http://%s:4319
 
 service:
@@ -224,7 +224,7 @@ service:
         - k8sattributes
         - transform
       exporters:
-        - otlphttp/traces
+        - otlp_http/traces
     metrics/node:
       receivers:
         - kubeletstats
@@ -234,7 +234,7 @@ service:
         - transform
         - cumulativetodelta
       exporters:
-        - otlphttp/node
+        - otlp_http/node
     metrics:
       receivers:
         - k8s_cluster
@@ -243,14 +243,14 @@ service:
         - transform
         - cumulativetodelta
       exporters:
-        - otlphttp/cluster
+        - otlp_http/cluster
     logs:
       receivers:
         - k8s_events
       processors:
         - transform
       exporters:
-        - otlphttp/logs`
+        - otlp_http/logs`
 )
 
 func TestE2E_K8sCombinedReceiver(t *testing.T) {

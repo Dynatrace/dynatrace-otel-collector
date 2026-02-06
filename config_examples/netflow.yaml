@@ -9,7 +9,7 @@ receivers:
     port: 2055
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -19,4 +19,4 @@ service:
   pipelines:
     logs:
       receivers: [netflow]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

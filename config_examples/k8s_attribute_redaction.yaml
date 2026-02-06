@@ -54,7 +54,7 @@ processors:
       - "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
     summary: info
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -69,4 +69,4 @@ service:
         - k8sattributes
         - redaction
       exporters:
-        - otlphttp
+        - otlp_http

@@ -23,15 +23,15 @@ data:
         limit_percentage: 100
 
     exporters:
-      otlp:
+      otlp_grpc:
         endpoint: {{ .HostEndpoint }}:4327
         tls:
           insecure: true
-      otlp/2:
+      otlp_grpc/2:
         endpoint: {{ .HostEndpoint }}:4328
         tls:
           insecure: true
-      otlp/3:
+      otlp_grpc/3:
         endpoint: {{ .HostEndpoint }}:4329
         tls:
           insecure: true
@@ -47,7 +47,7 @@ data:
             - batch
             - memory_limiter
           exporters:
-            - otlp
+            - otlp_grpc
         metrics:
           receivers:
             - otlp
@@ -55,7 +55,7 @@ data:
             - batch
             - memory_limiter
           exporters:
-            - otlp/2
+            - otlp_grpc/2
         logs:
           receivers:
             - otlp
@@ -63,4 +63,4 @@ data:
             - batch
             - memory_limiter
           exporters:
-            - otlp/3
+            - otlp_grpc/3

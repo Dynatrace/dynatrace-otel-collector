@@ -75,4 +75,4 @@ To start it in the `receiver mode`
 ## Run
 
 You can access `http://localhost:8080` and click on one of the trace generators. Afterwards you can see in the logs of the HotROD that the traces are being generated and sent to the collector. If you have set up a debug exporter in the collector (set up by default in the [example config](./config.yaml)),
-you should be able to see those traces also in the `received.json` file, as the traces are being exported via `otlphttp` exporter to the debug CLI tool and stored by it in the file.
+you should be able to see those traces also in the `received.json` file, as the traces are being exported via `otlp_http` exporter to the debug CLI tool and stored by it in the file.

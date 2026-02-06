@@ -5,7 +5,7 @@ receivers:
         endpoint: 0.0.0.0:14268
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: http://0.0.0.0:4319
     tls:
       insecure: true
@@ -18,4 +18,4 @@ service:
   pipelines:
     traces:
       receivers: [jaeger]
-      exporters: [debug, otlphttp]
+      exporters: [debug, otlp_http]

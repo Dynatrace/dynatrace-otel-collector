@@ -78,7 +78,7 @@ processors:
     metric_statements: *dynatrace_transformations
     log_statements: *dynatrace_transformations
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -93,4 +93,4 @@ service:
         - k8sattributes
         - transform
       exporters:
-        - otlphttp
+        - otlp_http

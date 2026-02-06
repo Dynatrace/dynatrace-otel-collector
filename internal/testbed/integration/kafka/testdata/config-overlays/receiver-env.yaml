@@ -1,5 +1,5 @@
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -9,10 +9,10 @@ service:
   pipelines:
     traces:
       receivers: [kafka]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
     metrics:
       receivers: [kafka]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
     logs:
       receivers: [kafka]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

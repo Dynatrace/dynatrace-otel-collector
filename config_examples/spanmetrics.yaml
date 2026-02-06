@@ -37,7 +37,7 @@ processors:
     decision_wait: 30s
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: Api-Token ${env:API_TOKEN}
@@ -55,7 +55,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [tail_sampling]
-      exporters: [otlphttp, debug]
+      exporters: [otlp_http, debug]
     traces/spanmetrics:
       receivers: [otlp]
       processors: []
@@ -63,4 +63,4 @@ service:
     metrics:
       receivers: [spanmetrics]
       processors: [transform, filter, transform/spanmetrics]
-      exporters: [otlphttp, debug]
+      exporters: [otlp_http, debug]

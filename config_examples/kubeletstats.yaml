@@ -53,7 +53,7 @@ processors:
     max_staleness: 25h
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -67,4 +67,4 @@ service:
     metrics:
       receivers: [kubeletstats]
       processors: [cumulativetodelta]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

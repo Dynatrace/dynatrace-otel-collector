@@ -27,7 +27,7 @@ alternateConfig:
         http:
           endpoint: ${env:MY_POD_IP}:4318
   exporters:
-    otlphttp:
+    otlp_http:
       endpoint: "${env:DT_ENDPOINT}"
       headers:
         Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -40,12 +40,12 @@ alternateConfig:
       traces:
         receivers: [otlp]
         processors: []
-        exporters: [otlphttp]
+        exporters: [otlp_http]
       metrics:
         receivers: [otlp]
         processors: []
-        exporters: [otlphttp]
+        exporters: [otlp_http]
       logs:
         receivers: [otlp]
         processors: []
-        exporters: [otlphttp]
+        exporters: [otlp_http]

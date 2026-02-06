@@ -251,7 +251,7 @@ processors:
           enabled: true
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -262,4 +262,4 @@ service:
     metrics:
       receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
       processors: [filter, resourcedetection, transform, cumulativetodelta, batch]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

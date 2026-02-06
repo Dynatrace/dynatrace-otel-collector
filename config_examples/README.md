@@ -32,7 +32,7 @@ Dynatrace distribution of the OpenTelemetry Collector.
 
 ## Sending data to Dynatrace
 
-In addition to the `debug` exporter, some samples are also configured with the `otlphttp` exporter
+In addition to the `debug` exporter, some samples are also configured with the `otlp_http` exporter
 so you can also see the data in your Dynatrace environment.
 
 Before running the samples, make sure you have the following environment variables set:

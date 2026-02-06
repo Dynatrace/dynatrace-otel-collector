@@ -75,7 +75,7 @@ processors:
         statements: &k8s-statements
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -90,4 +90,4 @@ service:
     logs:
       receivers: [filelog]
       processors: [k8sattributes,transform]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

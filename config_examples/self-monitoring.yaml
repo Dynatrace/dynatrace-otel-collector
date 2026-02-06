@@ -8,7 +8,7 @@ receivers:
       http:
         endpoint: ${env:MY_POD_IP}:4318
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -20,7 +20,7 @@ service:
       receivers:
         - otlp
       exporters:
-        - otlphttp
+        - otlp_http
   # turn on self-monitoring
   telemetry:
     resource:
@@ -38,7 +38,7 @@ service:
             interval: 10000
             timeout: 5000
             exporter:
-              otlp:
+              otlp_grpc:
                 protocol: http/protobuf
                 temporality_preference: delta
                 endpoint: ${env:DT_ENDPOINT}

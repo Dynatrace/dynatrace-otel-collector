@@ -29,7 +29,7 @@ Make sure to also add the receivers and processors to your collector pipeline.
 exporters:
   debug:
     verbosity: detailed
-  otlphttp:
+  otlp_http:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -86,7 +86,7 @@ service:
     metrics:
       receivers: [hostmetrics]
       processors: [resourcedetection, cumulativetodelta]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
 ```
 
 ### Adding attributes to the allow list

@@ -25,7 +25,7 @@ processors:
 exporters:
   debug:
     verbosity: detailed
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -35,4 +35,4 @@ service:
     metrics/otlp:
       receivers: [otlp]
       processors: [transform/histogram, filter/histogram]
-      exporters: [otlphttp, debug]
+      exporters: [otlp_http, debug]

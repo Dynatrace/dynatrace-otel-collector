@@ -11,7 +11,7 @@ processors:
     override: false
     detectors: [dynatrace]
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -25,4 +25,4 @@ service:
       processors:
         - resourcedetection/dynatrace
       exporters:
-        - otlphttp
+        - otlp_http

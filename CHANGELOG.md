@@ -4,6 +4,32 @@
 
 <!-- next version -->
 
+## v0.44.0
+
+This release includes version v0.145.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.145.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.145.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.145.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+---
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `config_examples`: Add config example for a host metrics receiver config that fits all needs of the Dynatrace Host extension (#809)
+
+<!-- previous-version -->
+
 ## v0.43.0
 
 This release includes version **0.144.0** of the upstream Collector components.

@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/testbed
 
-go 1.25.6
+go 1.25.7
 
 require (
 	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0
@@ -15,7 +15,7 @@ require (
 	go.opentelemetry.io/collector/consumer v1.50.0
 	go.opentelemetry.io/collector/consumer/consumertest v0.144.0
 	go.opentelemetry.io/collector/pdata v1.50.0
-	go.opentelemetry.io/otel v1.39.0
+	go.opentelemetry.io/otel v1.40.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -291,11 +291,11 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.39.0 // indirect
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.39.0 // indirect
 	go.opentelemetry.io/otel/log v0.15.0 // indirect
-	go.opentelemetry.io/otel/metric v1.39.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.39.0 // indirect
+	go.opentelemetry.io/otel/metric v1.40.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.40.0 // indirect
 	go.opentelemetry.io/otel/sdk/log v0.14.0 // indirect
-	go.opentelemetry.io/otel/sdk/metric v1.39.0 // indirect
-	go.opentelemetry.io/otel/trace v1.39.0 // indirect
+	go.opentelemetry.io/otel/sdk/metric v1.40.0 // indirect
+	go.opentelemetry.io/otel/trace v1.40.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.9.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
@@ -339,3 +339,5 @@ require (
 )
 
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon
+
+replace go.opentelemetry.io/otel/sdk => go.opentelemetry.io/otel/sdk v1.40.0

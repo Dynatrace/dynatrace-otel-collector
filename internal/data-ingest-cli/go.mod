@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli
 
-go 1.25.6
+go 1.25.7
 
 require (
 	github.com/fluent/fluent-logger-golang v1.10.1
@@ -40,8 +40,8 @@ require (
 	go.opentelemetry.io/collector/confmap v1.50.0 // indirect
 	go.opentelemetry.io/collector/confmap/xconfmap v0.144.0 // indirect
 	go.opentelemetry.io/collector/featuregate v1.50.0 // indirect
-	go.opentelemetry.io/otel v1.39.0 // indirect
-	go.opentelemetry.io/otel/trace v1.39.0 // indirect
+	go.opentelemetry.io/otel v1.40.0 // indirect
+	go.opentelemetry.io/otel/trace v1.40.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
@@ -52,3 +52,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )
+
+replace go.opentelemetry.io/otel/sdk => go.opentelemetry.io/otel/sdk v1.40.0

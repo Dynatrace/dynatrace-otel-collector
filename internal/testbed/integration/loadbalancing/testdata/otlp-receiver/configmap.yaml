@@ -17,17 +17,17 @@ data:
             endpoint: 0.0.0.0:4318
 
     exporters:
-      otlp/metrics:
+      otlp_grpc/metrics:
         endpoint: {{ .HostEndpoint }}:4327
         tls:
           insecure: true
 
-      otlp/traces:
+      otlp_grpc/traces:
         endpoint: {{ .HostEndpoint }}:4337
         tls:
           insecure: true
 
-      otlp/logs:
+      otlp_grpc/logs:
         endpoint: {{ .HostEndpoint }}:4347
         tls:
           insecure: true
@@ -37,10 +37,10 @@ data:
       pipelines:
         metrics:
           receivers: [otlp]
-          exporters: [otlp/metrics]
+          exporters: [otlp_grpc/metrics]
         traces:
           receivers: [otlp]
-          exporters: [otlp/traces]
+          exporters: [otlp_grpc/traces]
         logs:
           receivers: [otlp]
-          exporters: [otlp/logs]
+          exporters: [otlp_grpc/logs]

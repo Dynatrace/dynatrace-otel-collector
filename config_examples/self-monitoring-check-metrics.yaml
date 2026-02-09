@@ -9,7 +9,7 @@ receivers:
 exporters:
   debug:
     verbosity: detailed
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -56,7 +56,7 @@ service:
         - batch
       exporters:
         - debug
-        - otlphttp
+        - otlp_http
   # turn on self-monitoring
   telemetry:
     resource:

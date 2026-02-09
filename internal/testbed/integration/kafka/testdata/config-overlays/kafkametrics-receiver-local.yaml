@@ -1,5 +1,5 @@
 exporters:
-  otlphttp/second:
+  otlp_http/second:
     endpoint: http://%s:4322
 
 service:
@@ -8,4 +8,4 @@ service:
     metrics:
       receivers: [kafkametrics]
       processors: [cumulativetodelta]
-      exporters: [otlphttp/second]
+      exporters: [otlp_http/second]

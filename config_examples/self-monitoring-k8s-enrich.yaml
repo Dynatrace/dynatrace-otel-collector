@@ -67,7 +67,7 @@ processors:
          - delete_key(attributes, "k8s.cronjob.name")
          - delete_key(attributes, "k8s.job.name")
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
@@ -82,7 +82,7 @@ service:
         - k8sattributes
         - transform
       exporters:
-        - otlphttp
+        - otlp_http
   # turn on self-monitoring
   telemetry:
     metrics:

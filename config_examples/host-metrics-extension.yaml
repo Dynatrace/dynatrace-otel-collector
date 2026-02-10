@@ -14,24 +14,12 @@ receivers:
       # CPU metrics
       cpu:
         metrics:
-          system.cpu.logical.count:
-            enabled: false
-          system.cpu.physical.count:
-            enabled: false
-          system.cpu.utilization:
-            enabled: false
           system.cpu.time:
             enabled: true
-          system.cpu.frequency:
-            enabled: false
 
       # Memory metrics
       memory:
         metrics:
-          system.memory.limit:
-            enabled: false
-          system.memory.utilization:
-            enabled: false
           system.memory.usage:
             enabled: true
 
@@ -152,6 +140,25 @@ receivers:
   hostmetrics/1h:
     collection_interval: 1h
     scrapers:
+      # Memory metrics
+      memory:
+        metrics:
+          system.memory.limit:
+            enabled: true
+          system.memory.usage:
+            enabled: false
+
+      # CPU metrics
+      cpu:
+        metrics:
+          system.cpu.logical.count:
+            enabled: true
+          system.cpu.physical.count:
+            enabled: true
+          system.cpu.time:
+            enabled: false
+
+      # System metrics
       system:
         metrics:
           system.uptime:

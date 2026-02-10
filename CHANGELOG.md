@@ -1183,6 +1183,7 @@ v0.128.0:
   The case where logs are only exported to stdout was fixed in v0.126.0;
   this new fix also covers the case where logs are exported through OTLP.
 - `prometheusreceiver`: Fix invalid metric name validation error in scrape start from target allocator. (#[35459](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35459), #[40788](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40788))
+  Prometheus made setting metric_name_validation_scheme, metric_name_escaping_scheme mandatory, use sane defaults.
 - `hostmetricsreceiver`: Minor fix to the handling of conntrack errors ([#40175](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40175))
 - `k8sattributesprocessor`: Make sure getIdentifiersFromAssoc() can handle container.id ([#40745](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40745))
 

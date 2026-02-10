@@ -29,7 +29,7 @@ v0.145.0:
 
 ### 💡 Enhancements 💡
 
-- `config_examples`: Add config example for a host metrics receiver config that fits all needs of the Dynatrace Host extension (#809)
+- `config_examples`: Add config example for a host metrics receiver config that fits all needs of the Dynatrace Host extension ([#809](https://github.com/Dynatrace/dynatrace-otel-collector/issues/809))
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>

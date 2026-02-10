@@ -122,7 +122,7 @@ The individual upstream Collector changelogs can be found here:
 
 ---
 
-### 🛑 `Breaking Changes` 🛑
+### 🛑 Breaking Changes 🛑
 - `pkg/config/confighttp`: Replace `ServerConfig.Endpoint` with `NetAddr confignet.AddrConfig`, enabling more flexible transport configuration. ([#14187](https://github.com/open-telemetry/opentelemetry-collector/pull/14187), [#8752](https://github.com/open-telemetry/opentelemetry-collector/pull/8752))
   This change adds "transport" as a configuration option, allowing users to specify
   different transport protocols (e.g., "tcp", "unix").
@@ -138,13 +138,13 @@ The individual upstream Collector changelogs can be found here:
 
 ---
 
-### 🚩 `Deprecations` 🚩
+### 🚩 Deprecations 🚩
 - `exporter/otlp_grpc`: Rename `otlp` → `otlp_grpc`; add deprecated alias `otlp`. ([#14403](https://github.com/open-telemetry/opentelemetry-collector/pull/14403))
 - `exporter/otlp_http`: Rename `otlphttp` → `otlp_http`; add deprecated alias `otlphttp`. ([#14396](https://github.com/open-telemetry/opentelemetry-collector/pull/14396))
 
 ---
 
-### 💡 `Enhancements` 💡
+### 💡 Enhancements 💡
 - `processor/tail_sampling`: New `decision_wait_after_root_received` option. ([#43876](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43876))
 - `processor/k8sattributes`: Bump `semconv` to v1.39.0. ([#45447](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45447))
 - `processor/redaction`: Added `sanitize_span_name` and `ignored_key_patterns`. ([#44228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44228).
@@ -156,7 +156,7 @@ The individual upstream Collector changelogs can be found here:
 
 ---
 
-### 🧰 `Bug Fixes` 🧰
+### 🧰 Bug Fixes 🧰
 - `pkg/exporterhelper`: Fix partition batcher refcount. ([#14444](https://github.com/open-telemetry/opentelemetry-collector/pull/14444))
 - `exporter/kafka`: franz-go: Exclude non-produce metrics from kafka_exporter_write_latency and kafka_exporter_latency ([#45258](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45258))
 - `pkg/kafka/configkafka`: Fix consumer group rebalance strategy validation [#45268](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45268)

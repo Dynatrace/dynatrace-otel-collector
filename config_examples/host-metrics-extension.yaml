@@ -11,6 +11,12 @@ receivers:
   hostmetrics/5m:
     collection_interval: 5m
     scrapers:
+      # CPU metrics
+      cpu:
+        metrics:
+          system.cpu.time:
+            enabled: true
+
       # Memory metrics
       memory:
         metrics:
@@ -112,8 +118,8 @@ receivers:
             enabled: true
           system.cpu.utilization:
             enabled: true
-          system.cpu.time: # needs to be enabled, otherwise system.cpu.utilization does not work as expected
-            enabled: true
+          system.cpu.time:
+            enabled: false
 
       # Memory metrics
       memory:
@@ -163,7 +169,6 @@ processors:
     metrics:
       datapoint:
         - metric.name == "system.cpu.utilization" and attributes["state"] == "idle"
-        - metric.name == "system.cpu.time" and attributes["state"] == "idle"
 
   transform:
     error_mode: ignore

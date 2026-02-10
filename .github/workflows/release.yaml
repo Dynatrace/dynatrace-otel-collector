@@ -1,4 +1,4 @@
-name: Build and Release
+name: Release
 
 on:
   push:
@@ -16,12 +16,23 @@ env:
 
 jobs:
   build:
-    name: Release
+    name: Prepare
     runs-on: ubuntu-24.04
     permissions:
       id-token: write
       contents: write
       packages: write
+    strategy:
+      matrix:
+        goos: ["linux", "windows", "darwin"]
+        goarch: ["amd64", "arm64", "ppc64le", "s390x"]
+        exclude:
+          - goos: windows
+            goarch: arm64
+          - goos: darwin
+            goarch: s390x
+          - goos: windows
+            goarch: s390x
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -29,7 +40,7 @@ jobs:
           fetch-depth: 0
       - name: Validate version
         env:
-          TAG_NAME: ${{ github.head_ref || github.ref_name }} 
+          TAG_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           # Remove leading 'v' from version
           export VERSION=$(echo -n ${TAG_NAME} | cut -c 2-)
@@ -41,8 +52,8 @@ jobs:
         with:
           platforms: arm64,ppc64le,s390x
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
-      - name: Install cyclonedx-gomod
-        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@${{ env.CYCLONEDX_VERSION }}
+#      - name: Install cyclonedx-gomod
+#        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@${{ env.CYCLONEDX_VERSION }}
       - name: Cache tools
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -95,8 +106,90 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: ${{ env.GORELEASER_PRO_VERSION }}
-          args: release --clean --parallelism 1 --release-notes ${{ env.RELEASE_NOTES }}
+          args: release --clean --release-notes ${{ env.RELEASE_NOTES }} --split
         env:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_NOTES: "./release-notes.md"
+
+  release:
+    name: Release
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+#      - name: Validate version
+#        env:
+#          TAG_NAME: ${{ github.head_ref || github.ref_name }}
+#        run: |
+#          # Remove leading 'v' from version
+#          export VERSION=$(echo -n ${TAG_NAME} | cut -c 2-)
+#          grep "version: ${VERSION}" manifest.yaml || (echo "value of 'dist.version' in manifest.yaml does not match tag version ${VERSION}, please update it" && exit 1)
+      - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6.2.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+        with:
+          platforms: arm64,ppc64le,s390x
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - name: Install cyclonedx-gomod
+        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@${{ env.CYCLONEDX_VERSION }}
+      - name: Cache tools
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: .tools
+          key: release-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+      - name: Touch tools
+        run: |
+          mkdir -p .tools
+      - name: Login to GitHub Package Registry
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to DockerHub Registry
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6.0.0
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2.0.1
+        with:
+          registry-type: public
+
+      - name: Free up disk space
+        run: |
+          df -h
+          go clean -modcache -cache
+          rm -r /opt/hostedtoolcache/CodeQL
+          rm -r /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          rm -r /opt/hostedtoolcache/PyPy
+          rm -r /opt/hostedtoolcache/Ruby
+          rm -r /opt/hostedtoolcache/node
+          sudo rm -r $ANDROID_HOME
+          df -h
+
+      - name: Create release for version tag
+        uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
+        with:
+          distribution: goreleaser-pro
+          version: ${{ env.GORELEASER_PRO_VERSION }}
+          args: continue --merge --snapshot
+        env:
+          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

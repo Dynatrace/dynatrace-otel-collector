@@ -103,15 +103,6 @@ resourceMetrics:
     schemaUrl: https://opentelemetry.io/schemas/1.9.0
     scopeMetrics:
       - metrics:
-          - description: Number of available logical CPUs.
-            name: system.cpu.logical.count
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "4"
-                  startTimeUnixNano: "1759741945000000000"
-                  timeUnixNano: "1759742352220753769"
-            unit: "{cpu}"
           - description: Number of available physical CPUs.
             name: system.cpu.physical.count
             sum:

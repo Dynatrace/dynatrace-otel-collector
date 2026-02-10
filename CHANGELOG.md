@@ -49,6 +49,7 @@ v0.145.0:
 - `receiver/filelog`: Suppress repeated permission-denied errors([#39491](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39491))
   Only one error is logged per file per process run, and an informational message is emitted when the file becomes readable again.
   This reduces log spam and improves clarity for operators.
+- `pkg/scraperhelper`: ScraperID has been added to the logs for metrics, logs, and profiles ([#14461](https://github.com/open-telemetry/opentelemetry-collector/issues/14461))
 
 - `receiver/hostmetrics`: Add support for Linux hugepages memory monitoring via system.memory.linux.hugepages metrics.([#42650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42650))
   Users can now monitor hugepages usage on host machine.
@@ -80,6 +81,22 @@ v0.145.0:
   allowing proper parsing of files with fixed-length records and no line terminators in various encodings.
 
 - `receiver/receiver_creator`: Do not log config in receivercreator since it could contain sensitive information([#38163](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38163))
+- `exporter/otlp_grpc`: Fix the OTLP exporter balancer to use round_robin by default, as intended. ([#14090](https://github.com/open-telemetry/opentelemetry-collector/issues/14090))
+- `pkg/config/configoptional`: Fix `Unmarshal` methods not being called when config is wrapped inside `Optional` ([#14500](https://github.com/open-telemetry/opentelemetry-collector/issues/14500))
+  This bug notably manifested in the fact that the `sending_queue::batch::sizer` config for exporters
+  stopped defaulting to `sending_queue::sizer`, which sometimes caused the wrong units to be used
+  when configuring `sending_queue::batch::min_size` and `max_size`.
+
+  As part of the fix, `xconfmap` exposes a new `xconfmap.WithForceUnmarshaler` option, to be used in the `Unmarshal` methods
+  of wrapper types like `configoptional.Optional` to make sure the `Unmarshal` method of the inner type is called.
+
+  The default behavior remains that calling `conf.Unmarshal` on the `confmap.Conf` passed as argument to an `Unmarshal`
+  method will skip any top-level `Unmarshal` methods to avoid infinite recursion in standard use cases.
+
+- `pkg/confmap`: Fix an issue where configs could fail to decode when using interpolated values in string fields. ([#14413](https://github.com/open-telemetry/opentelemetry-collector/issues/14413))
+  For example, a header can be set via an environment variable to a string that is parseable as a number, e.g. `1234`
+
+- `pkg/service`: Don't error on startup when process metrics are enabled on unsupported OSes (e.g. AIX) ([#14307](https://github.com/open-telemetry/opentelemetry-collector/issues/14307))
 
 </details>
 
@@ -87,7 +104,7 @@ v0.145.0:
 
 ### 💡 Enhancements 💡
 
-- `config_examples`: Add config example for a host metrics receiver config that fits all needs of the Dynatrace Host extension (#809)
+- `config_examples`: Add config example for a host metrics receiver config that fits all needs of the Dynatrace Host extension ([#809](https://github.com/open-telemetry/opentelemetry-collector/issues/809))
 
 <!-- previous-version -->
 
@@ -105,53 +122,53 @@ The individual upstream Collector changelogs can be found here:
 
 ---
 
-### 🛑 **Breaking Changes** 🛑
-- **pkg/config/confighttp**: Replace `ServerConfig.Endpoint` with `NetAddr confignet.AddrConfig`, enabling more flexible transport configuration. ([#14187](https://github.com/open-telemetry/opentelemetry-collector/pull/14187), [#8752](https://github.com/open-telemetry/opentelemetry-collector/pull/8752))
+### 🛑 `Breaking Changes` 🛑
+- `pkg/config/confighttp`: Replace `ServerConfig.Endpoint` with `NetAddr confignet.AddrConfig`, enabling more flexible transport configuration. ([#14187](https://github.com/open-telemetry/opentelemetry-collector/pull/14187), [#8752](https://github.com/open-telemetry/opentelemetry-collector/pull/8752))
   This change adds "transport" as a configuration option, allowing users to specify
   different transport protocols (e.g., "tcp", "unix").
-- **pkg/exporterhelper**: Change verbosity level for `otelcol_exporter_queue_batch_send_size` metric to detailed. ([#14278](https://github.com/open-telemetry/opentelemetry-collector/pull/14278))
-- **pkg/service**: Remove deprecated `telemetry.disableHighCardinalityMetrics` feature gate. ([#14373](https://github.com/open-telemetry/opentelemetry-collector/pull/14373))
-- **pkg/service**: Remove deprecated `service.noopTracerProvider` feature gate. ([#14374](https://github.com/open-telemetry/opentelemetry-collector/pull/14374))
-- **processor/tail_sampling**: Deprecated invert decisions disabled by default (use drop policies). ([#44132](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44132))
-- **exporter/kafka**: Remove Sarama producer; Franz-go now required. ([#44565](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44565))
-- **receiver/kafka**: Remove Sarama consumer and `default_fetch_size`; Franz-go now required. ([#44564](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44564))
-- **all**: Add Unix socket support to HTTP server components. [#45308](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45308)  
+- `pkg/exporterhelper`: Change verbosity level for `otelcol_exporter_queue_batch_send_size` metric to detailed. ([#14278](https://github.com/open-telemetry/opentelemetry-collector/pull/14278))
+- `pkg/service`: Remove deprecated `telemetry.disableHighCardinalityMetrics` feature gate. ([#14373](https://github.com/open-telemetry/opentelemetry-collector/pull/14373))
+- `pkg/service`: Remove deprecated `service.noopTracerProvider` feature gate. ([#14374](https://github.com/open-telemetry/opentelemetry-collector/pull/14374))
+- `processor/tail_sampling`: Deprecated invert decisions disabled by default (use drop policies). ([#44132](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44132))
+- `exporter/kafka`: Remove Sarama producer; Franz-go now required. ([#44565](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44565))
+- `receiver/kafka`: Remove Sarama consumer and `default_fetch_size`; Franz-go now required. ([#44564](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44564))
+- `all`: Add Unix socket support to HTTP server components. [#45308](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45308)  
   HTTP server components (namely receivers) now support listening on Unix domain sockets in addition to TCP addresses, by configuring `transport: unix` and setting `endpoint` to a Unix socket path.  
   This is a breaking change to the config structs, but is not breaking for end users. Existing YAML configuration options remain unchanged.
 
 ---
 
-### 🚩 **Deprecations** 🚩
-- **exporter/otlp_grpc**: Rename `otlp` → `otlp_grpc`; add deprecated alias `otlp`. ([#14403](https://github.com/open-telemetry/opentelemetry-collector/pull/14403))
-- **exporter/otlp_http**: Rename `otlphttp` → `otlp_http`; add deprecated alias `otlphttp`. ([#14396](https://github.com/open-telemetry/opentelemetry-collector/pull/14396))
+### 🚩 `Deprecations` 🚩
+- `exporter/otlp_grpc`: Rename `otlp` → `otlp_grpc`; add deprecated alias `otlp`. ([#14403](https://github.com/open-telemetry/opentelemetry-collector/pull/14403))
+- `exporter/otlp_http`: Rename `otlphttp` → `otlp_http`; add deprecated alias `otlphttp`. ([#14396](https://github.com/open-telemetry/opentelemetry-collector/pull/14396))
 
 ---
 
-### 💡 **Enhancements** 💡
-- **processor/tail_sampling**: New `decision_wait_after_root_received` option. ([#43876](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43876))
-- **processor/k8sattributes**: Bump `semconv` to v1.39.0. ([#45447](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45447))
-- **processor/redaction**: Added `sanitize_span_name` and `ignored_key_patterns`. ([#44228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44228).
-- **processor/redaction**: Add ignored_key_patterns configuration option to allow ignoring keys by regex pattern [#44657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44657)).
-- **processor/resourcedetection**: Add optional docker attributes([#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898)
+### 💡 `Enhancements` 💡
+- `processor/tail_sampling`: New `decision_wait_after_root_received` option. ([#43876](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43876))
+- `processor/k8sattributes`: Bump `semconv` to v1.39.0. ([#45447](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45447))
+- `processor/redaction`: Added `sanitize_span_name` and `ignored_key_patterns`. ([#44228](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44228).
+- `processor/redaction`: Add ignored_key_patterns configuration option to allow ignoring keys by regex pattern [#44657](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44657)).
+- `processor/resourcedetection`: Add optional docker attributes([#44898](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44898)
   Add `container.image.name` and `container.name` optional resource attributes with the docker detector.
-- **receiver/prometheus**: Associate scraped `_created` per OpenMetricsText spec; add troubleshooting/best-practices guide. ([#45291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45291),
-- **receiver/prometheus**: Add comprehensive troubleshooting and best practices guide to Prometheus receiver README [#44925](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44925))
+- `receiver/prometheus`: Associate scraped `_created` per OpenMetricsText spec; add troubleshooting/best-practices guide. ([#45291](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45291),
+- `receiver/prometheus`: Add comprehensive troubleshooting and best practices guide to Prometheus receiver README [#44925](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44925))
 
 ---
 
-### 🧰 **Bug Fixes** 🧰
-- **pkg/exporterhelper**: Fix partition batcher refcount. ([#14444](https://github.com/open-telemetry/opentelemetry-collector/pull/14444))
-- **exporter/kafka**: franz-go: Exclude non-produce metrics from kafka_exporter_write_latency and kafka_exporter_latency ([#45258](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45258))
-- **pkg/kafka/configkafka**: Fix consumer group rebalance strategy validation [#45268](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45268)
-- **pkg/ottl**: Fix numeric parsing to correctly handle signed numbers in math expressions. [#45222](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45222)  
+### 🧰 `Bug Fixes` 🧰
+- `pkg/exporterhelper`: Fix partition batcher refcount. ([#14444](https://github.com/open-telemetry/opentelemetry-collector/pull/14444))
+- `exporter/kafka`: franz-go: Exclude non-produce metrics from kafka_exporter_write_latency and kafka_exporter_latency ([#45258](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45258))
+- `pkg/kafka/configkafka`: Fix consumer group rebalance strategy validation [#45268](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45268)
+- `pkg/ottl`: Fix numeric parsing to correctly handle signed numbers in math expressions. [#45222](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45222)  
   The OTTL math expression parser did not correctly handle unary signs for plus and minus. Expressions like 3-5 would not parse correctly without inserting spaces to make it 3 - 5. This change moves the sign handling out of the lexer and into the parser.
-- **pkg/ottl**: Handle floating constants with decimal point but no fraction. [#45222](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45222)  
+- `pkg/ottl`: Handle floating constants with decimal point but no fraction. [#45222](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45222)  
   Floating point constants that had a decimal point but no fractional digits (e.g., "3.") were not handled properly and could crash the parser. These are now parsed as valid floating point numbers.
-- **pkg/stanza**: Fix Windows UNC network path handling in filelog receiver [#44401](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44401)  
+- `pkg/stanza`: Fix Windows UNC network path handling in filelog receiver [#44401](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44401)  
   The filelog receiver now correctly handles Windows UNC network paths (e.g., \\server\share\logs*.log). Previously, the receiver could list files from network shares but failed to open them due to path corruption during normalization. This fix converts UNC paths to Windows extended-length format (\\?\UNC\server\share\path) which is more reliable and not affected by filepath.Clean() issues.
-- **pkg/stanza**: Ensure container parser respects the if condition and on_error settings when format detection fails [#41508](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41508)
-- **processor/resourcedetection**:  Prevent the resource detection processor from panicking when detectors return a zero-valued pdata resource.([#41934](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41934))
-- **processor/resourcedetection**: Fix nil pointer panic when HTTP client creation fails in Start method. ([#45220](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45220))
+- `pkg/stanza`: Ensure container parser respects the if condition and on_error settings when format detection fails [#41508](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41508)
+- `processor/resourcedetection`:  Prevent the resource detection processor from panicking when detectors return a zero-valued pdata resource.([#41934](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/41934))
+- `processor/resourcedetection`: Fix nil pointer panic when HTTP client creation fails in Start method. ([#45220](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45220))
 ---
 
 </details>
@@ -393,7 +410,7 @@ v0.141.0:
 
 ### 💡 Enhancements 💡
 
-- `metricstarttimeprocessor`: Add the Metric Start Time Processor to the distribution (#752)
+- `metricstarttimeprocessor`: Add the Metric Start Time Processor to the distribution ([#752](https://github.com/open-telemetry/opentelemetry-collector/issues/752))
   It is required to use this processor in any pipelines that use the
   Prometheus receiver.
   
@@ -1165,7 +1182,7 @@ v0.128.0:
 - `service`: Only allocate one set of internal log sampling counters ([#13014](https://github.com/open-telemetry/opentelemetry-collector/issues/13014))
   The case where logs are only exported to stdout was fixed in v0.126.0;
   this new fix also covers the case where logs are exported through OTLP.
-- `prometheusreceiver`: Fix invalid metric name validation error in scrape start from target allocator. (#[35459](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35459), #[40788](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40788))
+- `prometheusreceiver`: Fix invalid metric name validation error in scrape start from target allocator. ([#[35459](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35459), #[40788](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40788)](https://github.com/open-telemetry/opentelemetry-collector/issues/[35459](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35459), #[40788](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40788)))
   Prometheus made setting metric_name_validation_scheme, metric_name_escaping_scheme mandatory mandatory, use sane defaults.
 - `hostmetricsreceiver`: Minor fix to the handling of conntrack errors ([#40175](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40175))
 - `k8sattributesprocessor`: Make sure getIdentifiersFromAssoc() can handle container.id ([#40745](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40745))

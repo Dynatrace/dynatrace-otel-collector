@@ -32,6 +32,8 @@ builds:
         goarch: s390x
       - goos: windows
         goarch: s390x
+      - goos: windows
+        goarch: ppc64le
     dir: build
 
 sboms:

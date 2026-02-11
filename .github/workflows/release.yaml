@@ -36,6 +36,8 @@ jobs:
             goarch: s390x
           - goos: windows
             goarch: s390x
+          - goos: windows
+            goarch: ppc64le
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -127,6 +129,9 @@ jobs:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_NOTES: "./release-notes.md"
+
+      - name: Display structure of build folder
+        run: ls -R build
 
       - name: Display structure before upload of files
         run: ls -R dist

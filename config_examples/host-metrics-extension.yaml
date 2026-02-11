@@ -114,8 +114,6 @@ receivers:
       # CPU metrics
       cpu:
         metrics:
-          system.cpu.logical.count:
-            enabled: true
           system.cpu.utilization:
             enabled: true
           system.cpu.time:
@@ -153,6 +151,8 @@ receivers:
       # CPU metrics
       cpu:
         metrics:
+          system.cpu.logical.count:
+            enabled: true
           system.cpu.physical.count:
             enabled: true
           system.cpu.time:

@@ -194,7 +194,7 @@
     "4": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization),\n  count = avg(system.cpu.logical.count)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd usage = cpu_util[] * count[]\n\n",
+      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization),\n  count = avg(system.cpu.logical.count)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd usage = cpu_util[] * arrayLast(count)\n",
       "visualization": "lineChart",
       "visualizationSettings": {
         "chartSettings": {
@@ -214,7 +214,8 @@
             ],
             "timestamp": "timeframe"
           },
-          "pointsDisplay": "never"
+          "pointsDisplay": "never",
+          "gapPolicy": "connect"
         },
         "dataMapping": {
           "displayedFields": [
@@ -258,6 +259,7 @@
       "query": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name, os.type }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd os.type\n| fieldsRemove timeframe, interval, uptime, host.name\n| limit 1\n\n",
       "visualization": "singleValue",
       "visualizationSettings": {
+        "autoSelectVisualization": false,
         "singleValue": {
           "labelMode": "none",
           "label": "host.name",
@@ -266,7 +268,6 @@
             "isVisible": false
           }
         },
-        "autoSelectVisualization": false,
         "coloring": {
           "thresholdRules": []
         }
@@ -292,10 +293,6 @@
       "visualization": "table",
       "visualizationSettings": {
         "table": {
-          "columnOrder": [
-            "[\"process.command_line\"]",
-            "[\"memory\"]"
-          ],
           "hiddenColumns": [
             [
               "timeframe",
@@ -322,7 +319,11 @@
           ],
           "columnWidths": {
             "[\"process.command_line\"]": 526.8
-          }
+          },
+          "columnOrder": [
+            "[\"process.command_line\"]",
+            "[\"memory\"]"
+          ]
         },
         "autoSelectVisualization": false,
         "unitsOverrides": [

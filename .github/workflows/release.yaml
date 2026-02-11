@@ -36,6 +36,9 @@ jobs:
             goarch: s390x
           - goos: windows
             goarch: s390x
+    env:
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -61,7 +64,7 @@ jobs:
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: .tools
-          key: release-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+          key: release-tools-${{ env.GOOS }}-${{ hashFiles('internal/tools/go.sum') }}
       - name: Touch tools
         run: |
           mkdir -p .tools
@@ -111,8 +114,6 @@ jobs:
           version: ${{ env.GORELEASER_PRO_VERSION }}
           args: release --snapshot --clean --release-notes ${{ env.RELEASE_NOTES }} --split
         env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_NOTES: "./release-notes.md"

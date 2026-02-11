@@ -5,6 +5,9 @@ on:
     # run only against version tags
     tags:
       - 'v*'
+  pull_request:
+    branches:
+      - main
 
 env:
   # renovate: datasource=golang-version depName=go

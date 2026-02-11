@@ -43,7 +43,7 @@ jobs:
           fetch-depth: 0
       - name: Validate version
         env:
-          TAG_NAME: ${{ github.head_ref || github.ref_name }}
+          TAG_NAME: v0.45.0
         run: |
           # Remove leading 'v' from version
           export VERSION=$(echo -n ${TAG_NAME} | cut -c 2-)

@@ -27,15 +27,15 @@ jobs:
       packages: write
     strategy:
       matrix:
-        goos: ["linux", "windows", "darwin"]
-        goarch: ["amd64", "arm64", "ppc64le", "s390x"]
+        GOOS: ["linux", "windows", "darwin"]
+        GOARCH: ["amd64", "arm64", "ppc64le", "s390x"]
         exclude:
-          - goos: windows
-            goarch: arm64
-          - goos: darwin
-            goarch: s390x
-          - goos: windows
-            goarch: s390x
+          - GOOS: windows
+            GOARCH: arm64
+          - GOOS: darwin
+            GOARCH: s390x
+          - GOOS: windows
+            GOARCH: s390x
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -115,9 +115,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_NOTES: "./release-notes.md"
 
+      - name: Display structure before upload of files
+        run: ls -R dist
+
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: artifacts-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: artifacts-${{ matrix.GOOS }}-${{ matrix.GOARCH }}
           path: dist/**/*
           if-no-files-found: error
 

@@ -43,7 +43,7 @@ jobs:
           fetch-depth: 0
       - name: Validate version
         env:
-          TAG_NAME: v0.45.0
+          TAG_NAME: v0.44.0
         run: |
           # Remove leading 'v' from version
           export VERSION=$(echo -n ${TAG_NAME} | cut -c 2-)

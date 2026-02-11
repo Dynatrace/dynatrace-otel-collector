@@ -27,7 +27,7 @@ Make sure to also add the receivers and processors to your collector pipeline.
 
 ### Adding attributes to the allow list
 
-The following attributes are not included in the default allow list of resource attributes in Dynatrace:
+The following attributes are not included in the default allow list of resource attributes in Dynatrace (when using `MINT v1`):
 
 - `host.arch`
 - `host.ip`
@@ -46,3 +46,6 @@ Follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configurat
 above to the allow list.
 Note, that the attribute are case-sensitive.
 This will ensure that these resource attributes are stored as dimensions on the metrics in Dynatrace.
+
+**Note:**
+If you are using `MINT v2`, all attributes are enabled by default. Please be sure to check that none of the above mentioned attributes are present in the `blocked` list.

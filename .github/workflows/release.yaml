@@ -118,6 +118,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-24.04
+    needs: build
     permissions:
       id-token: write
       contents: write

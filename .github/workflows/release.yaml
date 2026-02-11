@@ -115,6 +115,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_NOTES: "./release-notes.md"
 
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: artifacts-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/**/*
+          if-no-files-found: error
+
   release:
     name: Release
     runs-on: ubuntu-24.04
@@ -128,30 +134,39 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-#      - name: Validate version
-#        env:
-#          TAG_NAME: ${{ github.head_ref || github.ref_name }}
-#        run: |
-#          # Remove leading 'v' from version
-#          export VERSION=$(echo -n ${TAG_NAME} | cut -c 2-)
-#          grep "version: ${VERSION}" manifest.yaml || (echo "value of 'dist.version' in manifest.yaml does not match tag version ${VERSION}, please update it" && exit 1)
+
       - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6.2.0
         with:
           go-version: ${{ env.GO_VERSION }}
+
       - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
         with:
           platforms: arm64,ppc64le,s390x
+
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
       - name: Install cyclonedx-gomod
         run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@${{ env.CYCLONEDX_VERSION }}
+
       - name: Cache tools
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: .tools
           key: release-tools-${{ runner.os }}-${{ hashFiles('internal/tools/go.sum') }}
+
       - name: Touch tools
         run: |
           mkdir -p .tools
+
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          pattern: artifacts-*
+          path: dist
+          merge-multiple: true
+
+      - name: Display structure of downloaded files
+        run: ls -R dist
+
       - name: Login to GitHub Package Registry
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
@@ -193,7 +208,7 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: ${{ env.GORELEASER_PRO_VERSION }}
-          args: continue --merge --snapshot
+          args: continue --merge
         env:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

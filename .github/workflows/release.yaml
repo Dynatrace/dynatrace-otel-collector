@@ -106,7 +106,7 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: ${{ env.GORELEASER_PRO_VERSION }}
-          args: release --clean --release-notes ${{ env.RELEASE_NOTES }} --split
+          args: release --snapshot --clean --release-notes ${{ env.RELEASE_NOTES }} --split
         env:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

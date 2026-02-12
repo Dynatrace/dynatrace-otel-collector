@@ -48,4 +48,4 @@ Note, that the attribute are case-sensitive.
 This will ensure that these resource attributes are stored as dimensions on the metrics in Dynatrace.
 
 **Note:**
-If you have the `advanced otlp metric dimensions` toggle enabled, all attributes are enabled by default. Please be sure to check that none of the above mentioned attributes are present in the `blocked` list.
+If you have the `advanced otlp metric dimensions` toggle enabled in your Dynatrace tenant, ingestion of all attributes is enabled by default. Please be sure to check that none of the above mentioned attributes are present in the `blocked` list.

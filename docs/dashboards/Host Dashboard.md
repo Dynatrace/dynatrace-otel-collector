@@ -21,7 +21,7 @@ support exporting metrics data in that format.
 
 ## Collector Configuration
 
-Add the receiver and processor configuration from [../../config_examples/host-metrics-extension.yaml](../../config_examples/host-metrics-extension.yaml) to your OpenTelemetry Collector configuration file to enable the
+Add the receivers and processors from [hostmetrics configuration example](../../config_examples/host-metrics.yaml) to your OpenTelemetry Collector configuration file to enable the
 collection of host metrics with the required attributes, resource detection, and cumulative to delta conversion.
 Make sure to also add the receivers and processors to your collector pipeline.
 

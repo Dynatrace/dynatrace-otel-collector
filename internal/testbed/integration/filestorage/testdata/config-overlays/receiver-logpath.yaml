@@ -1,0 +1,2 @@
+/var/log/app/*.log
+/var/log/pods/*/*.log

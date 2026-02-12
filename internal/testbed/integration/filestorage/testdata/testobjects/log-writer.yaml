@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-writer
+  namespace: e2e-filestorage-receiver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-writer
+  template:
+    metadata:
+      labels:
+        app: log-writer
+    spec:
+      containers:
+        - name: log-writer
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /var/log/app
+              while true; do
+                echo "$(date) - Log entry from filestorage test" >> /var/log/app/test.log
+                sleep 2
+              done
+          volumeMounts:
+            - name: log-volume
+              mountPath: /var/log/app
+          resources:
+            limits:
+              cpu: 50m
+              memory: 64Mi
+      volumes:
+        - name: log-volume
+          emptyDir: {}

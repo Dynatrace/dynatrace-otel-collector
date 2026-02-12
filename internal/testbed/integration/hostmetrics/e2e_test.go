@@ -144,12 +144,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("host.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("os.type", substituteWithStar),
 
-		pmetrictest.ChangeResourceAttributeValue("process.command", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("process.command_line", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("process.executable.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("process.executable.path", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("process.parent_pid", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("process.pid", substituteWithStar),
 
 		pmetrictest.ChangeDatapointAttributeValue("device", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("mode", substituteWithStar),
@@ -346,9 +341,7 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("os.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("os.version", substituteWithStar),
 
-		pmetrictest.ChangeResourceAttributeValue("process.command_line", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("process.executable.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("process.pid", substituteWithStar),
 
 		pmetrictest.ChangeDatapointAttributeValue("mountpoint", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("direction", substituteWithStar),

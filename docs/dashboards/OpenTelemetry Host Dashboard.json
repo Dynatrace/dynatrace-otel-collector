@@ -289,7 +289,7 @@
     "7": {
       "title": "Memory usage per process",
       "type": "data",
-      "query": "timeseries {\n  usage = sum(process.memory.usage, rollup: avg)\n},\nby: { process.executable.name, host.name },\nfilter: { host.name == $Hosts },\nfrom: -20m, to: -1m\n| fieldsAdd memory = arrayLast(usage)\n| fieldsRemove host.name, usage\n| summarize memory = sum(memory), by: { process.executable.name }\n| sort memory desc",
+      "query": "timeseries {\n  usage = sum(process.memory.usage, rollup: avg)\n},\nby: { process.executable.name, host.name },\nfilter: { host.name == $Hosts },\nfrom: -6m, to: -1m\n| fieldsAdd memory = arrayLast(usage)\n| fieldsRemove host.name, usage\n| summarize memory = sum(memory), by: { process.executable.name }\n| sort memory desc",
       "visualization": "table",
       "visualizationSettings": {
         "table": {
@@ -885,7 +885,7 @@
     "27": {
       "title": "CPU usage per process",
       "type": "data",
-      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.executable.name, host.name },\nfilter: { host.name == $Hosts },\nfrom: -20m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: { process.executable.name }\n| sort cpu desc",
+      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.executable.name, host.name },\nfilter: { host.name == $Hosts },\nfrom: -6m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: { process.executable.name }\n| sort cpu desc",
       "visualization": "table",
       "visualizationSettings": {
         "table": {

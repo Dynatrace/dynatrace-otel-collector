@@ -376,21 +376,21 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 	t.Logf("Checking 1m metrics...")
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	//require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
+	require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
 	checkMetrics(t, expectedFile1m, metricsConsumer1m, defaultOptions, compareTimeout, compareTick)
 
 	// 5m Metrics
 	t.Logf("Checking 5m metrics...")
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	//require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
+	require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
 	checkMetrics(t, expectedFile5m, metricsConsumer5m, defaultOptions, compareTimeout, compareTick)
 
 	// 1h Metrics
 	t.Logf("Checking 1h metrics...")
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	//require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
+	require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
 	checkMetrics(t, expectedFile1h, metricsConsumer1h, defaultOptions, compareTimeout, compareTick)
 
 	t.Log("Host metrics checked successfully")

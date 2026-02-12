@@ -315,6 +315,8 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 			"system.filesystem.inodes.usage",
 			"system.filesystem.usage",
 			"system.filesystem.utilization",
+			"system.cpu.logical.count",
+			"system.cpu.physical.count",
 			"system.cpu.time",
 			"system.cpu.utilization",
 			"system.cpu.load_average.1m",
@@ -328,7 +330,8 @@ func TestE2E_HostMetricsExtension(t *testing.T) {
 			"process.cpu.utilization",
 			"process.disk.io",
 			"process.memory.usage",
-			"process.memory.virtual"),
+			"process.memory.virtual",
+			"system.memory.limit"),
 		pmetrictest.IgnoreScopeVersion(),
 
 		pmetrictest.ChangeResourceAttributeValue("host.arch", substituteWithStar),

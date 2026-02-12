@@ -21,73 +21,9 @@ support exporting metrics data in that format.
 
 ## Collector Configuration
 
-Add the following receiver and processor configuration to your OpenTelemetry Collector configuration file to enable the
+Add the receiver and processor configuration from [../../config_examples/host-metrics-extension.yaml](../../config_examples/host-metrics-extension.yaml) to your OpenTelemetry Collector configuration file to enable the
 collection of host metrics with the required attributes, resource detection, and cumulative to delta conversion.
 Make sure to also add the receivers and processors to your collector pipeline.
-
-```yaml
-exporters:
-  debug:
-    verbosity: detailed
-  otlp_http:
-    endpoint: "${env:DT_ENDPOINT}"
-    headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
-
-receivers:
-  hostmetrics:
-    collection_interval: 10s
-    scrapers:
-      paging:
-      cpu:
-        metrics:
-          system.cpu.logical.count:
-            enabled: true
-          system.cpu.physical.count:
-            enabled: true
-          system.cpu.utilization:
-            enabled: true
-      disk:
-      filesystem:
-        metrics:
-          system.filesystem.utilization:
-            enabled: true
-      memory:
-        metrics:
-          system.memory.limit:
-            enabled: true
-          system.memory.utilization:
-            enabled: true
-      network:
-      processes:
-      process:
-        mute_process_all_errors: true
-        metrics:
-          process.cpu.utilization:
-            enabled: true
-      system:
-
-processors:
-  cumulativetodelta:
-    max_staleness: 25h
-  resourcedetection:
-    detectors: ["system"]
-    system:
-      resource_attributes:
-        host.arch:
-          enabled: true
-        host.ip:
-          enabled: true
-        host.mac:
-          enabled: true
-
-service:
-  pipelines:
-    metrics:
-      receivers: [hostmetrics]
-      processors: [resourcedetection, cumulativetodelta]
-      exporters: [otlp_http]
-```
 
 ### Adding attributes to the allow list
 
@@ -110,3 +46,6 @@ Follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configurat
 above to the allow list.
 Note, that the attribute are case-sensitive.
 This will ensure that these resource attributes are stored as dimensions on the metrics in Dynatrace.
+
+**Note:**
+If you have the `advanced otlp metric dimensions` toggle enabled in your Dynatrace tenant, ingestion of all attributes is enabled by default. Please be sure to check that none of the above mentioned attributes are present in the `blocked` list.

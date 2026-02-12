@@ -8,30 +8,47 @@ extensions:
     endpoint: 0.0.0.0:13133
 
 receivers:
+  hostmetrics/1m:
+    collection_interval: 1m
+    scrapers:
+      # CPU metrics
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+          system.cpu.time:
+            enabled: false
+
+      # Memory metrics
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+          system.memory.usage:
+            enabled: false
+
+      # Load average metrics
+      load:
+        metrics:
+          system.cpu.load_average.1m:
+            enabled: true
+          system.cpu.load_average.5m:
+            enabled: false
+          system.cpu.load_average.15m:
+            enabled: false
+
   hostmetrics/5m:
     collection_interval: 5m
     scrapers:
       # CPU metrics
       cpu:
         metrics:
-          system.cpu.logical.count:
-            enabled: false
-          system.cpu.physical.count:
-            enabled: false
-          system.cpu.utilization:
-            enabled: false
           system.cpu.time:
             enabled: true
-          system.cpu.frequency:
-            enabled: false
 
       # Memory metrics
       memory:
         metrics:
-          system.memory.limit:
-            enabled: false
-          system.memory.utilization:
-            enabled: false
           system.memory.usage:
             enabled: true
 
@@ -120,38 +137,28 @@ receivers:
           process.disk.io:
             enabled: true
 
-  hostmetrics/1m:
-    collection_interval: 1m
+  hostmetrics/1h:
+    collection_interval: 1h
     scrapers:
-      # CPU metrics
-      cpu:
-        metrics:
-          system.cpu.utilization:
-            enabled: true
-          system.cpu.time:
-            enabled: false
-
       # Memory metrics
       memory:
         metrics:
-          system.memory.utilization:
+          system.memory.limit:
             enabled: true
           system.memory.usage:
             enabled: false
 
-      # Load average metrics
-      load:
+      # CPU metrics
+      cpu:
         metrics:
-          system.cpu.load_average.1m:
+          system.cpu.logical.count:
             enabled: true
-          system.cpu.load_average.5m:
-            enabled: false
-          system.cpu.load_average.15m:
+          system.cpu.physical.count:
+            enabled: true
+          system.cpu.time:
             enabled: false
 
-  hostmetrics/1h:
-    collection_interval: 1h
-    scrapers:
+      # System metrics
       system:
         metrics:
           system.uptime:

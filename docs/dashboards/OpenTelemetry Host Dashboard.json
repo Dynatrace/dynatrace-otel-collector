@@ -1,11 +1,11 @@
 {
-  "version": 20,
+  "version": 21,
   "variables": [
     {
-      "key": "Hosts",
-      "visible": true,
-      "type": "query",
       "version": 2,
+      "key": "Hosts",
+      "type": "query",
+      "visible": true,
       "editable": true,
       "input": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name }\n| fieldsAdd host.name\n| fieldsRemove timeframe, interval, uptime",
       "multiple": false
@@ -15,9 +15,10 @@
     "0": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization, filter: state != \"idle\")\n},\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_util) * 100\n\n",
+      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization)\n},\nfilter: { host.name == $Hosts }, \nfrom: -5m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_util) * 100\n\n",
       "visualization": "gauge",
       "visualizationSettings": {
+        "autoSelectVisualization": false,
         "icon": {
           "showIcon": false,
           "icon": ""
@@ -28,9 +29,10 @@
         "dataMapping": {
           "value": "usage"
         },
-        "autoSelectVisualization": false,
-        "thresholds": [],
-        "unitsOverrides": []
+        "unitsOverrides": [],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -56,7 +58,7 @@
     "1": {
       "title": "Memory usage",
       "type": "data",
-      "query": "timeseries {\n\tusage = avg(system.memory.utilization)\n},\nby: { host.name },\nfrom: -2m, to: -1m,\nfilter: { state == \"used\" AND host.name == $Hosts }\n| fieldsAdd MemoryUtilization = arrayLast(usage) * 100\n",
+      "query": "timeseries {\n\tusage = avg(system.memory.utilization)\n},\nby: { host.name },\nfrom: -5m, to: -1m,\nfilter: { state == \"used\" AND host.name == $Hosts }\n| fieldsAdd MemoryUtilization = arrayLast(usage) * 100\n",
       "visualization": "gauge",
       "visualizationSettings": {
         "icon": {
@@ -69,8 +71,10 @@
           "value": "MemoryUtilization"
         },
         "autoSelectVisualization": false,
-        "thresholds": [],
-        "unitsOverrides": []
+        "unitsOverrides": [],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -112,7 +116,6 @@
           }
         },
         "autoSelectVisualization": false,
-        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "NetworkIO",
@@ -134,7 +137,10 @@
             "delimiter": false,
             "added": 1747648748806
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -153,7 +159,7 @@
     "3": {
       "title": "Filesystem usage (root)",
       "type": "data",
-      "query": "timeseries {\n  val = avg(system.filesystem.utilization)\n},\nby: { host.name, state },\nfilter: {\n  matchesValue(host.name, $Hosts) and mountpoint == \"/\"\n},\nfrom: -2m, to: -1m\n| fieldsAdd FileSystemUtilization = arraylast(val) * 100",
+      "query": "timeseries {\n  val = avg(system.filesystem.utilization)\n},\nby: { host.name, state },\nfilter: {\n  matchesValue(host.name, $Hosts) and mountpoint == \"/\"\n},\nfrom: -20m, to: -1m\n| fieldsAdd FileSystemUtilization = arraylast(val) * 100",
       "visualization": "gauge",
       "visualizationSettings": {
         "icon": {
@@ -167,7 +173,9 @@
           "value": "FileSystemUtilization"
         },
         "autoSelectVisualization": false,
-        "thresholds": []
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -186,7 +194,7 @@
     "4": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization, filter: state != \"idle\"),\n  count = avg(system.cpu.logical.count)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd usage = cpu_util[] * count[]\n\n",
+      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization),\n  count = avg(system.cpu.logical.count)\n},\nfilter: { host.name == $Hosts }\n| fieldsAdd usage = cpu_util[] * arrayLast(count)\n",
       "visualization": "lineChart",
       "visualizationSettings": {
         "chartSettings": {
@@ -206,7 +214,8 @@
             ],
             "timestamp": "timeframe"
           },
-          "pointsDisplay": "never"
+          "pointsDisplay": "never",
+          "gapPolicy": "connect"
         },
         "dataMapping": {
           "displayedFields": [
@@ -214,7 +223,6 @@
           ]
         },
         "autoSelectVisualization": false,
-        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "usage",
@@ -226,7 +234,10 @@
             "delimiter": false,
             "added": 1747811257789
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -248,6 +259,7 @@
       "query": "timeseries {\n  uptime=max(system.uptime)\n}, by: { host.name, os.type }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd os.type\n| fieldsRemove timeframe, interval, uptime, host.name\n| limit 1\n\n",
       "visualization": "singleValue",
       "visualizationSettings": {
+        "autoSelectVisualization": false,
         "singleValue": {
           "labelMode": "none",
           "label": "host.name",
@@ -256,8 +268,9 @@
             "isVisible": false
           }
         },
-        "autoSelectVisualization": false,
-        "thresholds": []
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -276,14 +289,10 @@
     "7": {
       "title": "Memory usage per process",
       "type": "data",
-      "query": "timeseries {\n  usage = sum(process.memory.usage, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd memory = arrayLast(usage)\n| fieldsRemove host.name, usage\n| summarize memory = sum(memory), by: { process.command_line }\n| sort memory desc",
+      "query": "timeseries {\n  usage = sum(process.memory.usage, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name },\nfilter: { host.name == $Hosts },\nfrom: -20m, to: -1m\n| fieldsAdd memory = arrayLast(usage)\n| fieldsRemove host.name, usage\n| summarize memory = sum(memory), by: { process.command_line }\n| sort memory desc",
       "visualization": "table",
       "visualizationSettings": {
         "table": {
-          "columnOrder": [
-            "[\"process.command_line\"]",
-            "[\"memory\"]"
-          ],
           "hiddenColumns": [
             [
               "timeframe",
@@ -310,10 +319,13 @@
           ],
           "columnWidths": {
             "[\"process.command_line\"]": 526.8
-          }
+          },
+          "columnOrder": [
+            "[\"process.command_line\"]",
+            "[\"memory\"]"
+          ]
         },
         "autoSelectVisualization": false,
-        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "memory",
@@ -325,7 +337,10 @@
             "delimiter": false,
             "added": 1747745333530
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -363,7 +378,9 @@
             ],
             "timestamp": "timeframe"
           },
-          "pointsDisplay": "never"
+          "curve": "smooth",
+          "pointsDisplay": "never",
+          "gapPolicy": "connect"
         },
         "dataMapping": {
           "displayedFields": [
@@ -371,7 +388,9 @@
           ]
         },
         "autoSelectVisualization": false,
-        "thresholds": []
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -409,7 +428,8 @@
             ],
             "timestamp": "timeframe"
           },
-          "pointsDisplay": "never"
+          "pointsDisplay": "never",
+          "gapPolicy": "connect"
         },
         "dataMapping": {
           "displayedFields": [
@@ -418,7 +438,6 @@
           ]
         },
         "autoSelectVisualization": false,
-        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "process_count",
@@ -430,7 +449,10 @@
             "delimiter": false,
             "added": 1747815637714
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -465,7 +487,8 @@
             ],
             "timestamp": "timeframe"
           },
-          "pointsDisplay": "never"
+          "pointsDisplay": "never",
+          "gapPolicy": "connect"
         },
         "dataMapping": {
           "displayedFields": [
@@ -473,7 +496,9 @@
           ]
         },
         "autoSelectVisualization": false,
-        "thresholds": []
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -508,7 +533,6 @@
           }
         },
         "autoSelectVisualization": false,
-        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "value.A",
@@ -520,7 +544,10 @@
             "delimiter": false,
             "added": 1741706555669
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -551,7 +578,9 @@
           }
         },
         "autoSelectVisualization": false,
-        "thresholds": []
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -586,7 +615,6 @@
           }
         },
         "autoSelectVisualization": false,
-        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "value.A",
@@ -598,7 +626,10 @@
             "delimiter": false,
             "added": 1741706924947
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -617,24 +648,23 @@
     "16": {
       "title": "Filesystem capacity (root)",
       "type": "data",
-      "query": "timeseries {\n  usage=sum(system.filesystem.usage, rollup:avg)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -2m, to: -1m\n| fieldsAdd fs_space = arrayLast(usage)",
+      "query": "timeseries {\n  usage=sum(system.filesystem.usage, rollup:avg)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -20m, to: -1m\n| fieldsAdd fs_space = arrayLast(usage)",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "autoSelectVisualization": false,
         "singleValue": {
           "labelMode": "none",
           "label": "host.name",
           "recordField": "fs_space",
           "sparklineSettings": {
-            "record": "space",
-            "isVisible": false
+            "isVisible": false,
+            "record": "space"
           },
           "trend": {
             "isVisible": false,
             "trendType": "custom"
           }
         },
-        "thresholds": [],
+        "autoSelectVisualization": false,
         "unitsOverrides": [
           {
             "identifier": "fs_space",
@@ -646,7 +676,10 @@
             "delimiter": false,
             "added": 1732273745399
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -668,7 +701,6 @@
       "query": "timeseries {\n  count=avg(system.cpu.physical.count)\n}, by: { host.name }, filter: { matchesValue(host.name, $Hosts) }\n| fieldsAdd value.A = arrayLast(count)\n| fieldsRemove timeframe, interval\n| limit 1",
       "visualization": "singleValue",
       "visualizationSettings": {
-        "autoSelectVisualization": false,
         "singleValue": {
           "labelMode": "none",
           "label": "host.name",
@@ -681,7 +713,7 @@
             "trendType": "custom"
           }
         },
-        "thresholds": [],
+        "autoSelectVisualization": false,
         "unitsOverrides": [
           {
             "identifier": "value.A",
@@ -693,7 +725,10 @@
             "delimiter": false,
             "added": 1741706583030
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -733,7 +768,9 @@
           }
         },
         "autoSelectVisualization": false,
-        "thresholds": []
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -769,7 +806,8 @@
             ],
             "timestamp": "timeframe"
           },
-          "pointsDisplay": "never"
+          "pointsDisplay": "never",
+          "gapPolicy": "connect"
         },
         "dataMapping": {
           "displayedFields": [
@@ -777,7 +815,9 @@
           ]
         },
         "autoSelectVisualization": false,
-        "thresholds": []
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -811,7 +851,6 @@
           }
         },
         "autoSelectVisualization": false,
-        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "NetworkIO",
@@ -823,7 +862,10 @@
             "delimiter": false,
             "added": 1747652121247
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -842,7 +884,7 @@
     "27": {
       "title": "CPU usage per process",
       "type": "data",
-      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name },\nfilter: { host.name == $Hosts },\nfrom: -2m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: { process.command_line }\n| sort cpu desc",
+      "query": "timeseries {\n  usage = sum(process.cpu.utilization, rollup: avg)\n},\nby: { process.command_line, process.pid, host.name },\nfilter: { host.name == $Hosts },\nfrom: -20m, to: -1m\n| fieldsAdd cpu1 = arrayLast(usage) * 100\n| fieldsRemove host.name, usage\n| summarize cpu = sum(cpu1), by: { process.command_line }\n| sort cpu desc",
       "visualization": "table",
       "visualizationSettings": {
         "table": {
@@ -879,7 +921,6 @@
           ]
         },
         "autoSelectVisualization": false,
-        "thresholds": [],
         "unitsOverrides": [
           {
             "identifier": "cpu",
@@ -891,7 +932,10 @@
             "delimiter": false,
             "added": 1747745333530
           }
-        ]
+        ],
+        "coloring": {
+          "thresholdRules": []
+        }
       },
       "querySettings": {
         "maxResultRecords": 1000,
@@ -1041,5 +1085,6 @@
     "gridLayout": {
       "mode": "responsive"
     }
-  }
+  },
+  "annotations": []
 }

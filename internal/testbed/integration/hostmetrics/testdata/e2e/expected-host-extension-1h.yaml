@@ -45,6 +45,131 @@ resourceMetrics:
     schemaUrl: https://opentelemetry.io/schemas/1.9.0
     scopeMetrics:
       - metrics:
+          - description: Total bytes of memory available.
+            name: system.memory.limit
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "16772579328"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352221519413"
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper
+          version: 0.43.0
+  - resource:
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: AMD EPYC 7763 64-Core Processor
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: CA-13-24-D1-B0-E9
+        - key: host.name
+          value:
+            stringValue: otelcol-4tpeuus6av-7lgcr
+        - key: os.build.id
+          value:
+            stringValue: 6.11.0-1018-azure
+        - key: os.description
+          value:
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
+        - key: os.name
+          value:
+            stringValue: ""
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: ""
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: Number of available logical CPUs.
+            name: system.cpu.logical.count
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "4"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+            unit: "{cpu}"
+          - description: Number of available physical CPUs.
+            name: system.cpu.physical.count
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "2"
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
+            unit: "{cpu}"
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/cpuscraper
+          version: 0.43.0
+  - resource:
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: AMD EPYC 7763 64-Core Processor
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.6
+                - stringValue: fe80::c813:24ff:fed1:b0e9
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: CA-13-24-D1-B0-E9
+        - key: host.name
+          value:
+            stringValue: otelcol-4tpeuus6av-7lgcr
+        - key: os.build.id
+          value:
+            stringValue: 6.11.0-1018-azure
+        - key: os.description
+          value:
+            stringValue: 'Linux otelcol-4tpeuus6av-7lgcr 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 x86_64'
+        - key: os.name
+          value:
+            stringValue: ""
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: ""
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
           - description: The time the system has been running
             gauge:
               dataPoints:

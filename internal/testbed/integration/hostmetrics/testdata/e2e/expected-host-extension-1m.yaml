@@ -48,9 +48,9 @@ resourceMetrics:
           - description: Difference in system.cpu.time since the last measurement per logical CPU, divided by the elapsed time (value in interval [0,1]).
             gauge:
               dataPoints:
-                - asDouble: 0.022467391707533077
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
+                - asDouble: 0.008072653884964536
+                  startTimeUnixNano: "1759741945000000000"
+                  timeUnixNano: "1759742352220753769"
             name: system.cpu.utilization
             unit: "1"
         scope:

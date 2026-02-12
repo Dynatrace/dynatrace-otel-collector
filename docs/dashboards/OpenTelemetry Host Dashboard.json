@@ -15,7 +15,7 @@
     "0": {
       "title": "CPU usage",
       "type": "data",
-      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization)\n},\nfilter: { host.name == $Hosts }, \nfrom: -5m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_util) * 100\n\n",
+      "query": "timeseries {\n  cpu_util=avg(system.cpu.utilization)\n},\nfilter: { host.name == $Hosts }, \nfrom: -6m, to: -1m\n| fieldsAdd usage = arrayLast(cpu_util) * 100\n\n",
       "visualization": "gauge",
       "visualizationSettings": {
         "autoSelectVisualization": false,
@@ -58,7 +58,7 @@
     "1": {
       "title": "Memory usage",
       "type": "data",
-      "query": "timeseries {\n\tusage = avg(system.memory.utilization)\n},\nby: { host.name },\nfrom: -5m, to: -1m,\nfilter: { state == \"used\" AND host.name == $Hosts }\n| fieldsAdd MemoryUtilization = arrayLast(usage) * 100\n",
+      "query": "timeseries {\n\tusage = avg(system.memory.utilization)\n},\nby: { host.name },\nfrom: -6m, to: -1m,\nfilter: { state == \"used\" AND host.name == $Hosts }\n| fieldsAdd MemoryUtilization = arrayLast(usage) * 100\n",
       "visualization": "gauge",
       "visualizationSettings": {
         "icon": {
@@ -159,7 +159,7 @@
     "3": {
       "title": "Filesystem usage (root)",
       "type": "data",
-      "query": "timeseries {\n  val = avg(system.filesystem.utilization)\n},\nby: { host.name, state },\nfilter: {\n  matchesValue(host.name, $Hosts) and mountpoint == \"/\"\n},\nfrom: -20m, to: -1m\n| fieldsAdd FileSystemUtilization = arraylast(val) * 100",
+      "query": "timeseries {\n  val = avg(system.filesystem.utilization)\n},\nby: { host.name, state },\nfilter: {\n  matchesValue(host.name, $Hosts) and mountpoint == \"/\"\n},\nfrom: -6m, to: -1m\n| fieldsAdd FileSystemUtilization = arraylast(val) * 100",
       "visualization": "gauge",
       "visualizationSettings": {
         "icon": {
@@ -649,7 +649,7 @@
     "16": {
       "title": "Filesystem capacity (root)",
       "type": "data",
-      "query": "timeseries {\n  usage=sum(system.filesystem.usage, rollup:avg)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -20m, to: -1m\n| fieldsAdd fs_space = arrayLast(usage)",
+      "query": "timeseries {\n  usage=sum(system.filesystem.usage, rollup:avg)\n},\nby: { host.name },\nfilter: { matchesValue(host.name, $Hosts) and mountpoint == \"/\" },\nfrom: -6m, to: -1m\n| fieldsAdd fs_space = arrayLast(usage)",
       "visualization": "singleValue",
       "visualizationSettings": {
         "singleValue": {

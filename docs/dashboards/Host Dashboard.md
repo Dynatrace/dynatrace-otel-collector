@@ -30,14 +30,9 @@ Make sure to also add the receivers and processors to your collector pipeline.
 The following attributes are not included in the default allow list of resource attributes in Dynatrace:
 
 - `host.arch`
-- `host.ip`
 - `host.name`
 - `os.type`
-- `process.command_line`
-- `process.name`
-- `process.pid`
-    - CAUTION: This resource attribute only needs to be added when you have processes that spawn sub-processes to be
-      able to accurately show CPU/memory usage per process. Only add the `process.pid` attribute if you have a need for it. Adding the attribute can lead to a cardinality explosion in your metrics.
+- `process.executable.name`
 - `mountpoint`
 - `device`
 - `state`

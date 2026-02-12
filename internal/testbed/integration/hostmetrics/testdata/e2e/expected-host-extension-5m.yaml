@@ -1738,15 +1738,9 @@ resourceMetrics:
         - key: os.version
           value:
             stringValue: ""
-        - key: process.command_line
-          value:
-            stringValue: /dynatrace-otel-collector_--config=/conf/relay.yaml
         - key: process.executable.name
           value:
             stringValue: dynatrace-otel-collector
-        - key: process.pid
-          value:
-            intValue: "1"
     schemaUrl: https://opentelemetry.io/schemas/1.9.0
     scopeMetrics:
       - metrics:

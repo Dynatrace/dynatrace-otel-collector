@@ -1654,9 +1654,6 @@ resourceMetrics:
           version: 0.136.0
   - resource:
       attributes:
-        - key: process.pid
-          value:
-            intValue: "1"
         - key: process.parent_pid
           value:
             intValue: "0"
@@ -1669,9 +1666,6 @@ resourceMetrics:
         - key: process.command
           value:
             stringValue: /otelcol-contrib
-        - key: process.command_line
-          value:
-            stringValue: /otelcol-contrib --config=/conf/relay.yaml
         - key: host.name
           value:
             stringValue: otelcol-q73vtw344d-tnhc7

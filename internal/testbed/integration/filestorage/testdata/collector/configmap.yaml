@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: otelcol-${ID}
-data:
-  config: |
-${CollectorConfig}

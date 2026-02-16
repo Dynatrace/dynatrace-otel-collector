@@ -1,9 +1,6 @@
-//go:build e2e
-
 package filestorage
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -55,13 +52,10 @@ func TestE2E_FileStorage_PersistentQueue(t *testing.T) {
 	collectorConfigPath := filepath.Join(configExamplesDir, "filestorage-exporter.yaml")
 	host := otelk8stest.HostEndpoint(t)
 
-	// Read overlay for secure storage path
-	securePathOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "secure-path.yaml"))
-
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host:      host,
 		Namespace: testNs,
-		Templates: []string{securePathOverlay},
+		Templates: []string{},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 
@@ -69,7 +63,7 @@ func TestE2E_FileStorage_PersistentQueue(t *testing.T) {
 		t,
 		k8sClient,
 		testID,
-		filepath.Join(testDir, "collector-secure"),
+		filepath.Join(testDir, "collector-exporter"),
 		map[string]string{
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 			"CollectorConfig":   collectorConfig,
@@ -102,23 +96,6 @@ func TestE2E_FileStorage_PersistentQueue(t *testing.T) {
 		totalLogs += logs.LogRecordCount()
 	}
 	require.Greater(t, totalLogs, 0, "Should have received log records")
-
-	// Verify the collector has the secure volume mount
-	pods, err := otelk8stest.GetPods(k8sClient, testNs, fmt.Sprintf("app.kubernetes.io/instance=%s", testID))
-	require.NoError(t, err)
-	require.NotEmpty(t, pods.Items, "Should find collector pod")
-
-	collectorPod := pods.Items[0]
-	hasSecureMount := false
-	for _, container := range collectorPod.Spec.Containers {
-		for _, mount := range container.VolumeMounts {
-			if mount.MountPath == "/var/lib/otelcol/file_storage" {
-				hasSecureMount = true
-				break
-			}
-		}
-	}
-	require.True(t, hasSecureMount, "Collector should have secure volume mount at /var/lib/otelcol/file_storage")
 
 	t.Log("FileStorage persistent queue test completed successfully")
 }

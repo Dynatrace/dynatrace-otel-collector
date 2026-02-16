@@ -14,6 +14,24 @@ spec:
         app.kubernetes.io/name: opentelemetry-collector
         app.kubernetes.io/instance: {{ .Name }}
     spec:
+      securityContext:
+        fsGroup: 10001
+      initContainers:
+        - name: init-filestorage
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /var/lib/otelcol/file_storage
+              chown -R 10001:10001 /var/lib/otelcol/file_storage
+              chmod -R 755 /var/lib/otelcol/file_storage
+          volumeMounts:
+            - mountPath: /var/lib/otelcol/file_storage
+              name: filestorage
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
       containers:
         - name: otelcol
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
@@ -36,6 +54,13 @@ spec:
             limits:
               cpu: 200m
               memory: 512Mi
+          securityContext:
+            runAsUser: 10001
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
       volumes:
         - name: config
           configMap:
@@ -44,7 +69,8 @@ spec:
               - key: config
                 path: config.yaml
         - name: filestorage
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: filestorage-pvc-{{ .Name }}
         - name: varlogpods
           hostPath:
             path: /var/log/pods

@@ -22,9 +22,11 @@ spec:
             - -c
             - |
               mkdir -p /var/log/app
+              counter=1
               while true; do
-                echo "$(date) - Log entry from filestorage test" >> /var/log/app/test.log
-                sleep 2
+                echo "Log entry ${counter} from filestorage checkpoint test at $(date)" >> /var/log/app/test.log
+                counter=$((counter + 1))
+                sleep 1
               done
           volumeMounts:
             - name: log-volume

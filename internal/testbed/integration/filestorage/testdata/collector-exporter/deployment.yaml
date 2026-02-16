@@ -1,18 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: otelcol-${ID}
+  name: {{ .Name }}
+  namespace: e2e-filestorage-queue
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: otelcol
-      app.kubernetes.io/instance: ${ID}
+      app.kubernetes.io/name: opentelemetry-collector
+      app.kubernetes.io/instance: {{ .Name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: otelcol
-        app.kubernetes.io/instance: ${ID}
+        app.kubernetes.io/name: opentelemetry-collector
+        app.kubernetes.io/instance: {{ .Name }}
     spec:
       securityContext:
         fsGroup: 10001
@@ -20,7 +21,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: otelcol
-          image: ${ContainerRegistry}dynatrace-otel-collector:latest
+          image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
           imagePullPolicy: IfNotPresent
           command:
             - /dynatrace-otel-collector
@@ -49,7 +50,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: otelcol-${ID}
+            name: {{ .Name }}-config
             items:
               - key: config
                 path: config.yaml

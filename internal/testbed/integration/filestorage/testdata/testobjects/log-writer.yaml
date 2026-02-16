@@ -35,4 +35,7 @@ spec:
               memory: 64Mi
       volumes:
         - name: log-volume
-          emptyDir: {}
+          hostPath:
+            path: /var/log/app
+            type: DirectoryOrCreate
+

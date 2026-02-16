@@ -1,6 +1,7 @@
 package filestorage
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -55,7 +56,6 @@ func TestE2E_FileStorage_PersistentQueue(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host:      host,
 		Namespace: testNs,
-		Templates: []string{},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 
@@ -71,14 +71,26 @@ func TestE2E_FileStorage_PersistentQueue(t *testing.T) {
 		host,
 	)
 
+	// Create telemetrygen for log generation
+	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
+		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
+		TestID:       testID,
+		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
+		DataTypes:    []string{"logs"},
+	}
+
+	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
+
 	defer func() {
-		for _, obj := range collectorObjs {
+		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
 
-	// Create a log generator pod
-	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "log-generator.yaml"))
+	// Wait for telemetrygen to start
+	for _, info := range telemetryGenObjInfos {
+		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
+	}
 
 	t.Log("Waiting for logs to be collected and sent...")
 
@@ -138,13 +150,9 @@ func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
 	collectorConfigPath := filepath.Join(configExamplesDir, "filestorage-receiver.yaml")
 	host := otelk8stest.HostEndpoint(t)
 
-	// Read overlay for log file paths
-	logPathOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "receiver-logpath.yaml"))
-
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host:      host,
 		Namespace: testNs,
-		Templates: []string{logPathOverlay},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 

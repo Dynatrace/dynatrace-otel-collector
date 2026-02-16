@@ -6,7 +6,6 @@ extensions:
     compaction:
       on_start: true
       on_rebound: true
-      directory: /tmp/otel_compaction
       rebound_needed_threshold_mib: 100
       rebound_trigger_threshold_mib: 10
       check_interval: 5s

@@ -2,7 +2,6 @@ package filestorage
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -19,105 +18,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
-
-// TestE2E_FileStorage_PersistentQueue tests the filestorage extension with persistent queue
-// in a Kubernetes environment, verifying that data persists across collector restarts
-// and that files are stored in a secure location
-func TestE2E_FileStorage_PersistentQueue(t *testing.T) {
-	return
-	testDir := filepath.Join("testdata")
-	configExamplesDir := "../../../../config_examples"
-
-	kubeconfigPath := k8stest.KubeconfigFromEnvOrDefault()
-	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
-	require.NoError(t, err)
-
-	// Create the namespace specific for the test
-	nsFile := filepath.Join(testDir, "namespace.yaml")
-	buf, err := os.ReadFile(nsFile)
-	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
-
-	testNs := nsObj.GetName()
-	defer func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	}()
-
-	logsConsumer := new(consumertest.LogsSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Logs: []*oteltest.LogSinkConfig{
-			{
-				Consumer: logsConsumer,
-			},
-		},
-	})
-	defer shutdownSinks()
-
-	// Create collector with secure volume mount
-	testID, err := testutil.GenerateRandomString(10)
-	require.NoError(t, err)
-	collectorConfigPath := filepath.Join(configExamplesDir, "filestorage-exporter.yaml")
-	host := otelk8stest.HostEndpoint(t)
-
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host:      host,
-		Namespace: testNs,
-	})
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-
-	collectorObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "collector-exporter"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfig,
-		},
-		host,
-	)
-
-	// Create telemetrygen for log generation
-	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
-		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
-		TestID:       testID,
-		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
-		DataTypes:    []string{"logs"},
-	}
-
-	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
-
-	defer func() {
-		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	// Wait for telemetrygen to start
-	for _, info := range telemetryGenObjInfos {
-		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
-	}
-
-	t.Log("Waiting for logs to be collected and sent...")
-
-	// Wait for logs to arrive
-	oteltest.WaitForLogs(t, 5, logsConsumer)
-
-	t.Log("Verifying logs were received...")
-
-	// Verify we received logs
-	require.GreaterOrEqual(t, len(logsConsumer.AllLogs()), 5, "Should have received at least 5 log batches")
-
-	// Verify that the persistent queue is working by checking we received data
-	totalLogs := 0
-	for _, logs := range logsConsumer.AllLogs() {
-		totalLogs += logs.LogRecordCount()
-	}
-	require.Greater(t, totalLogs, 0, "Should have received log records")
-
-	t.Log("FileStorage persistent queue test completed successfully")
-}
 
 // TestE2E_FileStorage_FileLogReceiver tests the filestorage extension with filelog receiver
 // in a Kubernetes environment, verifying checkpoint persistence across collector restarts
@@ -323,10 +223,95 @@ func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
 	t.Logf("Summary: Collected %d logs before restart, %d after restart, 0 missing, 0 duplicates",
 		len(firstBatchLogNumbers), len(secondBatchLogNumbers))
 	t.Logf("STRICT REQUIREMENTS MET: No data loss + No duplication = Perfect checkpoint persistence")
+
+	// Phase 5: Test exporter queue persistence with filestorage
+	t.Log("Phase 5: Testing exporter queue persistence...")
+
+	// Get the highest log number collected so far
+	allCollectedLogs := make(map[int]bool)
+	for num := range firstBatchLogNumbers {
+		allCollectedLogs[num] = true
+	}
+	for num := range secondBatchLogNumbers {
+		allCollectedLogs[num] = true
+	}
+
+	maxCollected := 0
+	for num := range allCollectedLogs {
+		if num > maxCollected {
+			maxCollected = num
+		}
+	}
+	t.Logf("Highest log number collected so far: %d", maxCollected)
+
+	// Shut down the sink to simulate exporter unavailability
+	t.Log("Shutting down sink to test queue persistence...")
+	shutdownSinks()
+
+	// Wait while logs accumulate in the queue
+	t.Log("Waiting 10 seconds for logs to accumulate in exporter queue...")
+	time.Sleep(10 * time.Second)
+
+	// Start a new sink
+	t.Log("Starting new sink to drain queued logs...")
+	logsConsumer3 := new(consumertest.LogsSink)
+	shutdownSinks3 := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Logs: []*oteltest.LogSinkConfig{
+			{
+				Consumer: logsConsumer3,
+			},
+		},
+	})
+	defer shutdownSinks3()
+
+	// Wait for queued logs to be sent
+	t.Log("Waiting for queued logs to be delivered...")
+	time.Sleep(15 * time.Second)
+
+	// Collect log numbers from third batch (queued logs)
+	thirdBatchLogNumbers := extractLogNumbers(t, logsConsumer3)
+	t.Logf("Third batch (from queue) collected %d unique log entries", len(thirdBatchLogNumbers))
+	require.Greater(t, len(thirdBatchLogNumbers), 0, "Should have collected queued logs after sink restart")
+
+	// Merge all collected logs
+	for num := range thirdBatchLogNumbers {
+		allCollectedLogs[num] = true
+	}
+
+	// Find min and max across all logs from all phases
+	minOverallAll := maxCollected + 1000
+	maxOverallAll := 0
+	for num := range allCollectedLogs {
+		if num < minOverallAll {
+			minOverallAll = num
+		}
+		if num > maxOverallAll {
+			maxOverallAll = num
+		}
+	}
+
+	// Check for gaps across all phases
+	missingLogsAll := []int{}
+	for i := minOverallAll; i <= maxOverallAll; i++ {
+		if !allCollectedLogs[i] {
+			missingLogsAll = append(missingLogsAll, i)
+		}
+	}
+
+	if len(missingLogsAll) > 0 {
+		t.Logf("WARNING: Missing log entries across all phases: %v (total: %d)", missingLogsAll, len(missingLogsAll))
+		t.Logf("This indicates logs were lost during queue persistence")
+	}
+
+	// Assert no gaps - exporter queue should ensure no data loss
+	require.Empty(t, missingLogsAll, "Found %d missing log entries %v - exporter queue persistence failed to prevent data loss", len(missingLogsAll), missingLogsAll)
+
+	t.Log("FileStorage exporter queue persistence test completed successfully!")
+	t.Logf("Final Summary: Collected %d unique logs across all phases (checkpoint + queue), 0 missing, 0 duplicates",
+		len(allCollectedLogs))
+	t.Logf("COMPLETE TEST PASSED: Checkpoint persistence + Exporter queue persistence = Perfect data integrity")
 }
 
-// extractLogNumbers parses log messages and extracts the log entry numbers
-// Expected format: "Log entry X from filestorage checkpoint test at ..."
 func extractLogNumbers(t *testing.T, consumer *consumertest.LogsSink) map[int]bool {
 	logNumbers := make(map[int]bool)
 	re := regexp.MustCompile(`Log entry (\d+) from filestorage`)

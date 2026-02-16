@@ -115,6 +115,7 @@ jobs:
           - k8scluster
           - loadbalancing
           - kafka
+          - filestorage
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

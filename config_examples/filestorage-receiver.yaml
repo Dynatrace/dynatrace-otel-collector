@@ -28,6 +28,16 @@ exporters:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 5000
+      storage: file_storage
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
 
 service:
   extensions: [health_check, file_storage]

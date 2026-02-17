@@ -156,7 +156,7 @@ jobs:
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
 
-      - name: Run helm installation
+      - name: Run helm i nstallation
         env:
           REPOSITORY: "dynatrace-otel-collector"
           TAG: "e2e-test"

@@ -222,7 +222,6 @@ func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
 	t.Log("FileStorage checkpoint persistence test completed successfully!")
 	t.Logf("Summary: Collected %d logs before restart, %d after restart, 0 missing, 0 duplicates",
 		len(firstBatchLogNumbers), len(secondBatchLogNumbers))
-	t.Logf("STRICT REQUIREMENTS MET: No data loss + No duplication = Perfect checkpoint persistence")
 
 	// Phase 5: Test exporter queue persistence with filestorage
 	t.Log("Phase 5: Testing exporter queue persistence...")
@@ -244,7 +243,7 @@ func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
 	}
 	t.Logf("Highest log number collected so far: %d", maxCollected)
 
-	// Shut down the sink to simulate exporter unavailability
+	// Shut down the sink to simulate backend unavailability
 	t.Log("Shutting down sink to test queue persistence...")
 	shutdownSinks()
 
@@ -272,6 +271,15 @@ func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
 	thirdBatchLogNumbers := extractLogNumbers(t, logsConsumer3)
 	t.Logf("Third batch (from queue) collected %d unique log entries", len(thirdBatchLogNumbers))
 	require.Greater(t, len(thirdBatchLogNumbers), 0, "Should have collected queued logs after sink restart")
+
+	// Find the lowest log number in third batch
+	minThirdBatch := maxCollected + 1000
+	for num := range thirdBatchLogNumbers {
+		if num < minThirdBatch {
+			minThirdBatch = num
+		}
+	}
+	t.Logf("Lowest log number in third batch: %d", minThirdBatch)
 
 	// Merge all collected logs
 	for num := range thirdBatchLogNumbers {
@@ -309,7 +317,6 @@ func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
 	t.Log("FileStorage exporter queue persistence test completed successfully!")
 	t.Logf("Final Summary: Collected %d unique logs across all phases (checkpoint + queue), 0 missing, 0 duplicates",
 		len(allCollectedLogs))
-	t.Logf("COMPLETE TEST PASSED: Checkpoint persistence + Exporter queue persistence = Perfect data integrity")
 }
 
 func extractLogNumbers(t *testing.T, consumer *consumertest.LogsSink) map[int]bool {

@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: {{ .Name }}
   namespace: e2e-filestorage
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: opentelemetry-collector

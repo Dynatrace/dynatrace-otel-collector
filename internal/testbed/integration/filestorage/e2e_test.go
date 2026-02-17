@@ -1,5 +1,3 @@
-//go:build e2e
-
 package filestorage
 
 import (
@@ -94,7 +92,7 @@ func TestE2E_FileStorage(t *testing.T) {
 
 	t.Log("Phase 2: Restarting collector to test checkpoint persistence...")
 
-	// Restart the collector by deleting the DaemonSet pod
+	// Restart the collector by deleting the Deployment pod
 	// This simulates a collector restart and tests if the checkpoint is persisted
 	podName, err := k8stest.GetPodNameByLabels(k8sClient.DynamicClient, testNs, map[string]string{
 		"app.kubernetes.io/name": "opentelemetry-collector",
@@ -132,11 +130,12 @@ func TestE2E_FileStorage(t *testing.T) {
 	}
 	t.Logf("Highest log number before restart: %d", maxLogNumber)
 
-	// Wait for the DaemonSet to create a new pod and for it to be ready
-	time.Sleep(10 * time.Second)
-	t.Log("Collector restarted, waiting for it to resume from checkpoint and catch up on missed logs...")
+	// Wait for the Deployment to create a new pod and for it to be ready
+	t.Log("Waiting for collector deployment to be ready after restart...")
+	err = k8stest.WaitForDeploymentPods(k8sClient.DynamicClient, testNs, "otelcol-"+testID, 2*time.Minute)
+	require.NoError(t, err, "Failed to wait for collector deployment to be ready")
 
-	t.Log("Phase 4: Waiting for logs after restart...")
+	t.Log("Phase 4: Waiting for logs after successful restart...")
 
 	// Wait for more logs to arrive after restart - give it time to catch up on logs written during restart
 	time.Sleep(15 * time.Second)

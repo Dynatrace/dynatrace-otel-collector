@@ -127,7 +127,7 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: ${{ env.GORELEASER_PRO_VERSION }}
-          args: release --snapshot --clean --release-notes ${{ env.RELEASE_NOTES }} --split
+          args: release --snapshot --clean --release-notes ${{ env.RELEASE_NOTES }} --split --verbose
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
@@ -235,7 +235,7 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: ${{ env.GORELEASER_PRO_VERSION }}
-          args: continue --merge
+          args: continue --merge --verbose
         env:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

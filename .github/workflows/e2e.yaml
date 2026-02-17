@@ -96,6 +96,14 @@ jobs:
           cd internal/testbed/integration/${{ matrix.usecase }}
           go test -v --tags=e2e
 
+      - name: Collect collector logs on failure
+        if: failure()
+        run: |
+          echo "====== Collector Pod Logs ======"
+          kubectl logs -l app.kubernetes.io/name=opentelemetry-collector --tail=500 --all-containers=true || true
+          echo "====== All Pods Status ======"
+          kubectl get pods --all-namespaces || true
+
   k8s-e2e-test-matrix:
     strategy:
       fail-fast: false
@@ -129,6 +137,14 @@ jobs:
           cd internal/testbed/integration/${{ matrix.usecase }}
           go test -v --tags=e2e
 
+      - name: Collect collector logs on failure
+        if: failure()
+        run: |
+          echo "====== Collector Pod Logs ======"
+          kubectl logs -l app.kubernetes.io/name=opentelemetry-collector --tail=500 --all-containers=true || true
+          echo "====== All Pods Status ======"
+          kubectl get pods --all-namespaces || true
+
   combined-load-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04
@@ -144,6 +160,14 @@ jobs:
         run: |
           cd internal/testbed/integration/combinedload
           go test -v --tags=e2e
+
+      - name: Collect collector logs on failure
+        if: failure()
+        run: |
+          echo "====== Collector Pod Logs ======"
+          kubectl logs -l app.kubernetes.io/name=opentelemetry-collector --tail=500 --all-containers=true || true
+          echo "====== All Pods Status ======"
+          kubectl get pods --all-namespaces || true
 
   helm-install-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

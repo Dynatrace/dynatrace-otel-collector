@@ -1,5 +1,3 @@
-//go:build e2e
-
 package k8scluster
 
 import (
@@ -45,19 +43,19 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
 
 	testNs := nsObj.GetName()
-	// defer func() {
-	// 	require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	// }()
+	defer func() {
+		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
+	}()
 
 	metricsConsumer := new(consumertest.MetricsSink)
-	_ = oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
 			{
 				Consumer: metricsConsumer,
 			},
 		},
 	})
-	//defer shutdownSinks()
+	defer shutdownSinks()
 
 	// create collector
 	testID, err := testutil.GenerateRandomString(10)
@@ -69,7 +67,7 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 		Namespace: testNs,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	_ = otelk8stest.CreateCollectorObjects(
+	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
@@ -81,11 +79,11 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 		host,
 	)
 
-	// defer func() {
-	// 	for _, obj := range collectorObjs {
-	// 		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-	// 	}
-	// }()
+	defer func() {
+		for _, obj := range collectorObjs {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
 
 	oteltest.WaitForMetrics(t, 10, metricsConsumer)
 

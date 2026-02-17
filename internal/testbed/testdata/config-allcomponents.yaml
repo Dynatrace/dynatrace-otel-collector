@@ -188,6 +188,9 @@ connectors:
   spanmetrics:
 
 extensions:
+  file_storage:
+    directory: /var/lib/otelcol/file_storage
+    create_directory: true
   k8s_leader_elector:
     auth_type: "serviceAccount"
     lease_name: lease

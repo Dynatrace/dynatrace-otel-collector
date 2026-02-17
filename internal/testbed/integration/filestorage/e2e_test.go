@@ -1,5 +1,3 @@
-//go:build e2e
-
 package filestorage
 
 import (
@@ -166,26 +164,7 @@ func TestE2E_FileStorage(t *testing.T) {
 		allLogNumbers[num] = true
 	}
 
-	// Find min and max across all logs
-	minOverall := maxLogNumber + 1000
-	maxOverall := 0
-	for num := range allLogNumbers {
-		if num < minOverall {
-			minOverall = num
-		}
-		if num > maxOverall {
-			maxOverall = num
-		}
-	}
-
-	// Check for gaps
-	missingLogs := []int{}
-	for i := minOverall; i <= maxOverall; i++ {
-		if !allLogNumbers[i] {
-			missingLogs = append(missingLogs, i)
-		}
-	}
-
+	missingLogs := findMissingLogs(allLogNumbers)
 	if len(missingLogs) > 0 {
 		t.Logf("WARNING: Missing log entries: %v (total: %d)", missingLogs, len(missingLogs))
 		t.Logf("This indicates logs were lost during collection or restart")
@@ -289,26 +268,8 @@ func TestE2E_FileStorage(t *testing.T) {
 		allCollectedLogs[num] = true
 	}
 
-	// Find min and max across all logs from all phases
-	minOverallAll := maxCollected + 1000
-	maxOverallAll := 0
-	for num := range allCollectedLogs {
-		if num < minOverallAll {
-			minOverallAll = num
-		}
-		if num > maxOverallAll {
-			maxOverallAll = num
-		}
-	}
-
 	// Check for gaps across all phases
-	missingLogsAll := []int{}
-	for i := minOverallAll; i <= maxOverallAll; i++ {
-		if !allCollectedLogs[i] {
-			missingLogsAll = append(missingLogsAll, i)
-		}
-	}
-
+	missingLogsAll := findMissingLogs(allCollectedLogs)
 	if len(missingLogsAll) > 0 {
 		t.Logf("WARNING: Missing log entries across all phases: %v (total: %d)", missingLogsAll, len(missingLogsAll))
 		t.Logf("This indicates logs were lost during queue persistence")
@@ -320,6 +281,36 @@ func TestE2E_FileStorage(t *testing.T) {
 	t.Log("FileStorage exporter queue persistence test completed successfully!")
 	t.Logf("Final Summary: Collected %d unique logs across all phases (checkpoint + queue), 0 missing, 0 duplicates",
 		len(allCollectedLogs))
+}
+
+// findMissingLogs checks for gaps in a sequence of log numbers and returns any missing entries
+func findMissingLogs(logNumbers map[int]bool) []int {
+	if len(logNumbers) == 0 {
+		return []int{}
+	}
+
+	// Find min and max
+	const unreachableHighValue = 1000000
+	minLog := unreachableHighValue
+	maxLog := 0
+	for num := range logNumbers {
+		if num < minLog {
+			minLog = num
+		}
+		if num > maxLog {
+			maxLog = num
+		}
+	}
+
+	// Check for gaps
+	missingLogs := []int{}
+	for i := minLog; i <= maxLog; i++ {
+		if !logNumbers[i] {
+			missingLogs = append(missingLogs, i)
+		}
+	}
+
+	return missingLogs
 }
 
 func extractLogNumbers(t *testing.T, consumer *consumertest.LogsSink) map[int]bool {

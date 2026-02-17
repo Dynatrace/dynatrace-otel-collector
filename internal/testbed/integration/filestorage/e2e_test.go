@@ -1,3 +1,5 @@
+//go:build e2e
+
 package filestorage
 
 import (
@@ -19,9 +21,10 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-// TestE2E_FileStorage_FileLogReceiver tests the filestorage extension with filelog receiver
-// in a Kubernetes environment, verifying checkpoint persistence across collector restarts
-func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
+// TestE2E_FileStorage tests the filestorage extension in a Kubernetes environment, verifying:
+// 1. Filelog receiver checkpoint persistence across collector restarts (no data loss, no duplicates)
+// 2. Exporter queue persistence when backend is unavailable (queued logs delivered after backend recovery)
+func TestE2E_FileStorage(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
@@ -30,7 +33,7 @@ func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the namespace specific for the test
-	nsFile := filepath.Join(testDir, "namespace-receiver.yaml")
+	nsFile := filepath.Join(testDir, "namespace.yaml")
 	buf, err := os.ReadFile(nsFile)
 	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
 	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
@@ -54,7 +57,7 @@ func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
 	// Create collector
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
-	collectorConfigPath := filepath.Join(configExamplesDir, "filestorage-receiver.yaml")
+	collectorConfigPath := filepath.Join(configExamplesDir, "filestorage.yaml")
 	host := otelk8stest.HostEndpoint(t)
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
@@ -67,7 +70,7 @@ func TestE2E_FileStorage_FileLogReceiver(t *testing.T) {
 		t,
 		k8sClient,
 		testID,
-		filepath.Join(testDir, "collector-receiver"),
+		filepath.Join(testDir, "collector"),
 		map[string]string{
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 			"CollectorConfig":   collectorConfig,

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: filestorage-pvc-{{ .Name }}
-  namespace: e2e-filestorage-receiver
+  namespace: e2e-filestorage
 spec:
   accessModes:
     - ReadWriteOnce

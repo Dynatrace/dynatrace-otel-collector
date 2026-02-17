@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ .Name }}
-  namespace: e2e-filestorage-receiver
+  namespace: e2e-filestorage
 spec:
   selector:
     matchLabels:
@@ -77,4 +77,3 @@ spec:
         - name: varlogapp
           hostPath:
             path: /var/log/app
-

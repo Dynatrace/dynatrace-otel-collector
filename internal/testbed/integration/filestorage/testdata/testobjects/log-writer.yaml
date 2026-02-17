@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: log-writer
-  namespace: e2e-filestorage-receiver
+  namespace: e2e-filestorage
 spec:
   replicas: 1
   selector:

@@ -50,7 +50,7 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 	// }()
 
 	metricsConsumer := new(consumertest.MetricsSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+	_ = oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
 			{
 				Consumer: metricsConsumer,
@@ -69,7 +69,7 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 		Namespace: testNs,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
+	_ = otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,

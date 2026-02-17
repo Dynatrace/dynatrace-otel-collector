@@ -141,7 +141,7 @@ jobs:
         if: failure()
         run: |
           echo "====== Collector Pod Logs ======"
-          kubectl logs -l app.kubernetes.io/name=opentelemetry-collector --tail=500 --all-containers=true || true
+          kubectl logs -l app.kubernetes.io/name=opentelemetry-collector --tail=500 --all-containers=true -n e2ek8scluster || true
           echo "====== All Pods Status ======"
           kubectl get pods --all-namespaces || true
 

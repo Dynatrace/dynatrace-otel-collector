@@ -17,9 +17,9 @@ require (
 	go.opentelemetry.io/collector/receiver/otlpreceiver v0.145.0
 	go.opentelemetry.io/collector/receiver/receivertest v0.145.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.35.0
+	k8s.io/api v0.35.1
 	k8s.io/apimachinery v0.35.1
-	k8s.io/client-go v0.35.0
+	k8s.io/client-go v0.35.1
 	k8s.io/metrics v0.35.0
 )
 
@@ -285,3 +285,5 @@ require (
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon
 
 replace go.opentelemetry.io/otel/sdk => go.opentelemetry.io/otel/sdk v1.40.0
+
+replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest => github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.0.0-20260214003441-53f460a472cd

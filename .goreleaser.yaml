@@ -101,7 +101,6 @@ nfpms:
     license: Apache 2.0
 dockers:
   - goos: linux
-    skip_push: true
     goarch: amd64
     image_templates:
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:{{ .Version }}-amd64
@@ -121,7 +120,6 @@ dockers:
       - --label=org.opencontainers.image.licenses=Apache-2.0
     use: buildx
   - goos: linux
-    skip_push: true
     goarch: arm64
     image_templates:
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:{{ .Version }}-arm64
@@ -141,7 +139,6 @@ dockers:
       - --label=org.opencontainers.image.licenses=Apache-2.0
     use: buildx
   - goos: linux
-    skip_push: true
     goarch: ppc64le
     dockerfile: Dockerfile
     image_templates:
@@ -162,7 +159,6 @@ dockers:
       - --label=org.opencontainers.image.licenses=Apache-2.0
     use: buildx
   - goos: linux
-    skip_push: true
     goarch: s390x
     dockerfile: Dockerfile
     image_templates:
@@ -184,42 +180,36 @@ dockers:
     use: buildx
 docker_manifests:
   - name_template: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:{{ .Version }}
-    skip_push: true
     image_templates:
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:{{ .Version }}-amd64
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:{{ .Version }}-arm64
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:{{ .Version }}-ppc64le
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:{{ .Version }}-s390x
   - name_template: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest
-    skip_push: true
     image_templates:
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-amd64
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-arm64
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-ppc64le
       - ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest-s390x
   - name_template: public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}
-    skip_push: true
     image_templates:
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-amd64
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-arm64
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-ppc64le
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:{{ .Version }}-s390x
   - name_template: public.ecr.aws/dynatrace/dynatrace-otel-collector:latest
-    skip_push: true
     image_templates:
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-amd64
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-arm64
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-ppc64le
       - public.ecr.aws/dynatrace/dynatrace-otel-collector:latest-s390x
   - name_template: dynatrace/dynatrace-otel-collector:{{ .Version }}
-    skip_push: true
     image_templates:
       - dynatrace/dynatrace-otel-collector:{{ .Version }}-amd64
       - dynatrace/dynatrace-otel-collector:{{ .Version }}-arm64
       - dynatrace/dynatrace-otel-collector:{{ .Version }}-ppc64le
       - dynatrace/dynatrace-otel-collector:{{ .Version }}-s390x
   - name_template: dynatrace/dynatrace-otel-collector:latest
-    skip_push: true
     image_templates:
       - dynatrace/dynatrace-otel-collector:latest-amd64
       - dynatrace/dynatrace-otel-collector:latest-arm64

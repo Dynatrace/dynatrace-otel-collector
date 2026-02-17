@@ -5,9 +5,6 @@ on:
     # run only against version tags
     tags:
       - 'v*'
-  pull_request:
-    branches:
-      - main
 
 env:
   # renovate: datasource=golang-version depName=go
@@ -33,7 +30,7 @@ jobs:
 
       - name: Validate version
         env:
-          TAG_NAME: v0.44.0
+          TAG_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           # Remove leading 'v' from version
           export VERSION=$(echo -n ${TAG_NAME} | cut -c 2-)
@@ -106,7 +103,7 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: ${{ env.GORELEASER_PRO_VERSION }}
-          args: release --snapshot --clean --release-notes ${{ env.RELEASE_NOTES }}
+          args: release --clean --release-notes ${{ env.RELEASE_NOTES }}
         env:
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

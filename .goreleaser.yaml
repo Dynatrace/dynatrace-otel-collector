@@ -38,7 +38,7 @@ builds:
 
 sboms:
   - cmd: cyclonedx-gomod
-    args: ["app", "-licenses", "-assert-licenses", "-std", "-json", "-main", "./", "-output", "$document", "../dist/"]
+    args: ["app", "-licenses", "-assert-licenses", "-std", "-json", "-main", "./", "-output", "$document", "../build/"]
     artifacts: binary
     env:
       - GOARCH={{ .Arch }}

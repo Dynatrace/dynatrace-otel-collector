@@ -230,6 +230,11 @@ jobs:
           sudo rm -r $ANDROID_HOME
           df -h
 
+      - run: make generate
+
+      - name: Display structure of build folder
+        run: ls -R build
+
       - name: Create release for version tag
         uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
         with:

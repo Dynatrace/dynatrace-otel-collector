@@ -191,9 +191,6 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - name: Display structure of build folder
-        run: ls -R build
-
       - name: Display structure of downloaded files
         run: ls -R dist
 

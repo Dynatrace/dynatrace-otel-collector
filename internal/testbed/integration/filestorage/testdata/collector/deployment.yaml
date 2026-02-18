@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}
+  namespace: e2e-filestorage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opentelemetry-collector
+      app.kubernetes.io/instance: {{ .Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: opentelemetry-collector
+        app.kubernetes.io/instance: {{ .Name }}
+    spec:
+      securityContext:
+        fsGroup: 10001
+      initContainers:
+        - name: init-filestorage
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /var/lib/otelcol/file_storage
+              chown -R 10001:10001 /var/lib/otelcol/file_storage
+              chmod -R 755 /var/lib/otelcol/file_storage
+          volumeMounts:
+            - mountPath: /var/lib/otelcol/file_storage
+              name: filestorage
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+      containers:
+        - name: otelcol
+          image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /dynatrace-otel-collector
+            - --config=/conf/config.yaml
+          volumeMounts:
+            - mountPath: /conf
+              name: config
+            - mountPath: /var/lib/otelcol/file_storage
+              name: filestorage
+            - mountPath: /var/log/pods
+              name: varlogpods
+              readOnly: true
+            - mountPath: /var/log/app
+              name: varlogapp
+              readOnly: true
+          resources:
+            limits:
+              cpu: 200m
+              memory: 512Mi
+          securityContext:
+            runAsUser: 10001
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Name }}-config
+            items:
+              - key: config
+                path: config.yaml
+        - name: filestorage
+          persistentVolumeClaim:
+            claimName: filestorage-pvc-{{ .Name }}
+        - name: varlogpods
+          hostPath:
+            path: /var/log/pods
+        - name: varlogapp
+          hostPath:
+            path: /var/log/app

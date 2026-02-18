@@ -10,7 +10,7 @@ inputs:
     required: false
     description: "Kubernetes version that should be used"
     # renovate: datasource=docker depName=kindest/node
-    default: "v1.35.0"
+    default: "v1.35.1"
   cluster-name:
     required: false
     description: "Name of the kind cluster"

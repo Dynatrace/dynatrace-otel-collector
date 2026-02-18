@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: filestorage-pv-{{ .Name }}
+  namespace: e2e-filestorage
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: filestorage-local
+  hostPath:
+    path: /tmp/otelcol-filestorage-{{ .Name }}
+    type: DirectoryOrCreate

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Name }}-config
-  namespace: e2ehostextension
+  namespace: e2e-filestorage
 data:
-  relay: |
+  config: |
 {{ .CollectorConfig }}

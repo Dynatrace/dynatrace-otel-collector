@@ -48,7 +48,7 @@ components: $(BIN)
 	$(BIN) components
 
 snapshot: .goreleaser.yaml $(GORELEASER)
-	$(GORELEASER) release --snapshot --clean --parallelism 2 --skip archive,sbom --fail-fast
+	$(GORELEASER) release --snapshot --clean --skip archive,sbom --fail-fast
 
 $(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod | $(TOOLS_BIN_DIR)
 	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))

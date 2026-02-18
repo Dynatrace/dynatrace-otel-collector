@@ -32,6 +32,8 @@ builds:
         goarch: s390x
       - goos: windows
         goarch: s390x
+      - goos: windows
+        goarch: ppc64le
     dir: build
 
 sboms:
@@ -52,7 +54,7 @@ sboms:
         {{- if .Arm }}v{{ .Arm }}{{ end }}-sbom.cdx.json
 
 archives:
-  - formats: [ 'tar.gz' ]
+  - formats: ['tar.gz']
     # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       {{ .ProjectName }}_
@@ -65,7 +67,7 @@ archives:
     # use zip for windows archives
     format_overrides:
       - goos: windows
-        formats: [ 'zip' ]
+        formats: ['zip']
 nfpms:
   - file_name_template: >-
       {{ .PackageName }}_

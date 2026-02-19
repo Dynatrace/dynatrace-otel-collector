@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temeletrygen-deployment
+  namespace: e2ehostmetrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temeletrygen-deployment
+  template:
+    metadata:
+      annotations:
+        workload: deployment
+      labels:
+        app: temeletrygen-deployment
+    spec:
+      containers:
+      - command:
+        - /telemetrygen
+        - logs
+        - --otlp-insecure
+        - --otlp-endpoint=otelcolsvc.e2ehostmetrics.svc.cluster.local:4317
+        - --duration=36000s
+        - --rate=1
+        - --batch=false
+        - --otlp-attributes=service.name="test-logs-deployment"
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.145.0@sha256:1fcf230e13cddffbd2649bbd7f1166bfd2d7809eb62cf66603e3f646cfe55c99
+        imagePullPolicy: IfNotPresent
+        name: telemetrygen-logs
+      restartPolicy: Always

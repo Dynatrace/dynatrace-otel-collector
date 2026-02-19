@@ -55,6 +55,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	metricsConsumer1m := new(consumertest.MetricsSink)
 	metricsConsumer5m := new(consumertest.MetricsSink)
 	metricsConsumer1h := new(consumertest.MetricsSink)
+	logsConsumer := new(consumertest.LogsSink)
 
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
@@ -74,6 +75,14 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 				Consumer: metricsConsumer1h,
 				Ports: &oteltest.ReceiverPorts{
 					Http: 4322,
+				},
+			},
+		},
+		Logs: []*oteltest.LogSinkConfig{
+			{
+				Consumer: logsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4323,
 				},
 			},
 		},
@@ -132,6 +141,9 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
+
+	// Create Telemetry Generator
+	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "telemetrygen.yaml"))
 
 	// Compare timeouts
 	const (
@@ -236,6 +248,12 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	checkMetrics(t, expectedFile1h, metricsConsumer1h, defaultOptions, compareTimeout, compareTick)
 
 	t.Log("Host metrics checked successfully")
+
+	// Logs
+	t.Logf("Checking logs...")
+	oteltest.WaitForLogs(t, 1, logsConsumer)
+
+	t.Log("Logs checked successfully")
 }
 
 func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.MetricsSink, options []pmetrictest.CompareMetricsOption, timeout, tick time.Duration) {

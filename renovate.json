@@ -28,8 +28,7 @@
         "/^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)//",
         "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen"
       ],
-      "groupName": "OpenTelemetry Collector",
-      "minimumReleaseAge": "4 days"
+      "groupName": "OpenTelemetry Collector"
     },
     {
       "matchDatasources": ["golang-version"],

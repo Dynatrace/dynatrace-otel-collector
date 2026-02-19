@@ -9,6 +9,7 @@
   "labels": ["dependencies"],
   "prConcurrentLimit": 25,
   "minimumReleaseAge": "3 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
   "timezone": "Europe/Vienna",
   "rebaseWhen": "behind-base-branch",
   "postUpdateOptions": [

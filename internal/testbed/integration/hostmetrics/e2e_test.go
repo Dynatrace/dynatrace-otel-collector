@@ -143,7 +143,23 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	}()
 
 	// Create Telemetry Generator
-	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "telemetrygen.yaml"))
+	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
+		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
+		TestID:       testID,
+		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
+		DataTypes:    []string{"logs"},
+	}
+
+	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
+	defer func() {
+		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
+	for _, info := range telemetryGenObjInfos {
+		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
+	}
 
 	// Compare timeouts
 	const (

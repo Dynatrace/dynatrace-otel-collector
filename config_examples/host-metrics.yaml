@@ -14,7 +14,6 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
-  journald:
   hostmetrics/1m:
     collection_interval: 1m
     scrapers:
@@ -179,10 +178,6 @@ processors:
 
   transform:
     error_mode: ignore
-    log_statements:
-      - context: scope
-        statements:
-          - set(attributes["otel.scope.name"], "testytest")
     metric_statements:
       - context: resource
         statements:
@@ -285,6 +280,6 @@ service:
       processors: [filter, resourcedetection, transform, cumulativetodelta, batch]
       exporters: [otlp_http]
     logs:
-        receivers: [journald]
-        processors: [resourcedetection, transform, batch]
+        receivers: [otlp]
+        processors: [resourcedetection, batch]
         exporters: [otlp_http]

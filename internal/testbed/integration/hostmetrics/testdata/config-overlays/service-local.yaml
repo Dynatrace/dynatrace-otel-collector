@@ -24,5 +24,5 @@ service:
       exporters: [otlp_http/3]
     logs:
       receivers: [otlp]
-      processors: [resourcedetection, batch]
+      processors: [resourcedetection]
       exporters: [otlp_http/logs]

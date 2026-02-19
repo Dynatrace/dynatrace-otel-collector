@@ -226,6 +226,12 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	oteltest.WaitForMetrics(t, 1, metricsConsumer1h)
 	t.Logf("Received metrics on all consumers...")
 
+	// Logs
+	t.Logf("Checking logs...")
+	oteltest.WaitForLogs(t, 1, logsConsumer)
+
+	t.Log("Logs checked successfully")
+
 	// 1m Metrics
 	t.Logf("Checking 1m metrics...")
 
@@ -248,12 +254,6 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	checkMetrics(t, expectedFile1h, metricsConsumer1h, defaultOptions, compareTimeout, compareTick)
 
 	t.Log("Host metrics checked successfully")
-
-	// Logs
-	t.Logf("Checking logs...")
-	oteltest.WaitForLogs(t, 1, logsConsumer)
-
-	t.Log("Logs checked successfully")
 }
 
 func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.MetricsSink, options []pmetrictest.CompareMetricsOption, timeout, tick time.Duration) {

@@ -5,6 +5,8 @@ exporters:
     endpoint: http://%[1]s:4321
   otlp_http/3:
     endpoint: http://%[1]s:4322
+  otlp_http/logs:
+    endpoint: http://%[1]s:4323
 service:
   extensions: [health_check]
   pipelines:
@@ -20,3 +22,7 @@ service:
       receivers: [hostmetrics/1h]
       processors: [filter, resourcedetection, transform, cumulativetodelta]
       exporters: [otlp_http/3]
+    logs:
+      receivers: [otlp]
+      processors: [resourcedetection]
+      exporters: [otlp_http/logs]

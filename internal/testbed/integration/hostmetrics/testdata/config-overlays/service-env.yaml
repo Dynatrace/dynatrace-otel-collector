@@ -11,3 +11,7 @@ service:
       receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
       processors: [filter, resourcedetection, transform, cumulativetodelta, batch]
       exporters: [otlp_http]
+    logs:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [otlp_http]

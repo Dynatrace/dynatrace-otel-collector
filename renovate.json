@@ -9,6 +9,7 @@
   "labels": ["dependencies"],
   "prConcurrentLimit": 25,
   "minimumReleaseAge": "3 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
   "timezone": "Europe/Vienna",
   "rebaseWhen": "behind-base-branch",
   "postUpdateOptions": [
@@ -25,11 +26,15 @@
     {
       "matchPackageNames": [
         "open-telemetry/opentelemetry-collector-contrib",
-        "/^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)//",
+        "/^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)//"
+      ],
+      "groupName": "OpenTelemetry Collector"
+    },
+    {
+      "matchPackageNames": [
         "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen"
       ],
-      "groupName": "OpenTelemetry Collector",
-      "minimumReleaseAge": "4 days"
+      "groupName": "OpenTelemetry Collector - telemetrygen"
     },
     {
       "matchDatasources": ["golang-version"],

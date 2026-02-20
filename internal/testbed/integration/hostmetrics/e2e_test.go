@@ -55,6 +55,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	metricsConsumer1m := new(consumertest.MetricsSink)
 	metricsConsumer5m := new(consumertest.MetricsSink)
 	metricsConsumer1h := new(consumertest.MetricsSink)
+	logsConsumer := new(consumertest.LogsSink)
 
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
@@ -74,6 +75,14 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 				Consumer: metricsConsumer1h,
 				Ports: &oteltest.ReceiverPorts{
 					Http: 4322,
+				},
+			},
+		},
+		Logs: []*oteltest.LogSinkConfig{
+			{
+				Consumer: logsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4323,
 				},
 			},
 		},
@@ -132,6 +141,25 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
+
+	// Create Telemetry Generator
+	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
+		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
+		TestID:       testID,
+		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
+		DataTypes:    []string{"logs"},
+	}
+
+	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
+	defer func() {
+		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
+	for _, info := range telemetryGenObjInfos {
+		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
+	}
 
 	// Compare timeouts
 	const (
@@ -213,6 +241,12 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	oteltest.WaitForMetrics(t, 1, metricsConsumer5m)
 	oteltest.WaitForMetrics(t, 1, metricsConsumer1h)
 	t.Logf("Received metrics on all consumers...")
+
+	// Logs
+	t.Logf("Checking logs...")
+	oteltest.WaitForLogs(t, 1, logsConsumer)
+
+	t.Log("Logs checked successfully")
 
 	// 1m Metrics
 	t.Logf("Checking 1m metrics...")

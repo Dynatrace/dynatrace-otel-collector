@@ -8,6 +8,12 @@ extensions:
     endpoint: 0.0.0.0:13133
 
 receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
   hostmetrics/1m:
     collection_interval: 1m
     scrapers:
@@ -272,4 +278,8 @@ service:
     metrics:
       receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
       processors: [filter, resourcedetection, transform, cumulativetodelta, batch]
+      exporters: [otlp_http]
+    logs:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
       exporters: [otlp_http]

@@ -26,10 +26,15 @@
     {
       "matchPackageNames": [
         "open-telemetry/opentelemetry-collector-contrib",
-        "/^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)//",
-        "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen"
+        "/^(go\\.opentelemetry\\.io/collector|github\\.com/open-telemetry/opentelemetry-collector-contrib)//"
       ],
       "groupName": "OpenTelemetry Collector"
+    },
+    {
+      "matchPackageNames": [
+        "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen"
+      ],
+      "groupName": "OpenTelemetry Collector - telemetrygen"
     },
     {
       "matchDatasources": ["golang-version"],

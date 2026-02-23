@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: otel-journald-test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  namespace: otel-journald-test
+  labels:
+    app: otel-collector
+    component: journald-receiver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-collector
+  template:
+    metadata:
+      labels:
+        app: otel-collector
+    spec:
+      hostPID: true
+      containers:
+      - name: otel-collector
+        image: localhost/otel-collector-journald:latest
+        imagePullPolicy: Never        
+        env:
+        - name: K8S_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: K8S_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 100m
+          limits:
+            memory: 512Mi
+            cpu: 500m
+        
+        volumeMounts:
+        - name: config
+          mountPath: /conf
+        - name: run-journal
+          mountPath: /run/log/journal
+          readOnly: true
+        
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        
+      volumes:
+      - name: config
+        configMap:
+          name: otel-collector-config
+      - name: run-journal
+        hostPath:
+          path: /run/log/journal
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+  namespace: otel-journald-test
+data:
+  config.yaml: |
+    receivers:
+      journald:
+        directory: /run/log/journal
+        priority: info
+        start_at: beginning
+
+    exporters:
+      debug:
+        verbosity: detailed
+      otlp_http:
+        endpoint: end
+        headers:
+          Authorization: "Api-Token token"
+
+    service:
+      pipelines:
+        logs:
+          receivers: [journald]
+          exporters: [debug, otlp_http]

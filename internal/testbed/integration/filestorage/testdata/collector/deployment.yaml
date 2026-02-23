@@ -56,12 +56,17 @@ spec:
               cpu: 200m
               memory: 512Mi
           securityContext:
-            runAsUser: 10001
-            runAsNonRoot: true
+            privileged: false
+            readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            seccompProfile:
+              type: RuntimeDefault
             capabilities:
               drop:
-                - ALL
+                - all
       volumes:
         - name: config
           configMap:

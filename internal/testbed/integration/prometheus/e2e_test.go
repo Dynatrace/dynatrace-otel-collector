@@ -69,7 +69,7 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 	// Lower the scrape interval to speed up test runs
 	collectorConfig = strings.ReplaceAll(collectorConfig, "scrape_interval: 60s", "scrape_interval: 5s")
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
+	collectorObjs := k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
@@ -79,6 +79,7 @@ func TestE2E_PrometheusNodeExporter(t *testing.T) {
 			"CollectorConfig":   collectorConfig,
 		},
 		host,
+		testNs,
 	)
 	defer func() {
 		for _, obj := range collectorObjs {

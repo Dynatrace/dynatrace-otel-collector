@@ -95,7 +95,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	host := otelk8stest.HostEndpoint(t)
 	testID2, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
-	collectorObjs2 := otelk8stest.CreateCollectorObjects(
+	collectorObjs2 := k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID2,
@@ -104,6 +104,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 		},
 		host,
+		testNs,
 	)
 
 	// create collector
@@ -117,7 +118,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
+	collectorObjs := k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
@@ -127,6 +128,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 			"CollectorConfig":   collectorConfig,
 		},
 		host,
+		testNs,
 	)
 
 	// create telemetrygen

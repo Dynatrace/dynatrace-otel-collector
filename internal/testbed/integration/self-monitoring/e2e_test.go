@@ -101,7 +101,7 @@ func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes 
 		Host: host,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
+	collectorObjs := k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
@@ -113,6 +113,7 @@ func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes 
 			"Namespace":         testNs,
 		},
 		host,
+		testNs,
 	)
 
 	defer func() {
@@ -217,7 +218,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		Host: host,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
+	collectorObjs := k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
@@ -229,6 +230,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 			"Namespace":         testNs,
 		},
 		host,
+		testNs,
 	)
 
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{

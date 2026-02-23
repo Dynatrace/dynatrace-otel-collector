@@ -178,6 +178,12 @@ processors:
 
   transform:
     error_mode: ignore
+    log_statements:
+      - context: log
+        statements:
+          # Map journald _EXE attribute to process.executable.name
+          - set(attributes["process.executable.name"], attributes["_EXE"]) where attributes["_EXE"] != nil
+
     metric_statements:
       - context: resource
         statements:
@@ -281,5 +287,5 @@ service:
       exporters: [otlp_http]
     logs:
       receivers: [otlp]
-      processors: [resourcedetection, batch]
+      processors: [resourcedetection, transform, batch]
       exporters: [otlp_http]

@@ -40,6 +40,7 @@ service:
         - batch
       exporters:
         - debug
+        - otlp_http
     logs:
       receivers:
         - otlp
@@ -48,6 +49,7 @@ service:
         - batch
       exporters:
         - debug
+        - otlp_http
     traces:
       receivers:
         - otlp

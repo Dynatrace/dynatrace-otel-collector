@@ -340,6 +340,4 @@ require (
 
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon
 
-replace go.opentelemetry.io/otel/sdk => go.opentelemetry.io/otel/sdk v1.40.0
-
 replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest => github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.0.0-20260214003441-53f460a472cd

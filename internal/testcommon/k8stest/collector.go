@@ -155,5 +155,5 @@ func RequireCollectorSecurityContextHardened(t *testing.T, k8sClient *xk8stest.K
 	require.True(t, ok, "missing capabilities")
 	drop, ok := caps["drop"].([]any)
 	require.True(t, ok, "missing capabilities.drop")
-	require.Contains(t, drop, "all")
+	require.Contains(t, drop, "ALL")
 }

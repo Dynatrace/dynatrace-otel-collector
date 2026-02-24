@@ -60,7 +60,7 @@ spec:
               type: RuntimeDefault
             capabilities:
               drop:
-                - all  
+                - ALL  
             - name: logs
               mountPath: /var/log
               readOnly: true

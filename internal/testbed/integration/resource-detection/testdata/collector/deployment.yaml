@@ -62,7 +62,7 @@ spec:
               type: RuntimeDefault
             capabilities:
               drop:
-                - all
+                - ALL
       volumes:
         - name: opentelemetry-collector-configmap
           configMap:

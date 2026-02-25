@@ -20,20 +20,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-
       - name: Install Kyverno CLI
         uses: kyverno/action-install-cli@v0.2.0
 
       - name: Render collector YAMLs and validate with Kyverno
         run: |
-          bash "${{ github.workspace }}/.github/workflows/scripts/kyverno_check_all_collectors.sh" \
-            "${{ github.workspace }}/internal/testbed/integration" \
-            "${{ github.workspace }}/.github/workflows/kyverno/policies" \
-            "${{ runner.temp }}/rendered-collectors"
+          bash .github/workflows/scripts/kyverno_check_all_collectors.sh \
+          internal/testbed/integration \
+          .github/workflows/kyverno/policies \
+          "${{ runner.temp }}/rendered-collectors-simple"
 
   docker-build:
     runs-on: ubuntu-24.04

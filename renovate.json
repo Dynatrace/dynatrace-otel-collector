@@ -65,6 +65,7 @@
       "customType": "regex",
       "fileMatch": [
         "(^|\\/)Makefile$",
+        "(^|\\/)Makefile.Common$",
         "(^|\\/)Dockerfile",
         "(^|\\/).*\\.ya?ml$",
         "(^|\\/).*\\.toml$",

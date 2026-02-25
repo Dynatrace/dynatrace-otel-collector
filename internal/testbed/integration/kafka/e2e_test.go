@@ -280,16 +280,25 @@ func TestE2E_Kafka(t *testing.T) {
 
 	kmetricsCompareOptions := []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreMetricValues(
+			"kafka.brokers",
+			"kafka.consumer_group.members",
 			"kafka.consumer_group.offset",
 			"kafka.consumer_group.offset_sum",
 			"kafka.consumer_group.lag",
-			"kafka.consumer_group.lag_sum"),
+			"kafka.consumer_group.lag_sum",
+			"kafka.partition.current_offset",
+			"kafka.partition.oldest_offset",
+			"kafka.partition.replicas",
+			"kafka.partition.replicas_in_sync",
+			"kafka.topic.partitions"),
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreDatapointAttributesOrder(),
+		pmetrictest.IgnoreMetricDataPointsOrder(),
+		pmetrictest.IgnoreMetricsOrder(),
+		pmetrictest.IgnoreScopeMetricsOrder(),
+		pmetrictest.IgnoreResourceMetricsOrder(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

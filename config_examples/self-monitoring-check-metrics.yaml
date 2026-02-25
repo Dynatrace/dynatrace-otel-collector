@@ -56,6 +56,7 @@ service:
         - batch
       exporters:
         - debug
+        - otlp_http
   # turn on self-monitoring
   telemetry:
     resource:

@@ -21,7 +21,7 @@ COSIGN     := $(TOOLS_BIN_DIR)/cosign
 GOJUNIT    := $(TOOLS_BIN_DIR)/v2
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
-GORELEASER_PRO_VERSION ?= v2.12.5
+GORELEASER_PRO_VERSION ?= v2.14.0
 
 .PHONY: moddownload
 moddownload:

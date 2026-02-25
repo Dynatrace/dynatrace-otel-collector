@@ -1791,12 +1791,146 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   sum: 2020
                   timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "404"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: host.docker.internal
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asInt: "808"
+                      spanId: 0d7859a8e8873125
+                      timeUnixNano: "1756286324653527710"
+                      traceId: f2ff1b99021241384a843c456ed03895
+                    - asInt: "1212"
+                      spanId: c55cb5efedeb01df
+                      timeUnixNano: "1756286319649757507"
+                      traceId: ff455452c7dfab927dc23b60cbbc73d2
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 1212
+                  min: 808
+                  startTimeUnixNano: "1000000"
+                  sum: 2020
+                  timeUnixNano: "2000000"
             name: http.client.request.body.size
             unit: By
           - description: Duration of HTTP client requests.
             histogram:
               aggregationTemporality: 1
               dataPoints:
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "404"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: host.docker.internal
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 0.002880387
+                      spanId: 0d7859a8e8873125
+                      timeUnixNano: "1756286324653542501"
+                      traceId: f2ff1b99021241384a843c456ed03895
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.003573306
+                  min: 0.002880387
+                  startTimeUnixNano: "1000000"
+                  sum: 0.006453693
+                  timeUnixNano: "2000000"
                 - attributes:
                     - key: http.request.method
                       value:

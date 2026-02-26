@@ -1091,29 +1091,19 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_size
             unit: '{batches}'
-          - description: Number of spans in failed attempts to send to destination. [Alpha]
+          - description: "Number of spans in failed attempts to send to destination. At detailed telemetry level, includes attributes: error.type (semantic convention), error.permanent. [Alpha]"
             name: otelcol_exporter_send_failed_spans
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asInt: "0"
-                  attributes:
-                    - key: exporter
-                      value:
-                        stringValue: debug
-                  exemplars:
-                    - asInt: "0"
-                      spanId: bb8a6dd32b0864a9
-                      timeUnixNano: "1756286319645717866"
-                      traceId: 20cf954291f4b11526e240b140866abd
-                    - asInt: "0"
-                      spanId: 3f5f5b54e42b2560
-                      timeUnixNano: "1756286324649974404"
-                      traceId: 9c368eec1008364e2fb21b772d6e67dc
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
                 - asInt: "10"
                   attributes:
+                    - key: error.permanent
+                      value:
+                        boolValue: true
+                    - key: error.type
+                      value:
+                        stringValue: Unimplemented
                     - key: exporter
                       value:
                         stringValue: otlp_http

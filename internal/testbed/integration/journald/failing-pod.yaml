@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: failing-pod
+  namespace: otel-journald-test
+  labels:
+    app: failing-test
+spec:
+  restartPolicy: Always
+  containers:
+  - name: fail-container
+    image: busybox:latest
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo "Starting pod that will fail..."
+        echo "This pod is intentionally failing for testing"
+        exit 1

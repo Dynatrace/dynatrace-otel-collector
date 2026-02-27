@@ -253,7 +253,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
-	//require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	var expected pmetric.Metrics
 	expected, err = golden.ReadMetrics(expectedFile)
@@ -318,10 +318,19 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1],
-			defaultOptions...,
-		),
-		)
+		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+		err := pmetrictest.CompareMetrics(expected, actual, defaultOptions...)
+		if err != nil {
+			// Log the actual metrics in YAML format for debugging
+			marshaler := &pmetric.JSONMarshaler{}
+			actualYAML, marshalErr := marshaler.MarshalMetrics(actual)
+			if marshalErr == nil {
+				t.Logf("Actual metrics received:\n%s", string(actualYAML))
+			} else {
+				t.Logf("Failed to marshal actual metrics: %v", marshalErr)
+			}
+		}
+		assert.NoError(tt, err)
 	}, 3*time.Minute, 1*time.Second)
 }
 

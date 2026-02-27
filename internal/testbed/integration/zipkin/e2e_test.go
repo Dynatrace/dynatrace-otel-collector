@@ -60,7 +60,7 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 		Host: host,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
+	collectorObjs := k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
@@ -70,6 +70,7 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 			"CollectorConfig":   collectorConfig,
 		},
 		host,
+		testNs,
 	)
 	createZipkinOpts := &k8stest.ZipkinAppCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "zipkin"),

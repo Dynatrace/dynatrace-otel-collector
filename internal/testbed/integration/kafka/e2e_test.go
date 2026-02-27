@@ -114,7 +114,7 @@ func TestE2E_Kafka(t *testing.T) {
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathReceiver)
 
-	_ = otelk8stest.CreateCollectorObjects(
+	_ = k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testIDReceiver,
@@ -124,6 +124,7 @@ func TestE2E_Kafka(t *testing.T) {
 			"CollectorConfig":   collectorConfigReceiver,
 		},
 		host,
+		testNs,
 	)
 
 	// KafkaMetrics Receiver collector
@@ -154,6 +155,7 @@ func TestE2E_Kafka(t *testing.T) {
 			"CollectorConfig":   collectorConfigKMReceiver,
 		},
 		host,
+		testNs,
 	)
 
 	// Exporter collector
@@ -166,7 +168,7 @@ func TestE2E_Kafka(t *testing.T) {
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathExporter)
 
-	otelk8stest.CreateCollectorObjects(
+	k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testIDExporter,
@@ -176,6 +178,7 @@ func TestE2E_Kafka(t *testing.T) {
 			"CollectorConfig":   collectorConfigExporter,
 		},
 		host,
+		testNs,
 	)
 
 	// Create Telemetries

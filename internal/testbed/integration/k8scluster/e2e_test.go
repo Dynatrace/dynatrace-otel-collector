@@ -69,7 +69,7 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 		Namespace: testNs,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
+	collectorObjs := k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
@@ -79,6 +79,7 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 			"CollectorConfig":   collectorConfig,
 		},
 		host,
+		testNs,
 	)
 
 	defer func() {

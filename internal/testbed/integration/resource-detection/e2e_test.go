@@ -58,7 +58,7 @@ func TestE2E_ResourceDetectionProcessor(t *testing.T) {
 		Host: host,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
+	collectorObjs := k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
@@ -68,6 +68,7 @@ func TestE2E_ResourceDetectionProcessor(t *testing.T) {
 			"CollectorConfig":   collectorConfig,
 		},
 		host,
+		testNs,
 	)
 
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{

@@ -101,7 +101,7 @@ func TestLoad_Combined(t *testing.T) {
 	require.NoError(t, err)
 
 	testID := uuid.NewString()[:8]
-	collectorObjs := otelk8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), map[string]string{
+	collectorObjs := k8stest.CreateCollectorObjects(t, k8sClient, testID, filepath.Join(testDir, "collector"), map[string]string{
 		"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
 	}, "")
 

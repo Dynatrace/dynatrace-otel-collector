@@ -3,11 +3,12 @@
 package k8sobjects
 
 import (
-	"go.opentelemetry.io/collector/pdata/pcommon"
 	"os"
 	"path"
 	"path/filepath"
 	"testing"
+
+	"go.opentelemetry.io/collector/pdata/pcommon"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -61,7 +62,7 @@ func TestE2E_K8sobjectsReceiver(t *testing.T) {
 		Namespace: testNs,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
+	collectorObjs := k8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
 		testID,
@@ -71,6 +72,7 @@ func TestE2E_K8sobjectsReceiver(t *testing.T) {
 			"CollectorConfig":   collectorConfig,
 		},
 		host,
+		testNs,
 	)
 
 	// create deployment

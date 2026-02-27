@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/tools
 
-go 1.25.7
+go 1.26.0
 
 require (
 	github.com/jstemmer/go-junit-report/v2 v2.1.0

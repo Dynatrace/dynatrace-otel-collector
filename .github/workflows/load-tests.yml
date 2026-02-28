@@ -37,7 +37,7 @@ jobs:
       - run: make oteltestbedcol
 
       - name: Upload Testbed Binaries
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: testbed-binaries
           path: ./bin/*
@@ -84,7 +84,7 @@ jobs:
       - name: Upload Test Results
         if: ${{ failure() || success() }}
         continue-on-error: true
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: test-result-archive-load-tests
           path: ./*.tar
@@ -93,7 +93,7 @@ jobs:
         run: cp internal/testbed/load/tests/results/benchmarks.json internal/testbed/load/tests/results/load-tests.json
 
       - name: Upload benchmarks.json
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: benchmark-results-load-tests
           path: internal/testbed/load/tests/results/load-tests.json

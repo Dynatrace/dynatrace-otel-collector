@@ -15,7 +15,6 @@ env:
   GO_VERSION: "1.25.7"
 
 jobs:
-
   docker-build:
     runs-on: ubuntu-24.04
     steps:

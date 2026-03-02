@@ -85,14 +85,14 @@ jobs:
           df -h
 
       - name: Upload Pull Request Preview
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: otelcol_dynatrace_${{ matrix.goos }}_${{ matrix.goarch }}_${{ github.event.pull_request.number }}_${{ github.run_number }}
           path: dist/*
 
       - name: Upload linux service packages
         if: matrix.goarch == 'arm64' && matrix.goos == 'linux'
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: linux-packages-arm64
           path: |
@@ -102,7 +102,7 @@ jobs:
 
       - name: Upload linux service packages
         if: matrix.goarch == 'amd64' && matrix.goos == 'linux'
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: linux-packages-amd64
           path: |

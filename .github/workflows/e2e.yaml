@@ -13,38 +13,8 @@ env:
   KUBECONFIG: /tmp/kube-config-collector-e2e-testing
   # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.25.7"
-  OUT_BASE: "${{ runner.temp }}/rendered-collectors-simple"
 
 jobs:
-  kyverno-yaml-check:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Check out code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Setup Go
-        uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6.2.0
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: |
-            cmd/rendercollectors/go.sum
-
-      - name: Install Kyverno CLI
-        uses: kyverno/action-install-cli@fcee92fca5c883169ef9927acf543e0b5fc58289 # v0.2.0
-
-      - name: Build renderer
-        shell: bash
-        run: |
-          cd cmd/rendercollectors
-          go build -o "${{ runner.temp }}/rendercollectors" .
-
-      - name: Render collector YAMLs
-        shell: bash
-        run: |
-          "${{ runner.temp }}/rendercollectors" \
-            -repo-root "${GITHUB_WORKSPACE}" \
-            -integration-root internal/testbed/integration \
-            -out-base "${{ env.OUT_BASE }}"
 
   docker-build:
     runs-on: ubuntu-24.04

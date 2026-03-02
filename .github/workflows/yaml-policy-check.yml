@@ -15,13 +15,11 @@ defaults:
 
 env:
   GO_VERSION: "1.25.7"
+  OUT_BASE: "/tmp/rendered-collectors-simple"
 
 jobs:
   kyverno-yaml-check:
     runs-on: ubuntu-24.04
-    env:
-      OUT_BASE: "${{ runner.temp }}/rendered-collectors-simple"
-
     steps:
       - name: Check out code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -39,16 +37,16 @@ jobs:
       - name: Build renderer
         run: |
           cd cmd/rendercollectors
-          go build -o "${{ runner.temp }}/rendercollectors" .
+          go build -o /tmp/rendercollectors .
 
       - name: Render collector YAMLs
         run: |
-          "${{ runner.temp }}/rendercollectors" \
-            -repo-root "${GITHUB_WORKSPACE}" \
+          /tmp/rendercollectors \
+            -repo-root "$GITHUB_WORKSPACE" \
             -integration-root internal/testbed/integration \
-            -out-base "${{ env.OUT_BASE }}"
+            -out-base "$OUT_BASE"
 
       - name: Validate with Kyverno
         run: |
-          sed 's|^|-r |' "${{ env.OUT_BASE }}/workloads.txt" \
+          sed 's|^|-r |' "$OUT_BASE/workloads.txt" \
             | xargs -n 1000 kyverno apply .github/workflows/kyverno/policies/*.yaml

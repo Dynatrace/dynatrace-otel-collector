@@ -32,6 +32,7 @@ func main() {
 		integrationRoot = flag.String("integration-root", "", "Path under repo root, e.g. internal/testbed/integration")
 		outBase         = flag.String("out-base", "", "Output directory, e.g. /tmp/rendered-collectors")
 		workloadsFile   = flag.String("workloads-file", "", "Optional override for workloads list output (default: <out-base>/workloads.txt)")
+		repoRootFlag    = flag.String("repo-root", "", "Repo root directory (used to write relative paths in workloads.txt)")
 	)
 	flag.Parse()
 
@@ -39,9 +40,17 @@ func main() {
 		fatalf("missing required flags: -integration-root and -out-base")
 	}
 
-	repoRoot, err := os.Getwd()
+	repoRoot := *repoRootFlag
+	if repoRoot == "" {
+		var err error
+		repoRoot, err = os.Getwd()
+		if err != nil {
+			fatalf("getwd: %v", err)
+		}
+	}
+	repoRoot, err := filepath.Abs(repoRoot)
 	if err != nil {
-		fatalf("getwd: %v", err)
+		fatalf("abs repo-root: %v", err)
 	}
 
 	// Ensure integrationRoot is absolute for walking/copying

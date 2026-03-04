@@ -127,6 +127,8 @@ v0.146.0:
 
 - Self-monitoring: the `otelcol_exporter_send_failed_{spans,metric_points,log_records}` metrics now only emit data points when there are failures to report.
 
+  Not reporting data points which have a value of `0` should reduce metric data volume and therefore ingest costs.
+
 ### 🚀 New components 🚀
 
 - `extension/filestorage`: Add filestorage extension to the distribution (#834)

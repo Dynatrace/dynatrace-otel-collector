@@ -44,16 +44,13 @@ sed 's|^|-r |' "$OUT_BASE/workloads.txt" \
 
 ### CI / automation
 
-The same render + validate steps run in the **YAML Policy Check** workflow:
-- Workflow: [.github/workflows/yaml-policy-check.yml]( https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/.github/workflows/yaml-policy-check.yml) 
+The same render + validate steps run in the **YAML Policy Check** workflow [.github/workflows/yaml-policy-check.yml]( https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/.github/workflows/yaml-policy-check.yml) 
 
 ## Kyverno policies
 
-Policies live in:
-- [`.github/workflows/kyverno/policies/`](https://github.com/Dynatrace/dynatrace-otel-collector/tree/main/.github/workflows/kyverno/policies)
-
-Policy for the hardened Collector `securityContext`are [here](https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/.github/workflows/kyverno/policies/collector-securitycontext.yaml)
-These policy enforces the following container security settings:
+Policies live in: [`.github/workflows/kyverno/policies/`](https://github.com/Dynatrace/dynatrace-otel-collector/tree/main/.github/workflows/kyverno/policies)
+The policy for the hardened Collector `securityContext`is [here](https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/.github/workflows/kyverno/policies/collector-securitycontext.yaml)
+It enforces the following container security settings:
 
 - `securityContext.capabilities.drop: ["ALL"]`
 - `securityContext.readOnlyRootFilesystem: true`

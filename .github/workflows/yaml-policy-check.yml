@@ -29,14 +29,14 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
           cache-dependency-path: |
-            cmd/rendercollectors/go.sum
+            internal/renderworkloads/go.sum
 
       - name: Install Kyverno CLI
         uses: kyverno/action-install-cli@fcee92fca5c883169ef9927acf543e0b5fc58289 # v0.2.0
 
       - name: Build renderer
         run: |
-          cd cmd/rendercollectors
+          cd internal/renderworkloads
           go build -o /tmp/rendercollectors .
 
       - name: Render collector YAMLs

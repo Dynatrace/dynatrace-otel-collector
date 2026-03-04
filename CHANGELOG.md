@@ -4,6 +4,139 @@
 
 <!-- next version -->
 
+## v0.45.0
+
+This release includes versions v0.146.0 and v0.147.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.147.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.147.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.147.0>
+
+v0.146.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.146.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.146.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+---
+
+### 🛑 Breaking changes 🛑
+
+- `processor/k8s_attributes`: Introduce semantic conventions compliant feature gate pair for k8sattributes processor ([#44693](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44693))
+  - Added `processor.k8sattributes.EmitV1K8sConventions` feature gate to enable stable semantic convention attributes (singular form: `k8s.<workload>.label.<key>` and `k8s.<workload>.annotation.<key>`)
+  - Added `processor.k8sattributes.DontEmitV0K8sConventions` feature gate to disable legacy non-compliant attributes (plural form: `k8s.<workload>.labels.<key>` and `k8s.<workload>.annotations.<key>`)
+  - Both feature gates are in `alpha` stage and disabled by default
+  - The processor now validates that legacy attributes cannot be disabled without enabling stable attributes
+  - Deprecated `k8sattr.labelsAnnotationsSingular.allow` feature gate in favor of the new semconv-compliant gates (will be removed in v0.150.0)
+  - During migration period, both legacy and stable attributes can coexist when `EmitV1K8sConventions` is enabled but `DontEmitV0K8sConventions` is not
+- `processor/resourcedetection`: Promote `processor.resourcedetection.propagateerrors` feature gate to Stable and is now always enabled ([#44609](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44609))
+- `processor/resourcedetection`: Remove feature gate processor.resourcedetection.removeGCPFaasID ([#45808](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45808))
+- `receiver/hostmetrics`: `process.context_switches` will now properly count context switches for all threads ([#36804](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36804))
+  
+  Previously, only the lead thread's context switches would be counted. We believe this was a bug, but are marking it as a breaking change.
+- `receiver/kafka`: Remove deprecated topic and exclude_topic fields ([#46232](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/46232))
+- `receiver/kafkametrics`: `receiver.kafkametricsreceiver.UseFranzGo` feature gate is now in Beta stage and enabled by default ([#44600](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44600))
+
+### 🚩 Deprecations 🚩
+
+- `processor/k8s_attributes`: Rename internal telemetry metrics to use dots instead of underscores ([#45871](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45871))
+- `processor/k8s_attributes`: Rename `k8sattributes` processor to `k8s_attributes` processor and add deprecated alias `k8sattributes` ([#45894](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45894))
+- `receiver/kubeletstats`: The `GCEPersistentDisk`, `AWSElasticBlockStore`, and `Glusterfs` volume types have been deprecated as these have been deprecated in k8s ([#40477](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40477))
+
+### 💡 Enhancements 💡
+
+- `all`: Add detailed failure attributes to exporter send_failed metrics at detailed telemetry level ([#13956](https://github.com/open-telemetry/opentelemetry-collector/issues/13956))
+  The `otelcol_exporter_send_failed_{spans,metric_points,log_records}` metrics now include failure attributes.
+- `exporter/debug`: Add `output_paths` configuration option to control output destination ([#10472](https://github.com/open-telemetry/opentelemetry-collector/issues/10472))
+- `exporter/kafkaexporter`: Add `conn_idle_timeout` configuration option to control when idle connections are closed ([#45321](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45321))
+  Defaults to 9 minutes.
+- `exporter/loadbalancing`: Support metrics routing by attributes in the loadbalancing exporter ([#45675](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45675))
+- `exporter/loadbalancing`: Change default timeout for k8s resolver from 1s to 1m to reduce Kubernetes API server load ([#33004](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33004))
+- `extension/healthcheck`: Added `extension.healthcheck.useComponentStatus` feature gate to enable v2 component status reporting ([#42256](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42256))
+- `extension/filestorage`: Support added for file-based storage configurations
+- `pkg/ottl`: Add `IsInCIDR` function to check if IP belongs to given list of CIDR ([#42215](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42215))
+- `pkg/ottl`: Add Base64Encode function to OTTL ([#46071](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46071))
+- `pkg/sampling`: Optimize OTel tracestate parsing by replacing regex validation with hand-written validator (10-21x faster). ([#45539](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45539))
+- `pkg/sampling`: Replace regex-based W3C tracestate validation with hand-written validator for 30-65x performance improvement ([#45734](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45734))
+- `processor/filter`: Introduces inferred context conditions for filtering ([#37904](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37904))
+  Introduces three new top-level config fields: `metric_conditions`, `log_conditions`, `trace_conditions`.
+- `processor/k8s_attributes`: Added `container.image.tags` resource attribute with feature gate controls ([#44589](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44589))
+- `processor/k8s_attributes`: ReplicaSet handling now supports PartialObjectMetadata, reducing cold-start memory/time ([#44407](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44407))
+- `processor/redaction`: Add HMAC hash functions (`hmac-sha256` and `hmac-sha512`) for GDPR-compliant pseudonymization ([#45715](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45715))
+- `processor/resourcedetection`: Add `tags_from_imds` config option to EC2 detector to control instance tag retrieval method ([#46046](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46046))
+- `receiver/filelog`: Suppress repeated permission-denied errors ([#39491](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39491))
+  Only one error is logged per file per process run.
+- `receiver/hostmetrics`: Add support for Linux hugepages memory monitoring via system.memory.linux.hugepages metrics ([#42650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42650))
+- `receiver/hostmetrics`: Add optional `system.memory.linux.shared` metric ([#32712](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32712))
+- `receiver/hostmetrics`: Reduce excessive float64 precision in memory, disk, and filesystem scrapers ([#46141](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46141))
+- `receiver/k8sobjects`: Add support for exclude_namespaces to exclude specific namespaces from being watched ([#36217](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36217))
+- `receiver/k8s_cluster`: Add opt-in service metrics derived from k8s Service and EndpointSlice API ([#45620](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45620))
+  
+  New metrics (disabled by default):
+  - `k8s.service.endpoint.count`: Number of endpoints by condition (ready, serving, terminating), address type, and zone
+  - `k8s.service.load_balancer.ingress.count`: Number of load balancer ingress points assigned to the service
+  New resource attributes:
+  - `k8s.service.name`: The k8s service name
+  - `k8s.service.uid`: The k8s service uid
+  - `k8s.service.type`: The k8s service type
+  - `k8s.service.traffic_distribution`: The service's traffic routing preference
+  - `k8s.service.publish_not_ready_addresses`: Whether the service publishes endpoints before pods are ready
+- `receiver/k8s_cluster`: Define entities and relationships for Kubernetes resources in metadata.yaml ([#41080](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41080))
+- `receiver/kafka`: Add `conn_idle_timeout` configuration option to control when idle connections are closed ([#45321](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45321))
+  
+  Defaults to 9 minutes.
+- `receiver/kafkametrics`: Improvements to Franz-go consumer handling and configuration options
+- `receiver/syslog`: Add facility_text attribute to syslog parser output ([#45641](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45641))
+
+  The syslog parser now outputs a facility_text attribute containing
+  the human-readable facility name (e.g., "auth", "kern", "local0")
+  in addition to the existing numeric facility attribute.
+
+### 🧰 Bug fixes 🧰
+
+- `exporter/loadbalancing`: Change default timeout for k8s resolver from 1s to 1m to reduce Kubernetes API server load ([#33004](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33004))
+- `pkg/confmap`: Fix an issue where configs could fail to decode when using interpolated values in string fields ([#14034](https://github.com/open-telemetry/opentelemetry-collector/issues/14034))
+- `pkg/fileconsumer`: Do not evaluate the include/exclude file patterns during component start ([#45988](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45988))
+  Previously a synchronous glob walk would block the collector from reporting readiness.
+- `pkg/otelcol`: The featuregate subcommand now rejects extra positional arguments instead of silently ignoring them. ([#14554](https://github.com/open-telemetry/opentelemetry-collector/pull/14554))
+- `pkg/stanza`: Fix recombine operator logging errors at ERROR level when `on_error` is set to quiet mode ([#42646](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42646))
+- `processor/k8s_attributes`: Fix concurrent map access panic by cloning pod labels and annotations before extraction ([#46112](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46112))
+- `processor/k8s_attributes`: Allow key_regex to work without tag_name by using the default tag name format ([#45719](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45719))
+
+  When using key_regex with capturing groups but without specifying tag_name, the processor now
+  correctly uses the default tag name format (e.g., k8s.pod.labels.<label_key>) instead of
+  producing empty tag names.
+- `processor/batch`: Fix bug where the batch processor would not copy `SchemaUrl` metadata during partial batch splits ([#12279](https://github.com/open-telemetry/opentelemetry-collector/issues/12279))
+- `receiver/fluentforward`: Handle uint64 to int64 overflow by changing to string ([#45252](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45252))
+
+  FluentD supports record entries with uint64 types. OpenTelemetry log attributes only support int64 and no uint64.
+  The old solution would overflow with uint64 values greater than `math.MaxInt64` and result in negative attribute values.
+  This fix changes that behaviour by storing only those large values as string attributes instead.
+- `receiver/syslog`: Handle multiple concatenated JSON objects ([#46120](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46120))
+
+</details>
+
+#### Dynatrace distribution changelog:
+
+### 🛑 Breaking changes 🛑
+
+- Self-monitoring: the `otelcol_exporter_send_failed_{spans,metric_points,log_records}` metrics now only emit data points when there are failures to report.
+
+### 🚀 New components 🚀
+
+- `extension/filestorage`: Add filestorage extension to the distribution (#834)
+
+### 💡 Enhancements 💡
+
+- `config_examples`: Add an OTLP logs pipeline with resource detection to the host metrics config example (#846)
+
+<!-- previous-version -->
+
 ## v0.44.0
 
 This release includes version v0.145.0 of the upstream Collector components.

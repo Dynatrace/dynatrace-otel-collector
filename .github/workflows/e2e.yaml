@@ -30,7 +30,7 @@ jobs:
       - name: Install tools
         run: |
           mkdir -p .tools
-          make install-tools
+          make install-tools TOOLS_BIN_NAMES_EFFECTIVE=$PWD/.tools/gomplate
 
       - name: Generate source files
         run: make generate

@@ -1,19 +1,22 @@
-### Validate rendered workloads with Kyverno (local)
+### Validate rendered workloads with Kyverno
 
 Install the Kyverno CLI: https://kyverno.io/docs/kyverno-cli/
 
-Then apply the repo’s policies to the rendered workloads. ( see [renderworkloads README](../../../internal/renderworkloads/README.md) for how to render the workloads in the first place)
+Install gomplate: https://gomplate.ca/install/ or run 
+```bash
+make instal-tools
+```
+
+Then run the Kyverno checks against the rendered workloads:
 
 ```bash
-OUT_BASE="/tmp/rendered-collectors-simple"
-
-sed 's|^|-r |' "$OUT_BASE/workloads.txt" \
-  | xargs -n 1000 kyverno apply .github/workflows/kyverno/policies/*.yaml
+make kyverno-workloads 
 ```
 
 ### CI / automation
 
-The same render + validate steps run in the **YAML Policy Check** workflow [.github/workflows/yaml-policy-check.yml]( https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/.github/workflows/yaml-policy-check.yml)
+The same render + validate steps run in the **YAML Policy Check** workflow:  
+https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/.github/workflows/yaml-policy-check.yml
 
 ## Kyverno policies
 

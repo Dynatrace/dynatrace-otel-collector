@@ -10,7 +10,7 @@ The rendered output is then checked with **Kyverno** to enforce a baseline conta
 
 ## How to use (local)
 
-Install gomplate: https://gomplate.ca/install/ or from root repo run 
+Install gomplate: https://docs.gomplate.ca/installing/ or from root repo run 
 ```bash
 make install-tools
 ```

@@ -2,7 +2,7 @@
 
 Install the Kyverno CLI: https://kyverno.io/docs/kyverno-cli/
 
-Install gomplate: https://gomplate.ca/install/ or run 
+Install gomplate: https://docs.gomplate.ca/installing/ or run 
 ```bash
 make instal-tools
 ```

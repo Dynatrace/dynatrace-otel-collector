@@ -1,73 +1,47 @@
-# renderworkloads 
+```md
+# renderworkloads
 
-`renderworkloads` is an internal helper used by CI to **render the Kubernetes workload definitions in this repository**
+`renderworkloads` is an internal helper used by CI to **render the Kubernetes collector workload definitions in this repository**
 into fully-materialized Kubernetes YAML.
 
-The rendered output can then be checked with **Kyverno** to enforce a baseline container `securityContext`. This gives us a
-regression test that the **components we include in the Dynatrace OTel Collector distribution** remain compatible with
-these hardened settings in the deployment scenarios we test, and it provides a guardrail when adding new components.
+The rendered output is then checked with **Kyverno** to enforce a baseline container `securityContext`. This provides:
+- a regression test that the **components included in the Dynatrace OTel Collector distribution** remain compatible with hardened settings
+- a guardrail when adding/changing components or manifests
 
-## How to use
+## How to use (local)
 
-### 1) Render workloads (local)
+### Render workloads
 
-Build and run the renderer to materialize all Kubernetes workloads used by the integration tests:
+This renders the collector workloads (Deployments/DaemonSets/StatefulSets) into an output directory and writes an index file.
 
 ```bash
-cd internal/renderworkloads
-go build -o /tmp/rendercollectors .
-
-OUT_BASE="/tmp/rendered-collectors-simple"
-
-/tmp/rendercollectors \
-  -repo-root "$(git rev-parse --show-toplevel)" \
-  -integration-root internal/testbed/integration \
-  -out-base "$OUT_BASE"
+OUT_BASE="/tmp/rendered-collectors-workloads"
+make render-workloads OUT_BASE="$OUT_BASE"
 ```
 
 This produces:
-- Rendered YAML workloads under `"$OUT_BASE"`
-- A file list at `"$OUT_BASE/workloads.txt"` (one YAML path per line)
+- Rendered workload YAMLs under `"$OUT_BASE"` (paths preserved relative to repo root)
+- A file list at `"$OUT_BASE/workloads.txt"` (one rendered YAML path per line)
 
-### 2) Validate rendered workloads with Kyverno (local)
+### Run Kyverno checks
 
-Install the Kyverno CLI: https://kyverno.io/docs/kyverno-cli/
-
-Then apply the repo’s policies to the rendered workloads:
+This runs the Kyverno policies against the rendered workloads listed in `workloads.txt`.
 
 ```bash
-OUT_BASE="/tmp/rendered-collectors-simple"
-
-sed 's|^|-r |' "$OUT_BASE/workloads.txt" \
-  | xargs -n 1000 kyverno apply .github/workflows/kyverno/policies/*.yaml
+OUT_BASE="/tmp/rendered-collectors-workloads"
+make kyverno-workloads OUT_BASE="$OUT_BASE"
 ```
 
-### CI / automation
+Expected output looks like:
 
-The same render + validate steps run in the **YAML Policy Check** workflow [.github/workflows/yaml-policy-check.yml]( https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/.github/workflows/yaml-policy-check.yml) 
+```text
+Applying 1 policy rule(s) to N resource(s)...
+pass: N, fail: 0, warn: 0, error: 0, skip: 0
+```
 
-## Kyverno policies
+## Notes
 
-Policies live in: [`.github/workflows/kyverno/policies/`](https://github.com/Dynatrace/dynatrace-otel-collector/tree/main/.github/workflows/kyverno/policies)
-The policy for the hardened Collector `securityContext`is [here](https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/.github/workflows/kyverno/policies/collector-securitycontext.yaml)
-It enforces the following container security settings:
-
-- `securityContext.capabilities.drop: ["ALL"]`
-- `securityContext.readOnlyRootFilesystem: true`
-- `securityContext.allowPrivilegeEscalation: false`
-- `securityContext.runAsNonRoot: true`
-- `securityContext.runAsUser: 10001`
-- `securityContext.runAsGroup: 10001`
-- `securityContext.privileged: false`
-- `securityContext.seccompProfile.type: RuntimeDefault`
-
-These are widely recommended Kubernetes hardening defaults. For background, see:
-- Kubernetes Security Context docs: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-- Kubernetes Pod Security Standards: https://kubernetes.io/docs/concepts/security/pod-security-standards/
-
-## Notes / scope
-
-- This is an **internal CI tool** (not part of the shipped Collector artifacts).
-- The Kyverno validation applies to the **workloads/scenarios rendered and exercised by this repository’s CI**. It is
-  intended as a compatibility/regression check and a guardrail for new additions — not a blanket guarantee that every
-  possible configuration of every component will work under all hardened Kubernetes policies.
+- `kyverno-workloads` depends on `render-workloads` and will re-render before running Kyverno.
+- If `workloads.txt` is empty, the Kyverno target will fail (to avoid silently doing nothing).
+- You need `gomplate` and `kyverno` available in your `PATH`.
+```

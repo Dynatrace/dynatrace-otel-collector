@@ -1,7 +1,14 @@
+// internal/renderworkloads/main.go
+//
+// Renders YAML templates (using gomplate) under a given input root, writing ONLY rendered
+// collector workload YAMLs (Deployment/DaemonSet/StatefulSet) to an output directory while
+// preserving relative paths.
+// Also writes workloads.txt containing paths to rendered workload YAMLs.
+//
+// Values are provided via a JSON file (default: render-vars.json) located in -repo-root.
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"errors"
 	"flag"
@@ -9,383 +16,239 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
-	"regexp"
-	"sort"
 	"strings"
 
-	"gopkg.in/yaml.v3"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	k8syaml "k8s.io/apimachinery/pkg/util/yaml"
 )
 
-var (
-	reName            = regexp.MustCompile(`\{\{\s*\.Name\s*\}\}`)
-	reNamespace       = regexp.MustCompile(`\{\{\s*\.Namespace\s*\}\}`)
-	reTestID          = regexp.MustCompile(`\{\{\s*\.TestID\s*\}\}`)
-	reHostEndpoint    = regexp.MustCompile(`\{\{\s*\.HostEndpoint\s*\}\}`)
-	reContainerReg    = regexp.MustCompile(`\{\{\s*\.ContainerRegistry\s*\}\}`)
-	reK8sCluster      = regexp.MustCompile(`\{\{\s*\.K8sCluster\s*\}\}`)
-	reCollectorConfig = regexp.MustCompile(`\{\{\s*\.CollectorConfig\s*\}\}`)
+const (
+	defaultOutBase  = "/tmp/rendered"
+	defaultGomplate = "gomplate"
+	defaultVarsFile = "render-vars.json"
+
+	collectorLabelKey   = "app.kubernetes.io/name"
+	collectorLabelValue = "opentelemetry-collector"
+
+	workloadsIndexName = "workloads.txt"
 )
+
+var workloadKinds = map[string]struct{}{
+	"Deployment":  {},
+	"DaemonSet":   {},
+	"StatefulSet": {},
+}
+
+type Options struct {
+	RepoRoot   string
+	InRoot     string
+	OutBase    string
+	Gomplate   string
+	VarsFile   string
+	WriteIndex bool
+	Verbose    bool
+}
 
 func main() {
-	var (
-		integrationRoot = flag.String("integration-root", "", "Path under repo root, e.g. internal/testbed/integration")
-		outBase         = flag.String("out-base", "", "Output directory, e.g. /tmp/rendered-collectors")
-		workloadsFile   = flag.String("workloads-file", "", "Optional override for workloads list output (default: <out-base>/workloads.txt)")
-		repoRootFlag    = flag.String("repo-root", "", "Repo root directory (used to write relative paths in workloads.txt)")
-	)
+	opt := parseFlags()
+
+	if opt.RepoRoot == "" || opt.InRoot == "" {
+		fatalf("error: -repo-root and -in-root are required\n")
+	}
+
+	repoRoot := mustAbs(opt.RepoRoot)
+
+	inRoot := mustAbs(filepath.Join(repoRoot, opt.InRoot))
+	if _, err := os.Stat(inRoot); err != nil {
+		fatalf("error: input root does not exist: %s: %v\n", inRoot, err)
+	}
+
+	outBase := mustAbs(opt.OutBase)
+	if err := os.MkdirAll(outBase, 0o755); err != nil {
+		fatalf("error: cannot create out-base %s: %v\n", outBase, err)
+	}
+
+	varsPath := mustAbs(filepath.Join(repoRoot, opt.VarsFile))
+	if _, err := os.Stat(varsPath); err != nil {
+		fatalf("error: vars file not found: %s: %v\n", varsPath, err)
+	}
+
+	workloads, err := renderCollectorWorkloads(repoRoot, inRoot, outBase, varsPath, opt)
+	if err != nil {
+		// mirror the behavior you saw (panic-ish), but with a clearer message
+		fatalf("panic: %v\n", err)
+	}
+
+	if opt.WriteIndex {
+		indexPath := filepath.Join(outBase, workloadsIndexName)
+
+		content := strings.Join(workloads, "\n")
+		if len(content) > 0 {
+			content += "\n"
+		}
+
+		if err := os.WriteFile(indexPath, []byte(content), 0o644); err != nil {
+			fatalf("error: writing workloads index: %v\n", err)
+		}
+		fmt.Printf("Wrote workload index: %s\n", indexPath)
+	}
+
+	fmt.Printf("Rendered collector workloads from %s to %s\n", inRoot, outBase)
+}
+
+func parseFlags() Options {
+	var opt Options
+	flag.StringVar(&opt.RepoRoot, "repo-root", "", "Repository root (used to compute relative paths and locate vars file)")
+	flag.StringVar(&opt.InRoot, "in-root", "", "Input root directory (relative to -repo-root) to scan for YAML templates")
+	flag.StringVar(&opt.OutBase, "out-base", defaultOutBase, "Output base directory")
+	flag.StringVar(&opt.Gomplate, "gomplate", defaultGomplate, "Path to gomplate binary")
+	flag.StringVar(&opt.VarsFile, "vars-file", defaultVarsFile, "Vars JSON file name (resolved relative to -repo-root)")
+	flag.BoolVar(&opt.WriteIndex, "write-index", true, "Write workloads.txt with rendered workload YAML paths")
+	flag.BoolVar(&opt.Verbose, "verbose", false, "Verbose output (print gomplate commands)")
 	flag.Parse()
-
-	if *integrationRoot == "" || *outBase == "" {
-		fatalf("missing required flags: -integration-root and -out-base")
-	}
-
-	repoRoot := *repoRootFlag
-	if repoRoot == "" {
-		var err error
-		repoRoot, err = os.Getwd()
-		if err != nil {
-			fatalf("getwd: %v", err)
-		}
-	}
-	repoRoot, err := filepath.Abs(repoRoot)
-	if err != nil {
-		fatalf("abs repo-root: %v", err)
-	}
-
-	// Ensure integrationRoot is absolute for walking/copying
-	integrationAbs := filepath.Clean(filepath.Join(repoRoot, *integrationRoot))
-	outBaseAbs := filepath.Clean(*outBase)
-
-	if err := os.RemoveAll(outBaseAbs); err != nil {
-		fatalf("remove out-base: %v", err)
-	}
-	if err := os.MkdirAll(outBaseAbs, 0o755); err != nil {
-		fatalf("mkdir out-base: %v", err)
-	}
-
-	collectorDirs, err := findCollectorDirs(integrationAbs)
-	if err != nil {
-		fatalf("find collector dirs: %v", err)
-	}
-	if len(collectorDirs) == 0 {
-		fatalf("no collector* directories found under: %s", integrationAbs)
-	}
-
-	fmt.Printf("Found collector template dirs: %d\n", len(collectorDirs))
-	for _, d := range collectorDirs {
-		rel, _ := filepath.Rel(integrationAbs, d)
-		fmt.Printf(" - %s\n", filepath.ToSlash(rel))
-	}
-
-	// Render all
-	for _, inDir := range collectorDirs {
-		rel, _ := filepath.Rel(integrationAbs, inDir)
-		safe := strings.ReplaceAll(filepath.ToSlash(rel), "/", "_")
-		outDir := filepath.Join(outBaseAbs, safe)
-
-		if err := copyDir(inDir, outDir); err != nil {
-			fatalf("copy %s -> %s: %v", inDir, outDir, err)
-		}
-		if err := preprocessYAMLs(outDir); err != nil {
-			fatalf("preprocess %s: %v", outDir, err)
-		}
-		if err := ensureNoTemplatesRemain(outDir); err != nil {
-			fatalf("template leftovers in %s: %v", inDir, err)
-		}
-	}
-
-	// Collect workload YAMLs and write relative paths (relative to repo root)
-	workloadAbs, err := collectWorkloadYAMLs(outBaseAbs)
-	if err != nil {
-		fatalf("collect workload yamls: %v", err)
-	}
-	if len(workloadAbs) == 0 {
-		fatalf("no workload YAMLs found after preprocessing")
-	}
-
-	outList := *workloadsFile
-	if outList == "" {
-		outList = filepath.Join(outBaseAbs, "workloads.txt")
-	}
-
-	relList := make([]string, 0, len(workloadAbs))
-	for _, p := range workloadAbs {
-		r, err := filepath.Rel(repoRoot, p)
-		if err != nil {
-			fatalf("make relative path for %s: %v", p, err)
-		}
-		relList = append(relList, filepath.ToSlash(r))
-	}
-	sort.Strings(relList)
-
-	if err := writeLines(outList, relList); err != nil {
-		fatalf("write workloads file: %v", err)
-	}
-
-	fmt.Printf("Wrote %d workload YAMLs to %s\n", len(relList), outList)
-	// Optional: print a small preview to help CI logs
-	preview := 20
-	if len(relList) < preview {
-		preview = len(relList)
-	}
-	for i := 0; i < preview; i++ {
-		fmt.Printf(" - %s\n", relList[i])
-	}
-	if len(relList) > preview {
-		fmt.Printf(" ... (%d more)\n", len(relList)-preview)
-	}
+	return opt
 }
 
-func findCollectorDirs(integrationAbs string) ([]string, error) {
-	var dirs []string
+func renderCollectorWorkloads(repoRoot, inRoot, outBase, varsPath string, opt Options) ([]string, error) {
+	workloads := make([]string, 0, 128)
 
-	err := filepath.WalkDir(integrationAbs, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if !d.IsDir() {
-			return nil
-		}
-
-		base := filepath.Base(path)
-		if !strings.HasPrefix(base, "collector") {
-			return nil
-		}
-
-		// ".../testdata/collector*"
-		parent := filepath.Base(filepath.Dir(path))
-		if parent != "testdata" {
-			return nil
-		}
-
-		dirs = append(dirs, path)
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	sort.Strings(dirs)
-	return dirs, nil
-}
-
-func copyDir(src, dst string) error {
-	return filepath.WalkDir(src, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		rel, _ := filepath.Rel(src, path)
-		outPath := filepath.Join(dst, rel)
-
-		info, err := d.Info()
-		if err != nil {
-			return err
+	err := filepath.WalkDir(inRoot, func(path string, d fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
 		}
 
 		if d.IsDir() {
-			return os.MkdirAll(outPath, info.Mode().Perm())
+			switch filepath.Base(path) {
+			case ".git", "vendor":
+				return filepath.SkipDir
+			default:
+				return nil
+			}
+		}
+
+		if !isYAMLFile(path) {
+			return nil
+		}
+
+		relToRepo, err := filepath.Rel(repoRoot, path)
+		if err != nil {
+			return err
+		}
+		outPath := filepath.Join(outBase, relToRepo)
+
+		rendered, err := gomplateRenderFile(opt.Gomplate, varsPath, path, opt.Verbose)
+		if err != nil {
+			return err
+		}
+
+		// Render/write ONLY collector workloads; skip everything else.
+		if !isCollectorWorkloadYAML(rendered) {
+			return nil
 		}
 
 		if err := os.MkdirAll(filepath.Dir(outPath), 0o755); err != nil {
 			return err
 		}
-		return copyFile(path, outPath, info.Mode().Perm())
-	})
-}
-
-func copyFile(src, dst string, perm fs.FileMode) error {
-	in, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-
-	defer in.Close()
-
-	out, err := os.OpenFile(dst, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, perm)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = out.Close() }()
-
-	if _, err := io.Copy(out, in); err != nil {
-		return err
-	}
-	return out.Close()
-}
-
-func preprocessYAMLs(root string) error {
-	return filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
+		if err := os.WriteFile(outPath, rendered, 0o644); err != nil {
 			return err
 		}
-		if d.IsDir() {
-			return nil
-		}
-		ext := strings.ToLower(filepath.Ext(path))
-		if ext != ".yaml" && ext != ".yml" {
-			return nil
+
+		if opt.WriteIndex {
+			workloads = append(workloads, outPath)
 		}
 
-		orig, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-		s := string(orig)
-
-		s = reName.ReplaceAllString(s, "otelcol-ci")
-		s = reNamespace.ReplaceAllString(s, "e2e")
-		s = reTestID.ReplaceAllString(s, "ci")
-		s = reHostEndpoint.ReplaceAllString(s, "http://example.invalid")
-		s = reContainerReg.ReplaceAllString(s, "dynatrace")
-		s = reK8sCluster.ReplaceAllString(s, "ci")
-		s = reCollectorConfig.ReplaceAllString(s, "receivers: {}\nexporters: {}\nservice: { pipelines: {} }\n")
-
-		if s == string(orig) {
-			return nil
-		}
-
-		// Preserve existing permissions if possible; fallback to 0644
-		mode := fs.FileMode(0o644)
-		if st, err := os.Stat(path); err == nil {
-			mode = st.Mode().Perm()
-		}
-		return os.WriteFile(path, []byte(s), mode)
-	})
-}
-
-func ensureNoTemplatesRemain(root string) error {
-	var first []string
-
-	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-		ext := strings.ToLower(filepath.Ext(path))
-		if ext != ".yaml" && ext != ".yml" {
-			return nil
-		}
-
-		b, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-		if !bytes.Contains(b, []byte("{{")) {
-			return nil
-		}
-
-		sc := bufio.NewScanner(bytes.NewReader(b))
-		line := 0
-		for sc.Scan() {
-			line++
-			txt := sc.Text()
-			if strings.Contains(txt, "{{") {
-				first = append(first, fmt.Sprintf("%s:%d:%s", filepath.ToSlash(path), line, txt))
-				if len(first) >= 50 {
-					break
-				}
-			}
-		}
 		return nil
 	})
-	if err != nil {
-		return err
-	}
-	if len(first) > 0 {
-		return fmt.Errorf("unhandled template expressions remain; first occurrences:\n%s", strings.Join(first, "\n"))
-	}
-	return nil
+
+	return workloads, err
 }
 
-func collectWorkloadYAMLs(root string) ([]string, error) {
-	var out []string
-	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-		ext := strings.ToLower(filepath.Ext(path))
-		if ext != ".yaml" && ext != ".yml" {
-			return nil
-		}
-
-		kinds, err := kindsInFile(path)
-		if err != nil {
-			return fmt.Errorf("parse yaml %s: %w", path, err)
-		}
-		for _, k := range kinds {
-			switch k {
-			case "Deployment", "DaemonSet", "StatefulSet":
-				out = append(out, path)
-				return nil
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	sort.Strings(out)
-	return out, nil
+func isYAMLFile(path string) bool {
+	ext := strings.ToLower(filepath.Ext(path))
+	return ext == ".yaml" || ext == ".yml"
 }
 
-func kindsInFile(path string) ([]string, error) {
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
+func gomplateRenderFile(gomplateBin, varsAbsPath, inFile string, verbose bool) ([]byte, error) {
+	// gomplate v5: --context expects alias=URL form; '.' sets root context.
+	// For an absolute Unix path, "file://" + "/Users/..." => "file:///Users/..."
+	ctxURL := "file://" + filepath.ToSlash(varsAbsPath)
+
+	cmd := exec.Command(
+		gomplateBin,
+		"-c", ".="+ctxURL,
+		"-f", inFile,
+	)
+
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	if verbose {
+		fmt.Fprintf(os.Stderr, "gomplate cmd: %q\n", cmd.Args)
 	}
 
-	dec := yaml.NewDecoder(bytes.NewReader(b))
-	var kinds []string
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf(
+			"gomplate render failed for %s: %w: %s",
+			inFile,
+			err,
+			strings.TrimSpace(stderr.String()),
+		)
+	}
+	return stdout.Bytes(), nil
+}
+
+func isCollectorWorkloadYAML(b []byte) bool {
+	dec := k8syaml.NewYAMLOrJSONDecoder(bytes.NewReader(b), 4096)
 
 	for {
-		var doc map[string]any
-		if err := dec.Decode(&doc); err != nil {
+		var u unstructured.Unstructured
+		if err := dec.Decode(&u); err != nil {
 			if errors.Is(err, io.EOF) {
-				break
+				return false
 			}
-			return nil, err
+			// Invalid YAML: treat as non-workload (safer than accidentally including it).
+			return false
 		}
-		if doc == nil {
+
+		// Skip empty YAML docs
+		if len(u.Object) == 0 {
 			continue
 		}
-		if k, ok := doc["kind"].(string); ok && k != "" {
-			kinds = append(kinds, k)
+
+		if !isWorkloadKind(u.GetKind()) {
+			continue
+		}
+
+		// Check object labels
+		if u.GetLabels()[collectorLabelKey] == collectorLabelValue {
+			return true
+		}
+
+		// Check pod template labels (common case for workloads)
+		lbls, found, _ := unstructured.NestedStringMap(u.Object, "spec", "template", "metadata", "labels")
+		if found && lbls[collectorLabelKey] == collectorLabelValue {
+			return true
 		}
 	}
-
-	return kinds, nil
 }
 
-func writeLines(path string, lines []string) error {
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-		return err
-	}
-	f, err := os.Create(path)
+func isWorkloadKind(kind string) bool {
+	_, ok := workloadKinds[kind]
+	return ok
+}
+
+func mustAbs(p string) string {
+	a, err := filepath.Abs(p)
 	if err != nil {
-		return err
+		fatalf("error: cannot resolve path %q: %v\n", p, err)
 	}
-	defer func() { _ = f.Close() }()
-
-	w := bufio.NewWriter(f)
-	for _, s := range lines {
-		if _, err := w.WriteString(s + "\n"); err != nil {
-			return err
-		}
-	}
-	if err := w.Flush(); err != nil {
-		return err
-	}
-	return f.Close()
+	return a
 }
 
-func fatalf(format string, a ...any) {
-	fmt.Fprintf(os.Stderr, "ERROR: "+format+"\n", a...)
+func fatalf(format string, args ...any) {
+	fmt.Fprintf(os.Stderr, format, args...)
 	os.Exit(1)
 }

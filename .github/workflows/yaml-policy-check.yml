@@ -15,7 +15,7 @@ defaults:
 
 env:
   GO_VERSION: "1.25.7"
-  OUT_BASE: "/tmp/rendered-collectors-simple"
+  OUT_BASE: "/tmp/rendered-collectors-workloads"
 
 jobs:
   kyverno-yaml-check:
@@ -30,23 +30,15 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache-dependency-path: |
             internal/renderworkloads/go.sum
+            internal/tools/go.sum
 
       - name: Install Kyverno CLI
         uses: kyverno/action-install-cli@fcee92fca5c883169ef9927acf543e0b5fc58289 # v0.2.0
 
-      - name: Build renderer
+      - name: Install build tools
         run: |
-          cd internal/renderworkloads
-          go build -o /tmp/rendercollectors .
+          make install-tools
 
-      - name: Render collector YAMLs
+      - name: Render workloads and validate with Kyverno
         run: |
-          /tmp/rendercollectors \
-            -repo-root "$GITHUB_WORKSPACE" \
-            -integration-root internal/testbed/integration \
-            -out-base "$OUT_BASE"
-
-      - name: Validate with Kyverno
-        run: |
-          sed 's|^|-r |' "$OUT_BASE/workloads.txt" \
-            | xargs -n 1000 kyverno apply .github/workflows/kyverno/policies/*.yaml
+          make kyverno-workloads OUT_BASE="${OUT_BASE}"

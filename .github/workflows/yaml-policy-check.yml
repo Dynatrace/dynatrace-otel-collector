@@ -37,7 +37,7 @@ jobs:
 
       - name: Install build tools
         run: |
-          make install-tools
+          make install-tools TOOLS_BIN_NAMES_EFFECTIVE=$PWD/.tools/gomplate
 
       - name: Render workloads and validate with Kyverno
         run: |

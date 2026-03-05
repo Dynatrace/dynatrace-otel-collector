@@ -65,4 +65,3 @@ providers:
 
 replaces:
   - github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider => ../internal/confmap/provider/eecprovider
-  - go.opentelemetry.io/otel/sdk => go.opentelemetry.io/otel/sdk v1.40.0

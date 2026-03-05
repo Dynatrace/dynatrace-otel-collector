@@ -1,0 +1,41 @@
+exporters:
+  debug:
+    verbosity: detailed
+  otlp_http/traces:
+    endpoint: http://%[1]s:4321
+  otlp_http/metrics:
+    endpoint: http://%[1]s:4320
+  otlp_http/logs:
+    endpoint: http://%[1]s:4319
+
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - otlp
+      processors:
+        - filter
+        - batch
+      exporters:
+        - debug
+        - otlp_http/metrics
+    logs:
+      receivers:
+        - otlp
+      processors:
+        - filter
+        - batch
+      exporters:
+        - debug
+        - otlp_http/logs
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - filter
+        - batch
+      exporters:
+        - debug
+        - otlp_http/traces

@@ -202,19 +202,56 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		}
 	}()
 
+	// Sink for internal metrics (self-monitoring)
 	metricsConsumer := new(consumertest.MetricsSink)
+	// Sinks for telemetrygen data
+	telemetrygenMetricsConsumer := new(consumertest.MetricsSink)
+	telemetrygenTracesConsumer := new(consumertest.TracesSink)
+	telemetrygenLogsConsumer := new(consumertest.LogsSink)
+
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
 			{
 				Consumer: metricsConsumer,
+			},
+			{
+				Consumer: telemetrygenMetricsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4320,
+				},
+			},
+		},
+		Traces: []*oteltest.TraceSinkConfig{
+			{
+				Consumer: telemetrygenTracesConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4321,
+				},
+			},
+		},
+		Logs: []*oteltest.LogSinkConfig{
+			{
+				Consumer: telemetrygenLogsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4319,
+				},
 			},
 		},
 	})
 	defer shutdownSinks()
 
 	collectorConfigPath := path.Join(configExamplesDir, "self-monitoring-check-metrics.yaml")
+
+	// Read overlay from files
+	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "telemetrygen-receiver-local.yaml")), host)
+	originalOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "telemetrygen-receiver-original.yaml"))
+
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
+		Templates: []string{
+			originalOverlay,
+			localOverlay,
+		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
@@ -288,7 +325,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 			"otelcol_processor_incoming_items",
 			"otelcol_processor_outgoing_items",
 			"otelcol_processor_internal_duration",
-			"rpc.server.duration",
+			"rpc.server.call.duration",
 			"rpc.server.request.size",
 			"rpc.server.response.size",
 			"rpc.server.requests_per_rpc",

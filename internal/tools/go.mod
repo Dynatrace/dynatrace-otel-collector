@@ -6,7 +6,7 @@ require (
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	github.com/sigstore/cosign/v3 v3.0.5
 	go.opentelemetry.io/build-tools/chloggen v0.29.0
-	go.opentelemetry.io/collector/cmd/builder v0.146.1
+	go.opentelemetry.io/collector/cmd/builder v0.147.0
 )
 
 require (
@@ -268,7 +268,7 @@ require (
 	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/oauth2 v0.35.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/term v0.39.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/time v0.14.0 // indirect

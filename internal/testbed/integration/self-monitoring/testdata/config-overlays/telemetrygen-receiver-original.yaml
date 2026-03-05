@@ -1,0 +1,38 @@
+exporters:
+  debug:
+    verbosity: detailed
+  otlp_http:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
+service:
+  extensions:
+    - health_check
+  pipelines:
+    metrics:
+      receivers:
+        - otlp
+      processors:
+        - filter
+        - batch
+      exporters:
+        - debug
+        - otlp_http
+    logs:
+      receivers:
+        - otlp
+      processors:
+        - filter
+        - batch
+      exporters:
+        - debug
+        - otlp_http
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - filter
+        - batch
+      exporters:
+        - debug
+        - otlp_http

@@ -271,8 +271,8 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
 		TestID:       testID,
-		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
-		DataTypes:    []string{"traces", "metrics", "logs"},
+		OtlpEndpoint: fmt.Sprintf("otelcol-%s", testID),
+		DataTypes:    []string{"traces"},
 	}
 	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
 
@@ -286,8 +286,13 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
-	wantEntries := 5 // Minimal number of metrics to wait for.
-	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
+	// testing data creating load
+	oteltest.WaitForMetrics(t, 1, telemetrygenMetricsConsumer)
+	oteltest.WaitForTraces(t, 1, telemetrygenTracesConsumer)
+	oteltest.WaitForLogs(t, 1, telemetrygenLogsConsumer)
+
+	// self monitoring metrics
+	oteltest.WaitForMetrics(t, 5, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))

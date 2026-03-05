@@ -18,7 +18,7 @@ GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
 BUILDER    := $(TOOLS_BIN_DIR)/builder
 CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
 COSIGN     := $(TOOLS_BIN_DIR)/cosign
-GOJUNIT    := $(TOOLS_BIN_DIR)/go-junit-report
+GOJUNIT    := $(TOOLS_BIN_DIR)/v2
 GOMPLATE   := $(TOOLS_BIN_DIR)/gomplate
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro

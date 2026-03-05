@@ -202,19 +202,56 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		}
 	}()
 
+	// Sink for internal metrics (self-monitoring)
 	metricsConsumer := new(consumertest.MetricsSink)
+	// Sinks for telemetrygen data
+	telemetrygenMetricsConsumer := new(consumertest.MetricsSink)
+	telemetrygenTracesConsumer := new(consumertest.TracesSink)
+	telemetrygenLogsConsumer := new(consumertest.LogsSink)
+
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
 			{
 				Consumer: metricsConsumer,
+			},
+			{
+				Consumer: telemetrygenMetricsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4320,
+				},
+			},
+		},
+		Traces: []*oteltest.TraceSinkConfig{
+			{
+				Consumer: telemetrygenTracesConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4321,
+				},
+			},
+		},
+		Logs: []*oteltest.LogSinkConfig{
+			{
+				Consumer: telemetrygenLogsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4319,
+				},
 			},
 		},
 	})
 	defer shutdownSinks()
 
 	collectorConfigPath := path.Join(configExamplesDir, "self-monitoring-check-metrics.yaml")
+
+	// Read overlay from files
+	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "telemetrygen-receiver-local.yaml")), host)
+	originalOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "telemetrygen-receiver-original.yaml"))
+
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
+		Templates: []string{
+			originalOverlay,
+			localOverlay,
+		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
@@ -234,8 +271,8 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
 		TestID:       testID,
-		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
-		DataTypes:    []string{"traces", "metrics", "logs"},
+		OtlpEndpoint: fmt.Sprintf("otelcol-%s", testID),
+		DataTypes:    []string{"traces"},
 	}
 	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
 
@@ -249,8 +286,13 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
-	wantEntries := 5 // Minimal number of metrics to wait for.
-	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
+	// testing data creating load
+	oteltest.WaitForMetrics(t, 1, telemetrygenMetricsConsumer)
+	oteltest.WaitForTraces(t, 1, telemetrygenTracesConsumer)
+	oteltest.WaitForLogs(t, 1, telemetrygenLogsConsumer)
+
+	// self monitoring metrics
+	oteltest.WaitForMetrics(t, 5, metricsConsumer)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
@@ -288,7 +330,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 			"otelcol_processor_incoming_items",
 			"otelcol_processor_outgoing_items",
 			"otelcol_processor_internal_duration",
-			"rpc.server.duration",
+			"rpc.server.call.duration",
 			"rpc.server.request.size",
 			"rpc.server.response.size",
 			"rpc.server.requests_per_rpc",
@@ -304,13 +346,14 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 			"otelcol_exporter_queue_batch_send_size_bytes",
 			"otelcol_exporter_queue_batch_send_size"),
 		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreExemplarSlice(),
+		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreExemplarSlice(),
+		pmetrictest.IgnoreResourceMetricsOrder(),
 		pmetrictest.ChangeDatapointAttributeValue("server.address", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("net.peer.name", substituteWithStar),
+		pmetrictest.ChangeDatapointAttributeValue("server.port", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("service.instance.id", substituteWithStar),

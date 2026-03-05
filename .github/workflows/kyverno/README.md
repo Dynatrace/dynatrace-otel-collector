@@ -15,8 +15,7 @@ make kyverno-workloads
 
 ### CI / automation
 
-The same render + validate steps run in the **YAML Policy Check** workflow:  
-https://github.com/Dynatrace/dynatrace-otel-collector/blob/main/.github/workflows/yaml-policy-check.yml
+The same render + validate steps run in the **YAML Policy Check** workflow "[yaml-policy-check.yml](../yaml-policy-check.yml)"  
 
 ## Kyverno policies
 

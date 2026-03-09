@@ -15,9 +15,10 @@ v0.147.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.147.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.147.0>
 
-v0.146.0:
+v0.146.0 and v0.146.1:
 
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.146.0>
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.146.1>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.146.0>
 
 <details>
@@ -36,6 +37,7 @@ v0.146.0:
   - During migration period, both legacy and stable attributes can coexist when `EmitV1K8sConventions` is enabled but `DontEmitV0K8sConventions` is not
 - `processor/resourcedetection`: Promote `processor.resourcedetection.propagateerrors` feature gate to Stable and is now always enabled ([#44609](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44609))
 - `processor/resourcedetection`: Remove feature gate processor.resourcedetection.removeGCPFaasID ([#45808](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45808))
+- `processor/resourcedetection`: Changed cloud platform value for Azure EKS from azure_eks to azure.eks to align with OpenTelemetry semantic conventions v1.39.0. ([#45030](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45030))
 - `receiver/hostmetrics`: `process.context_switches` will now properly count context switches for all threads ([#36804](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36804))
   
   Previously, only the lead thread's context switches would be counted. We believe this was a bug, but are marking it as a breaking change.
@@ -52,6 +54,7 @@ v0.146.0:
 
 - `all`: Add detailed failure attributes to exporter send_failed metrics at detailed telemetry level ([#13956](https://github.com/open-telemetry/opentelemetry-collector/issues/13956))
   The `otelcol_exporter_send_failed_{spans,metric_points,log_records}` metrics now include failure attributes.
+- `exporter/debug`: Output bucket counts for exponential histogram data points in normal verbosity. ([#10463](https://github.com/open-telemetry/opentelemetry-collector/issues/10463))
 - `exporter/debug`: Add `output_paths` configuration option to control output destination ([#10472](https://github.com/open-telemetry/opentelemetry-collector/issues/10472))
 - `exporter/kafkaexporter`: Add `conn_idle_timeout` configuration option to control when idle connections are closed ([#45321](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45321))
   Defaults to 9 minutes.
@@ -61,6 +64,7 @@ v0.146.0:
 - `extension/filestorage`: Support added for file-based storage configurations
 - `pkg/ottl`: Add `IsInCIDR` function to check if IP belongs to given list of CIDR ([#42215](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42215))
 - `pkg/ottl`: Add Base64Encode function to OTTL ([#46071](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46071))
+- `pkg/ottl`: Added metadata access path to all OTTL contexts for accessing client request metadata  ([#33288](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33288))
 - `pkg/sampling`: Optimize OTel tracestate parsing by replacing regex validation with hand-written validator (10-21x faster). ([#45539](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45539))
 - `pkg/sampling`: Replace regex-based W3C tracestate validation with hand-written validator for 30-65x performance improvement ([#45734](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45734))
 - `processor/filter`: Introduces inferred context conditions for filtering ([#37904](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/37904))
@@ -69,6 +73,7 @@ v0.146.0:
 - `processor/k8s_attributes`: ReplicaSet handling now supports PartialObjectMetadata, reducing cold-start memory/time ([#44407](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44407))
 - `processor/redaction`: Add HMAC hash functions (`hmac-sha256` and `hmac-sha512`) for GDPR-compliant pseudonymization ([#45715](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45715))
 - `processor/resourcedetection`: Add `tags_from_imds` config option to EC2 detector to control instance tag retrieval method ([#46046](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46046))
+- `processor/resourcedetection`: Added Tencent Cloud CVM resource detector to the Resource Detection Processor ([#45779](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45779))
 - `receiver/filelog`: Suppress repeated permission-denied errors ([#39491](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39491))
   Only one error is logged per file per process run.
 - `receiver/hostmetrics`: Add support for Linux hugepages memory monitoring via system.memory.linux.hugepages metrics ([#42650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42650))
@@ -91,6 +96,7 @@ v0.146.0:
   
   Defaults to 9 minutes.
 - `receiver/kafkametrics`: Improvements to Franz-go consumer handling and configuration options
+- `receiver/statsd`: Discard StatsD metrics with NaN or infinite values to prevent invalid data from entering the metric pipeline ([#44288](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44288))
 - `receiver/syslog`: Add facility_text attribute to syslog parser output ([#45641](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45641))
 
   The syslog parser now outputs a facility_text attribute containing
@@ -100,6 +106,11 @@ v0.146.0:
 ### 🧰 Bug fixes 🧰
 
 - `exporter/loadbalancing`: Change default timeout for k8s resolver from 1s to 1m to reduce Kubernetes API server load ([#33004](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33004))
+- `processor/cumulativetodelta`: Fix memory blowup in exponential histogram delta conversion ([#45927](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45927))
+- `processor/resourcedetection`: IRSA and Pod Identity tokens are checked to determine if running within an EKS cluster ([#45866](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45866))
+- `processor/tail_sampling`: Properly remove trace id from its original batch when using decision_wait_after_root_received ([#46004](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46004))
+  The bug only causes the traces dropped too early metric to be incorrectly incremented. There is no functional change to what is sampled.
+
 - `pkg/confmap`: Fix an issue where configs could fail to decode when using interpolated values in string fields ([#14034](https://github.com/open-telemetry/opentelemetry-collector/issues/14034))
 - `pkg/fileconsumer`: Do not evaluate the include/exclude file patterns during component start ([#45988](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45988))
   Previously a synchronous glob walk would block the collector from reporting readiness.
@@ -112,6 +123,15 @@ v0.146.0:
   correctly uses the default tag name format (e.g., k8s.pod.labels.<label_key>) instead of
   producing empty tag names.
 - `processor/batch`: Fix bug where the batch processor would not copy `SchemaUrl` metadata during partial batch splits ([#12279](https://github.com/open-telemetry/opentelemetry-collector/issues/12279))
+- `processor/redaction`: Improve database sanitization with system-aware obfuscation, span name sanitization, and URL path parameter redaction. ([#44229](https://github.com/open-telemetry/opentelemetry-collector/issues/44229))
+
+  Database sanitization now validates span kind (CLIENT/SERVER/INTERNAL ) and requires db.system.name/db.system attribute for traces/metrics
+  Implemented span name obfuscation for database operations based on db.system
+  Added URL path parameter sanitization for span names with configurable pattern matching
+  Improved query validation database sanitizers
+  Fix issue ensuring no spans with ... name can be generated due to enabling multiple sanitizers
+  If something went wrong during span name sanitization, original span name is used
+
 - `receiver/fluentforward`: Handle uint64 to int64 overflow by changing to string ([#45252](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45252))
 
   FluentD supports record entries with uint64 types. OpenTelemetry log attributes only support int64 and no uint64.
@@ -128,6 +148,28 @@ v0.146.0:
 - Self-monitoring: the `otelcol_exporter_send_failed_{spans,metric_points,log_records}` metrics now only emit data points when there are failures to report.
 
   Not reporting data points which have a value of `0` should reduce metric data volume and therefore ingest costs.
+
+- Self-monitoring: The `rpc.*` metrics were upgraded to use `v1.39.0` version of semantic conversions, which leads to breaking changes of the following metrics:
+
+  rpc span and metric attributes have been renamed to align with naming guidelines:
+
+    `rpc.system` → `rpc.system.name` (values: grpc, grpc_web, connectrpc, thrift, dubbo, etc.)
+    `rpc.method` and `rpc.service` have been merged into a fully-qualified `rpc.method` attribute
+    `rpc.client|server.duration` → `rpc.client|server.call.duration` (unit changed to seconds)
+    `rpc.grpc.request.metadata`/`rpc.grpc.response.metadata` → `rpc.request.metadata`/`rpc.response.metadata`
+    `rpc.grpc.status_code` → deprecated in favor of `rpc.response.status_code`
+    `rpc.jsonrpc.request_id` → `jsonrpc.request.id`
+    `rpc.jsonrpc.version` → `jsonrpc.protocol.version`
+
+  system and process metrics:
+
+    `*.linux.memory` metrics renamed to `*.memory.linux`
+    `system.process.status` → `process.state`
+    `system.paging.type` and `process.paging.fault_type` → `system.paging.fault.type`
+
+  `peer.service` attribute has been deprecated in favor of `service.peer.name`
+
+  More details available in [this PR](https://github.com/open-telemetry/opentelemetry-go-contrib/pull/8481)
 
 ### 🚀 New components 🚀
 

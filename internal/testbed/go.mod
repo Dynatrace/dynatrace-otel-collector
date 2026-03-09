@@ -15,7 +15,7 @@ require (
 	go.opentelemetry.io/collector/consumer v1.53.0
 	go.opentelemetry.io/collector/consumer/consumertest v0.147.0
 	go.opentelemetry.io/collector/pdata v1.53.0
-	go.opentelemetry.io/otel v1.40.0
+	go.opentelemetry.io/otel v1.41.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.35.2
 )
@@ -292,11 +292,11 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.40.0 // indirect
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.40.0 // indirect
 	go.opentelemetry.io/otel/log v0.16.0 // indirect
-	go.opentelemetry.io/otel/metric v1.40.0 // indirect
+	go.opentelemetry.io/otel/metric v1.41.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.40.0 // indirect
 	go.opentelemetry.io/otel/sdk/log v0.16.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.40.0 // indirect
-	go.opentelemetry.io/otel/trace v1.40.0 // indirect
+	go.opentelemetry.io/otel/trace v1.41.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.9.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

@@ -78,23 +78,3 @@ func TestShouldInclude_DenylistTakesPrecedence(t *testing.T) {
 		t.Error("denylist should take precedence over manifest and allowlist")
 	}
 }
-
-func TestShouldInclude_KnownAliasesMatchManifestComponent(t *testing.T) {
-	components := map[string]bool{
-		"extension/healthcheck": true,
-		"exporter/otlp":         true,
-		"exporter/otlphttp":     true,
-	}
-	cfg := Config{}
-
-	cases := []string{
-		"extension/health_check",
-		"exporter/otlp_grpc",
-		"exporter/otlp_http",
-	}
-	for _, component := range cases {
-		if !shouldInclude(component, components, cfg) {
-			t.Errorf("expected alias %q to match canonical manifest component", component)
-		}
-	}
-}

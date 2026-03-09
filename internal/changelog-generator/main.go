@@ -73,8 +73,8 @@ func run(manifestPath, configPath, changelogPath string, dryRun bool, prURLs []s
 		len(fc.Enhancements), len(fc.BugFixes))
 
 	// 5. Generate markdown.
-	if len(fc.UpstreamVersions) == 0 {
-		return fmt.Errorf("no upstream versions found — check that the PR URLs are correct")
+	if highestVersion(fc.UpstreamVersions) == "" {
+		return fmt.Errorf("no valid upstream versions found — check PR URLs and versions.yaml content")
 	}
 	markdown := GenerateChangelog(fc)
 
@@ -97,4 +97,3 @@ func min(a, b int) int {
 	}
 	return b
 }
-

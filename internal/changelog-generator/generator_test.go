@@ -160,6 +160,19 @@ func TestGenerateChangelog_MultiVersion(t *testing.T) {
 	}
 }
 
+func TestGenerateChangelog_MultiVersion_HeaderUsesHighestSemver(t *testing.T) {
+	fc := FilteredChangelog{
+		UpstreamVersions: []string{"v0.145.0", "v0.144.0"},
+		CoreRepoURL:      coreRepoURL,
+		ContribRepoURL:   contribRepoURL,
+	}
+
+	out := GenerateChangelog(fc)
+	if !strings.Contains(out, "## v0.145.0") {
+		t.Errorf("expected highest semver in header:\n%s", out)
+	}
+}
+
 func TestBuildIssueLinks(t *testing.T) {
 	got := buildIssueLinks([]int{42650}, contribRepoURL)
 	want := "[#42650](" + contribRepoURL + "/issues/42650)"
@@ -201,4 +214,3 @@ func TestGenerateChangelog_SubtextIndented(t *testing.T) {
 		t.Errorf("subtext should be indented by 2 spaces:\n%s", out)
 	}
 }
-

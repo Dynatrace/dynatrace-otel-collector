@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	nextVersionMarker    = "<!-- next version -->"
+	nextVersionMarker     = "<!-- next version -->"
 	previousVersionMarker = "<!-- previous-version -->"
 )
 
@@ -75,4 +75,3 @@ func buildNewBlock(currentBlock, newContent string) string {
 	}
 	return "\n\n" + trimmed + "\n\n" + newContent + "\n"
 }
-

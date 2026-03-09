@@ -13,7 +13,7 @@ func TestMatchPattern(t *testing.T) {
 		// Exact match.
 		{"pkg/ottl", "pkg/ottl", true},
 		{"pkg/ottl/other", "pkg/ottl", true}, // prefix match
-		{"pkg/ottl2", "pkg/ottl", false},      // not a prefix match
+		{"pkg/ottl2", "pkg/ottl", false},     // not a prefix match
 		// Glob suffix.
 		{"internal/metadataproviders", "internal/*", true},
 		{"cmd/builder", "cmd/*", true},
@@ -31,7 +31,7 @@ func TestMatchPattern(t *testing.T) {
 
 func TestFilterEntries(t *testing.T) {
 	components := map[string]bool{
-		"receiver/filelog":         true,
+		"receiver/filelog":            true,
 		"processor/resourcedetection": true,
 	}
 	cfg := Config{
@@ -79,3 +79,22 @@ func TestShouldInclude_DenylistTakesPrecedence(t *testing.T) {
 	}
 }
 
+func TestShouldInclude_KnownAliasesMatchManifestComponent(t *testing.T) {
+	components := map[string]bool{
+		"extension/healthcheck": true,
+		"exporter/otlp":         true,
+		"exporter/otlphttp":     true,
+	}
+	cfg := Config{}
+
+	cases := []string{
+		"extension/health_check",
+		"exporter/otlp_grpc",
+		"exporter/otlp_http",
+	}
+	for _, component := range cases {
+		if !shouldInclude(component, components, cfg) {
+			t.Errorf("expected alias %q to match canonical manifest component", component)
+		}
+	}
+}

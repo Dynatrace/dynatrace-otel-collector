@@ -70,4 +70,3 @@ func matchPattern(component, pattern string) bool {
 	}
 	return false
 }
-

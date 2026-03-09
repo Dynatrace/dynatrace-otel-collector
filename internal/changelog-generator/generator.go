@@ -15,10 +15,10 @@ const (
 func GenerateChangelog(fc FilteredChangelog) string {
 	var sb strings.Builder
 
-	// Determine the version label for the ## header (highest/last version).
-	headerVersion := ""
-	if len(fc.UpstreamVersions) > 0 {
-		headerVersion = fc.UpstreamVersions[len(fc.UpstreamVersions)-1]
+	orderedVersions := sortedUniqueVersions(fc.UpstreamVersions)
+	headerVersion := highestVersion(orderedVersions)
+	if headerVersion == "" && len(orderedVersions) > 0 {
+		headerVersion = orderedVersions[len(orderedVersions)-1]
 	}
 
 	// Use collected repo URLs, falling back to well-known defaults.
@@ -35,20 +35,18 @@ func GenerateChangelog(fc FilteredChangelog) string {
 	fmt.Fprintf(&sb, "## %s\n\n", headerVersion)
 
 	// --- Intro line ---
-	if len(fc.UpstreamVersions) == 1 {
+	if len(orderedVersions) == 1 {
 		fmt.Fprintf(&sb, "This release includes version %s of the upstream Collector components.\n\n", headerVersion)
 	} else {
-		versions := make([]string, len(fc.UpstreamVersions))
-		for i, v := range fc.UpstreamVersions {
-			versions[i] = v
-		}
+		versions := make([]string, len(orderedVersions))
+		copy(versions, orderedVersions)
 		fmt.Fprintf(&sb, "This release includes versions %s of the upstream Collector components.\n\n",
 			joinVersions(versions))
 	}
 
 	// --- Upstream release links ---
 	sb.WriteString("The individual upstream Collector changelogs can be found here:\n\n")
-	for _, v := range fc.UpstreamVersions {
+	for _, v := range orderedVersions {
 		fmt.Fprintf(&sb, "%s:\n\n", v)
 		fmt.Fprintf(&sb, "- <%s/releases/tag/%s>\n", coreURL, v)
 		fmt.Fprintf(&sb, "- <%s/releases/tag/%s>\n\n", contribURL, v)
@@ -164,4 +162,3 @@ func joinVersions(versions []string) string {
 		return strings.Join(versions[:len(versions)-1], ", ") + ", and " + versions[len(versions)-1]
 	}
 }
-

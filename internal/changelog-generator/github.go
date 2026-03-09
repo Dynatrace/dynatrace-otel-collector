@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 // githubClient wraps the GitHub REST API.
@@ -40,12 +42,15 @@ type PRInfo struct {
 // parsePRURL extracts owner, repo, and PR number from a GitHub PR URL.
 // Accepted format: https://github.com/{owner}/{repo}/pull/{number}
 func parsePRURL(rawURL string) (owner, repo string, number int, err error) {
-	re := regexp.MustCompile(`github\.com/([^/]+)/([^/]+)/pull/(\d+)`)
-	m := re.FindStringSubmatch(rawURL)
+	re := regexp.MustCompile(`^https://github\.com/([^/]+)/([^/]+)/pull/(\d+)/?$`)
+	m := re.FindStringSubmatch(strings.TrimSpace(rawURL))
 	if m == nil {
 		return "", "", 0, fmt.Errorf("invalid PR URL: %q", rawURL)
 	}
-	n, _ := strconv.Atoi(m[3])
+	n, err := strconv.Atoi(m[3])
+	if err != nil {
+		return "", "", 0, fmt.Errorf("invalid PR number %q: %w", m[3], err)
+	}
 	return m[1], m[2], n, nil
 }
 
@@ -67,12 +72,25 @@ func (c *githubClient) FetchPRInfo(prURL string) (PRInfo, error) {
 		Base  struct {
 			SHA string `json:"sha"`
 		} `json:"base"`
+		Head struct {
+			SHA string `json:"sha"`
+		} `json:"head"`
 	}
 	if err := json.Unmarshal(body, &pr); err != nil {
 		return PRInfo{}, fmt.Errorf("parsing PR response: %w", err)
 	}
+	if pr.Base.SHA == "" {
+		return PRInfo{}, fmt.Errorf("PR base SHA is empty")
+	}
+	if pr.Head.SHA == "" {
+		return PRInfo{}, fmt.Errorf("PR head SHA is empty")
+	}
 
-	version := extractVersionFromTitle(pr.Title)
+	version, err := c.fetchVersionFromVersionsFile(owner, repo, pr.Head.SHA)
+	if err != nil {
+		return PRInfo{}, fmt.Errorf("reading versions.yaml for %s/%s at %s: %w", owner, repo, pr.Head.SHA[:min(8, len(pr.Head.SHA))], err)
+	}
+
 	source := "core"
 	if strings.Contains(repo, "contrib") {
 		source = "contrib"
@@ -89,18 +107,74 @@ func (c *githubClient) FetchPRInfo(prURL string) (PRInfo, error) {
 	}, nil
 }
 
-// extractVersionFromTitle parses a version string from a PR title such as
-// "[chore] Prepare release 0.145.0" → "v0.145.0".
-func extractVersionFromTitle(title string) string {
-	re := regexp.MustCompile(`(\d+\.\d+\.\d+)`)
-	m := re.FindString(title)
-	if m == "" {
-		return ""
+func (c *githubClient) fetchVersionFromVersionsFile(owner, repo, ref string) (string, error) {
+	fileMetaURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/versions.yaml?ref=%s", owner, repo, ref)
+	body, err := c.get(fileMetaURL)
+	if err != nil {
+		return "", err
 	}
-	if !strings.HasPrefix(m, "v") {
-		return "v" + m
+
+	var meta struct {
+		Type        string `json:"type"`
+		DownloadURL string `json:"download_url"`
 	}
-	return m
+	if err := json.Unmarshal(body, &meta); err != nil {
+		return "", fmt.Errorf("parsing versions.yaml metadata: %w", err)
+	}
+	if meta.Type != "file" || meta.DownloadURL == "" {
+		return "", fmt.Errorf("versions.yaml metadata missing download URL")
+	}
+
+	raw, err := c.getRaw(meta.DownloadURL)
+	if err != nil {
+		return "", fmt.Errorf("fetching versions.yaml content: %w", err)
+	}
+
+	version, err := extractVersionFromVersionsYAML(raw)
+	if err != nil {
+		return "", err
+	}
+	return version, nil
+}
+
+func extractVersionFromVersionsYAML(data []byte) (string, error) {
+	var raw any
+	if err := yaml.Unmarshal(data, &raw); err != nil {
+		return "", fmt.Errorf("parsing versions.yaml: %w", err)
+	}
+
+	versions := collectSemverStrings(raw, nil)
+	if len(versions) == 0 {
+		return "", fmt.Errorf("no semver values found in versions.yaml")
+	}
+
+	version := highestVersion(versions)
+	if version == "" {
+		return "", fmt.Errorf("unable to determine highest version from versions.yaml")
+	}
+	return canonicalVersion(version), nil
+}
+
+func collectSemverStrings(v any, out []string) []string {
+	switch t := v.(type) {
+	case map[string]any:
+		for _, val := range t {
+			out = collectSemverStrings(val, out)
+		}
+	case map[any]any:
+		for _, val := range t {
+			out = collectSemverStrings(val, out)
+		}
+	case []any:
+		for _, val := range t {
+			out = collectSemverStrings(val, out)
+		}
+	case string:
+		if _, ok := parseSemVersion(t); ok {
+			out = append(out, canonicalVersion(t))
+		}
+	}
+	return out
 }
 
 // githubContent is a file entry returned by the GitHub contents API.
@@ -163,7 +237,7 @@ func (c *githubClient) FetchChloggenEntries(info PRInfo) ([]ChangelogEntry, erro
 }
 
 // get performs an authenticated GET against the GitHub API and returns the
-// response body.  It retries once on 403 rate-limit responses.
+// response body. It retries once on rate-limit responses.
 func (c *githubClient) get(url string) ([]byte, error) {
 	return c.doGet(url, true)
 }
@@ -174,36 +248,75 @@ func (c *githubClient) getRaw(url string) ([]byte, error) {
 }
 
 func (c *githubClient) doGet(url string, apiHeaders bool) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	if c.token != "" {
-		req.Header.Set("Authorization", "Bearer "+c.token)
-	}
-	if apiHeaders {
-		req.Header.Set("Accept", "application/vnd.github+json")
-		req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
+	const maxAttempts = 2
+
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		if err != nil {
+			return nil, err
+		}
+		if c.token != "" {
+			req.Header.Set("Authorization", "Bearer "+c.token)
+		}
+		if apiHeaders {
+			req.Header.Set("Accept", "application/vnd.github+json")
+			req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
+		}
+
+		resp, err := c.httpClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
+
+		body, readErr := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if readErr != nil {
+			return nil, fmt.Errorf("reading response body: %w", readErr)
+		}
+
+		if resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusTooManyRequests {
+			if attempt < maxAttempts {
+				time.Sleep(retryDelay(resp.Header))
+				continue
+			}
+			return nil, fmt.Errorf("GitHub API rate limit or auth error (HTTP %d): %s", resp.StatusCode, string(body))
+		}
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("unexpected HTTP %d from %s: %s", resp.StatusCode, url, string(body))
+		}
+
+		return body, nil
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reading response body: %w", err)
-	}
-
-	if resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusTooManyRequests {
-		return nil, fmt.Errorf("GitHub API rate limit or auth error (HTTP %d): %s", resp.StatusCode, string(body))
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected HTTP %d from %s: %s", resp.StatusCode, url, string(body))
-	}
-
-	return body, nil
+	return nil, fmt.Errorf("exhausted retries for %s", url)
 }
 
+func retryDelay(headers http.Header) time.Duration {
+	if raw := strings.TrimSpace(headers.Get("Retry-After")); raw != "" {
+		if seconds, err := strconv.Atoi(raw); err == nil {
+			d := time.Duration(seconds) * time.Second
+			if d < 0 {
+				return 2 * time.Second
+			}
+			if d > 30*time.Second {
+				return 30 * time.Second
+			}
+			return d
+		}
+	}
+
+	if raw := strings.TrimSpace(headers.Get("X-RateLimit-Reset")); raw != "" {
+		if ts, err := strconv.ParseInt(raw, 10, 64); err == nil {
+			wait := time.Until(time.Unix(ts, 0))
+			if wait <= 0 {
+				return 2 * time.Second
+			}
+			if wait > 30*time.Second {
+				return 30 * time.Second
+			}
+			return wait
+		}
+	}
+
+	return 2 * time.Second
+}

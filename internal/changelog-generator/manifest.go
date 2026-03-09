@@ -96,4 +96,3 @@ func stripTypeSuffix(name, compType string) string {
 	}
 	return name
 }
-

@@ -54,6 +54,25 @@ func FilterEntries(entries []ChangelogEntry, components map[string]bool, cfg Con
 	return fc
 }
 
+// knownComponentAliases maps canonical component IDs to known upstream aliases.
+var knownComponentAliases = map[string][]string{
+	"extension/healthcheck": {"extension/health_check"},
+	"exporter/otlp":         {"exporter/otlp_grpc"},
+	"exporter/otlphttp":     {"exporter/otlp_http"},
+}
+
+var aliasToCanonicalComponent = buildAliasToCanonical(knownComponentAliases)
+
+func buildAliasToCanonical(in map[string][]string) map[string]string {
+	out := make(map[string]string)
+	for canonical, aliases := range in {
+		for _, alias := range aliases {
+			out[alias] = canonical
+		}
+	}
+	return out
+}
+
 // shouldInclude decides whether a component should be included in the output.
 //
 //  1. If it matches the denylist → exclude.
@@ -61,15 +80,33 @@ func FilterEntries(entries []ChangelogEntry, components map[string]bool, cfg Con
 //  3. If it matches the allowlist → include.
 //  4. Otherwise → exclude.
 func shouldInclude(component string, manifestComponents map[string]bool, cfg Config) bool {
-	if MatchesDenylist(component, cfg.Denylist) {
-		return false
+	candidates := componentMatchCandidates(component)
+
+	for _, candidate := range candidates {
+		if MatchesDenylist(candidate, cfg.Denylist) {
+			return false
+		}
 	}
-	if manifestComponents[component] {
-		return true
+	for _, candidate := range candidates {
+		if manifestComponents[candidate] {
+			return true
+		}
 	}
-	if MatchesAllowlist(component, cfg.Allowlist) {
-		return true
+	for _, candidate := range candidates {
+		if MatchesAllowlist(candidate, cfg.Allowlist) {
+			return true
+		}
 	}
 	return false
 }
 
+func componentMatchCandidates(component string) []string {
+	candidates := []string{component}
+	if canonical, ok := aliasToCanonicalComponent[component]; ok {
+		candidates = append(candidates, canonical)
+	}
+	if aliases, ok := knownComponentAliases[component]; ok {
+		candidates = append(candidates, aliases...)
+	}
+	return candidates
+}

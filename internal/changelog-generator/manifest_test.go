@@ -81,4 +81,3 @@ func TestGomodToComponentID(t *testing.T) {
 		}
 	}
 }
-

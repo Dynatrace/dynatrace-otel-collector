@@ -155,4 +155,3 @@ func TestInsertChangelog_PreservesDistroEntries(t *testing.T) {
 		t.Error("upstream content should be inserted")
 	}
 }
-

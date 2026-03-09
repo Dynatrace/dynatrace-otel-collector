@@ -50,14 +50,16 @@ go build -o ./bin/changelog-generator ./internal/changelog-generator
    (e.g. `receiver/filelog`, `processor/batch`).
 2. **Fetches `.chloggen/*.yaml` files** from the base commit of each upstream "prepare release" PR
    via the GitHub Contents API. The entries exist at the *base* commit because the PR deletes them.
-3. **Parses each entry** (structured YAML with `change_type`, `component`, `note`, `issues`,
+3. **Reads `versions.yaml` from the PR head commit** to determine the upstream release version
+   (instead of relying on PR title parsing).
+4. **Parses each entry** (structured YAML with `change_type`, `component`, `note`, `issues`,
    `subtext`, `change_logs`). Entries with `change_logs: [api]` only are skipped.
-4. **Filters entries** against the component set, plus the allowlist/denylist from `config.yaml`.
-5. **Renders filtered entries** into formatted markdown:
+5. **Filters entries** against the component set, plus the allowlist/denylist from `config.yaml`.
+6. **Renders filtered entries** into formatted markdown:
    - Breaking changes appear at the top level (outside `<details>`).
    - Enhancements, bug fixes, deprecations, and new components go inside a `<details>` block.
    - Core entries appear before contrib entries within each section.
-6. **Inserts** the generated section into `CHANGELOG.md` between the
+7. **Inserts** the generated section into `CHANGELOG.md` between the
    `<!-- next version -->` and `<!-- previous-version -->` markers, preserving any
    distro-specific entries added by `chloggen`.
 
@@ -144,12 +146,11 @@ Set `GITHUB_TOKEN` to a personal access token (or use `gh auth token` to get one
 export GITHUB_TOKEN=$(gh auth token)
 ```
 
-**"no upstream versions found"**
-Check that the PR URLs point to actual "prepare release" PRs with titles like
-`[chore] Prepare release 0.145.0`. The version is extracted from the PR title.
+**"no valid upstream versions found"**
+Check that each supplied PR contains `versions.yaml` at its head commit with a valid semver
+(e.g. `v0.145.0` or `0.145.0`). The tool reads upstream version values from `versions.yaml`.
 
 **Entry not appearing in output**
 Run with `-dry-run` and check stderr for `info:` lines showing how many entries
 were fetched and filtered. If a component is missing, add it to the `allowlist`
 in `config.yaml`.
-

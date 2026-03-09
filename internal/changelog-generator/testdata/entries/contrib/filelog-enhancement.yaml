@@ -1,0 +1,9 @@
+change_type: enhancement
+component: receiver/filelog
+note: Suppress repeated permission-denied errors
+issues: [39491]
+subtext: |
+  Only one error is logged per file per process run, and an informational
+  message is emitted when the file becomes readable again.
+change_logs: [user]
+

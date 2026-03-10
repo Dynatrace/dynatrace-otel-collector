@@ -55,17 +55,14 @@ spec:
             runAsUser: 0
           volumeMounts:
             - mountPath: /conf
-              name: opentelemetry-collector-configmap
+              name: config
             - name: run-journal
               mountPath: /run/log/journal
               readOnly: true
       volumes:
-        - name: opentelemetry-collector-configmap
+        - name: config
           configMap:
             name: {{ .Name }}-config
-            items:
-              - key: relay
-                path: relay.yaml
         - name: run-journal
           hostPath:
             path: /run/log/journal

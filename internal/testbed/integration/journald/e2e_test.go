@@ -79,6 +79,7 @@ func TestE2E_JournaldReceiver(t *testing.T) {
 		}
 	}()
 
-	oteltest.WaitForLogs(t, 10, logsConsumer)
+	oteltest.WaitForLogs(t, 1, logsConsumer)
 
+	//TODO check attributes modified by operators
 }

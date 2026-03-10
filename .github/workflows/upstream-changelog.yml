@@ -3,16 +3,11 @@ name: Generate Changelog
 on:
   workflow_dispatch:
     inputs:
-      core_pr_url:
-        description: 'Core repo "prepare release" PR URL (e.g. https://github.com/open-telemetry/opentelemetry-collector/pull/14515)'
-        required: true
-        type: string
-      contrib_pr_url:
-        description: 'Contrib repo "prepare release" PR URL (e.g. https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45836)'
-        required: true
-        type: string
-      extra_pr_urls:
-        description: 'Additional PR URLs (comma-separated, for multi-version upgrades)'
+      pr_urls:
+        description: >
+          Space-separated "prepare release" PR URLs (core and/or contrib).
+          Leave empty if there is no upstream release for this dist release.
+          Example: https://github.com/open-telemetry/opentelemetry-collector/pull/14515 https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45836
         required: false
         type: string
       dist_version:
@@ -43,10 +38,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_URLS="${{ inputs.core_pr_url }} ${{ inputs.contrib_pr_url }}"
-          if [ -n "${{ inputs.extra_pr_urls }}" ]; then
-            EXTRA=$(echo "${{ inputs.extra_pr_urls }}" | tr ',' ' ')
-            PR_URLS="$PR_URLS $EXTRA"
+          PR_URLS="${{ inputs.pr_urls }}"
+          if [ -z "$PR_URLS" ]; then
+            echo "No upstream PR URLs provided — skipping upstream changelog generation."
+            exit 0
           fi
           ./bin/changelog-generator $PR_URLS
 
@@ -72,9 +67,7 @@ jobs:
             Auto-generated changelog for collector version v${{ env.DIST_VERSION }}.
 
             **Source PRs:**
-            - ${{ inputs.core_pr_url }}
-            - ${{ inputs.contrib_pr_url }}
-            ${{ inputs.extra_pr_urls != '' && format('- {0}', inputs.extra_pr_urls) || '' }}
+            ${{ inputs.pr_urls != '' && inputs.pr_urls || '_No upstream release for this dist release._' }}
 
             > ⚠️ Please review the generated changelog carefully before merging.
             > The automation filters entries based on components in `manifest.yaml` and the allow/denylist in

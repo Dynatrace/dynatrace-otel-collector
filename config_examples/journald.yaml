@@ -24,8 +24,6 @@ receivers:
         to: body.message
 
 exporters:
-  debug:
-    verbosity: detailed
   otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
@@ -36,4 +34,4 @@ service:
   pipelines:
     logs:
       receivers: [journald]
-      exporters: [debug, otlp_http]
+      exporters: [otlp_http]

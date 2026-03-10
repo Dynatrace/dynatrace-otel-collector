@@ -16,7 +16,7 @@ receivers:
       # You can rename multiple fields at once
       - type: move
         from: body._EXE
-        to: attributes.process.executable.name
+        to: attributes["process.executable.name"]
 
       # Optional: move MESSAGE to a differently named field
       - type: move

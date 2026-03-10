@@ -1,3 +1,7 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
 receivers:
   journald:
     directory: /run/log/journal
@@ -28,6 +32,7 @@ exporters:
       Authorization: "Api-Token ${env:API_TOKEN}"
 
 service:
+  extensions: [health_check]
   pipelines:
     logs:
       receivers: [journald]

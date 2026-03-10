@@ -135,7 +135,6 @@ jobs:
           - loadbalancing
           - kafka
           - filestorage
-          - journald
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

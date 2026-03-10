@@ -1,0 +1,84 @@
+name: Generate Changelog
+
+on:
+  workflow_dispatch:
+    inputs:
+      core_pr_url:
+        description: 'Core repo "prepare release" PR URL (e.g. https://github.com/open-telemetry/opentelemetry-collector/pull/14515)'
+        required: true
+        type: string
+      contrib_pr_url:
+        description: 'Contrib repo "prepare release" PR URL (e.g. https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45836)'
+        required: true
+        type: string
+      extra_pr_urls:
+        description: 'Additional PR URLs (comma-separated, for multi-version upgrades)'
+        required: false
+        type: string
+      dist_version:
+        description: 'New dist version (e.g. 0.45.0 — leave empty to auto-bump minor)'
+        required: false
+        type: string
+
+env:
+  GO_VERSION: "1.25.7"
+
+jobs:
+  generate-changelog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build changelog generator
+        run: go build -o ./bin/changelog-generator ./internal/changelog-generator
+
+      - name: Run changelog generator
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_URLS="${{ inputs.core_pr_url }} ${{ inputs.contrib_pr_url }}"
+          if [ -n "${{ inputs.extra_pr_urls }}" ]; then
+            EXTRA=$(echo "${{ inputs.extra_pr_urls }}" | tr ',' ' ')
+            PR_URLS="$PR_URLS $EXTRA"
+          fi
+          ./bin/changelog-generator $PR_URLS
+
+      - name: Bump dist.version in manifest.yaml and generate downstream changelog
+        run: |
+          if [ -n "${{ inputs.dist_version }}" ]; then
+            NEW_VERSION="${{ inputs.dist_version }}"
+          else
+            CURRENT=$(grep '  version:' manifest.yaml | head -1 | awk '{print $2}')
+            NEW_VERSION=$(echo "$CURRENT" | awk -F. '{printf "%d.%d.0", $1, $2+1}')
+          fi
+          sed -i "s/  version: .*/  version: $NEW_VERSION/" manifest.yaml
+          echo "DIST_VERSION=$NEW_VERSION" >> "$GITHUB_ENV"
+          make chlog-update VERSION="$NEW_VERSION"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: changelog/v${{ env.DIST_VERSION }}
+          title: "[chore] Prepare release v${{ env.DIST_VERSION }}"
+          body: |
+            Auto-generated changelog for collector version v${{ env.DIST_VERSION }}.
+
+            **Source PRs:**
+            - ${{ inputs.core_pr_url }}
+            - ${{ inputs.contrib_pr_url }}
+            ${{ inputs.extra_pr_urls != '' && format('- {0}', inputs.extra_pr_urls) || '' }}
+
+            > ⚠️ Please review the generated changelog carefully before merging.
+            > The automation filters entries based on components in `manifest.yaml` and the allow/denylist in
+            > `internal/changelog-generator/config.yaml`. Some entries may need manual adjustment.
+          labels: Skip Changelog
+          commit-message: "chore: prepare release v${{ env.DIST_VERSION }}"
+

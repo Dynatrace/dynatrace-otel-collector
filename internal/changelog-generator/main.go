@@ -15,9 +15,8 @@ func main() {
 
 	prURLs := flag.Args()
 	if len(prURLs) == 0 {
-		fmt.Fprintln(os.Stderr, "error: at least one PR URL is required")
-		flag.Usage()
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, "info: no PR URLs provided — skipping upstream changelog generation")
+		return
 	}
 
 	if err := run(*manifestPath, *configPath, *changelogPath, *dryRun, prURLs); err != nil {

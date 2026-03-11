@@ -109,29 +109,14 @@ func (c *githubClient) FetchPRInfo(prURL string) (PRInfo, error) {
 }
 
 func (c *githubClient) fetchVersionFromVersionsFile(owner, repo, ref string) (string, error) {
-	fileMetaURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/versions.yaml?ref=%s", owner, repo, ref)
-	body, err := c.get(fileMetaURL)
+	// Fetch versions.yaml directly from raw.githubusercontent.com — no metadata round-trip needed.
+	rawURL := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/versions.yaml", owner, repo, ref)
+	data, err := c.getRaw(rawURL)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("fetching versions.yaml: %w", err)
 	}
 
-	var meta struct {
-		Type        string `json:"type"`
-		DownloadURL string `json:"download_url"`
-	}
-	if err := json.Unmarshal(body, &meta); err != nil {
-		return "", fmt.Errorf("parsing versions.yaml metadata: %w", err)
-	}
-	if meta.Type != "file" || meta.DownloadURL == "" {
-		return "", fmt.Errorf("versions.yaml metadata missing download URL")
-	}
-
-	raw, err := c.getRaw(meta.DownloadURL)
-	if err != nil {
-		return "", fmt.Errorf("fetching versions.yaml content: %w", err)
-	}
-
-	version, err := extractVersionFromVersionsYAML(raw)
+	version, err := extractVersionFromVersionsYAML(data)
 	if err != nil {
 		return "", err
 	}

@@ -27,6 +27,9 @@ resourceMetrics:
         - key: host.name
           value:
             stringValue: otelcol-4tpeuus6av-7lgcr
+        - key: host.id
+          value:
+            stringValue: fdfsnjndjsddsdfd
         - key: os.build.id
           value:
             stringValue: 6.11.0-1018-azure
@@ -85,6 +88,9 @@ resourceMetrics:
         - key: host.name
           value:
             stringValue: otelcol-4tpeuus6av-7lgcr
+        - key: host.id
+          value:
+            stringValue: fdfsnjndjsddsdfd
         - key: os.build.id
           value:
             stringValue: 6.11.0-1018-azure
@@ -152,6 +158,9 @@ resourceMetrics:
         - key: host.name
           value:
             stringValue: otelcol-4tpeuus6av-7lgcr
+        - key: host.id
+          value:
+            stringValue: fdfsnjndjsddsdfd
         - key: os.build.id
           value:
             stringValue: 6.11.0-1018-azure

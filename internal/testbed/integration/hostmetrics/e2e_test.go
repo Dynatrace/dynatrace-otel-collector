@@ -209,6 +209,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 
 		pmetrictest.ChangeResourceAttributeValue("host.arch", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.ip", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("host.id", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.mac", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.cpu.model.name", substituteWithStar),

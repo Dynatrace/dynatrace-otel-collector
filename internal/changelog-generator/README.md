@@ -1,29 +1,29 @@
 # changelog-generator
 
-A Go tool that automates the generation of upstream changelog sections in the Dynatrace OTel Collector
-distribution's `CHANGELOG.md`.
+A Go tool that fills the upstream changelog section in `CHANGELOG.md` during a release.
 
-It extracts structured `.chloggen/*.yaml` entry files from upstream "prepare release" PRs in the
-OpenTelemetry Collector Core and Contrib repositories, filters them to the components included in this
-distribution, and renders them into the existing changelog format.
+`make chlog-update` (via `chloggen`) generates a new version section with placeholder comments.
+This tool fetches the upstream `.chloggen/*.yaml` entry files from the upstream "prepare release" PRs,
+filters them to components included in this distribution, and replaces those placeholders with real content.
 
 ## Usage
 
 ```sh
-# Dry-run: print generated markdown to stdout without modifying any files
-GITHUB_TOKEN=ghp_xxx ./bin/changelog-generator -dry-run \
+# Upstream release: fill placeholders with content from the upstream PRs
+GITHUB_TOKEN=$(gh auth token) ./bin/changelog-generator \
   https://github.com/open-telemetry/opentelemetry-collector/pull/14515 \
   https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45836
 
-# For real: insert the upstream section into CHANGELOG.md
-GITHUB_TOKEN=ghp_xxx ./bin/changelog-generator \
+# Multi-version upgrade: pass all upstream PR URLs
+GITHUB_TOKEN=$(gh auth token) ./bin/changelog-generator \
   https://github.com/open-telemetry/opentelemetry-collector/pull/14515 \
   https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45836
 
-# Multi-version upgrade (provide all four PR URLs)
-GITHUB_TOKEN=ghp_xxx ./bin/changelog-generator \
-  https://github.com/open-telemetry/opentelemetry-collector/pull/14400 \
-  https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45700 \
+# Distro-only release (no upstream bump): removes the upstream placeholder section entirely
+GITHUB_TOKEN=$(gh auth token) ./bin/changelog-generator
+
+# Dry-run: print the generated pieces to stdout without modifying any files
+GITHUB_TOKEN=$(gh auth token) ./bin/changelog-generator -dry-run \
   https://github.com/open-telemetry/opentelemetry-collector/pull/14515 \
   https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45836
 ```
@@ -40,59 +40,47 @@ GITHUB_TOKEN=ghp_xxx ./bin/changelog-generator \
 ## Building
 
 ```sh
-# From the repo root
 go build -o ./bin/changelog-generator ./internal/changelog-generator
 ```
 
 ## How It Works
 
-1. **Parses `manifest.yaml`** to extract the set of upstream component IDs in the distribution
-   (e.g. `receiver/filelog`, `processor/batch`).
-2. **Fetches `.chloggen/*.yaml` files** from the base commit of each upstream "prepare release" PR
-   via the GitHub Contents API. The entries exist at the *base* commit because the PR deletes them.
-3. **Reads `versions.yaml` from the PR head commit** to determine the upstream release version
-   (instead of relying on PR title parsing).
-4. **Parses each entry** (structured YAML with `change_type`, `component`, `note`, `issues`,
-   `subtext`, `change_logs`). Entries with `change_logs: [api]` only are skipped.
-5. **Filters entries** against the component set, plus the allowlist/denylist from `config.yaml`.
-6. **Renders filtered entries** into formatted markdown:
-   - Breaking changes appear at the top level (outside `<details>`).
-   - Enhancements, bug fixes, deprecations, and new components go inside a `<details>` block.
-   - Core entries appear before contrib entries within each section.
-7. **Inserts** the generated section into `CHANGELOG.md` between the
-   `<!-- next version -->` and `<!-- previous-version -->` markers, preserving any
-   distro-specific entries added by `chloggen`.
+1. **`make chlog-update VERSION="vX.Y.Z"`** runs `chloggen`, which consumes distro `.chloggen/*.yaml` entries and
+   writes a new version section into `CHANGELOG.md` using `summary.tmpl`. The template includes
+   named placeholder comments (`<!-- upstream-version -->`, `<!-- upstream-collector-versions -->`,
+   `<!-- upstream-breaking-changes -->`, `<!-- upstream-other-changes -->`) wrapped in
+   `<!-- upstream-start -->`/`<!-- upstream-end -->` boundary markers.
+
+2. **This tool** then fills those placeholders:
+   - Reads `manifest.yaml` to build the set of included upstream component IDs.
+   - For each supplied PR URL, fetches `.chloggen/*.yaml` files from the PR's **base commit** via
+     the GitHub Contents API (entries live at the base because the PR deletes them on merge), and
+     reads `versions.yaml` from the **head commit** to determine the upstream release version.
+   - Filters entries against the component set and the allow/denylist from `config.yaml`.
+   - Renders filtered entries into the four placeholder slots and removes the boundary markers.
+   - When no PR URLs are provided, removes the entire `<!-- upstream-start -->`…`<!-- upstream-end -->` block.
 
 ## Configuration (`config.yaml`)
 
-The config file lets you extend the filter beyond what is in `manifest.yaml`:
-
 ```yaml
-# Always include entries for these component identifiers.
-# Supports exact match and prefix match (e.g. "pkg/stanza" also matches "pkg/stanza/something").
+# Always include entries for these component identifiers (exact or prefix match).
 allowlist:
   - "pkg/ottl"
-  - "pkg/stanza"
-  - "all"          # entries with component "all" affect every component
+  - "all"   # entries with component "all" affect every component
 
-# Always exclude entries for these component identifiers.
+# Always exclude. Denylist takes precedence over allowlist and manifest components.
 # Supports glob suffix (*) for prefix matching.
-# Denylist takes precedence over both allowlist and manifest components.
 denylist:
   - "internal/*"
   - "cmd/*"
 ```
 
-### Adding/removing components
-
-- To **always include** a shared package (e.g. `pkg/newpackage`): add it to `allowlist`.
-- To **exclude** a specific component even if it is in `manifest.yaml`: add it to `denylist`.
-- The default config at `internal/changelog-generator/config.yaml` covers the commonly relevant
-  shared packages.
+- **To add a shared package**: add it to `allowlist` (e.g. `pkg/newpackage`).
+- **To suppress a component** even if it's in `manifest.yaml`: add it to `denylist`.
 
 ## Component Name Mapping
 
-The tool derives upstream component IDs from `manifest.yaml` gomod paths:
+Component IDs are derived from `manifest.yaml` gomod paths:
 
 | `manifest.yaml` gomod | Upstream `component` ID |
 |---|---|
@@ -100,31 +88,25 @@ The tool derives upstream component IDs from `manifest.yaml` gomod paths:
 | `.../receiver/filelogreceiver` | `receiver/filelog` |
 | `.../processor/resourcedetectionprocessor` | `processor/resourcedetection` |
 | `.../extension/storage/filestorage` | `extension/filestorage` |
-| `.../connector/spanmetricsconnector` | `connector/spanmetrics` |
 
-The mapping strips the component-type suffix from the last path segment
-(e.g. `filelogreceiver` → `filelog` by stripping `receiver`). If the last segment
-does not end with the type suffix, it is used as-is (e.g. `filestorage`).
+The type suffix is stripped from the last path segment (e.g. `filelogreceiver` → `filelog`).
 
 ## GitHub Actions Workflow
 
-The tool is also available as a manually-triggered GitHub Actions workflow at
-`.github/workflows/upstream-changelog.yml`. The workflow:
+The tool is wrapped by `.github/workflows/upstream-changelog.yml`, which:
 
-1. Builds the tool and runs it against the supplied PR URLs.
-2. Bumps `dist.version` in `manifest.yaml` (auto-increments minor if not specified).
-3. Bumps `OTEL_UPSTREAM_VERSION` in `Makefile`.
+1. Runs `make chlog-update` to consume distro entries and write the scaffold.
+2. Runs this tool to fill the upstream placeholders.
+3. Bumps `dist.version` in `manifest.yaml` and `OTEL_UPSTREAM_VERSION` in `Makefile`.
 4. Opens a PR labelled `Skip Changelog` for human review.
-
-### Triggering the workflow
 
 ```
 Actions → "Generate Upstream Changelog" → Run workflow
 
 Inputs:
-  core_pr_url    (required)  https://github.com/open-telemetry/opentelemetry-collector/pull/NNNN
-  contrib_pr_url (required)  https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/NNNN
-  extra_pr_urls  (optional)  Comma-separated additional PR URLs for multi-version upgrades
+  core_pr_url    (required)  upstream core "prepare release" PR URL
+  contrib_pr_url (required)  upstream contrib "prepare release" PR URL
+  extra_pr_urls  (optional)  comma-separated additional PR URLs for multi-version upgrades
   dist_version   (optional)  e.g. 0.46.0 — auto-bumps minor version if omitted
 ```
 
@@ -133,24 +115,20 @@ Inputs:
 ```sh
 cd internal/changelog-generator
 go test ./...
-go test -v -run TestParseManifest
-go test -v -run TestFilterEntries
-go test -v -run TestGenerateChangelog
 ```
 
 ## Troubleshooting
 
 **`GITHUB_TOKEN` not set / 403 errors**
-Set `GITHUB_TOKEN` to a personal access token (or use `gh auth token` to get one):
 ```sh
 export GITHUB_TOKEN=$(gh auth token)
 ```
 
 **"no valid upstream versions found"**
-Check that each supplied PR contains `versions.yaml` at its head commit with a valid semver
-(e.g. `v0.145.0` or `0.145.0`). The tool reads upstream version values from `versions.yaml`.
+Each PR must have a `versions.yaml` at its head commit with a valid semver. The tool reads the
+version from `module-sets.beta.version` (core) or `module-sets.contrib-base.version` (contrib).
 
 **Entry not appearing in output**
-Run with `-dry-run` and check stderr for `info:` lines showing how many entries
-were fetched and filtered. If a component is missing, add it to the `allowlist`
-in `config.yaml`.
+Run with `-dry-run` and check the `info:` lines on stderr. If a component is missing, add it to
+`allowlist` in `config.yaml`.
+

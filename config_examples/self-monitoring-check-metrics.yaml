@@ -6,13 +6,6 @@ receivers:
     protocols:
       grpc:
         endpoint: ${env:MY_POD_IP}:4317
-exporters:
-  debug:
-    verbosity: detailed
-  otlp_http:
-    endpoint: ${env:DT_ENDPOINT}
-    headers:
-      Authorization: "Api-Token ${env:API_TOKEN}"
 processors:
   batch:
     send_batch_size: 5
@@ -28,6 +21,13 @@ processors:
     logs:
       log_record:
         - 'IsMatch(body, ".*password.*")'
+exporters:
+  debug:
+    verbosity: detailed
+  otlp_http:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:API_TOKEN}"
 service:
   extensions:
     - health_check
@@ -40,6 +40,7 @@ service:
         - batch
       exporters:
         - debug
+        - otlp_http
     logs:
       receivers:
         - otlp
@@ -48,6 +49,7 @@ service:
         - batch
       exporters:
         - debug
+        - otlp_http
     traces:
       receivers:
         - otlp

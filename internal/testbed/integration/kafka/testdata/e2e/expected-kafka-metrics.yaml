@@ -17,6 +17,181 @@ resourceMetrics:
   - resource: {}
     scopeMetrics:
       - metrics:
+          - description: Current offset of partition of topic.
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_logs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_metrics
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_spans
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: kafka.partition.current_offset
+            unit: "1"
+          - description: Oldest offset of partition of topic
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_logs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_metrics
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_spans
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: kafka.partition.oldest_offset
+            unit: "1"
+          - description: Number of replicas for partition of topic
+            name: kafka.partition.replicas
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_logs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_metrics
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_spans
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{replicas}'
+          - description: Number of synchronized replicas of partition
+            name: kafka.partition.replicas_in_sync
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_logs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_metrics
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: partition
+                      value:
+                        intValue: "0"
+                    - key: topic
+                      value:
+                        stringValue: otlp_spans
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{replicas}'
+          - description: Number of partitions in topic.
+            name: kafka.topic.partitions
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: topic
+                      value:
+                        stringValue: otlp_logs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: topic
+                      value:
+                        stringValue: otlp_metrics
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: topic
+                      value:
+                        stringValue: otlp_spans
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{partitions}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver
+          version: 0.44.0
+  - resource: {}
+    scopeMetrics:
+      - metrics:
           - description: Current approximate lag of consumer group at partition of topic
             gauge:
               dataPoints:

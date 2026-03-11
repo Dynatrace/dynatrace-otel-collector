@@ -217,6 +217,8 @@ docker_manifests:
       - dynatrace/dynatrace-otel-collector:latest-s390x
 checksum:
   name_template: "checksums.txt"
+docker_digest:
+  name_template: "digests.txt"
 snapshot:
   version_template: "{{ incpatch .Version }}-next"
 changelog:

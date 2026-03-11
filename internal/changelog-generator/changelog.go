@@ -7,71 +7,77 @@ import (
 )
 
 const (
-	nextVersionMarker     = "<!-- next version -->"
-	previousVersionMarker = "<!-- previous-version -->"
+	upstreamStartMarker    = "<!-- upstream-start -->"
+	upstreamEndMarker      = "<!-- upstream-end -->"
+	upstreamVersionMarker  = "<!-- upstream-version -->"
+	upstreamVersionsMarker = "<!-- upstream-collector-versions -->"
+	upstreamBreakingMarker = "<!-- upstream-breaking-changes -->"
+	upstreamOtherMarker    = "<!-- upstream-other-changes -->"
 )
 
-// InsertChangelog reads CHANGELOG.md, finds the insertion point between the
-// <!-- next version --> and <!-- previous-version --> markers, inserts the
-// generated content, and writes the result back to disk.
+// FillUpstreamPlaceholders reads the CHANGELOG.md at path and either fills the
+// upstream placeholder comments with content from UpstreamContent, or removes
+// the entire upstream section when UpstreamContent is zero-valued (no upstream
+// release).
 //
-// If a previously-generated upstream section already exists (detected by the
-// presence of a "## v" header between the two markers), it is replaced.
-func InsertChangelog(path, content string) error {
+// The expected scaffold (produced by `make chlog-update`) contains:
+//
+//	<!-- upstream-start -->
+//	This release includes version <!-- upstream-version --> ...
+//	<!-- upstream-collector-versions -->
+//	<!-- upstream-breaking-changes -->
+//	<details>
+//	<!-- upstream-other-changes -->
+//	</details>
+//	<!-- upstream-end -->
+//
+// After this function runs, the boundary markers are removed and only the
+// rendered content (or nothing) remains.
+func FillUpstreamPlaceholders(path string, content UpstreamContent) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("reading changelog: %w", err)
 	}
 
-	original := string(data)
+	s := string(data)
 
-	nextIdx := strings.Index(original, nextVersionMarker)
-	if nextIdx == -1 {
-		return fmt.Errorf("marker %q not found in %s", nextVersionMarker, path)
+	if content.VersionIntro == "" {
+		s = removeUpstreamSection(s)
+	} else {
+		s = strings.ReplaceAll(s, upstreamVersionMarker, content.VersionIntro)
+		s = fillOrRemovePlaceholder(s, upstreamVersionsMarker, content.CollectorVersions)
+		s = fillOrRemovePlaceholder(s, upstreamBreakingMarker, content.BreakingChanges)
+		s = fillOrRemovePlaceholder(s, upstreamOtherMarker, content.OtherChanges)
+		// Remove the boundary markers now that the content is in place.
+		s = strings.ReplaceAll(s, upstreamStartMarker+"\n", "")
+		s = strings.ReplaceAll(s, "\n\n"+upstreamEndMarker, "\n")
 	}
 
-	// Find the first <!-- previous-version --> after <!-- next version -->.
-	prevIdx := strings.Index(original[nextIdx:], previousVersionMarker)
-	if prevIdx == -1 {
-		return fmt.Errorf("marker %q not found in %s", previousVersionMarker, path)
-	}
-	prevIdx += nextIdx // Absolute index.
-
-	// Everything between the end of <!-- next version --> and the start of
-	// <!-- previous-version --> is the "current block".
-	afterNext := nextIdx + len(nextVersionMarker)
-	currentBlock := original[afterNext:prevIdx]
-
-	// If the current block already has an upstream-generated section (a "## v"
-	// header) that was produced by a previous run, strip it so we can replace it.
-	newBlock := buildNewBlock(currentBlock, content)
-
-	result := original[:afterNext] + newBlock + original[prevIdx:]
-
-	return os.WriteFile(path, []byte(result), 0o644)
+	return os.WriteFile(path, []byte(s), 0o644)
 }
 
-// buildNewBlock merges any existing chloggen distro content with the new
-// upstream-generated content.
-//
-// Strategy:
-//   - If the current block already contains a "## v" header from a prior run
-//     of this tool, drop that header and everything after it, keeping only the
-//     distro-specific content before it.
-//   - Append the new upstream content.
-func buildNewBlock(currentBlock, newContent string) string {
-	// Look for an existing upstream section marker ("## v").
-	if idx := strings.Index(currentBlock, "\n## v"); idx != -1 {
-		// Keep only the distro-specific part that precedes the old upstream block.
-		currentBlock = currentBlock[:idx]
+// removeUpstreamSection removes everything between <!-- upstream-start --> and
+// <!-- upstream-end --> (both inclusive) and normalizes the surrounding
+// whitespace to a single blank line.
+func removeUpstreamSection(s string) string {
+	startIdx := strings.Index(s, upstreamStartMarker)
+	endIdx := strings.Index(s, upstreamEndMarker)
+	if startIdx == -1 || endIdx == -1 {
+		return s
 	}
+	endIdx += len(upstreamEndMarker)
 
-	// Ensure there is exactly one blank line between the next-version marker
-	// and the new content, and between any existing distro content and the new
-	// upstream section.
-	trimmed := strings.TrimRight(currentBlock, "\n")
-	if trimmed == "" {
-		return "\n\n" + newContent + "\n"
+	before := strings.TrimRight(s[:startIdx], " \t\n")
+	after := strings.TrimLeft(s[endIdx:], " \t\n")
+	return before + "\n\n" + after
+}
+
+// fillOrRemovePlaceholder replaces a placeholder comment that lives on its own
+// line (surrounded by blank lines) with content. When content is empty the
+// placeholder line is removed entirely to avoid stray blank lines.
+func fillOrRemovePlaceholder(s, placeholder, content string) string {
+	if content == "" {
+		return strings.ReplaceAll(s, "\n\n"+placeholder+"\n", "\n")
 	}
-	return "\n\n" + trimmed + "\n\n" + newContent + "\n"
+	return strings.ReplaceAll(s, placeholder, content)
 }

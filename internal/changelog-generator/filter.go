@@ -2,6 +2,7 @@ package main
 
 // FilteredChangelog holds the filtered and grouped entries ready for rendering.
 type FilteredChangelog struct {
+	DistVersion      string   // Distribution version for the section header (e.g. "v0.44.0").
 	UpstreamVersions []string // Distinct upstream versions covered (ordered).
 	CoreRepoURL      string
 	ContribRepoURL   string

@@ -128,7 +128,6 @@ jobs:
           - resource-detection
           - netflow
           - self-monitoring
-          - hostmetrics
           - k8sobjects
           - kubeletstats
           - k8scluster
@@ -233,7 +232,7 @@ jobs:
 
       - name: Run e2e tests
         run: |
-          cd internal/testbed/integration/journald
+          cd internal/testbed/integration/hostmetrics
           go test -v --tags=e2e
 
   notify-slack-combined-load-test:

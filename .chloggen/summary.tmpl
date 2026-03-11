@@ -12,22 +12,25 @@
 {{- end }}
 ## {{ .Version }}
 
-This release includes version XX.YY.ZZ of the upstream Collector components.
+<!-- upstream-start -->
+This release includes version <!-- upstream-version --> of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
-vXX.YY.ZZ:
+<!-- upstream-collector-versions -->
 
-- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/vXX.YY.ZZ>
-- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/vXX.YY.ZZ>
+<!-- upstream-breaking-changes -->
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
+
+<!-- upstream-other-changes -->
 
 ---
 
 </details>
 
+<!-- upstream-end -->
 {{- if or .BreakingChanges .Deprecations .NewComponents .BugFixes .Enhancements }}
 
 #### Dynatrace distribution changelog:

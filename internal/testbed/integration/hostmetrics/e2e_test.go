@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
@@ -245,6 +246,49 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	// Logs
 	t.Logf("Checking logs...")
 	oteltest.WaitForLogs(t, 1, logsConsumer)
+
+	t.Logf("Received %d log record(s)", logsConsumer.LogRecordCount())
+
+	// Assert that the operators in journald.yaml transformed the fields correctly:
+	//   body._PID   -> body.pid
+	//   body._EXE   -> attributes.process.executable.name
+	//   body.MESSAGE -> body.message
+	var foundMessage, foundProcessExec bool
+	for _, logs := range logsConsumer.AllLogs() {
+		for i := 0; i < logs.ResourceLogs().Len(); i++ {
+			scopeLogs := logs.ResourceLogs().At(i).ScopeLogs()
+			for j := 0; j < scopeLogs.Len(); j++ {
+				logRecords := scopeLogs.At(j).LogRecords()
+				for k := 0; k < logRecords.Len(); k++ {
+					record := logRecords.At(k)
+
+					// Only inspect records whose body is a map (all journald records are)
+					if record.Body().Type() != pcommon.ValueTypeMap {
+						continue
+					}
+					body := record.Body().Map()
+
+					// Old field names must be absent – the move operators should have renamed them
+					_, hasPID := body.Get("_PID")
+					require.False(t, hasPID, "body._PID should have been moved to body.pid by the operator")
+					_, hasEXE := body.Get("_EXE")
+					require.False(t, hasEXE, "body._EXE should have been moved to attributes.process.executable.name by the operator")
+					_, hasMESSAGE := body.Get("MESSAGE")
+					require.False(t, hasMESSAGE, "body.MESSAGE should have been moved to body.message by the operator")
+
+					// Track that the new field names appear at least once across all records
+					if _, ok := body.Get("message"); ok {
+						foundMessage = true
+					}
+					if _, ok := record.Attributes().Get("process.executable.name"); ok {
+						foundProcessExec = true
+					}
+				}
+			}
+		}
+	}
+	require.True(t, foundMessage, "expected at least one log record with body.message (moved from body.MESSAGE by the operator)")
+	require.True(t, foundProcessExec, "expected at least one log record with attributes.process.executable.name (moved from body._EXE by the operator)")
 
 	t.Log("Logs checked successfully")
 

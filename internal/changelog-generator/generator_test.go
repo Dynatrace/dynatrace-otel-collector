@@ -7,6 +7,7 @@ import (
 
 func sampleFilteredChangelog() FilteredChangelog {
 	return FilteredChangelog{
+		DistVersion:      "v0.44.0",
 		UpstreamVersions: []string{"v0.145.0"},
 		CoreRepoURL:      coreRepoURL,
 		ContribRepoURL:   contribRepoURL,
@@ -44,63 +45,109 @@ func sampleFilteredChangelog() FilteredChangelog {
 	}
 }
 
-func TestGenerateChangelog_ContainsVersionHeader(t *testing.T) {
-	out := GenerateChangelog(sampleFilteredChangelog())
-	if !strings.Contains(out, "## v0.145.0") {
-		t.Errorf("output missing version header:\n%s", out)
+func TestGenerateUpstreamContent_VersionIntro(t *testing.T) {
+	uc := GenerateUpstreamContent(sampleFilteredChangelog())
+	if uc.VersionIntro != "v0.145.0" {
+		t.Errorf("expected VersionIntro %q, got %q", "v0.145.0", uc.VersionIntro)
 	}
 }
 
-func TestGenerateChangelog_ContainsReleaseLinks(t *testing.T) {
-	out := GenerateChangelog(sampleFilteredChangelog())
-	if !strings.Contains(out, coreRepoURL+"/releases/tag/v0.145.0") {
-		t.Errorf("output missing core release link:\n%s", out)
-	}
-	if !strings.Contains(out, contribRepoURL+"/releases/tag/v0.145.0") {
-		t.Errorf("output missing contrib release link:\n%s", out)
-	}
-}
-
-func TestGenerateChangelog_BreakingOutsideDetails(t *testing.T) {
-	out := GenerateChangelog(sampleFilteredChangelog())
-	breakingIdx := strings.Index(out, "Breaking changes")
-	detailsIdx := strings.Index(out, "<details>")
-	if breakingIdx == -1 {
-		t.Fatal("output missing breaking changes section")
-	}
-	if detailsIdx == -1 {
-		t.Fatal("output missing <details> block")
-	}
-	if breakingIdx > detailsIdx {
-		t.Error("breaking changes section should appear BEFORE <details> block")
-	}
-	entryIdx := strings.Index(out, "processor/resourcedetection")
-	if entryIdx > detailsIdx {
-		t.Error("breaking change entry should be outside (before) the <details> block")
+func TestGenerateUpstreamContent_NoVersionHeader(t *testing.T) {
+	uc := GenerateUpstreamContent(sampleFilteredChangelog())
+	// The section header (## vX.Y.Z) is now produced by the chloggen template,
+	// not by the generator — verify it does not appear in any generated field.
+	for _, field := range []string{uc.CollectorVersions, uc.BreakingChanges, uc.OtherChanges} {
+		if strings.Contains(field, "## v") {
+			t.Errorf("upstream content fields must not contain a '## v' section header: %s", field)
+		}
 	}
 }
 
-func TestGenerateChangelog_EnhancementsInsideDetails(t *testing.T) {
-	out := GenerateChangelog(sampleFilteredChangelog())
-	detailsIdx := strings.Index(out, "<details>")
-	filelogIdx := strings.Index(out, "receiver/filelog")
-	if filelogIdx == -1 {
-		t.Fatal("output missing receiver/filelog entry")
+func TestGenerateUpstreamContent_CollectorVersions(t *testing.T) {
+	uc := GenerateUpstreamContent(sampleFilteredChangelog())
+	if !strings.Contains(uc.CollectorVersions, coreRepoURL+"/releases/tag/v0.145.0") {
+		t.Errorf("CollectorVersions missing core release link:\n%s", uc.CollectorVersions)
 	}
-	if filelogIdx < detailsIdx {
-		t.Error("enhancement entry should be INSIDE the <details> block")
+	if !strings.Contains(uc.CollectorVersions, contribRepoURL+"/releases/tag/v0.145.0") {
+		t.Errorf("CollectorVersions missing contrib release link:\n%s", uc.CollectorVersions)
 	}
 }
 
-func TestGenerateChangelog_IssueLinks(t *testing.T) {
-	out := GenerateChangelog(sampleFilteredChangelog())
+func TestGenerateUpstreamContent_BreakingChangesHasHeader(t *testing.T) {
+	uc := GenerateUpstreamContent(sampleFilteredChangelog())
+	if !strings.Contains(uc.BreakingChanges, "Breaking changes") {
+		t.Errorf("BreakingChanges missing header:\n%s", uc.BreakingChanges)
+	}
+	if !strings.Contains(uc.BreakingChanges, "processor/resourcedetection") {
+		t.Errorf("BreakingChanges missing entry:\n%s", uc.BreakingChanges)
+	}
+}
+
+func TestGenerateUpstreamContent_BreakingChangesDoesNotContainOther(t *testing.T) {
+	uc := GenerateUpstreamContent(sampleFilteredChangelog())
+	if strings.Contains(uc.BreakingChanges, "receiver/filelog") {
+		t.Errorf("BreakingChanges should not contain enhancement entries")
+	}
+}
+
+func TestGenerateUpstreamContent_OtherChangesContainsEnhancements(t *testing.T) {
+	uc := GenerateUpstreamContent(sampleFilteredChangelog())
+	if !strings.Contains(uc.OtherChanges, "receiver/filelog") {
+		t.Errorf("OtherChanges missing enhancement entry:\n%s", uc.OtherChanges)
+	}
+}
+
+func TestGenerateUpstreamContent_NoBreaking_EmptyBreakingField(t *testing.T) {
+	fc := FilteredChangelog{
+		UpstreamVersions: []string{"v0.145.0"},
+		CoreRepoURL:      coreRepoURL,
+		ContribRepoURL:   contribRepoURL,
+		Enhancements: []ChangelogEntry{
+			{Component: "receiver/filelog", ChangeType: Enhancement, Source: "contrib", UpstreamVersion: "v0.145.0", RepoURL: contribRepoURL},
+		},
+	}
+	uc := GenerateUpstreamContent(fc)
+	if uc.BreakingChanges != "" {
+		t.Errorf("expected empty BreakingChanges, got %q", uc.BreakingChanges)
+	}
+}
+
+func TestGenerateUpstreamContent_NoOther_DefaultMessage(t *testing.T) {
+	fc := FilteredChangelog{
+		UpstreamVersions: []string{"v0.145.0"},
+		CoreRepoURL:      coreRepoURL,
+		ContribRepoURL:   contribRepoURL,
+		Breaking: []ChangelogEntry{
+			{Component: "comp", ChangeType: Breaking, Source: "core", UpstreamVersion: "v0.145.0", RepoURL: coreRepoURL},
+		},
+	}
+	uc := GenerateUpstreamContent(fc)
+	if !strings.Contains(uc.OtherChanges, "No upstream highlights for this release.") {
+		t.Errorf("expected 'No upstream highlights' message in OtherChanges, got %q", uc.OtherChanges)
+	}
+}
+
+func TestGenerateUpstreamContent_EmptyVersions_ZeroValue(t *testing.T) {
+	fc := FilteredChangelog{
+		UpstreamVersions: []string{},
+		CoreRepoURL:      coreRepoURL,
+		ContribRepoURL:   contribRepoURL,
+	}
+	uc := GenerateUpstreamContent(fc)
+	if uc.VersionIntro != "" || uc.CollectorVersions != "" || uc.BreakingChanges != "" || uc.OtherChanges != "" {
+		t.Errorf("expected zero-value UpstreamContent when no upstream versions, got %+v", uc)
+	}
+}
+
+func TestGenerateUpstreamContent_IssueLinks(t *testing.T) {
+	uc := GenerateUpstreamContent(sampleFilteredChangelog())
 	want := "[#45797](" + contribRepoURL + "/issues/45797)"
-	if !strings.Contains(out, want) {
-		t.Errorf("output missing issue link:\n%s", out)
+	if !strings.Contains(uc.BreakingChanges, want) {
+		t.Errorf("BreakingChanges missing issue link:\n%s", uc.BreakingChanges)
 	}
 }
 
-func TestGenerateChangelog_CoreBeforeContrib(t *testing.T) {
+func TestGenerateUpstreamContent_CoreBeforeContrib(t *testing.T) {
 	fc := FilteredChangelog{
 		UpstreamVersions: []string{"v0.145.0"},
 		CoreRepoURL:      coreRepoURL,
@@ -110,34 +157,37 @@ func TestGenerateChangelog_CoreBeforeContrib(t *testing.T) {
 			{Component: "receiver/filelog", ChangeType: BugFix, Source: "contrib", UpstreamVersion: "v0.145.0", RepoURL: contribRepoURL, Issues: []int{39011}},
 		},
 	}
-	out := GenerateChangelog(fc)
-	coreIdx := strings.Index(out, "pkg/config/configoptional")
-	contribIdx := strings.Index(out, "receiver/filelog")
+	uc := GenerateUpstreamContent(fc)
+	coreIdx := strings.Index(uc.OtherChanges, "pkg/config/configoptional")
+	contribIdx := strings.Index(uc.OtherChanges, "receiver/filelog")
 	if coreIdx == -1 || contribIdx == -1 {
-		t.Fatal("missing expected entries")
+		t.Fatal("missing expected entries in OtherChanges")
 	}
 	if coreIdx > contribIdx {
 		t.Error("core entries should appear before contrib entries")
 	}
 }
 
-func TestGenerateChangelog_NoBreaking_OmitsHeader(t *testing.T) {
+func TestGenerateUpstreamContent_SubtextIndented(t *testing.T) {
 	fc := FilteredChangelog{
 		UpstreamVersions: []string{"v0.145.0"},
 		CoreRepoURL:      coreRepoURL,
 		ContribRepoURL:   contribRepoURL,
-		Enhancements: []ChangelogEntry{
-			{Component: "receiver/filelog", ChangeType: Enhancement, Source: "contrib", UpstreamVersion: "v0.145.0", RepoURL: contribRepoURL},
+		Breaking: []ChangelogEntry{
+			{Component: "processor/resourcedetection", Note: "Some breaking change",
+				Issues: []int{1}, Subtext: "This is the subtext.", ChangeType: Breaking,
+				Source: "contrib", RepoURL: contribRepoURL},
 		},
 	}
-	out := GenerateChangelog(fc)
-	if strings.Contains(out, "Breaking changes") {
-		t.Error("should not emit breaking changes header when there are no breaking changes")
+	uc := GenerateUpstreamContent(fc)
+	if !strings.Contains(uc.BreakingChanges, "  This is the subtext.") {
+		t.Errorf("subtext should be indented by 2 spaces:\n%s", uc.BreakingChanges)
 	}
 }
 
-func TestGenerateChangelog_MultiVersion(t *testing.T) {
+func TestGenerateUpstreamContent_MultiVersion(t *testing.T) {
 	fc := FilteredChangelog{
+		DistVersion:      "v0.44.0",
 		UpstreamVersions: []string{"v0.144.0", "v0.145.0"},
 		CoreRepoURL:      coreRepoURL,
 		ContribRepoURL:   contribRepoURL,
@@ -145,31 +195,31 @@ func TestGenerateChangelog_MultiVersion(t *testing.T) {
 			{Component: "receiver/filelog", ChangeType: Enhancement, Source: "contrib", UpstreamVersion: "v0.144.0", RepoURL: contribRepoURL},
 		},
 	}
-	out := GenerateChangelog(fc)
-	if !strings.Contains(out, "## v0.145.0") {
-		t.Errorf("expected ## v0.145.0 header for multi-version:\n%s", out)
+	uc := GenerateUpstreamContent(fc)
+	if !strings.Contains(uc.VersionIntro, "v0.144.0") || !strings.Contains(uc.VersionIntro, "v0.145.0") {
+		t.Errorf("VersionIntro should mention both upstream versions: %q", uc.VersionIntro)
 	}
-	if !strings.Contains(out, "v0.144.0:") {
-		t.Errorf("expected v0.144.0 links:\n%s", out)
+	if !strings.Contains(uc.CollectorVersions, "v0.144.0:") {
+		t.Errorf("CollectorVersions missing v0.144.0 links:\n%s", uc.CollectorVersions)
 	}
-	if !strings.Contains(out, "v0.145.0:") {
-		t.Errorf("expected v0.145.0 links:\n%s", out)
-	}
-	if !strings.Contains(out, "v0.144.0 and v0.145.0") {
-		t.Errorf("expected both versions in intro:\n%s", out)
+	if !strings.Contains(uc.CollectorVersions, "v0.145.0:") {
+		t.Errorf("CollectorVersions missing v0.145.0 links:\n%s", uc.CollectorVersions)
 	}
 }
 
-func TestGenerateChangelog_MultiVersion_HeaderUsesHighestSemver(t *testing.T) {
+func TestGenerateUpstreamContent_UsesOnlyCollectorReleaseVersions(t *testing.T) {
 	fc := FilteredChangelog{
-		UpstreamVersions: []string{"v0.145.0", "v0.144.0"},
+		DistVersion:      "v0.44.0",
+		UpstreamVersions: []string{"v0.145.0", "v1.51.0"},
 		CoreRepoURL:      coreRepoURL,
 		ContribRepoURL:   contribRepoURL,
 	}
-
-	out := GenerateChangelog(fc)
-	if !strings.Contains(out, "## v0.145.0") {
-		t.Errorf("expected highest semver in header:\n%s", out)
+	uc := GenerateUpstreamContent(fc)
+	if strings.Contains(uc.CollectorVersions, "v1.51.0:") {
+		t.Errorf("should not render links for 1.x component versions:\n%s", uc.CollectorVersions)
+	}
+	if !strings.Contains(uc.CollectorVersions, "v0.145.0:") {
+		t.Errorf("should render links for 0.x collector version:\n%s", uc.CollectorVersions)
 	}
 }
 
@@ -195,22 +245,5 @@ func TestBuildIssueLinks_Empty(t *testing.T) {
 	got := buildIssueLinks(nil, "https://example.com")
 	if got != "" {
 		t.Errorf("expected empty string for no issues, got %q", got)
-	}
-}
-
-func TestGenerateChangelog_SubtextIndented(t *testing.T) {
-	fc := FilteredChangelog{
-		UpstreamVersions: []string{"v0.145.0"},
-		CoreRepoURL:      coreRepoURL,
-		ContribRepoURL:   contribRepoURL,
-		Breaking: []ChangelogEntry{
-			{Component: "processor/resourcedetection", Note: "Some breaking change",
-				Issues: []int{1}, Subtext: "This is the subtext.", ChangeType: Breaking,
-				Source: "contrib", RepoURL: contribRepoURL},
-		},
-	}
-	out := GenerateChangelog(fc)
-	if !strings.Contains(out, "  This is the subtext.") {
-		t.Errorf("subtext should be indented by 2 spaces:\n%s", out)
 	}
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	"golang.org/x/mod/semver"
 )
 
 const (
@@ -10,15 +12,32 @@ const (
 	contribRepoURL = "https://github.com/open-telemetry/opentelemetry-collector-contrib"
 )
 
-// GenerateChangelog renders a FilteredChangelog into the markdown section that
-// will be inserted into CHANGELOG.md.
-func GenerateChangelog(fc FilteredChangelog) string {
-	var sb strings.Builder
+// UpstreamContent holds the generated upstream changelog pieces, each
+// corresponding to one placeholder in the summary.tmpl scaffold.
+type UpstreamContent struct {
+	// VersionIntro is the human-readable upstream version string, e.g.
+	// "v0.145.0" or "v0.144.0 and v0.145.0". Replaces <!-- upstream-version -->.
+	VersionIntro string
+	// CollectorVersions is the release-link block for each upstream version.
+	// Replaces <!-- upstream-collector-versions -->.
+	CollectorVersions string
+	// BreakingChanges is the formatted breaking-changes section (including its
+	// header), or empty if there are none. Replaces <!-- upstream-breaking-changes -->.
+	BreakingChanges string
+	// OtherChanges contains the remaining upstream sections (deprecations, new
+	// components, enhancements, bug fixes) with their headers, or a "no
+	// highlights" note when all are empty. Replaces <!-- upstream-other-changes -->.
+	OtherChanges string
+}
 
-	orderedVersions := sortedUniqueVersions(fc.UpstreamVersions)
-	headerVersion := highestVersion(orderedVersions)
-	if headerVersion == "" && len(orderedVersions) > 0 {
-		headerVersion = orderedVersions[len(orderedVersions)-1]
+// GenerateUpstreamContent builds the UpstreamContent for a FilteredChangelog.
+// When the FilteredChangelog contains no upstream versions the returned struct
+// is zero-valued, signaling to the caller that the upstream section should be
+// removed from CHANGELOG.md entirely.
+func GenerateUpstreamContent(fc FilteredChangelog) UpstreamContent {
+	orderedVersions := filterCollectorReleaseVersions(sortedUniqueVersions(fc.UpstreamVersions))
+	if len(orderedVersions) == 0 {
+		return UpstreamContent{}
 	}
 
 	// Use collected repo URLs, falling back to well-known defaults.
@@ -31,79 +50,71 @@ func GenerateChangelog(fc FilteredChangelog) string {
 		contribURL = contribRepoURL
 	}
 
-	// --- Version header ---
-	fmt.Fprintf(&sb, "## %s\n\n", headerVersion)
+	// --- Version intro ---
+	versionIntro := joinVersions(orderedVersions)
 
-	// --- Intro line ---
-	if len(orderedVersions) == 1 {
-		fmt.Fprintf(&sb, "This release includes version %s of the upstream Collector components.\n\n", headerVersion)
-	} else {
-		versions := make([]string, len(orderedVersions))
-		copy(versions, orderedVersions)
-		fmt.Fprintf(&sb, "This release includes versions %s of the upstream Collector components.\n\n",
-			joinVersions(versions))
-	}
-
-	// --- Upstream release links ---
-	sb.WriteString("The individual upstream Collector changelogs can be found here:\n\n")
+	// --- Collector version links ---
+	var upstreamVersionsBuilder strings.Builder
 	for _, v := range orderedVersions {
-		fmt.Fprintf(&sb, "%s:\n\n", v)
-		fmt.Fprintf(&sb, "- <%s/releases/tag/%s>\n", coreURL, v)
-		fmt.Fprintf(&sb, "- <%s/releases/tag/%s>\n\n", contribURL, v)
+		fmt.Fprintf(&upstreamVersionsBuilder, "%s:\n\n", v)
+		fmt.Fprintf(&upstreamVersionsBuilder, "- <%s/releases/tag/%s>\n", coreURL, v)
+		fmt.Fprintf(&upstreamVersionsBuilder, "- <%s/releases/tag/%s>\n\n", contribURL, v)
 	}
 
-	// --- Top-level breaking changes (outside <details>) ---
+	// --- Breaking changes (top-level, outside <details>) ---
+	var breakingChangesBuilder strings.Builder
 	if len(fc.Breaking) > 0 {
-		sb.WriteString("### 🛑 Breaking changes 🛑\n\n")
-		writeEntries(&sb, fc.Breaking)
-		sb.WriteString("\n")
+		breakingChangesBuilder.WriteString("### 🛑 Breaking changes 🛑\n\n")
+		writeEntries(&breakingChangesBuilder, fc.Breaking)
 	}
 
-	// --- Dynatrace distribution changelog separator ---
-	sb.WriteString("#### Dynatrace distribution changelog:\n\n")
-
-	// --- <details> block for the rest ---
-	sb.WriteString("<details>\n")
-	sb.WriteString("<summary>Highlights from the upstream Collector changelog</summary>\n\n")
-	sb.WriteString("---\n\n")
-
-	detailsHasContent := false
-
+	// --- Other changes (inside <details>) ---
+	var otherChangesBuilder strings.Builder
+	hasOther := false
 	if len(fc.Deprecations) > 0 {
-		sb.WriteString("### ⚠️ Deprecations ⚠️\n\n")
-		writeEntries(&sb, fc.Deprecations)
-		sb.WriteString("\n")
-		detailsHasContent = true
+		otherChangesBuilder.WriteString("### ⚠️ Deprecations ⚠️\n\n")
+		writeEntries(&otherChangesBuilder, fc.Deprecations)
+		hasOther = true
 	}
 	if len(fc.NewComponents) > 0 {
-		sb.WriteString("### 🚀 New components 🚀\n\n")
-		writeEntries(&sb, fc.NewComponents)
-		sb.WriteString("\n")
-		detailsHasContent = true
+		if hasOther {
+			otherChangesBuilder.WriteString("\n")
+		}
+		otherChangesBuilder.WriteString("### 🚀 New components 🚀\n\n")
+		writeEntries(&otherChangesBuilder, fc.NewComponents)
+		hasOther = true
 	}
 	if len(fc.Enhancements) > 0 {
-		sb.WriteString("### 💡 Enhancements 💡\n\n")
-		writeEntries(&sb, fc.Enhancements)
-		sb.WriteString("\n")
-		detailsHasContent = true
+		if hasOther {
+			otherChangesBuilder.WriteString("\n")
+		}
+		otherChangesBuilder.WriteString("### 💡 Enhancements 💡\n\n")
+		writeEntries(&otherChangesBuilder, fc.Enhancements)
+		hasOther = true
 	}
 	if len(fc.BugFixes) > 0 {
-		sb.WriteString("### 🧰 Bug fixes 🧰\n\n")
-		writeEntries(&sb, fc.BugFixes)
-		sb.WriteString("\n")
-		detailsHasContent = true
+		if hasOther {
+			otherChangesBuilder.WriteString("\n")
+		}
+		otherChangesBuilder.WriteString("### 🧰 Bug fixes 🧰\n\n")
+		writeEntries(&otherChangesBuilder, fc.BugFixes)
+		hasOther = true
 	}
 
-	if !detailsHasContent {
-		sb.WriteString("No upstream highlights for this release.\n\n")
+	otherStr := strings.TrimRight(otherChangesBuilder.String(), "\n")
+	if !hasOther {
+		otherStr = "No upstream highlights for this release."
 	}
 
-	sb.WriteString("</details>\n")
-
-	return sb.String()
+	return UpstreamContent{
+		VersionIntro:      versionIntro,
+		CollectorVersions: strings.TrimRight(upstreamVersionsBuilder.String(), "\n"),
+		BreakingChanges:   strings.TrimRight(breakingChangesBuilder.String(), "\n"),
+		OtherChanges:      otherStr,
+	}
 }
 
-// writeEntries renders a slice of ChangelogEntry items as markdown list items.
+// writeEntries renders a slice of ChangelogEntry items as Markdown list items.
 // Core entries come before contrib entries.
 func writeEntries(sb *strings.Builder, entries []ChangelogEntry) {
 	// Write core entries first, then contrib.
@@ -161,4 +172,18 @@ func joinVersions(versions []string) string {
 	default:
 		return strings.Join(versions[:len(versions)-1], ", ") + ", and " + versions[len(versions)-1]
 	}
+}
+
+func filterCollectorReleaseVersions(versions []string) []string {
+	collector := make([]string, 0, len(versions))
+	for _, v := range versions {
+		vc := canonicalVersion(v)
+		if semver.IsValid(vc) && semver.Major(vc) == "v0" {
+			collector = append(collector, vc)
+		}
+	}
+	if len(collector) > 0 {
+		return sortedUniqueVersions(collector)
+	}
+	return versions
 }

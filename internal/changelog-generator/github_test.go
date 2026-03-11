@@ -37,6 +37,23 @@ func TestExtractVersionFromVersionsYAML(t *testing.T) {
 	}
 }
 
+func TestExtractVersionFromVersionsYAML_IgnoresHigherNonCoreVersions(t *testing.T) {
+	versionsYAML := []byte(`module-sets:
+  beta:
+    version: v0.145.0
+  stable:
+    version: v1.51.0
+`)
+
+	got, err := extractVersionFromVersionsYAML(versionsYAML)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got != "v0.145.0" {
+		t.Fatalf("got %q, want %q", got, "v0.145.0")
+	}
+}
+
 func TestDoGet_RetriesOnRateLimit(t *testing.T) {
 	attempts := 0
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

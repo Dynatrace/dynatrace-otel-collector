@@ -137,44 +137,39 @@ func (c *githubClient) fetchVersionFromVersionsFile(owner, repo, ref string) (st
 	return version, nil
 }
 
+// knownModuleSetKeys are the module-set names tried in order when looking up
+// the release version in versions.yaml. The list covers:
+//   - "beta"         — opentelemetry-collector core beta modules
+//   - "stable"         — opentelemetry-collector core stable modules
+//   - "contrib-base" — opentelemetry-collector-contrib
+var knownModuleSetKeys = []string{"beta", "contrib-base", "stable"}
+
+// versionsYAML mirrors the relevant subset of the versions.yaml schema used by
+// the opentelemetry-collector and opentelemetry-collector-contrib release tooling.
+type versionsYAML struct {
+	ModuleSets map[string]struct {
+		Version string `yaml:"version"`
+	} `yaml:"module-sets"`
+}
+
 func extractVersionFromVersionsYAML(data []byte) (string, error) {
-	var raw any
-	if err := yaml.Unmarshal(data, &raw); err != nil {
+	var v versionsYAML
+	if err := yaml.Unmarshal(data, &v); err != nil {
 		return "", fmt.Errorf("parsing versions.yaml: %w", err)
 	}
 
-	versions := collectSemverStrings(raw, nil)
-	if len(versions) == 0 {
-		return "", fmt.Errorf("no semver values found in versions.yaml")
+	for _, key := range knownModuleSetKeys {
+		version := strings.TrimSpace(v.ModuleSets[key].Version)
+		if version == "" {
+			continue
+		}
+		if _, valid := parseSemVersion(version); !valid {
+			return "", fmt.Errorf("invalid version %q in versions.yaml module-sets.%s", version, key)
+		}
+		return canonicalVersion(version), nil
 	}
 
-	version := highestVersion(versions)
-	if version == "" {
-		return "", fmt.Errorf("unable to determine highest version from versions.yaml")
-	}
-	return canonicalVersion(version), nil
-}
-
-func collectSemverStrings(v any, out []string) []string {
-	switch t := v.(type) {
-	case map[string]any:
-		for _, val := range t {
-			out = collectSemverStrings(val, out)
-		}
-	case map[any]any:
-		for _, val := range t {
-			out = collectSemverStrings(val, out)
-		}
-	case []any:
-		for _, val := range t {
-			out = collectSemverStrings(val, out)
-		}
-	case string:
-		if _, ok := parseSemVersion(t); ok {
-			out = append(out, canonicalVersion(t))
-		}
-	}
-	return out
+	return "", fmt.Errorf("versions.yaml: could not find version under any of module-sets.{%s}", strings.Join(knownModuleSetKeys, ", "))
 }
 
 // githubContent is a file entry returned by the GitHub contents API.

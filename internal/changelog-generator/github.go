@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,10 +16,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// githubClient wraps the GitHub REST API.
+// githubClient wraps the GitHub REST and GraphQL APIs.
 type githubClient struct {
 	token      string
 	httpClient *http.Client
+	graphqlURL string // defaults to https://api.github.com/graphql
 }
 
 func newGitHubClient() *githubClient {
@@ -27,6 +29,7 @@ func newGitHubClient() *githubClient {
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
+		graphqlURL: "https://api.github.com/graphql",
 	}
 }
 
@@ -159,57 +162,22 @@ func extractVersionFromVersionsYAML(data []byte) (string, error) {
 	return "", fmt.Errorf("versions.yaml: could not find version under any of module-sets.{%s}", strings.Join(knownModuleSetKeys, ", "))
 }
 
-// githubContent is a file entry returned by the GitHub contents API.
-type githubContent struct {
-	Name        string `json:"name"`
-	DownloadURL string `json:"download_url"`
-	Type        string `json:"type"`
-}
-
 // FetchChloggenEntries fetches and parses all .chloggen/*.yaml files from the
-// base commit of the given PR.
+// base commit of the given PR using a single GraphQL query.
 func (c *githubClient) FetchChloggenEntries(info PRInfo) ([]ChangelogEntry, error) {
-	// List .chloggen/ directory at base SHA.
-	listURL := fmt.Sprintf(
-		"https://api.github.com/repos/%s/%s/contents/.chloggen?ref=%s",
-		info.Owner, info.Repo, info.BaseSHA,
-	)
-	body, err := c.get(listURL)
+	files, err := c.fetchChloggenFiles(info.Owner, info.Repo, info.BaseSHA)
 	if err != nil {
-		return nil, fmt.Errorf("listing .chloggen at %s: %w", listURL, err)
-	}
-
-	var contents []githubContent
-	if err := json.Unmarshal(body, &contents); err != nil {
-		return nil, fmt.Errorf("parsing .chloggen listing: %w", err)
+		return nil, fmt.Errorf("fetching .chloggen files for %s/%s@%s: %w", info.Owner, info.Repo, info.BaseSHA[:min(8, len(info.BaseSHA))], err)
 	}
 
 	var entries []ChangelogEntry
-	for _, f := range contents {
-		if f.Type != "file" {
-			continue
-		}
-		if !strings.HasSuffix(f.Name, ".yaml") {
-			continue
-		}
-		// Skip template and config files.
-		if f.Name == "TEMPLATE.yaml" || f.Name == "config.yaml" {
-			continue
-		}
-
-		fileBody, err := c.getRaw(f.DownloadURL)
+	for name, content := range files {
+		entry, err := ParseChloggenEntry([]byte(content), info.Source, info.UpstreamVersion, info.RepoURL)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "warning: skipping %s: %v\n", f.Name, err)
-			continue
-		}
-
-		entry, err := ParseChloggenEntry(fileBody, info.Source, info.UpstreamVersion, info.RepoURL)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "warning: parsing %s: %v\n", f.Name, err)
+			fmt.Fprintf(os.Stderr, "warning: parsing %s: %v\n", name, err)
 			continue
 		}
 		if entry == nil {
-			// Skipped (e.g. api-only).
 			continue
 		}
 		entries = append(entries, *entry)
@@ -218,27 +186,126 @@ func (c *githubClient) FetchChloggenEntries(info PRInfo) ([]ChangelogEntry, erro
 	return entries, nil
 }
 
+// fetchChloggenFiles retrieves all .chloggen/*.yaml file contents at the given
+// commit SHA using a single GraphQL query. Returns a map of filename → content.
+func (c *githubClient) fetchChloggenFiles(owner, repo, sha string) (map[string]string, error) {
+	const query = `
+query($owner: String!, $repo: String!, $expr: String!) {
+  repository(owner: $owner, name: $repo) {
+    object(expression: $expr) {
+      ... on Tree {
+        entries {
+          name
+          object {
+            ... on Blob {
+              text
+            }
+          }
+        }
+      }
+    }
+  }
+}`
+
+	variables := map[string]string{
+		"owner": owner,
+		"repo":  repo,
+		"expr":  sha + ":.chloggen",
+	}
+
+	payload := map[string]any{
+		"query":     query,
+		"variables": variables,
+	}
+
+	body, err := c.post(c.graphqlURL, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp struct {
+		Data struct {
+			Repository struct {
+				Object *struct {
+					Entries []struct {
+						Name   string `json:"name"`
+						Object *struct {
+							Text string `json:"text"`
+						} `json:"object"`
+					} `json:"entries"`
+				} `json:"object"`
+			} `json:"repository"`
+		} `json:"data"`
+		Errors []struct {
+			Message string `json:"message"`
+		} `json:"errors"`
+	}
+
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("parsing GraphQL response: %w", err)
+	}
+	if len(resp.Errors) > 0 {
+		return nil, fmt.Errorf("GraphQL error: %s", resp.Errors[0].Message)
+	}
+	if resp.Data.Repository.Object == nil {
+		return nil, fmt.Errorf("no .chloggen directory found at %s", sha[:min(8, len(sha))])
+	}
+
+	files := make(map[string]string)
+	for _, entry := range resp.Data.Repository.Object.Entries {
+		if !strings.HasSuffix(entry.Name, ".yaml") {
+			continue
+		}
+		if entry.Name == "TEMPLATE.yaml" || entry.Name == "config.yaml" {
+			continue
+		}
+		if entry.Object == nil || entry.Object.Text == "" {
+			continue
+		}
+		files[entry.Name] = entry.Object.Text
+	}
+	return files, nil
+}
+
 // get performs an authenticated GET against the GitHub API and returns the
 // response body. It retries once on rate-limit responses.
 func (c *githubClient) get(url string) ([]byte, error) {
-	return c.doGet(url, true)
+	return c.do(http.MethodGet, url, nil, true)
 }
 
 // getRaw performs a GET for raw file content (no JSON API headers needed).
 func (c *githubClient) getRaw(url string) ([]byte, error) {
-	return c.doGet(url, false)
+	return c.do(http.MethodGet, url, nil, false)
 }
 
-func (c *githubClient) doGet(url string, apiHeaders bool) ([]byte, error) {
+// post performs an authenticated POST with a JSON body against the GitHub API.
+func (c *githubClient) post(url string, payload any) ([]byte, error) {
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return nil, fmt.Errorf("marshalling request: %w", err)
+	}
+	return c.do(http.MethodPost, url, body, true)
+}
+
+// do executes an HTTP request with optional auth and GitHub API headers,
+// retrying once on rate-limit responses (403/429).
+func (c *githubClient) do(method, url string, body []byte, apiHeaders bool) ([]byte, error) {
 	const maxAttempts = 2
 
 	for attempt := 1; attempt <= maxAttempts; attempt++ {
-		req, err := http.NewRequest(http.MethodGet, url, nil)
+		var bodyReader io.Reader
+		if body != nil {
+			bodyReader = bytes.NewReader(body)
+		}
+		req, err := http.NewRequest(method, url, bodyReader)
 		if err != nil {
 			return nil, err
 		}
 		if c.token != "" {
 			req.Header.Set("Authorization", "Bearer "+c.token)
+		}
+		if body != nil {
+			req.Header.Set("Content-Type", "application/json")
 		}
 		if apiHeaders {
 			req.Header.Set("Accept", "application/vnd.github+json")
@@ -250,7 +317,7 @@ func (c *githubClient) doGet(url string, apiHeaders bool) ([]byte, error) {
 			return nil, err
 		}
 
-		body, readErr := io.ReadAll(resp.Body)
+		respBody, readErr := io.ReadAll(resp.Body)
 		resp.Body.Close()
 		if readErr != nil {
 			return nil, fmt.Errorf("reading response body: %w", readErr)
@@ -261,13 +328,13 @@ func (c *githubClient) doGet(url string, apiHeaders bool) ([]byte, error) {
 				time.Sleep(retryDelay(resp.Header))
 				continue
 			}
-			return nil, fmt.Errorf("GitHub API rate limit or auth error (HTTP %d): %s", resp.StatusCode, string(body))
+			return nil, fmt.Errorf("GitHub API rate limit or auth error (HTTP %d): %s", resp.StatusCode, string(respBody))
 		}
 		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("unexpected HTTP %d from %s: %s", resp.StatusCode, url, string(body))
+			return nil, fmt.Errorf("unexpected HTTP %d from %s: %s", resp.StatusCode, url, string(respBody))
 		}
 
-		return body, nil
+		return respBody, nil
 	}
 
 	return nil, fmt.Errorf("exhausted retries for %s", url)

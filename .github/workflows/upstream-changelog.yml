@@ -31,20 +31,6 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
-      - name: Build changelog generator
-        run: go build -o ./bin/changelog-generator ./internal/changelog-generator
-
-      - name: Run changelog generator
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PR_URLS="${{ inputs.pr_urls }}"
-          if [ -z "$PR_URLS" ]; then
-            echo "No upstream PR URLs provided — skipping upstream changelog generation."
-            exit 0
-          fi
-          ./bin/changelog-generator $PR_URLS
-
       - name: Bump dist.version in manifest.yaml and generate downstream changelog
         run: |
           if [ -n "${{ inputs.dist_version }}" ]; then
@@ -55,7 +41,17 @@ jobs:
           fi
           sed -i "s/  version: .*/  version: $NEW_VERSION/" manifest.yaml
           echo "DIST_VERSION=$NEW_VERSION" >> "$GITHUB_ENV"
+
           make chlog-update VERSION="$NEW_VERSION"
+
+      - name: Build changelog generator
+        run: go build -o ./bin/changelog-generator ./internal/changelog-generator
+
+      - name: Fill upstream changelog placeholders
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./bin/changelog-generator ${{ inputs.pr_urls }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0

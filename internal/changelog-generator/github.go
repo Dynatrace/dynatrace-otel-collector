@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/mod/semver"
 	"gopkg.in/yaml.v3"
 )
 
@@ -163,10 +164,11 @@ func extractVersionFromVersionsYAML(data []byte) (string, error) {
 		if version == "" {
 			continue
 		}
-		if _, valid := parseSemVersion(version); !valid {
+		vc := canonicalVersion(version)
+		if !semver.IsValid(vc) {
 			return "", fmt.Errorf("invalid version %q in versions.yaml module-sets.%s", version, key)
 		}
-		return canonicalVersion(version), nil
+		return vc, nil
 	}
 
 	return "", fmt.Errorf("versions.yaml: could not find version under any of module-sets.{%s}", strings.Join(knownModuleSetKeys, ", "))

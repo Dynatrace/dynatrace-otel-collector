@@ -1,98 +1,34 @@
 package main
 
 import (
-	"regexp"
-	"sort"
-	"strconv"
 	"strings"
+
+	"golang.org/x/mod/semver"
 )
 
-var semverRegex = regexp.MustCompile(`^v?(\d+)\.(\d+)\.(\d+)$`)
-
-type semVersion struct {
-	major int
-	minor int
-	patch int
-}
-
-func parseSemVersion(v string) (semVersion, bool) {
-	m := semverRegex.FindStringSubmatch(strings.TrimSpace(v))
-	if m == nil {
-		return semVersion{}, false
-	}
-	major, err := strconv.Atoi(m[1])
-	if err != nil {
-		return semVersion{}, false
-	}
-	minor, err := strconv.Atoi(m[2])
-	if err != nil {
-		return semVersion{}, false
-	}
-	patch, err := strconv.Atoi(m[3])
-	if err != nil {
-		return semVersion{}, false
-	}
-	return semVersion{major: major, minor: minor, patch: patch}, true
-}
-
+// canonicalVersion normalizes a version string to the "vX.Y.Z" form expected
+// by golang.org/x/mod/semver. Bare versions without the "v" prefix (e.g.
+// "0.145.0") are accepted and normalized automatically.
 func canonicalVersion(v string) string {
-	sv, ok := parseSemVersion(v)
-	if !ok {
-		return strings.TrimSpace(v)
+	v = strings.TrimSpace(v)
+	if !strings.HasPrefix(v, "v") {
+		v = "v" + v
 	}
-	return "v" + strconv.Itoa(sv.major) + "." + strconv.Itoa(sv.minor) + "." + strconv.Itoa(sv.patch)
-}
-
-func compareVersions(a, b string) int {
-	sa, okA := parseSemVersion(a)
-	sb, okB := parseSemVersion(b)
-	if okA && okB {
-		switch {
-		case sa.major != sb.major:
-			if sa.major < sb.major {
-				return -1
-			}
-			return 1
-		case sa.minor != sb.minor:
-			if sa.minor < sb.minor {
-				return -1
-			}
-			return 1
-		case sa.patch != sb.patch:
-			if sa.patch < sb.patch {
-				return -1
-			}
-			return 1
-		default:
-			return 0
-		}
+	c := semver.Canonical(v)
+	if c == "" {
+		return strings.TrimSpace(v) // not a valid semver; return as-is
 	}
-	if okA && !okB {
-		return 1
-	}
-	if !okA && okB {
-		return -1
-	}
-	ac := canonicalVersion(a)
-	bc := canonicalVersion(b)
-	switch {
-	case ac < bc:
-		return -1
-	case ac > bc:
-		return 1
-	default:
-		return 0
-	}
+	return c
 }
 
 func highestVersion(versions []string) string {
 	best := ""
 	for _, v := range versions {
 		vc := canonicalVersion(v)
-		if vc == "" {
+		if !semver.IsValid(vc) {
 			continue
 		}
-		if best == "" || compareVersions(vc, best) > 0 {
+		if best == "" || semver.Compare(vc, best) > 0 {
 			best = vc
 		}
 	}
@@ -104,16 +40,12 @@ func sortedUniqueVersions(versions []string) []string {
 	uniq := make([]string, 0, len(versions))
 	for _, v := range versions {
 		vc := canonicalVersion(v)
-		if vc == "" || seen[vc] {
+		if !semver.IsValid(vc) || seen[vc] {
 			continue
 		}
 		seen[vc] = true
 		uniq = append(uniq, vc)
 	}
-
-	sort.SliceStable(uniq, func(i, j int) bool {
-		return compareVersions(uniq[i], uniq[j]) < 0
-	})
-
+	semver.Sort(uniq)
 	return uniq
 }

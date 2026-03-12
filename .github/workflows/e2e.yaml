@@ -209,8 +209,8 @@ jobs:
           cd internal/confmap/provider/eecprovider
           go test -v --tags=e2e
 
-  journald-e2e-test:
-    name: Test Journald Receiver
+  hostmetrics-e2e-test:
+    name: Test Hostmetrics configuraration
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:
@@ -251,7 +251,7 @@ jobs:
 
   notify-slack-e2e-tests:
     runs-on: ubuntu-24.04
-    needs: [k8s-e2e-test-matrix, eec-confmap-provider, k8s-multinode-matrix, journald-e2e-test]
+    needs: [k8s-e2e-test-matrix, eec-confmap-provider, k8s-multinode-matrix, hostmetrics-e2e-test]
     if: failure() && github.event_name == 'push'
     steps:
       - name: Slack Notification

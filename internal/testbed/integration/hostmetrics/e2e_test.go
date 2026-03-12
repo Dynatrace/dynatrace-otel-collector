@@ -10,17 +10,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/consumer/consumertest"
-	"go.opentelemetry.io/collector/pdata/pcommon"
-
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 )
 
 // TestE2E_HostMetricsReceiver validates the Host Metrics Receiver functionality
@@ -322,19 +321,11 @@ func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.Metr
 	expectedMerged := testutil.MergeResources(expectedMetrics)
 	actualMerged := testutil.MergeResources(consumer.AllMetrics()[len(consumer.AllMetrics())-1])
 
+	t.Logf("[DEBUG] current options: %d", options)
+
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		err := pmetrictest.CompareMetrics(expectedMerged, actualMerged, options...)
-		if err != nil {
-			// Print resource counts and details for debugging
-			t.Logf("[DEBUG] Expected resource count: %d", expectedMerged.ResourceMetrics().Len())
-			t.Logf("[DEBUG] Actual resource count: %d", actualMerged.ResourceMetrics().Len())
-			for i := 0; i < expectedMerged.ResourceMetrics().Len(); i++ {
-				t.Logf("[DEBUG] Expected resource[%d] attributes: %v", i, expectedMerged.ResourceMetrics().At(i).Resource().Attributes().AsRaw())
-			}
-			for i := 0; i < actualMerged.ResourceMetrics().Len(); i++ {
-				t.Logf("[DEBUG] Actual resource[%d] attributes: %v", i, actualMerged.ResourceMetrics().At(i).Resource().Attributes().AsRaw())
-			}
-		}
+		// testutil.Debug(err, t, expectedMerged, actualMerged)
 		assert.NoError(tt, err)
 	}, timeout, tick)
 }

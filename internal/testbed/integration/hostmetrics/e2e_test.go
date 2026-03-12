@@ -322,11 +322,22 @@ func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.Metr
 	require.NoError(t, err)
 
 	expectedMerged := testutil.MergeResources(expectedMetrics)
+	actualMerged := testutil.MergeResources(consumer.AllMetrics()[len(consumer.AllMetrics())-1])
+
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged, testutil.MergeResources(consumer.AllMetrics()[len(consumer.AllMetrics())-1]),
-			options...,
-		),
-		)
+		err := pmetrictest.CompareMetrics(expectedMerged, actualMerged, options...)
+		if err != nil {
+			// Print resource counts and details for debugging
+			t.Logf("[DEBUG] Expected resource count: %d", expectedMerged.ResourceMetrics().Len())
+			t.Logf("[DEBUG] Actual resource count: %d", actualMerged.ResourceMetrics().Len())
+			for i := 0; i < expectedMerged.ResourceMetrics().Len(); i++ {
+				t.Logf("[DEBUG] Expected resource[%d] attributes: %v", i, expectedMerged.ResourceMetrics().At(i).Resource().Attributes().AsRaw())
+			}
+			for i := 0; i < actualMerged.ResourceMetrics().Len(); i++ {
+				t.Logf("[DEBUG] Actual resource[%d] attributes: %v", i, actualMerged.ResourceMetrics().At(i).Resource().Attributes().AsRaw())
+			}
+		}
+		assert.NoError(tt, err)
 	}, timeout, tick)
 }
 

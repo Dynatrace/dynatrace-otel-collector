@@ -14,6 +14,7 @@ defaults:
     shell: bash
 
 env:
+  # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.25.7"
   OUT_BASE: "/tmp/rendered-collectors-workloads"
 
@@ -35,9 +36,9 @@ jobs:
       - name: Install Kyverno CLI
         uses: kyverno/action-install-cli@fcee92fca5c883169ef9927acf543e0b5fc58289 # v0.2.0
 
-      - name: Install build tools
-        run: |
-          make install-tools
+#      - name: Install build tools
+#        run: |
+#          make install-tools
 
       - name: Render workloads and validate with Kyverno
         run: |

@@ -105,7 +105,6 @@ gomoddownload:
 	$(MAKE) --no-print-directory for-all-target TARGET="moddownload"
 
 OUT_BASE  ?= /tmp/rendered-collectors-workloads
-REPO_ROOT := $(shell git rev-parse --show-toplevel)
 
 RENDERWORKLOADS_MOD_DIR := internal/renderworkloads
 
@@ -113,8 +112,8 @@ RENDERWORKLOADS_MOD_DIR := internal/renderworkloads
 
 render-workloads: $(GOMPLATE)
 	@echo "Rendering workloads to $(OUT_BASE)"
-	@cd "$(REPO_ROOT)/$(RENDERWORKLOADS_MOD_DIR)" && go run . \
-		-repo-root "$(REPO_ROOT)" \
+	@cd "$(SRC_ROOT)/$(RENDERWORKLOADS_MOD_DIR)" && go run . \
+		-repo-root "$(SRC_ROOT)" \
 		-in-root internal/testbed/integration \
 		-out-base "$(OUT_BASE)" \
 		-vars-file internal/renderworkloads/render-vars.json \
@@ -123,5 +122,5 @@ render-workloads: $(GOMPLATE)
 
 kyverno-workloads: render-workloads
 	@echo "Running Kyverno against rendered workloads from $(OUT_BASE)/workloads.txt"
-	@cd "$(REPO_ROOT)" && sed 's|^|-r |' "$(OUT_BASE)/workloads.txt" \
+	@cd "$(SRC_ROOT)" && sed 's|^|-r |' "$(OUT_BASE)/workloads.txt" \
 		| xargs -n 1000 kyverno apply .github/workflows/kyverno/policies/*.yaml

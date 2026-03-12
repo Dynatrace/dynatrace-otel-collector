@@ -384,3 +384,17 @@ func MaskParentSpanID(traces ptrace.Traces) {
 		}
 	}
 }
+
+func Debug(err error, t *testing.T, expectedMerged pmetric.Metrics, actualMerged pmetric.Metrics) {
+	if err != nil {
+		// Print resource counts and details for debugging
+		t.Logf("[DEBUG] Expected resource count: %d", expectedMerged.ResourceMetrics().Len())
+		t.Logf("[DEBUG] Actual resource count: %d", actualMerged.ResourceMetrics().Len())
+		for i := 0; i < expectedMerged.ResourceMetrics().Len(); i++ {
+			t.Logf("[DEBUG] Expected resource[%d] attributes: %v", i, expectedMerged.ResourceMetrics().At(i).Resource().Attributes().AsRaw())
+		}
+		for i := 0; i < actualMerged.ResourceMetrics().Len(); i++ {
+			t.Logf("[DEBUG] Actual resource[%d] attributes: %v", i, actualMerged.ResourceMetrics().At(i).Resource().Attributes().AsRaw())
+		}
+	}
+}

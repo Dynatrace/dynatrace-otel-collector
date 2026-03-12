@@ -320,9 +320,6 @@ func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.Metr
 
 	expectedMerged := testutil.MergeResources(expectedMetrics)
 	actualMerged := testutil.MergeResources(consumer.AllMetrics()[len(consumer.AllMetrics())-1])
-
-	t.Logf("[DEBUG] current options: %d", options)
-
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		err := pmetrictest.CompareMetrics(expectedMerged, actualMerged, options...)
 		// testutil.Debug(err, t, expectedMerged, actualMerged)

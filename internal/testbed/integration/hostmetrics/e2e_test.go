@@ -220,8 +220,6 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("os.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("os.version", substituteWithStar),
 
-		pmetrictest.ChangeResourceAttributeValue("process.executable.name", substituteWithStar),
-
 		pmetrictest.ChangeDatapointAttributeValue("mountpoint", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("direction", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("cpu", substituteWithStar),

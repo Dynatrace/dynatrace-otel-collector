@@ -1,41 +1,39 @@
-exporters:
-  debug:
-    verbosity: detailed
   otlp_http/traces:
     endpoint: http://%[1]s:4321
   otlp_http/metrics:
     endpoint: http://%[1]s:4320
   otlp_http/logs:
     endpoint: http://%[1]s:4319
-
 service:
   extensions:
     - health_check
   pipelines:
-    metrics:
-      receivers:
-        - otlp
-      processors:
-        - filter
-        - batch
-      exporters:
-        - debug
-        - otlp_http/metrics
-    logs:
-      receivers:
-        - otlp
-      processors:
-        - filter
-        - batch
-      exporters:
-        - debug
-        - otlp_http/logs
+    traces/self2:
+      receivers: [otlp/2]
+      processors: [filter, batch]
+      exporters: [otlp_grpc/self]
+
+    logs/self2:
+      receivers: [otlp/2]
+      processors: [filter, batch]
+      exporters: [otlp_grpc/self]
+
+    metrics/self2:
+      receivers: [otlp/2]
+      processors: [filter, batch]
+      exporters: [otlp_grpc/self]
+
     traces:
-      receivers:
-        - otlp
-      processors:
-        - filter
-        - batch
-      exporters:
-        - debug
-        - otlp_http/traces
+      receivers: [otlp]
+      processors: [filter, batch]
+      exporters: [debug, otlp_http/traces]
+
+    logs:
+      receivers: [otlp]
+      processors: [filter, batch]
+      exporters: [debug, otlp_http/logs]
+
+    metrics:
+      receivers: [otlp]
+      processors: [filter, cumulativetodelta, batch]
+      exporters: [debug, otlp_http/metrics]

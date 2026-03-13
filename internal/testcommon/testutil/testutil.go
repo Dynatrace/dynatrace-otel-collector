@@ -416,40 +416,58 @@ func Debug(err error, t *testing.T, expectedMerged pmetric.Metrics, actualMerged
 }
 
 // Print datapoints for the metric (limited to a reasonable number)
-func printDataPoints(prefix string, met pmetric.Metric, t *testing.T, i int, s int, mi int) {
+
+func printDataPoints(prefix string, met pmetric.Metric, t *testing.T, r int, s int, mi int, scopeName string, scopeVersion string) {
 	maxPrint := 10
+	scopeInfo := scopeName
+	if scopeVersion != "" {
+		scopeInfo = fmt.Sprintf("%s@%s", scopeName, scopeVersion)
+	}
+
 	switch met.Type() {
 	case pmetric.MetricTypeGauge:
 		dps := met.Gauge().DataPoints()
 		for dpi := 0; dpi < dps.Len() && dpi < maxPrint; dpi++ {
 			dp := dps.At(dpi)
-			t.Logf("[DEBUG] %s resource[%d] scope[%d] metric[%d] dp[%d]: value=%v attrs=%v start=%d time=%d", prefix, i, s, mi, dpi, dp.DoubleValue(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
+			t.Logf("[DEBUG] %s resource[%d] scope[%d:%s] metric[%d] dp[%d]: int=%d double=%v attrs=%v start=%d time=%d",
+				prefix, r, s, scopeInfo, mi, dpi, dp.IntValue(), dp.DoubleValue(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
 		}
+
 	case pmetric.MetricTypeSum:
 		dps := met.Sum().DataPoints()
 		for dpi := 0; dpi < dps.Len() && dpi < maxPrint; dpi++ {
 			dp := dps.At(dpi)
-			// print both possible numeric representations
-			t.Logf("[DEBUG] %s resource[%d] scope[%d] metric[%d] dp[%d]: int=%d double=%v attrs=%v start=%d time=%d", prefix, i, s, mi, dpi, dp.IntValue(), dp.DoubleValue(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
+			t.Logf("[DEBUG] %s resource[%d] scope[%d:%s] metric[%d] dp[%d]: int=%d double=%v attrs=%v start=%d time=%d",
+				prefix, r, s, scopeInfo, mi, dpi, dp.IntValue(), dp.DoubleValue(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
 		}
+
 	case pmetric.MetricTypeHistogram:
 		dps := met.Histogram().DataPoints()
 		for dpi := 0; dpi < dps.Len() && dpi < maxPrint; dpi++ {
 			dp := dps.At(dpi)
-			t.Logf("[DEBUG] %s resource[%d] scope[%d] metric[%d] hist dp[%d]: count=%d sum=%v bounds=%v attrs=%v start=%d time=%d", prefix, i, s, mi, dpi, dp.Count(), dp.Sum(), dp.BucketCounts(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
+			t.Logf("[DEBUG] %s resource[%d] scope[%d:%s] metric[%d] hist dp[%d]: count=%d sum=%v bounds=%v attrs=%v start=%d time=%d",
+				prefix, r, s, scopeInfo, mi, dpi, dp.Count(), dp.Sum(), dp.BucketCounts(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
 		}
+
 	case pmetric.MetricTypeExponentialHistogram:
 		dps := met.ExponentialHistogram().DataPoints()
 		for dpi := 0; dpi < dps.Len() && dpi < maxPrint; dpi++ {
 			dp := dps.At(dpi)
-			t.Logf("[DEBUG] %s resource[%d] scope[%d] metric[%d] exp-hist dp[%d]: count=%d sum=%v attrs=%v start=%d time=%d", prefix, i, s, mi, dpi, dp.Count(), dp.Sum(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
+			t.Logf("[DEBUG] %s resource[%d] scope[%d:%s] metric[%d] exp-hist dp[%d]: count=%d sum=%v attrs=%v start=%d time=%d",
+				prefix, r, s, scopeInfo, mi, dpi, dp.Count(), dp.Sum(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
 		}
+
 	case pmetric.MetricTypeSummary:
 		dps := met.Summary().DataPoints()
 		for dpi := 0; dpi < dps.Len() && dpi < maxPrint; dpi++ {
 			dp := dps.At(dpi)
-			t.Logf("[DEBUG] %s resource[%d] scope[%d] metric[%d] summary dp[%d]: count=%d sum=%v attrs=%v start=%d time=%d", prefix, i, s, mi, dpi, dp.Count(), dp.Sum(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
+			t.Logf("[DEBUG] %s resource[%d] scope[%d:%s] metric[%d] summary dp[%d]: count=%d sum=%v attrs=%v start=%d time=%d",
+				prefix, r, s, scopeInfo, mi, dpi, dp.Count(), dp.Sum(), dp.Attributes().AsRaw(), dp.StartTimestamp(), dp.Timestamp())
 		}
+
+	default:
+		t.Logf("[DEBUG] %s resource[%d] scope[%d:%s] metric[%d]: unknown metric type=%v",
+			prefix, r, s, scopeInfo, mi, met.Type())
 	}
 }
 

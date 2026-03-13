@@ -1,0 +1,15 @@
+FROM ubuntu:24.04
+
+# Install systemd for journalctl (required by journaldreceiver)
+RUN apt-get update && \
+    apt-get install -y systemd && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Verify journalctl is available at build time
+RUN journalctl --version
+
+COPY --chmod=755 dynatrace-otel-collector /dynatrace-otel-collector
+
+ENTRYPOINT ["/dynatrace-otel-collector"]
+CMD ["--config=/conf/config.yaml"]

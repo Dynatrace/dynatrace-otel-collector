@@ -74,6 +74,25 @@ jobs:
           name: dynatrace-otel-collector-image
           path: /tmp/dynatrace-otel-collector.tar
 
+      - name: Build journald image
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: ./bin
+          file: Dockerfile-journald
+          push: false
+          load: true
+          tags: dynatrace-otel-collector-journald:e2e-test
+
+      - name: Export journald image to tar
+        run: |
+          docker save dynatrace-otel-collector-journald:e2e-test > /tmp/dynatrace-otel-collector-journald.tar
+
+      - name: Upload journald container image artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: dynatrace-otel-collector-journald-image
+          path: /tmp/dynatrace-otel-collector-journald.tar
+
   k8s-multinode-matrix:
     strategy:
       fail-fast: false
@@ -109,7 +128,6 @@ jobs:
           - resource-detection
           - netflow
           - self-monitoring
-          - hostmetrics
           - k8sobjects
           - kubeletstats
           - k8scluster
@@ -191,6 +209,32 @@ jobs:
           cd internal/confmap/provider/eecprovider
           go test -v --tags=e2e
 
+  hostmetrics-e2e-test:
+    name: Test Hostmetrics configuraration
+    runs-on: ubuntu-24.04
+    needs: docker-build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup cluster
+        uses: ./.github/actions/create-cluster
+
+      - name: Download journald image artifact
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          name: dynatrace-otel-collector-journald-image
+          path: /tmp
+
+      - name: Load journald image into Kind
+        run: |
+          kind load image-archive /tmp/dynatrace-otel-collector-journald.tar
+
+      - name: Run e2e tests
+        run: |
+          cd internal/testbed/integration/hostmetrics
+          go test -v --tags=e2e
+
   notify-slack-combined-load-test:
     runs-on: ubuntu-24.04
     needs: [combined-load-test]
@@ -207,7 +251,7 @@ jobs:
 
   notify-slack-e2e-tests:
     runs-on: ubuntu-24.04
-    needs: [k8s-e2e-test-matrix, eec-confmap-provider, k8s-multinode-matrix]
+    needs: [k8s-e2e-test-matrix, eec-confmap-provider, k8s-multinode-matrix, hostmetrics-e2e-test]
     if: failure() && github.event_name == 'push'
     steps:
       - name: Slack Notification

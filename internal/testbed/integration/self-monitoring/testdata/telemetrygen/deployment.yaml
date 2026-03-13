@@ -19,8 +19,9 @@ spec:
       - command:
         - /telemetrygen
         - traces
+        - --otlp-http
         - --otlp-insecure
-        - --otlp-endpoint={{ .OTLPEndpoint }}:4317
+        - --otlp-endpoint={{ .OTLPEndpoint }}:4318
         - --duration=36000s
         - --rate=1
         - --batch=false
@@ -31,8 +32,9 @@ spec:
       - command:
         - /telemetrygen
         - metrics
+        - --otlp-http
         - --otlp-insecure
-        - --otlp-endpoint={{ .OTLPEndpoint }}:4317
+        - --otlp-endpoint={{ .OTLPEndpoint }}:4318
         - --duration=36000s
         - --rate=1
         - --batch=false
@@ -43,8 +45,9 @@ spec:
       - command:
         - /telemetrygen
         - logs
+        - --otlp-http
         - --otlp-insecure
-        - --otlp-endpoint={{ .OTLPEndpoint }}:4317
+        - --otlp-endpoint={{ .OTLPEndpoint }}:4318
         - --duration=36000s
         - --rate=1
         - --batch=false
@@ -53,4 +56,3 @@ spec:
         imagePullPolicy: IfNotPresent
         name: telemetrygen-logs
       restartPolicy: Always
-

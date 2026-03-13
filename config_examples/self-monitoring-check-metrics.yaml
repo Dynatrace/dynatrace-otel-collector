@@ -5,8 +5,13 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: ${env:MY_POD_IP}:4317
+        endpoint: 0.0.0.0:4317
+  otlp/2:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
 processors:
+  cumulativetodelta:
   batch:
     send_batch_size: 5
     timeout: 5s
@@ -24,6 +29,14 @@ processors:
 exporters:
   debug:
     verbosity: detailed
+  otlp_grpc/self:
+    endpoint: 0.0.0.0:4317
+    tls:
+      insecure: true
+  otlp_http/self:
+    endpoint: http://0.0.0.0:4318
+    tls:
+      insecure: true
   otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
@@ -32,33 +45,35 @@ service:
   extensions:
     - health_check
   pipelines:
-    metrics:
-      receivers:
-        - otlp
-      processors:
-        - filter
-        - batch
-      exporters:
-        - debug
-        - otlp_http
-    logs:
-      receivers:
-        - otlp
-      processors:
-        - filter
-        - batch
-      exporters:
-        - debug
-        - otlp_http
+    traces/self2:
+      receivers: [otlp/2]
+      processors: [filter, batch]
+      exporters: [otlp_grpc/self]
+
+    logs/self2:
+      receivers: [otlp/2]
+      processors: [filter, batch]
+      exporters: [otlp_grpc/self]
+
+    metrics/self2:
+      receivers: [otlp/2]
+      processors: [filter, batch]
+      exporters: [otlp_grpc/self]
+
     traces:
-      receivers:
-        - otlp
-      processors:
-        - filter
-        - batch
-      exporters:
-        - debug
-        - otlp_http
+      receivers: [otlp]
+      processors: [filter, batch]
+      exporters: [debug, otlp_http]
+
+    logs:
+      receivers: [otlp]
+      processors: [filter, batch]
+      exporters: [debug, otlp_http]
+
+    metrics:
+      receivers: [otlp]
+      processors: [filter, cumulativetodelta, batch]
+      exporters: [debug, otlp_http]
   # turn on self-monitoring
   telemetry:
     resource:

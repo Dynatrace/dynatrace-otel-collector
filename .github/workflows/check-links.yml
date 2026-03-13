@@ -24,16 +24,40 @@ concurrency:
 
 jobs:
   check-links:
+    permissions:
+      contents: read
+      issues: write # required for peter-evans/create-issue-from-file
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+     
+      - name: Restore lychee cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ runner.os }}-main-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            cache-lychee-${{ runner.os }}-main-
+            cache-lychee-${{ runner.os }}-
 
       - name: Link Checker
         id: lychee
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: lycheeverse/lychee-action@a8c4c7cb88f0c7386610c35eb25108e448569cb0 # v2.7.0
         with:
           fail: ${{ github.event_name != 'schedule' }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: >
+            --config "${{ github.workspace }}/lychee.toml"
+            --root-dir "${{ github.workspace }}"
+            --cache --max-cache-age 1d
+            --timeout 20
+            --exclude-path "${{ github.workspace }}/.lycheeignore"
+            --max-concurrency 2
+            --max-retries 2 --retry-wait-time 10
+            .
 
       - name: Create Issue From File
         if: steps.lychee.outputs.exit_code != 0 && github.event_name == 'schedule'

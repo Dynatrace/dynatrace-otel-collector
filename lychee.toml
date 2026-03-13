@@ -1,6 +1,6 @@
 include-fragments = true
 
-accept = ["200", "429"]
+accept = ["200", "206", "429"]
 
 exclude  = [
     "http(s)?://localhost",

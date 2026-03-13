@@ -4,6 +4,18 @@ image:
   tag: $TAG
 command:
   name: dynatrace-otel-collector
+containerSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop:
+      - all
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  privileged: false
 extraEnvs:
 - name: DT_API_TOKEN
   valueFrom:

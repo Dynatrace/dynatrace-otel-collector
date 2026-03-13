@@ -1798,7 +1798,6 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: s
-
           - description: Percentage of total CPU time used by the process since last scrape, expressed as a value between 0 and 1. On the first scrape, no data point is emitted for this metric.
             gauge:
               dataPoints:
@@ -1825,7 +1824,6 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: process.cpu.utilization
             unit: "1"
-
           - description: Disk bytes transferred.
             name: process.disk.io
             sum:
@@ -1847,7 +1845,6 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: By
-
           - description: The amount of physical memory in use.
             name: process.memory.usage
             sum:
@@ -1870,7 +1867,6 @@ resourceMetrics:
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper
           version: 0.43.0
-
   - resource:
       attributes:
         - key: host.arch

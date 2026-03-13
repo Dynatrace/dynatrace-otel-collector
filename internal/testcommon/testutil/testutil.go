@@ -404,7 +404,7 @@ func Debug(err error, t *testing.T, expectedMerged pmetric.Metrics, actualMerged
 					for mi := 0; mi < sm.Metrics().Len(); mi++ {
 						met := sm.Metrics().At(mi)
 						t.Logf("[DEBUG] %s resource[%d] scope[%d] metric[%d]: name=%q desc=%q unit=%q type=%s datapoints=%d", prefix, i, s, mi, met.Name(), met.Description(), met.Unit(), met.Type(), countDataPoints(met))
-						printDataPoints(prefix, met, t, i, s, mi)
+						printDataPoints(prefix, met, t, i, s, mi, scope.Name(), scope.Version())
 					}
 				}
 			}

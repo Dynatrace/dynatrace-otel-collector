@@ -1,0 +1,7 @@
+change_type: bug_fix
+component: internal/metadataproviders
+note: Fix kubeadm resource detector to correctly read clusterName from kubeadm configmap
+issues: [45603]
+subtext: ""
+change_logs: [user]
+

@@ -120,6 +120,8 @@ render-workloads:
 
 
 kyverno-workloads: render-workloads
-	@echo "Running Kyverno against rendered workloads from $(OUT_BASE)/workloads.txt"
-	@cd "$(SRC_ROOT)" && sed 's|^|-r |' "$(OUT_BASE)/workloads.txt" \
-		| xargs -n 1000 kyverno apply .github/workflows/kyverno/policies/*.yaml
+    @echo "Running Kyverno against rendered workloads from $(OUT_BASE)/workloads.txt"
+    @cd "$(SRC_ROOT)" && \
+        { test -s "$(OUT_BASE)/workloads.txt" || { echo "ERROR: workloads.txt is empty"; exit 1; }; } && \
+        sed 's|^|-r |' "$(OUT_BASE)/workloads.txt" \
+        | xargs -n 1000 kyverno apply .github/workflows/kyverno/policies/*.yaml

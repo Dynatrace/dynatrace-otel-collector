@@ -3,7 +3,6 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/tools
 go 1.25.7
 
 require (
-	github.com/hairyhenderson/gomplate/v5 v5.0.0
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	github.com/sigstore/cosign/v3 v3.0.5
 	go.opentelemetry.io/build-tools/chloggen v0.29.0

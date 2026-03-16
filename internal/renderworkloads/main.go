@@ -1,8 +1,8 @@
 // internal/renderworkloads/main.go
 //
-// Renders YAML templates (using gomplate) under a given input root, writing ONLY rendered
-// collector workload YAMLs (Deployment/DaemonSet/StatefulSet) to an output directory while
-// preserving relative paths.
+// Renders YAML templates (using Go's built-in text/template) under a given input root,
+// writing ONLY rendered collector workload YAMLs (Deployment/DaemonSet/StatefulSet) to an
+// output directory while preserving relative paths.
 // Also writes workloads.txt containing paths to rendered workload YAMLs.
 //
 // Values are provided via a JSON file (default: render-vars.json) located in -repo-root.
@@ -10,23 +10,24 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	k8syaml "k8s.io/apimachinery/pkg/util/yaml"
+	"sigs.k8s.io/yaml"
 )
 
 const (
 	defaultOutBase  = "/tmp/rendered"
-	defaultGomplate = "gomplate"
 	defaultVarsFile = "render-vars.json"
 
 	collectorLabelKey   = "app.kubernetes.io/name"
@@ -45,7 +46,6 @@ type Options struct {
 	RepoRoot   string
 	InRoot     string
 	OutBase    string
-	Gomplate   string
 	VarsFile   string
 	WriteIndex bool
 	Verbose    bool
@@ -75,9 +75,13 @@ func main() {
 		fatalf("error: vars file not found: %s: %v\n", varsPath, err)
 	}
 
-	workloads, err := renderCollectorWorkloads(repoRoot, inRoot, outBase, varsPath, opt)
+	vars, err := loadVarsJSON(varsPath)
 	if err != nil {
-		// mirror the behavior you saw (panic-ish), but with a clearer message
+		fatalf("error: reading vars file %s: %v\n", varsPath, err)
+	}
+
+	workloads, err := renderCollectorWorkloads(repoRoot, inRoot, outBase, vars, opt)
+	if err != nil {
 		fatalf("panic: %v\n", err)
 	}
 
@@ -103,15 +107,14 @@ func parseFlags() Options {
 	flag.StringVar(&opt.RepoRoot, "repo-root", "", "Repository root (used to compute relative paths and locate vars file)")
 	flag.StringVar(&opt.InRoot, "in-root", "", "Input root directory (relative to -repo-root) to scan for YAML templates")
 	flag.StringVar(&opt.OutBase, "out-base", defaultOutBase, "Output base directory")
-	flag.StringVar(&opt.Gomplate, "gomplate", defaultGomplate, "Path to gomplate binary")
 	flag.StringVar(&opt.VarsFile, "vars-file", defaultVarsFile, "Vars JSON file name (resolved relative to -repo-root)")
 	flag.BoolVar(&opt.WriteIndex, "write-index", true, "Write workloads.txt with rendered workload YAML paths")
-	flag.BoolVar(&opt.Verbose, "verbose", false, "Verbose output (print gomplate commands)")
+	flag.BoolVar(&opt.Verbose, "verbose", false, "Verbose output (print files being rendered)")
 	flag.Parse()
 	return opt
 }
 
-func renderCollectorWorkloads(repoRoot, inRoot, outBase, varsPath string, opt Options) ([]string, error) {
+func renderCollectorWorkloads(repoRoot, inRoot, outBase string, vars map[string]any, opt Options) ([]string, error) {
 	workloads := make([]string, 0, 128)
 
 	err := filepath.WalkDir(inRoot, func(path string, d fs.DirEntry, walkErr error) error {
@@ -138,7 +141,11 @@ func renderCollectorWorkloads(repoRoot, inRoot, outBase, varsPath string, opt Op
 		}
 		outPath := filepath.Join(outBase, relToRepo)
 
-		rendered, err := gomplateRenderFile(opt.Gomplate, varsPath, path, opt.Verbose)
+		if opt.Verbose {
+			fmt.Fprintf(os.Stderr, "render: %s\n", path)
+		}
+
+		rendered, err := goTemplateRenderFile(path, vars)
 		if err != nil {
 			return err
 		}
@@ -170,34 +177,103 @@ func isYAMLFile(path string) bool {
 	return ext == ".yaml" || ext == ".yml"
 }
 
-func gomplateRenderFile(gomplateBin, varsAbsPath, inFile string, verbose bool) ([]byte, error) {
-	// gomplate v5: --context expects alias=URL form; '.' sets root context.
-	// For an absolute Unix path, "file://" + "/Users/..." => "file:///Users/..."
-	ctxURL := "file://" + filepath.ToSlash(varsAbsPath)
+func loadVarsJSON(varsAbsPath string) (map[string]any, error) {
+	b, err := os.ReadFile(varsAbsPath)
+	if err != nil {
+		return nil, err
+	}
+	var v map[string]any
+	if err := json.Unmarshal(b, &v); err != nil {
+		return nil, err
+	}
+	return v, nil
+}
 
-	cmd := exec.Command(
-		gomplateBin,
-		"-c", ".="+ctxURL,
-		"-f", inFile,
-	)
-
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	if verbose {
-		fmt.Fprintf(os.Stderr, "gomplate cmd: %q\n", cmd.Args)
+func goTemplateRenderFile(inFile string, vars map[string]any) ([]byte, error) {
+	src, err := os.ReadFile(inFile)
+	if err != nil {
+		return nil, err
 	}
 
-	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf(
-			"gomplate render failed for %s: %w: %s",
-			inFile,
-			err,
-			strings.TrimSpace(stderr.String()),
-		)
+	tpl, err := template.New(filepath.Base(inFile)).
+		Option("missingkey=error").
+		Funcs(templateFuncs()).
+		Parse(string(src))
+	if err != nil {
+		return nil, fmt.Errorf("template parse failed for %s: %w", inFile, err)
 	}
-	return stdout.Bytes(), nil
+
+	var out bytes.Buffer
+	if err := tpl.Execute(&out, vars); err != nil {
+		return nil, fmt.Errorf("template execute failed for %s: %w", inFile, err)
+	}
+	return out.Bytes(), nil
+}
+
+func templateFuncs() template.FuncMap {
+	return template.FuncMap{
+		// Strings/formatting
+		"indent":  indent,
+		"nindent": nindent,
+
+		// Defaults (minimal)
+		"default": defaultValue,
+
+		// Serialization helpers
+		"toYaml": toYAML,
+		"toJson": toJSON,
+	}
+}
+
+func indent(spaces int, s string) string {
+	if spaces <= 0 || s == "" {
+		return s
+	}
+	pad := strings.Repeat(" ", spaces)
+	lines := strings.Split(s, "\n")
+	for i := range lines {
+		// keep trailing empty line empty (common after yaml.Marshal)
+		if lines[i] == "" && i == len(lines)-1 {
+			continue
+		}
+		lines[i] = pad + lines[i]
+	}
+	return strings.Join(lines, "\n")
+}
+
+func nindent(spaces int, s string) string {
+	if s == "" {
+		return ""
+	}
+	return "\n" + indent(spaces, s)
+}
+
+// defaultValue is intentionally minimal (not "deep empty") to avoid overdoing semantics.
+// It only treats nil and "" as empty.
+func defaultValue(def, v any) any {
+	if v == nil {
+		return def
+	}
+	if s, ok := v.(string); ok && s == "" {
+		return def
+	}
+	return v
+}
+
+func toYAML(v any) (string, error) {
+	b, err := yaml.Marshal(v)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
+}
+
+func toJSON(v any) (string, error) {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
 }
 
 func isCollectorWorkloadYAML(b []byte) bool {

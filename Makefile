@@ -110,14 +110,13 @@ RENDERWORKLOADS_MOD_DIR := internal/renderworkloads
 
 .PHONY: render-workloads kyverno-workloads
 
-render-workloads: $(GOMPLATE)
+render-workloads:
 	@echo "Rendering workloads to $(OUT_BASE)"
 	@cd "$(SRC_ROOT)/$(RENDERWORKLOADS_MOD_DIR)" && go run . \
 		-repo-root "$(SRC_ROOT)" \
 		-in-root internal/testbed/integration \
 		-out-base "$(OUT_BASE)" \
 		-vars-file internal/renderworkloads/render-vars.json \
-		-gomplate "$(abspath $(GOMPLATE))"
 
 
 kyverno-workloads: render-workloads

@@ -2,11 +2,6 @@
 
 Install the Kyverno CLI: https://kyverno.io/docs/kyverno-cli/
 
-Install gomplate: https://docs.gomplate.ca/installing/ or run 
-```bash
-make install-tools
-```
-
 Then run the Kyverno checks against the rendered workloads:
 
 ```bash

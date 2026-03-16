@@ -10,13 +10,6 @@ The rendered output is then checked with **Kyverno** to enforce a baseline conta
 
 ## How to use (local)
 
-Install gomplate: https://docs.gomplate.ca/installing/ or from root repo run 
-```bash
-make install-tools
-```
-
-This renders the collector workloads (Deployments/DaemonSets/StatefulSets) into an output directory and writes an index file.
-
 ```bash
 make render-workloads 
 ```

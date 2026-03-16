@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: .lycheecache
-          key: cache-lychee-${{ github.sha }}
+          key: cache-lychee-v2-${{ github.sha }}
           restore-keys: cache-lychee-
           
       - name: Link Checker
@@ -46,14 +46,15 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: >
-            --root-dir ${{ github.workspace }} --cache --max-cache-age 1d
+            --root-dir ${{ github.workspace }} 
+            --cache --max-cache-age 1d
             --timeout 20
             --max-concurrency 2
             --max-retries 2 --retry-wait-time 10
             .
 
       - name: Save lychee cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         if: steps.lychee.outcome == 'success'
         with:
           path: .lycheecache

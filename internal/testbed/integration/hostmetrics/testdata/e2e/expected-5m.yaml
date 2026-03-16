@@ -1711,6 +1711,162 @@ resourceMetrics:
                       value:
                         stringValue: /swapfile
                     - key: state
+                      value:
+                        stringValue: used
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/pagingscraper
+          version: 0.43.0
+  - resource: # Added one value for Journald process since now we have 3 processes running not 2
+      attributes:
+        - key: host.arch
+          value:
+            stringValue: amd64
+        - key: host.cpu.model.name
+          value:
+            stringValue: AMD EPYC 9V74 80-Core Processor
+        - key: host.interface
+          value:
+            arrayValue:
+              values:
+                - stringValue: lo
+                - stringValue: eth0
+        - key: host.ip
+          value:
+            arrayValue:
+              values:
+                - stringValue: 10.244.0.5
+        - key: host.mac
+          value:
+            arrayValue:
+              values:
+                - stringValue: 02-A4-D9-CA-8F-85
+        - key: host.name
+          value:
+            stringValue: otelcol-zk2486d6vh-789ddf6574-ctr7b
+        - key: host.id
+          value:
+            stringValue: ccf282541efa97664c071e4a69b2668b
+        - key: os.build.id
+          value:
+            stringValue: 6.14.0-1017-azure
+        - key: os.description
+          value:
+            stringValue: "Ubuntu 24.04.4 LTS (Noble Numbat) (Linux otelcol-zk2486d6vh-789ddf6574-ctr7b 6.14.0-1017-azure #17~24.04.1-Ubuntu SMP Mon Dec  1 20:10:50 UTC 2025 x86_64)"
+        - key: os.name
+          value:
+            stringValue: ubuntu
+        - key: os.type
+          value:
+            stringValue: linux
+        - key: os.version
+          value:
+            stringValue: "24.04"
+        - key: process.executable.name
+          value:
+            stringValue: journalctl
+    schemaUrl: https://opentelemetry.io/schemas/1.9.0
+    scopeMetrics:
+      - metrics:
+          - description: Total CPU seconds broken down by different states.
+            name: process.cpu.time
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0.02
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: wait
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: s
+          - description: Percentage of total CPU time used by the process since last scrape, expressed as a value between 0 and 1. On the first scrape, no data point is emitted for this metric.
+            gauge:
+              dataPoints:
+                - asDouble: 0.0004999802127830989
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: system
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: user
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: wait
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: process.cpu.utilization
+            unit: "1"
+          - description: Disk bytes transferred.
+            name: process.disk.io
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "30653"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "4396"
+                  attributes:
+                    - key: direction
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: By
+          - description: The amount of physical memory in use.
+            name: process.memory.usage
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "101388288"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
+
+          - description: Virtual memory size.
+            name: process.memory.virtual
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "1430163456"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper
+          version: 0.43.0
   - resource:
       attributes:
         - key: host.arch

@@ -403,7 +403,7 @@ func Debug(err error, t *testing.T, expectedMerged pmetric.Metrics, actualMerged
 					t.Logf("[DEBUG] %s resource[%d] scope[%d]: name=%q version=%q metrics=%d", prefix, i, s, scope.Name(), scope.Version(), sm.Metrics().Len())
 					for mi := 0; mi < sm.Metrics().Len(); mi++ {
 						met := sm.Metrics().At(mi)
-						t.Logf("[DEBUG] %s resource[%d] scope[%d] metric[%d]: name=%q desc=%q unit=%q type=%s datapoints=%d", prefix, i, s, mi, met.Name(), met.Description(), met.Unit(), met.Type(), countDataPoints(met))
+						t.Logf("[DEBUG] %s resource[%d] scope[%d] metric[%d]: name=%q desc=%q unit=%q type=%s datapoints=%d", prefix, i, s, mi, met.Name(), met.Description(), met.Unit(), met.Type(), dataPointsCount(met))
 						printDataPoints(prefix, met, t, i, s, mi, scopeInfoFrom(sm))
 					}
 				}
@@ -427,35 +427,6 @@ func scopeInfoFrom(sm pmetric.ScopeMetrics) string {
 		return name
 	}
 	return name + "@" + ver
-}
-
-// Example function to print all resources -> scopes -> metrics
-func printAllMetrics(prefix string, rms pmetric.ResourceMetricsSlice, t *testing.T) {
-	for rIdx := 0; rIdx < rms.Len(); rIdx++ {
-		rm := rms.At(rIdx)
-		// print resource attributes once
-		t.Logf("[DEBUG] %s Actual resource[%d] attributes: %v", prefix, rIdx, rm.Resource().Attributes().AsRaw())
-
-		// iterate scope metrics
-		sms := rm.ScopeMetrics()
-		for sIdx := 0; sIdx < sms.Len(); sIdx++ {
-			sm := sms.At(sIdx)
-			scopeInfo := scopeInfoFrom(sm)
-			metrics := sm.Metrics()
-			t.Logf("[DEBUG] %s Actual resource[%d] scope[%d:%s]: metrics=%d",
-				prefix, rIdx, sIdx, scopeInfo, metrics.Len())
-
-			for mIdx := 0; mIdx < metrics.Len(); mIdx++ {
-				met := metrics.At(mIdx)
-				// metric header - now includes scope name/version
-				t.Logf("[DEBUG] %s Actual resource[%d] scope[%d:%s] metric[%d]: name=%q desc=%q unit=%q type=%v datapoints=%d",
-					prefix, rIdx, sIdx, scopeInfo, mIdx, met.Name(), met.Description(), met.Unit(), met.Type(), dataPointsCount(met))
-
-				// call printDataPoints - use version that accepts scope info
-				printDataPoints(prefix, met, t, rIdx, sIdx, mIdx, scopeInfo)
-			}
-		}
-	}
 }
 
 // small helper to get datapoints count (for the header)
@@ -520,22 +491,5 @@ func printDataPoints(prefix string, met pmetric.Metric, t *testing.T, r int, s i
 	default:
 		t.Logf("[DEBUG] %s resource[%d] scope[%d:%s] metric[%d]: unknown metric type=%v",
 			prefix, r, s, scopeInfo, mi, met.Type())
-	}
-}
-
-func countDataPoints(m pmetric.Metric) int {
-	switch m.Type() {
-	case pmetric.MetricTypeGauge:
-		return m.Gauge().DataPoints().Len()
-	case pmetric.MetricTypeSum:
-		return m.Sum().DataPoints().Len()
-	case pmetric.MetricTypeHistogram:
-		return m.Histogram().DataPoints().Len()
-	case pmetric.MetricTypeSummary:
-		return m.Summary().DataPoints().Len()
-	case pmetric.MetricTypeExponentialHistogram:
-		return m.ExponentialHistogram().DataPoints().Len()
-	default:
-		return 0
 	}
 }

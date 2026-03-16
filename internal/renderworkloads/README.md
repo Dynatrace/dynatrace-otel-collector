@@ -38,4 +38,4 @@ pass: N, fail: 0, warn: 0, error: 0, skip: 0
 
 - `kyverno-workloads` depends on `render-workloads` and will re-render before running Kyverno.
 - If `workloads.txt` is empty, the Kyverno target will fail (to avoid silently doing nothing).
-- You need `gomplate` and `kyverno` available in your `PATH`.
+- You need `kyverno` available in your `PATH`.

@@ -9,7 +9,7 @@ containerSecurityContext:
     type: RuntimeDefault
   capabilities:
     drop:
-      - all
+      - ALL
   readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
   runAsNonRoot: true

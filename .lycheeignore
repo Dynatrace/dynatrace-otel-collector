@@ -1,0 +1,4 @@
+# Known missing / intentionally referenced URLs
+
+# mentioned in changelog does not exist anymore
+https://github.com/open-telemetry/opentelemetry-collector/issues/44229

@@ -24,23 +24,3 @@ support exporting metrics data in that format.
 Add the receivers and processors from [hostmetrics configuration example](../../config_examples/host-metrics.yaml) to your OpenTelemetry Collector configuration file to enable the
 collection of host metrics with the required attributes, resource detection, and cumulative to delta conversion.
 Make sure to also add the receivers and processors to your collector pipeline.
-
-### Adding attributes to the allow list
-
-The following attributes are not included in the default allow list of resource attributes in Dynatrace:
-
-- `host.arch`
-- `host.name`
-- `os.type`
-- `process.executable.name`
-- `mountpoint`
-- `device`
-- `state`
-
-Follow [this guide](https://docs.dynatrace.com/docs/shortlink/metrics-configuration#allow-list) and add the attributes
-above to the allow list.
-Note, that the attribute are case-sensitive.
-This will ensure that these resource attributes are stored as dimensions on the metrics in Dynatrace.
-
-**Note:**
-If you have the `advanced otlp metric dimensions` toggle enabled in your Dynatrace tenant, ingestion of all attributes is enabled by default. Please be sure to check that none of the above mentioned attributes are present in the `blocked` list.

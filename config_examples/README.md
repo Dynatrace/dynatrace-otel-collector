@@ -38,7 +38,7 @@ so you can also see the data in your Dynatrace environment.
 Before running the samples, make sure you have the following environment variables set:
 
 - `DT_ENDPOINT`: The OTLP HTTP endpoint of your Dynatrace environment.
-  - Follow the guide: [Export to ActiveGate](https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport#export-to-activegate)
+  - Follow the guide: [Export to ActiveGate](https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport#export-to-dt)
     to see how to get the correct API URL for your environment
 - `API_TOKEN`: The Dynatrace API access token. Follow the guide on [Authentication](https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport#authentication-export-to-activegate) to see the scopes required for ingesting OTLP data.
 

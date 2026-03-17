@@ -10,7 +10,7 @@ spec:
       port: 4318
       targetPort: 4318
       protocol: TCP
-      appProtocol: grpc
+      appProtocol: http
     - name: otlpgrpc
       port: 4317
       targetPort: 4317

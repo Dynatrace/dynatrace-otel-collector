@@ -50,8 +50,11 @@ spec:
               mountPath: /run/log/journal
               readOnly: true
           securityContext:
-            privileged: true
             runAsUser: 0
+            capabilities:
+              add:
+                - DAC_READ_SEARCH
+                - SYS_PTRACE
       volumes:
         - name: config
           configMap:

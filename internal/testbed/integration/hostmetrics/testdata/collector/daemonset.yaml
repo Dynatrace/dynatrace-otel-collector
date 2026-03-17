@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: {{ .Name }}
   namespace: e2ehostmetrics
@@ -17,9 +17,8 @@ spec:
       serviceAccountName: {{ .Name }}
       containers:
         - name: opentelemetry-collector
-          image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
-          args:
-            - --config=/conf/relay.yaml
+          imagePullPolicy: Never
+          image: "{{ .ContainerRegistry }}dynatrace-otel-collector-journald:e2e-test"
           ports:
             - name: otlp
               containerPort: 4317
@@ -46,11 +45,27 @@ spec:
               memory: 256Mi
           volumeMounts:
             - mountPath: /conf
-              name: opentelemetry-collector-configmap
+              name: config
+            - name: run-journal
+              mountPath: /run/log/journal
+              readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            runAsUser: 0
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - DAC_READ_SEARCH
+                - SYS_PTRACE
       volumes:
-        - name: opentelemetry-collector-configmap
+        - name: config
           configMap:
             name: {{ .Name }}-config
-            items:
-              - key: relay
-                path: relay.yaml
+        - name: run-journal
+          hostPath:
+            path: /run/log/journal
+

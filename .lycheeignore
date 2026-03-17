@@ -2,3 +2,6 @@
 
 # mentioned in changelog does not exist anymore
 https://github.com/open-telemetry/opentelemetry-collector/issues/44229
+
+# current v2.8.0 has a bug for GitHub Markdown fragment https://github.com/lycheeverse/lychee/issues/1729
+https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/release/v0.147.x/pkg/stanza/operator/parser/syslog/syslogtest/data.go#L46

@@ -50,6 +50,12 @@ spec:
               mountPath: /run/log/journal
               readOnly: true
           securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            seLinuxOptions:
+              type: spc_t
+            seccompProfile:
+              type: RuntimeDefault
             runAsUser: 0
             capabilities:
               add:

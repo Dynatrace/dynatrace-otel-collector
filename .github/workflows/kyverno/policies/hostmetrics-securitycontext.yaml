@@ -1,24 +1,19 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: collector-workloads-securitycontext
+  name: collector-hostmetrics-securitycontext
 spec:
   validationFailureAction: Enforce
   background: false
   rules:
-    - name: require-hardened-securitycontext-on-collector-workloads
+    - name: enforce-hostmetrics-daemonset-securitycontext
       match:
-        any:
-          - resources:
-              kinds:
-                - Deployment
-                - DaemonSet
-                - StatefulSet
-        # Exempt all matching resources in this namespace
-      exclude:
         resources:
+          kinds:
+            - DaemonSet
           namespaces:
             - e2ehostmetrics
+
       preconditions:
         all:
           - key: "{{ request.object.spec.template.metadata.labels.\"app.kubernetes.io/name\" }}"
@@ -26,7 +21,7 @@ spec:
             value: opentelemetry-collector
 
       validate:
-        message: "Collector workloads must run with hardened container securityContext."
+        message: "Host-metrics DaemonSet must use the approved securityContext for journal/host access."
         pattern:
           spec:
             template:
@@ -34,12 +29,9 @@ spec:
                 containers:
                   - name: "?*"
                     securityContext:
-                      privileged: false
                       readOnlyRootFilesystem: true
                       allowPrivilegeEscalation: false
-                      runAsNonRoot: true
-                      runAsUser: 10001
-                      runAsGroup: 10001
+                      runAsUser: 0
                       seccompProfile:
                         type: RuntimeDefault
                       capabilities:

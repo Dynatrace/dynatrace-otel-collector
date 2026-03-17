@@ -1,0 +1,8 @@
+change_type: breaking
+component: processor/resourcedetection
+note: Promote `processor.resourcedetection.removeGCPFaasID` feature gate to Stable and is now always enabled
+issues: [45797]
+subtext: |
+  The faas.id attribute is replaced by the faas.instance attribute.
+change_logs: [user]
+

@@ -1,0 +1,7 @@
+change_type: enhancement
+component: somecomponent/internal
+note: This should be excluded by api-only change_logs
+issues: [11111]
+subtext: ""
+change_logs: [api]
+

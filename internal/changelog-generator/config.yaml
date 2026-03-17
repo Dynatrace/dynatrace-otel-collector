@@ -1,0 +1,30 @@
+# Configuration for upstream changelog filtering.
+#
+# Components from manifest.yaml are always included.
+# Use allowlist/denylist to additionally include or exclude entries.
+
+# Always include entries for these component identifiers.
+# Supports exact match and prefix match (entries starting with these prefixes).
+allowlist:
+  # Shared packages that affect components in the distribution
+  - "pkg/ottl"
+  - "pkg/stanza"
+  - "pkg/fileconsumer"
+  - "pkg/scraperhelper"
+  - "pkg/config/confighttp"
+  - "pkg/config/configgrpc"
+  - "pkg/confmap"
+  - "pkg/service"
+  - "pkg/exporterhelper"
+  - "pkg/kafka/configkafka"
+  - "pkg/config/configoptional"
+  # Global entries affecting all components
+  - "all"
+
+# Always exclude entries for these component identifiers.
+# Supports glob suffix (*) for prefix matching.
+# Denylist takes precedence over allowlist and manifest components.
+denylist:
+  - "internal/*"
+  - "cmd/*"
+

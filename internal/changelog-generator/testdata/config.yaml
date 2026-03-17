@@ -1,0 +1,11 @@
+allowlist:
+  - "pkg/ottl"
+  - "pkg/stanza"
+  - "pkg/fileconsumer"
+  - "pkg/scraperhelper"
+  - "all"
+
+denylist:
+  - "internal/*"
+  - "cmd/*"
+

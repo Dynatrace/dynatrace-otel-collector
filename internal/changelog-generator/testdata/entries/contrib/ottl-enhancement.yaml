@@ -1,0 +1,7 @@
+change_type: enhancement
+component: pkg/ottl
+note: Added generic path to get/set span flags in OTTL trace span context
+issues: [34739]
+subtext: ""
+change_logs: [user]
+

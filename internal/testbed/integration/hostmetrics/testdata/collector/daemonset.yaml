@@ -60,6 +60,6 @@ spec:
           configMap:
             name: {{ .Name }}-config
         - name: run-journal
-        hostPath:
-          path: /run/log/journal
+          hostPath:
+            path: /run/log/journal
 

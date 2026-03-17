@@ -8,6 +8,12 @@ extensions:
     endpoint: 0.0.0.0:13133
 
 receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
   journald:
     directory: /run/log/journal
     priority: info
@@ -293,6 +299,6 @@ service:
       processors: [filter, resourcedetection, transform, cumulativetodelta, batch]
       exporters: [otlp_http]
     logs:
-      receivers: [journald]
+      receivers: [otlp, journald]
       processors: [resourcedetection, batch]
       exporters: [otlp_http]

@@ -247,7 +247,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 
 	t.Logf("Received %d log record(s)", logsConsumer.LogRecordCount())
 
-	// Assert that the operators in journald.yaml transformed the fields correctly:
+	// Assert that the operators transformed the fields correctly:
 	//   body._PID   -> body.pid
 	//   body._EXE   -> attributes.process.executable.name
 	//   body.MESSAGE -> body.message

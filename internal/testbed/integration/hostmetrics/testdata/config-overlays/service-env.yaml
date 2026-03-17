@@ -12,6 +12,6 @@ service:
       processors: [filter, resourcedetection, transform, cumulativetodelta, batch]
       exporters: [otlp_http]
     logs:
-      receivers: [journald]
+      receivers: [otlp, journald]
       processors: [resourcedetection, batch]
       exporters: [otlp_http]

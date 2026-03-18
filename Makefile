@@ -104,7 +104,7 @@ for-all-target: $(INTERNAL_MODS)
 gomoddownload:
 	$(MAKE) --no-print-directory for-all-target TARGET="moddownload"
 
-OUT_BASE  ?= /tmp/rendered-collectors-workloads
+OUT_BASE ?= /tmp/rendered-collectors-workloads
 
 RENDERWORKLOADS_MOD_DIR := internal/renderworkloads
 

@@ -1,0 +1,11 @@
+{
+  "Name": "otelcol-e2e",
+  "Namespace": "e2e",
+  "TestID": "123",
+  "HostEndpoint": "host.docker.internal",
+  "ContainerRegistry": "ghcr.io/dynatrace/",
+  "K8sCluster": "kind",
+  "CollectorConfig": "relay",
+  "OTLPEndpoint": "4317",
+  "DataType" : "testtype"
+}

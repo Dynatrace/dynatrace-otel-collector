@@ -51,7 +51,8 @@ snapshot: .goreleaser.yaml $(GORELEASER)
 	$(GORELEASER) release --snapshot --clean --skip archive,sbom --fail-fast
 
 $(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod | $(TOOLS_BIN_DIR)
-	cd $(TOOLS_MOD_DIR) && go build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
+	cd $(TOOLS_MOD_DIR) && $(GOCMD) build -trimpath -o $(abspath $@) \
+		$(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
 $(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN) $(SOURCES)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
@@ -102,3 +103,25 @@ for-all-target: $(INTERNAL_MODS)
 .PHONY: gomoddownload
 gomoddownload:
 	$(MAKE) --no-print-directory for-all-target TARGET="moddownload"
+
+OUT_BASE ?= /tmp/rendered-collectors-workloads
+
+RENDERWORKLOADS_MOD_DIR := internal/renderworkloads
+
+.PHONY: render-workloads kyverno-workloads
+
+render-workloads:
+	@echo "Rendering workloads to $(OUT_BASE)"
+	@cd "$(SRC_ROOT)/$(RENDERWORKLOADS_MOD_DIR)" && go run . \
+		-repo-root "$(SRC_ROOT)" \
+		-in-root internal/testbed/integration \
+		-out-base "$(OUT_BASE)" \
+		-vars-file internal/renderworkloads/render-vars.json \
+
+
+kyverno-workloads: render-workloads
+	@echo "Running Kyverno against rendered workloads from $(OUT_BASE)/workloads.txt"
+	@cd "$(SRC_ROOT)" && \
+		{ test -s "$(OUT_BASE)/workloads.txt" || { echo "ERROR: workloads.txt is empty"; exit 1; }; } && \
+		sed 's|^|-r |' "$(OUT_BASE)/workloads.txt" \
+		| xargs -n 1000 kyverno apply .github/workflows/kyverno/policies/*.yaml

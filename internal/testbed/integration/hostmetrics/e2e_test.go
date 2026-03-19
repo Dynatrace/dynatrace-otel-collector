@@ -10,16 +10,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/consumer/consumertest"
-
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 )
 
 // TestE2E_HostMetricsReceiver validates the Host Metrics Receiver functionality
@@ -208,6 +208,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 
 		pmetrictest.ChangeResourceAttributeValue("host.arch", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.ip", substituteWithStar),
+		pmetrictest.ChangeResourceAttributeValue("host.id", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.mac", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("host.cpu.model.name", substituteWithStar),
@@ -217,8 +218,6 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("os.build.id", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("os.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("os.version", substituteWithStar),
-
-		pmetrictest.ChangeResourceAttributeValue("process.executable.name", substituteWithStar),
 
 		pmetrictest.ChangeDatapointAttributeValue("mountpoint", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("direction", substituteWithStar),
@@ -245,6 +244,49 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	// Logs
 	t.Logf("Checking logs...")
 	oteltest.WaitForLogs(t, 1, logsConsumer)
+
+	t.Logf("Received %d log record(s)", logsConsumer.LogRecordCount())
+
+	// Assert that the operators transformed the fields correctly:
+	//   body._PID   -> body.pid
+	//   body._EXE   -> attributes.process.executable.name
+	//   body.MESSAGE -> body.message
+	var foundMessage, foundProcessExec bool
+	for _, logs := range logsConsumer.AllLogs() {
+		for i := 0; i < logs.ResourceLogs().Len(); i++ {
+			scopeLogs := logs.ResourceLogs().At(i).ScopeLogs()
+			for j := 0; j < scopeLogs.Len(); j++ {
+				logRecords := scopeLogs.At(j).LogRecords()
+				for k := 0; k < logRecords.Len(); k++ {
+					record := logRecords.At(k)
+
+					// Only inspect records whose body is a map (all journald records are)
+					if record.Body().Type() != pcommon.ValueTypeMap {
+						continue
+					}
+					body := record.Body().Map()
+
+					// Old field names must be absent – the move operators should have renamed them
+					_, hasPID := body.Get("_PID")
+					require.False(t, hasPID, "body._PID should have been moved to body.pid by the operator")
+					_, hasEXE := body.Get("_EXE")
+					require.False(t, hasEXE, "body._EXE should have been moved to attributes.process.executable.name by the operator")
+					_, hasMESSAGE := body.Get("MESSAGE")
+					require.False(t, hasMESSAGE, "body.MESSAGE should have been moved to body.message by the operator")
+
+					// Track that the new field names appear at least once across all records
+					if _, ok := body.Get("message"); ok {
+						foundMessage = true
+					}
+					if _, ok := record.Attributes().Get("process.executable.name"); ok {
+						foundProcessExec = true
+					}
+				}
+			}
+		}
+	}
+	require.True(t, foundMessage, "expected at least one log record with body.message (moved from body.MESSAGE by the operator)")
+	require.True(t, foundProcessExec, "expected at least one log record with attributes.process.executable.name (moved from body._EXE by the operator)")
 
 	t.Log("Logs checked successfully")
 
@@ -278,10 +320,11 @@ func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.Metr
 
 	expectedMerged := testutil.MergeResources(expectedMetrics)
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMerged, testutil.MergeResources(consumer.AllMetrics()[len(consumer.AllMetrics())-1]),
-			options...,
-		),
-		)
+		actualMerged := testutil.MergeResources(consumer.AllMetrics()[len(consumer.AllMetrics())-1])
+		err := pmetrictest.CompareMetrics(expectedMerged, actualMerged, options...)
+		// the commented line below prints the diff between expected and actual metrics in case of a test failure
+		// testutil.Debug(err, t, expectedMerged, actualMerged)
+		assert.NoError(tt, err)
 	}, timeout, tick)
 }
 

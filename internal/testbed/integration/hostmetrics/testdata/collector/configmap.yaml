@@ -4,5 +4,5 @@ metadata:
   name: {{ .Name }}-config
   namespace: e2ehostmetrics
 data:
-  relay: |
+  config.yaml: |
 {{ .CollectorConfig }}

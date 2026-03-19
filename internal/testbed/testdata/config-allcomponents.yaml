@@ -1,4 +1,8 @@
 receivers:
+  journald:
+    directory: /run/log/journal
+    priority: info
+    start_at: end
   kafka:
     traces:
     metrics:

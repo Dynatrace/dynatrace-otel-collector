@@ -7,4 +7,4 @@ comprehensive as a basis.
 
 ## Attribution
 
-All payloads in this directory were derived from test cases provided in the `syslogtest` package [here](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/stanza/operator/parser/syslog/syslogtest/data.go#L46).
+All payloads in this directory were derived from test cases provided in the `syslogtest` package [here](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/release/v0.147.x/pkg/stanza/operator/parser/syslog/syslogtest/data.go#L46).

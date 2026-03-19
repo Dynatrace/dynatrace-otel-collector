@@ -1,0 +1,9 @@
+change_type: bug_fix
+component: pkg/config/configoptional
+note: Fix `Unmarshal` methods not being called when config is wrapped inside `Optional`
+issues: [14500]
+subtext: |
+  This bug notably manifested in the fact that the `sending_queue::batch::sizer` config for exporters
+  stopped defaulting to `sending_queue::sizer`.
+change_logs: [user]
+

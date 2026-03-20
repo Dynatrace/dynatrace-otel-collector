@@ -3,6 +3,7 @@ package loadtest
 import (
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"path"
 	"path/filepath"
@@ -58,8 +59,10 @@ func GenericScenario(
 		sender,
 		receiver,
 		agentProc,
-		&testbed.PerfTestValidator{
-			IncludeLimitsInReport: true,
+		&safeTestcaseValidator{
+			inner: &testbed.PerfTestValidator{
+				IncludeLimitsInReport: true,
+			},
 		},
 		resultsSummary,
 		testbed.WithResourceLimits(loadOptions.resourceSpec),
@@ -118,9 +121,11 @@ func PullBasedSenderScenario(
 		sender,
 		receiver,
 		agentProc,
-		&simpleTestcaseValidator{
-			perfTestValidator: &testbed.PerfTestValidator{
-				IncludeLimitsInReport: true,
+		&safeTestcaseValidator{
+			inner: &simpleTestcaseValidator{
+				perfTestValidator: &testbed.PerfTestValidator{
+					IncludeLimitsInReport: true,
+				},
 			},
 		},
 		resultsSummary,
@@ -193,11 +198,41 @@ func genRandByteString(length int) string {
 	return string(b)
 }
 
+// safeTestcaseValidator wraps any TestCaseValidator and recovers from panics
+// in RecordResults. This is necessary because when a test fails before the
+// agent process is started (e.g. sender.Start() fails), the cleanup function
+// tc.Stop() still calls RecordResults(), which in turn calls
+// childProcessCollector.GetTotalConsumption(). That method dereferences internal
+// state that is nil when the agent was never started, causing a panic.
+type safeTestcaseValidator struct {
+	inner testbed.TestCaseValidator
+}
+
+func (s *safeTestcaseValidator) Validate(tc *testbed.TestCase) {
+	s.inner.Validate(tc)
+}
+
+func (s *safeTestcaseValidator) RecordResults(tc *testbed.TestCase) {
+	if tc == nil {
+		return
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("RecordResults skipped due to panic (agent likely never started): %v", r)
+		}
+	}()
+	s.inner.RecordResults(tc)
+}
+
+// simpleTestcaseValidator is a validator for pull-based / Prometheus scrape
+// scenarios that skips the standard data validation (since pulled metrics
+// don't go through the load generator in the same way) but still records
+// performance results.
 type simpleTestcaseValidator struct {
 	perfTestValidator *testbed.PerfTestValidator
 }
 
-func (simpleTestcaseValidator) Validate(tc *testbed.TestCase) {
+func (simpleTestcaseValidator) Validate(_ *testbed.TestCase) {
 }
 
 func (s simpleTestcaseValidator) RecordResults(tc *testbed.TestCase) {

@@ -6,7 +6,7 @@ require (
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	github.com/sigstore/cosign/v3 v3.0.5
 	go.opentelemetry.io/build-tools/chloggen v0.29.0
-	go.opentelemetry.io/collector/cmd/builder v0.147.0
+	go.opentelemetry.io/collector/cmd/builder v0.148.0
 )
 
 require (

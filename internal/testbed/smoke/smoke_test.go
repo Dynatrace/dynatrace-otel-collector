@@ -23,10 +23,6 @@ var duplicateAliasExporters = []string{
 	"otlphttp",
 }
 
-var duplicateAliasProcessors = []string{
-	"k8sattributes",
-}
-
 func TestCollectorStarts(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -124,7 +120,7 @@ func TestCollectorIsBuiltFromManifest(t *testing.T) {
 	assert.Equal(t, len(components.Connectors), len(manifestComponents.Connectors))
 	assert.Equal(t, len(components.Exporters), len(manifestComponents.Exporters)-len(duplicateAliasExporters))
 	assert.Equal(t, len(components.Extensions), len(manifestComponents.Extensions))
-	assert.Equal(t, len(components.Processors), len(manifestComponents.Processors)-len(duplicateAliasProcessors))
+	assert.Equal(t, len(components.Processors), len(manifestComponents.Processors))
 	assert.Equal(t, len(components.Receivers), len(manifestComponents.Receivers))
 }
 

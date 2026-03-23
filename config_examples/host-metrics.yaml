@@ -194,10 +194,19 @@ processors:
     metrics:
       datapoint:
         - metric.name == "system.cpu.utilization" and attributes["state"] == "idle"
-
   transform:
     error_mode: ignore
     metric_statements:
+      - context: datapoint
+        statements:
+          # Mark process metrics for deletion if the process uses less than 1 MiB of memory (value_int < 1048576 bytes).
+          # Adjust the threshold to your needs (e.g. 10485760 for 10 MiB).
+          # This filters out low-memory/insignificant processes to reduce cardinality.
+          - set(resource.attributes["delete-me"], "true") where metric.name == "process.memory.usage" and value_int < 1048576 and resource.attributes["process.executable.name"] != nil
+
+          # Allowlist: uncomment and add process executable names to always ingest regardless of memory usage.
+          # For regex pattern matching, use IsMatch() instead, e.g.: IsMatch(resource.attributes["process.executable.name"], "java.*")
+          # - delete_key(resource.attributes, "delete-me") where ContainsValue(["my-process", "another-process"], resource.attributes["process.executable.name"])
       - context: resource
         statements:
           # Replace spaces in process command line with underscores for cleaner entity IDs
@@ -239,6 +248,10 @@ processors:
         statements:
           # Average remaining datapoints (one per core) into a single host-level value
           - aggregate_on_attributes("mean") where metric.name == "system.cpu.utilization"
+
+  filter/delete-metrics:
+    metric_conditions:
+      - resource.attributes["delete-me"] != nil
 
   batch:
     send_batch_size: 3000
@@ -296,7 +309,7 @@ service:
   pipelines:
     metrics:
       receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
-      processors: [filter, resourcedetection, transform, cumulativetodelta, batch]
+      processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta, batch]
       exporters: [otlp_http]
     logs:
       receivers: [otlp, journald]

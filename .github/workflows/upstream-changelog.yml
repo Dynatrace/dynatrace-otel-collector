@@ -45,7 +45,7 @@ jobs:
           make chlog-update VERSION="$NEW_VERSION"
 
       - name: Build changelog generator
-        run: go build -o ./bin/changelog-generator ./internal/changelog-generator
+        run: cd internal/changelog-generator && go build -o ./../../bin/changelog-generator . && cd ../../
 
       - name: Fill upstream changelog placeholders
         env:

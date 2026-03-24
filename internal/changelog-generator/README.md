@@ -40,7 +40,7 @@ GITHUB_TOKEN=$(gh auth token) ./bin/changelog-generator -dry-run \
 ## Building
 
 ```sh
-go build -o ./bin/changelog-generator ./internal/changelog-generator
+cd internal/changelog-generator && go build -o ./../../bin/changelog-generator . && cd ../../
 ```
 
 ## How It Works

@@ -25,6 +25,7 @@ var duplicateAliasExporters = []string{
 
 var duplicateAliasProcessors = []string{
 	"k8sattributes",
+	"metricstarttime",
 }
 
 func TestCollectorStarts(t *testing.T) {

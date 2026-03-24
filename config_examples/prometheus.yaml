@@ -18,7 +18,7 @@ receivers:
 processors:
   cumulativetodelta:
     max_staleness: 25h
-  metricstarttime:
+  metric_start_time:
 
 exporters:
   otlp_http:
@@ -31,5 +31,5 @@ service:
   pipelines:
     metrics:
       receivers: [prometheus]
-      processors: [metricstarttime, cumulativetodelta]
+      processors: [metric_start_time, cumulativetodelta]
       exporters: [otlp_http]

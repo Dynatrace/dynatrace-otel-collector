@@ -67,3 +67,4 @@ providers:
 replaces:
   - github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider => ../internal/confmap/provider/eecprovider
   - google.golang.org/grpc => google.golang.org/grpc v1.79.3
+  - github.com/buger/jsonparser => github.com/buger/jsonparser v1.1.2

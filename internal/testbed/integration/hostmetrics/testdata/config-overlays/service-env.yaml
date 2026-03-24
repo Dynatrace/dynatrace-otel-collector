@@ -9,7 +9,7 @@ service:
   pipelines:
     metrics:
       receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
-      processors: [filter, resourcedetection, transform, cumulativetodelta, batch]
+      processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta, batch]
       exporters: [otlp_http]
     logs:
       receivers: [otlp, journald]

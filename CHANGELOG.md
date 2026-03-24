@@ -15,11 +15,31 @@ v0.148.0:
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.148.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.148.0>
 
+### ❗ Known Issues ❗
+
+- `service`: The collector's internal Prometheus metrics endpoint (`:8888`) now emits OTel service labels with underscore
+  names (`service_name`, `service_instance_id`, `service_version`) instead of dot-notation names (`service.name`,
+  `service.instance.id`, `service.version`). Users scraping this endpoint with the Prometheus receiver will see these renamed
+  labels in resource and datapoint attributes. As a workaround, add the following `metric_relabel_configs` to your scrape
+  config in prometheus receiver:
+
+  ```yaml
+  metric_relabel_configs:
+    - source_labels: [service_name]
+      target_label: service.name
+    - source_labels: [service_instance_id]
+      target_label: service.instance.id
+    - source_labels: [service_version]
+      target_label: service.version
+    - regex: service_name|service_instance_id|service_version
+      action: labeldrop
+  ```
+
+  Read [here](https://github.com/open-telemetry/opentelemetry-collector/issues/14814) for details and updates.
+
 ### 🛑 Breaking changes 🛑
 
 - `all`: Change metric units to be singular to match OTel specification, e.g. `{requests}` -> `{request}` ([#14753](https://github.com/open-telemetry/opentelemetry-collector/issues/14753))
-- `all`: Removes the k8slog receiver after being unmaintained for 3 months ([#46544](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46544))
-- `all`: Remove deprecated SAPM exporter ([#46555](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46555))
 - `exporter/kafka`: Remove deprecated top-level `topic` and `encoding` configuration fields ([#46916](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46916))
   The top-level `topic` and `encoding` fields were deprecated in v0.124.0.
   Use the per-signal fields instead: `logs::topic`, `metrics::topic`,
@@ -29,8 +49,6 @@ v0.148.0:
   The default `truncate_all` behavior has changed. Truncation now respects UTF-8 character boundaries by default (new optional parameter `utf8_safe`, default: `true`), so results stay valid UTF-8 and may be slightly shorter than the limit.
   To keep the previous byte-level truncation behavior (e.g. for non-UTF-8 data or to avoid any behavior change), set `utf8_safe` to `false` in all `truncate_all` usages.
 - `exporter/kafka`: Remove kafka-local batching partitioner wiring and require explicit `sending_queue::batch::partition::metadata_keys` configuration as a superset of `include_metadata_keys` when batching is enabled. ([#46757](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46757))
-- `all`: Remove the datadogsemantics processor. ([#46893](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46893))
-  If you need help, please contact Datadog support: https://www.datadoghq.com/support.
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
@@ -38,8 +56,7 @@ v0.148.0:
 ### 💡 Enhancements 💡
 
 - `pkg/service`: The internal status reporter no longer drops repeated Ok and RecoverableError statuses ([#14282](https://github.com/open-telemetry/opentelemetry-collector/issues/14282))
-  Status events can now carry metadata and there's value in allowing them to be emitted despite the status value itself 
-  not changing.
+  Status events can now carry metadata and there's value in allowing them to be emitted despite the status value itself not changing.
 - `receiver/kafka`: add kafka.topic, kafka.partition, kafka.offset to client metadata ([#45931](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45931))
 - `receiver/hostmetrics`: Enable re-aggregation feature for the filesystem scraper by setting `reaggregation_enabled` and adding `requirement_level` to attributes. ([#46616](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46616))
 - `receiver/hostmetrics`: Enables re-aggregation for nfs scraper ([#46386](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46386), [#46620](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46620))
@@ -47,6 +64,15 @@ v0.148.0:
 - `receiver/hostmetrics`: Enable metric re-aggregation for paging scrapers. ([#46386](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46386), [#46621](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46621))
 - `receiver/filelog`: Add `include_file_permissions` option ([#46504](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46504))
 - `pkg/stanza`: Implement `if` field support for the recombine operator so entries not matching the condition pass through unrecombined. ([#46048](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46048))
+- `pkg/zipkin`: Add feature gates to migrate semconv v1.12.0 attributes to v1.38.0 equivalents ([#45076](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45076))
+The following attribute keys from go.opentelemetry.io/otel/semconv/v1.12.0 can now be migrated to their v1.38.0 equivalents
+using feature gates (both default to disabled, preserving the old behavior):
+
+    `net.host.ip` -> `network.local.address` (enable `pkg.translator.zipkin.EmitV1NetworkConventions`)
+    `net.peer.ip` -> `network.peer.address` (enable `pkg.translator.zipkin.EmitV1NetworkConventions`)
+    To stop emitting the deprecated v1.12.0 attributes, also enable `pkg.translator.zipkinDontEmitV0NetworkConventions`
+    (requires `pkg.translator.zipkin.EmitV1NetworkConventions` to also be enabled).
+
 - `processor/resourcedetection`: Added IBM Cloud VPC resource detector to the Resource Detection Processor ([#46874](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46874))
 - `processor/redaction`: Document audit trail attributes emitted when `summary` is set to `debug` or `info` ([#46648](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46648))
   Adds an Audit Trail section to the README describing the diagnostic attributes
@@ -104,6 +130,8 @@ v0.148.0:
   early to prevent this panic and provide a clear error message.
 - `processor/filter`: Fix validation of include and exclude severity configurations so they run independently of LogConditions. ([#46883](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46883))
 - `processor/resourcedetection`: Fix collector panic on shutdown when the same processor is used in multiple pipelines with refresh_interval enabled. ([#46918](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46918))
+- `exporter/otlp_http`: Show the actual destination URL in error messages when request URL is modified by middleware. ([#14673](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/14673))
+  Unwraps the *url.Error returned by http.Client.Do() to prevent misleading error logs when a middleware extension dynamically updates the endpoint.
 
 ---
 

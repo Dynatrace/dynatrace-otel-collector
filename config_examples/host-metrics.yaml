@@ -202,11 +202,11 @@ processors:
           # Mark process metrics for deletion if the process uses less than 1 MiB of memory (value_int < 1048576 bytes).
           # Adjust the threshold to your needs (e.g. 10485760 for 10 MiB).
           # This filters out low-memory/insignificant processes to reduce cardinality.
-          - set(resource.attributes["delete-me"], "true") where metric.name == "process.memory.usage" and value_int < 1048576 and resource.attributes["process.executable.name"] != nil
+          - set(resource.attributes["low-memory-process"], "true") where metric.name == "process.memory.usage" and value_int < 1048576 and resource.attributes["process.executable.name"] != nil
 
           # Allowlist: uncomment and add process executable names to always ingest regardless of memory usage.
           # For regex pattern matching, use IsMatch() instead, e.g.: IsMatch(resource.attributes["process.executable.name"], "java.*")
-          # - delete_key(resource.attributes, "delete-me") where ContainsValue(["my-process", "another-process"], resource.attributes["process.executable.name"])
+          # - delete_key(resource.attributes, "low-memory-process") where ContainsValue(["my-process", "another-process"], resource.attributes["process.executable.name"])
       - context: resource
         statements:
           # Replace spaces in process command line with underscores for cleaner entity IDs
@@ -251,7 +251,7 @@ processors:
 
   filter/delete-metrics:
     metric_conditions:
-      - resource.attributes["delete-me"] != nil
+      - resource.attributes["low-memory-process"] != nil
 
   batch:
     send_batch_size: 3000

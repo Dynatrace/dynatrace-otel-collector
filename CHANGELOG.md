@@ -4,6 +4,152 @@
 
 <!-- next version -->
 
+## 0.46.0
+
+This release includes version v0.148.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.148.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.148.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.148.0>
+
+### ❗ Known Issues ❗
+
+- `service`: The collector's internal Prometheus metrics endpoint (`:8888`) now emits OTel service labels with underscore
+  names (`service_name`, `service_instance_id`, `service_version`) instead of dot-notation names (`service.name`,
+  `service.instance.id`, `service.version`). Users scraping this endpoint with the Prometheus receiver will see these renamed
+  labels in resource and datapoint attributes. As a workaround, add the following `metric_relabel_configs` to your scrape
+  config in prometheus receiver:
+
+  ```yaml
+  metric_relabel_configs:
+    - source_labels: [service_name]
+      target_label: service.name
+    - source_labels: [service_instance_id]
+      target_label: service.instance.id
+    - source_labels: [service_version]
+      target_label: service.version
+    - regex: service_name|service_instance_id|service_version
+      action: labeldrop
+  ```
+
+  Read [here](https://github.com/open-telemetry/opentelemetry-collector/issues/14814) for details and updates.
+
+### 🛑 Breaking changes 🛑
+
+- `all`: Change metric units to be singular to match OTel specification, e.g. `{requests}` -> `{request}` ([#14753](https://github.com/open-telemetry/opentelemetry-collector/issues/14753))
+- `exporter/kafka`: Remove deprecated top-level `topic` and `encoding` configuration fields ([#46916](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46916))
+  The top-level `topic` and `encoding` fields were deprecated in v0.124.0.
+  Use the per-signal fields instead: `logs::topic`, `metrics::topic`,
+  `traces::topic`, `profiles::topic`, and the corresponding `encoding`
+  fields under each signal section.
+- `pkg/ottl`: `truncate_all` function now supports UTF-8 safe truncation ([#36713](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36713))
+  The default `truncate_all` behavior has changed. Truncation now respects UTF-8 character boundaries by default (new optional parameter `utf8_safe`, default: `true`), so results stay valid UTF-8 and may be slightly shorter than the limit.
+  To keep the previous byte-level truncation behavior (e.g. for non-UTF-8 data or to avoid any behavior change), set `utf8_safe` to `false` in all `truncate_all` usages.
+- `exporter/kafka`: Remove kafka-local batching partitioner wiring and require explicit `sending_queue::batch::partition::metadata_keys` configuration as a superset of `include_metadata_keys` when batching is enabled. ([#46757](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46757))
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 💡 Enhancements 💡
+
+- `pkg/service`: The internal status reporter no longer drops repeated Ok and RecoverableError statuses ([#14282](https://github.com/open-telemetry/opentelemetry-collector/issues/14282))
+  Status events can now carry metadata and there's value in allowing them to be emitted despite the status value itself not changing.
+- `receiver/kafka`: add kafka.topic, kafka.partition, kafka.offset to client metadata ([#45931](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45931))
+- `receiver/hostmetrics`: Enable re-aggregation feature for the filesystem scraper by setting `reaggregation_enabled` and adding `requirement_level` to attributes. ([#46616](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46616))
+- `receiver/hostmetrics`: Enables re-aggregation for nfs scraper ([#46386](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46386), [#46620](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46620))
+- `pkg/ottl`: Improve unsupported type error diagnostics in the Len() OTTL function by including the runtime type in error messages. ([#46476](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46476))
+- `receiver/hostmetrics`: Enable metric re-aggregation for paging scrapers. ([#46386](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46386), [#46621](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46621))
+- `receiver/filelog`: Add `include_file_permissions` option ([#46504](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46504))
+- `pkg/stanza`: Implement `if` field support for the recombine operator so entries not matching the condition pass through unrecombined. ([#46048](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46048))
+- `pkg/zipkin`: Add feature gates to migrate semconv v1.12.0 attributes to v1.38.0 equivalents ([#45076](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45076))
+The following attribute keys from go.opentelemetry.io/otel/semconv/v1.12.0 can now be migrated to their v1.38.0 equivalents
+using feature gates (both default to disabled, preserving the old behavior):
+
+    `net.host.ip` -> `network.local.address` (enable `pkg.translator.zipkin.EmitV1NetworkConventions`)
+    `net.peer.ip` -> `network.peer.address` (enable `pkg.translator.zipkin.EmitV1NetworkConventions`)
+    To stop emitting the deprecated v1.12.0 attributes, also enable `pkg.translator.zipkinDontEmitV0NetworkConventions`
+    (requires `pkg.translator.zipkin.EmitV1NetworkConventions` to also be enabled).
+
+- `processor/resourcedetection`: Added IBM Cloud VPC resource detector to the Resource Detection Processor ([#46874](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46874))
+- `processor/redaction`: Document audit trail attributes emitted when `summary` is set to `debug` or `info` ([#46648](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46648))
+  Adds an Audit Trail section to the README describing the diagnostic attributes
+  the processor appends to spans, log records, and metric datapoints, including
+  a worked example. Also fixes the example output to omit zero-count attributes
+  that are never emitted, and restores URL Sanitization and Span Name Sanitization
+  as top-level README sections.
+- `receiver/statsd`: Add counter_type configuration option to control how counter values are represented (int, float, or stochastic_int) ([#45276](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45276))
+- `receiver/hostmetrics`: Enable dynamic metric reaggregation for the cpu scraper in the hostmetrics receiver. ([#46386](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46386))
+- `connector/spanmetrics`: Add support for W3C tracestate-based adjusted count in span metrics with stochastic rounding ([#45539](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45539))
+  The span metrics connector now supports extracting sampling information from W3C tracestate 
+  to generate extrapolated span metrics with adjusted counts. This enables accurate metric 
+  aggregation for sampled traces by computing stochastic-rounded adjusted counts based on 
+  the sampling threshold (ot.th field) in the tracestate. Key features include:
+
+  - Stochastic rounding for fractional adjusted counts using integer-only operations
+  - Single-entry cache for consecutive identical tracestates (4% overhead in benchmarks)
+  - Support for mixed-mode services where some spans have tracestate and others don't
+  - New sampling.method attribute to distinguish between adjusted and non-adjusted metrics
+  - Histogram support for observing multiple events at once
+
+  Performance characteristics:
+  - ~4% overhead for traces with tracestate (3-span batch: 3684ns → 3829ns). Overhead will further diminish with larger batches.
+  - Scales linearly with trace size (500 spans: 577μs → 581μs)
+  - Zero allocations for common cases with caching enabled
+- `receiver/hostmetrics`: Enable re-aggregation for processes scraper ([#46622](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46622))
+  Enabled the reaggregation feature gate for the processes scraper and set the status attribute requirement level to recommended.
+- `receiver/kafkametrics`: Enable re-aggregation feature for kafkametrics receiver to support dynamic metric attribute configuration at runtime. ([#46362](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46362))
+- `pkg/fileconsumer`: `filelog` receiver checkpoint storage now supports protobuf encoding behind a feature gate for improved performance and reduced storage usage ([#43266](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43266))
+  Added optional protobuf encoding for filelog checkpoint storage, providing ~7x faster decoding and 31% storage savings.
+  Enable with feature gate: `--feature-gates=filelog.protobufCheckpointEncoding`
+  The feature is in StageAlpha (disabled by default) and includes full backward compatibility with JSON checkpoints.
+- `receiver/hostmetrics`: Enable re-aggregation feature for the load scraper by setting `reaggregation_enabled`. ([#46617](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46617))
+- `receiver/hostmetrics`: Enable re-aggregation feature for the memory scraper to support dynamic metric attribute configuration at runtime. ([#46618](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46618))
+- `receiver/prometheus`: Graduate `receiver.prometheusreceiver.RemoveReportExtraScrapeMetricsConfig` feature gate to stable; deprecate `receiver.prometheusreceiver.EnableReportExtraScrapeMetrics` feature gate ([#44181](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44181))
+  The `report_extra_scrape_metrics` configuration option is now fully ignored; remove it from your configuration to avoid crashes.
+  The `receiver.prometheusreceiver.EnableReportExtraScrapeMetrics` feature gate is deprecated and will be removed in v0.148.0; use the `extra_scrape_metrics` Prometheus scrape configuration option instead.
+- `receiver/hostmetrics`: Enable re-aggregation feature for the disk scraper by setting `reaggregation_enabled` and adding `requirement_level` to attributes. ([#46615](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46615))
+- `receiver/hostmetrics`: Enable re-aggregation feature for the network scraper by setting `reaggregation_enabled` and adding `requirement_level` to attributes. ([#46619](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46619))
+
+### 🧰 Bug fixes 🧰
+
+- `exporter/debug`: Add printing of metric metadata in detailed verbosity. ([#14667](https://github.com/open-telemetry/opentelemetry-collector/issues/14667))
+- `processor/resourcedetection`: Fix consul detector `token_file` setting the file path as the literal token value instead of configuring the consul SDK to read the file ([#46745](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46745))
+  When `token_file` was configured, the file path string
+  was assigned to `api.Config.Token` instead of `api.Config.TokenFile`,
+  causing the consul API client to use the path as the authentication
+  token (always resulting in 403 Forbidden)."
+- `receiver/prometheus`: receiver/prometheusreceiver: return stable SeriesRef from AppendHistogram for correct per-series staleness tracking ([#44528](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44528))
+- `exporter/kafka`: Add `MergeCtx` to preserve `include_metadata_keys` when batching is enabled. ([#46718](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46718))
+- `exporter/kafka`: Validate that `topic_from_metadata_key` is present in `include_metadata_keys` when configured, with clear config validation errors. ([#46711](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46711))
+- `receiver/prometheus`: Validate target allocator interval during configuration to prevent runtime panic when interval is set to 0 or a negative value. ([#46700](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46700))
+  Previously, setting `interval` to 0s or a negative value would cause a runtime panic when
+  `time.NewTicker()` was called with an invalid duration. The configuration is now validated
+  early to prevent this panic and provide a clear error message.
+- `processor/filter`: Fix validation of include and exclude severity configurations so they run independently of LogConditions. ([#46883](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46883))
+- `processor/resourcedetection`: Fix collector panic on shutdown when the same processor is used in multiple pipelines with refresh_interval enabled. ([#46918](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46918))
+- `exporter/otlp_http`: Show the actual destination URL in error messages when request URL is modified by middleware. ([#14673](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/14673))
+  Unwraps the *url.Error returned by http.Client.Do() to prevent misleading error logs when a middleware extension dynamically updates the endpoint.
+
+---
+
+</details>
+
+
+#### Dynatrace distribution changelog:
+
+### 🚀 New components 🚀
+
+- `receiver/journald`: Introduce journald receiver in the distribution. (#873)
+
+### 💡 Enhancements 💡
+
+- `release`: The release workflow now publishes SLSA Level 2 build provenance attestations for produced binary artifacts and container images to strengthen supply-chain security. (#869)
+
+<!-- previous-version -->
+
 ## v0.45.0
 
 This release includes versions v0.146.0 and v0.147.0 of the upstream Collector components.

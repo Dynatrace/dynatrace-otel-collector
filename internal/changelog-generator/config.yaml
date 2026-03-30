@@ -15,6 +15,7 @@ allowlist:
   - "pkg/config/configgrpc"
   - "pkg/confmap"
   - "pkg/service"
+  - "pkg/zipkin"
   - "pkg/exporterhelper"
   - "pkg/kafka/configkafka"
   - "pkg/config/configoptional"

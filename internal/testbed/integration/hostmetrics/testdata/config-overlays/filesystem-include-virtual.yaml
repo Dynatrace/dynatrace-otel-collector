@@ -1,0 +1,3 @@
+      filesystem:
+        include_virtual_filesystems: true
+        metrics:

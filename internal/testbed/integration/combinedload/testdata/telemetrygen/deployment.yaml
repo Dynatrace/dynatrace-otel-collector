@@ -25,7 +25,7 @@ spec:
             - --rate=5000
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --severity-text="loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongText"
-          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.148.0@sha256:55beefe284b1a3aad3ff9d3a470485042545248be34dea1a3d6a46e2566382d4
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.149.0@sha256:bc690011cc541a6c1ecf494e2fe9f8398ca91ef0b83a1c3f18e521de83967183
           imagePullPolicy: IfNotPresent
           name: telemetrygen-logs
         - command:
@@ -45,7 +45,7 @@ spec:
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey8="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey9="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey10="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
-          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.148.0@sha256:55beefe284b1a3aad3ff9d3a470485042545248be34dea1a3d6a46e2566382d4
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.149.0@sha256:bc690011cc541a6c1ecf494e2fe9f8398ca91ef0b83a1c3f18e521de83967183
           imagePullPolicy: IfNotPresent
           name: telemetrygen-metrics
         - command:
@@ -65,7 +65,7 @@ spec:
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey8="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey9="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
             - --telemetry-attributes=loooooooooooooooooooooooooooooooooongKey10="loooooooooooooooooooooooooooooooooooooooooooooooooooongValue"
-          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.148.0@sha256:55beefe284b1a3aad3ff9d3a470485042545248be34dea1a3d6a46e2566382d4
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.149.0@sha256:bc690011cc541a6c1ecf494e2fe9f8398ca91ef0b83a1c3f18e521de83967183
           imagePullPolicy: IfNotPresent
           name: telemetrygen-traces
       restartPolicy: Always

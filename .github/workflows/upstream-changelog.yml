@@ -15,8 +15,8 @@ on:
         required: false
         type: string
 
-env:
-  GO_VERSION: "1.25.7"
+env: # renovate: datasource=golang-version depName=go
+  GO_VERSION: "1.26.1"
 
 jobs:
   generate-changelog:

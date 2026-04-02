@@ -23,6 +23,10 @@ var duplicateAliasExporters = []string{
 	"otlphttp",
 }
 
+var duplicateAliasReceivers = []string{
+	"filelog",
+}
+
 var duplicateAliasProcessors = []string{
 	"k8sattributes",
 	"metricstarttime",
@@ -126,7 +130,7 @@ func TestCollectorIsBuiltFromManifest(t *testing.T) {
 	assert.Equal(t, len(components.Exporters), len(manifestComponents.Exporters)-len(duplicateAliasExporters))
 	assert.Equal(t, len(components.Extensions), len(manifestComponents.Extensions))
 	assert.Equal(t, len(components.Processors), len(manifestComponents.Processors)-len(duplicateAliasProcessors))
-	assert.Equal(t, len(components.Receivers), len(manifestComponents.Receivers))
+	assert.Equal(t, len(components.Receivers), len(manifestComponents.Receivers)-len(duplicateAliasReceivers))
 }
 
 type componentMetadata struct {

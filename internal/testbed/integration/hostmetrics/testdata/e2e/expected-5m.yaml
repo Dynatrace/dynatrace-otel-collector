@@ -1560,7 +1560,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: '{processes}'
-          - description: Total number of created processes.
+          - description: Total number of created processes. Supported on Linux and OpenBSD.
             name: system.processes.created
             sum:
               aggregationTemporality: 1

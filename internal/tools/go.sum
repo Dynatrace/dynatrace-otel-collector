@@ -3550,8 +3550,8 @@ github.com/knadh/koanf/providers/file v1.2.1 h1:bEWbtQwYrA+W2DtdBrQWyXqJaJSG3KrP
 github.com/knadh/koanf/providers/file v1.2.1/go.mod h1:bp1PM5f83Q+TOUu10J/0ApLBd9uIzg+n9UgthfY+nRA=
 github.com/knadh/koanf/providers/fs v1.0.0 h1:tvn4MrduLgdOSUqqEHULUuIcELXf6xDOpH8GUErpYaY=
 github.com/knadh/koanf/providers/fs v1.0.0/go.mod h1:FksHET+xXFNDozvj8ZCdom54OnZ6eGKJtC5FhZJKx/8=
-github.com/knadh/koanf/v2 v2.3.3 h1:jLJC8XCRfLC7n4F+ZKKdBsbq1bfXTpuFhf4L7t94D94=
-github.com/knadh/koanf/v2 v2.3.3/go.mod h1:gRb40VRAbd4iJMYYD5IxZ6hfuopFcXBpc9bbQpZwo28=
+github.com/knadh/koanf/v2 v2.3.4 h1:fnynNSDlujWE+v83hAp8wKr/cdoxHLO0629SN+U8Urc=
+github.com/knadh/koanf/v2 v2.3.4/go.mod h1:gRb40VRAbd4iJMYYD5IxZ6hfuopFcXBpc9bbQpZwo28=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.3/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kr/fs v0.1.0/go.mod h1:FFnZGqtBN9Gxj7eW1uZ42v5BccTP0vu6NEaFoC2HwRg=
@@ -4041,8 +4041,8 @@ go.opentelemetry.io/auto/sdk v1.2.1 h1:jXsnJ4Lmnqd11kwkBV2LgLoFMZKizbCi5fNZ/ipaZ
 go.opentelemetry.io/auto/sdk v1.2.1/go.mod h1:KRTj+aOaElaLi+wW1kO/DZRXwkF4C5xPbEe3ZiIhN7Y=
 go.opentelemetry.io/build-tools/chloggen v0.29.0 h1:0HnDE47uJNlst1XtCukHB7sQYtUlJjmvdhWVdJn+GBU=
 go.opentelemetry.io/build-tools/chloggen v0.29.0/go.mod h1:eby4AVJQF5uanGCnErZdhDYBSW/EJ0iqejBFNJMN4DQ=
-go.opentelemetry.io/collector/cmd/builder v0.148.0 h1:a8mxjU7wyD1Qh9lj0UEfsNRL1/S1/yRDFuGkHIGlwbk=
-go.opentelemetry.io/collector/cmd/builder v0.148.0/go.mod h1:pFwU1tJbcpfD+K37IsTboMQ5jsgPBj8nhtkXpO+1WLE=
+go.opentelemetry.io/collector/cmd/builder v0.149.0 h1:ITeN3IiQT6Kiqc+Mo7M40Uh3B3yVhKOfugEiV9osauQ=
+go.opentelemetry.io/collector/cmd/builder v0.149.0/go.mod h1:ElmxpyeQW5fQSZAG5WnLfsKustgglJcI1SPlJRjLQxg=
 go.opentelemetry.io/contrib/detectors/gcp v1.29.0/go.mod h1:GW2aWZNwR2ZxDLdv8OyC2G8zkRoQBuURgV7RPQgcPoU=
 go.opentelemetry.io/contrib/detectors/gcp v1.31.0/go.mod h1:tzQL6E1l+iV44YFTkcAeNQqzXUiekSYP9jjJjXwEd00=
 go.opentelemetry.io/contrib/detectors/gcp v1.33.0/go.mod h1:ZHrLmr4ikK2AwRj9QL+c9s2SOlgoSRyMpNVzUj2fZqI=

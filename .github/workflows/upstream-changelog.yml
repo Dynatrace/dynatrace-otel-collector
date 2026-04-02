@@ -15,7 +15,7 @@ on:
         required: false
         type: string
 
-env: 
+env: # renovate: datasource=golang-version depName=go
   # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.26.1"
 

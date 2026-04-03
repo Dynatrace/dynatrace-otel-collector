@@ -283,5 +283,3 @@ require (
 )
 
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon
-
-replace google.golang.org/grpc => google.golang.org/grpc v1.79.3

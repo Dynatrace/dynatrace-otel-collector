@@ -340,3 +340,5 @@ require (
 replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => ../testcommon
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.79.3
+
+replace go.mongodb.org/mongo-driver => go.mongodb.org/mongo-driver v1.17.7

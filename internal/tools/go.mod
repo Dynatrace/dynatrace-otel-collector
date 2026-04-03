@@ -296,3 +296,5 @@ require (
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.79.3
+
+replace go.mongodb.org/mongo-driver => go.mongodb.org/mongo-driver v1.17.7

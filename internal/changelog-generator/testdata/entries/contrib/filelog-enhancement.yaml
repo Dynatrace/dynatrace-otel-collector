@@ -1,5 +1,5 @@
 change_type: enhancement
-component: receiver/filelog
+component: receiver/file_log
 note: Suppress repeated permission-denied errors
 issues: [39491]
 subtext: |

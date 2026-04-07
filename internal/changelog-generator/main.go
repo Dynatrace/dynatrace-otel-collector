@@ -33,15 +33,23 @@ func run(manifestPath, configPath, changelogPath string, dryRun bool, prURLs []s
 		return FillUpstreamPlaceholders(changelogPath, UpstreamContent{})
 	}
 
-	// 1. Parse manifest.yaml.
-	components, distVersion, err := ParseManifest(manifestPath)
+	// 1. Fetch upstream chloggen configs and build lookup index.
+	chloggen, err := ParseChloggenConfig(ChloggenCoreURL, ChloggenContribURL)
+	if err != nil {
+		return fmt.Errorf("fetching chloggen config: %w", err)
+	}
+	index := BuildChloggenIndex(chloggen)
+	fmt.Fprintf(os.Stderr, "info: %d upstream components loaded from chloggen\n", len(chloggen))
+
+	// 2. Parse manifest.yaml.
+	components, distVersion, err := ParseManifest(manifestPath, index)
 	if err != nil {
 		return fmt.Errorf("parsing manifest: %w", err)
 	}
 	fmt.Fprintf(os.Stderr, "info: dist version: %s, %d components loaded from manifest\n",
 		distVersion, len(components))
 
-	// 2. Parse config.yaml.
+	// 3. Parse config.yaml.
 	cfg, err := ParseConfig(configPath)
 	if err != nil {
 		return fmt.Errorf("parsing config: %w", err)
@@ -49,7 +57,7 @@ func run(manifestPath, configPath, changelogPath string, dryRun bool, prURLs []s
 	fmt.Fprintf(os.Stderr, "info: %d allowlist, %d denylist entries\n",
 		len(cfg.Allowlist), len(cfg.Denylist))
 
-	// 3. Fetch and parse chloggen entries from each PR.
+	// 4. Fetch and parse chloggen entries from each PR.
 	client := newGitHubClient()
 	var allEntries []ChangelogEntry
 
@@ -72,20 +80,20 @@ func run(manifestPath, configPath, changelogPath string, dryRun bool, prURLs []s
 		allEntries = append(allEntries, entries...)
 	}
 
-	// 4. Filter entries.
+	// 5. Filter entries.
 	fc := FilterEntries(allEntries, components, cfg)
 	fc.DistVersion = canonicalVersion(distVersion)
 	fmt.Fprintf(os.Stderr, "info: filtered to %d breaking, %d deprecations, %d new components, %d enhancements, %d bug fixes\n",
 		len(fc.Breaking), len(fc.Deprecations), len(fc.NewComponents),
 		len(fc.Enhancements), len(fc.BugFixes))
 
-	// 5. Generate upstream content.
+	//6. Generate upstream content.
 	if highestVersion(fc.UpstreamVersions) == "" {
 		return fmt.Errorf("no valid upstream versions found — check PR URLs and versions.yaml content")
 	}
 	content := GenerateUpstreamContent(fc)
 
-	// 6. Output.
+	// 7. Output.
 	if dryRun {
 		fmt.Printf("Version intro:     %s\n\n", content.VersionIntro)
 		fmt.Printf("Collector versions:\n%s\n\n", content.CollectorVersions)

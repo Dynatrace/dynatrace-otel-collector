@@ -5,7 +5,31 @@ import (
 )
 
 func TestParseManifest(t *testing.T) {
-	components, distVersion, err := ParseManifest("testdata/manifest.yaml")
+	// Build a fake chloggen index from the expected IDs so the test
+	// doesn't make real HTTP calls.
+	expected := []string{
+		"receiver/otlp",
+		"receiver/file_log", // canonical chloggen form
+		"receiver/hostmetrics",
+		"receiver/prometheus",
+		"exporter/otlp",
+		"exporter/otlp_http", // canonical chloggen form
+		"exporter/loadbalancing",
+		"extension/file_storage", // canonical chloggen form
+		"extension/health_check", // canonical chloggen form
+		"processor/batch",
+		"processor/resourcedetection",
+		"processor/k8s_attributes", // canonical chloggen form
+		"processor/tail_sampling",  // canonical chloggen form
+		"connector/spanmetrics",
+	}
+	fakeChloggen := make(map[string]bool, len(expected))
+	for _, id := range expected {
+		fakeChloggen[id] = true
+	}
+	index := BuildChloggenIndex(fakeChloggen)
+
+	components, distVersion, err := ParseManifest("testdata/manifest.yaml", index)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -13,23 +37,7 @@ func TestParseManifest(t *testing.T) {
 		t.Errorf("distVersion: got %q, want %q", distVersion, "0.44.0")
 	}
 
-	// Check a selection of expected component IDs.
-	expected := []string{
-		"receiver/otlp",
-		"receiver/filelog",
-		"receiver/hostmetrics",
-		"receiver/prometheus",
-		"exporter/otlp",
-		"exporter/otlphttp",
-		"exporter/loadbalancing",
-		"extension/filestorage",
-		"extension/healthcheck",
-		"processor/batch",
-		"processor/resourcedetection",
-		"processor/k8sattributes",
-		"processor/tailsampling",
-		"connector/spanmetrics",
-	}
+	// Check using canonical chloggen IDs (with underscores where applicable).
 	for _, c := range expected {
 		if !components[c] {
 			t.Errorf("expected component %q to be in set", c)
@@ -54,7 +62,7 @@ func TestGomodToComponentID(t *testing.T) {
 		},
 		{
 			"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.145.0",
-			"receiver", "receiver/filelog",
+			"receiver", "receiver/filelog", // intermediate form — "file_log" is resolved via index later
 		},
 		{
 			"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.145.0",

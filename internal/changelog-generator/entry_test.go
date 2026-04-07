@@ -17,8 +17,8 @@ func TestParseChloggenEntry_Enhancement(t *testing.T) {
 	if entry == nil {
 		t.Fatal("expected entry, got nil")
 	}
-	if entry.Component != "receiver/filelog" {
-		t.Errorf("component: got %q, want %q", entry.Component, "receiver/filelog")
+	if entry.Component != "receiver/file_log" {
+		t.Errorf("component: got %q, want %q", entry.Component, "receiver/file_log")
 	}
 	if entry.ChangeType != Enhancement {
 		t.Errorf("change_type: got %q, want %q", entry.ChangeType, Enhancement)

@@ -42,16 +42,6 @@ v0.149.0:
 ### 💡 Enhancements 💡
 
 - `all`: Move aix/ppc64 to tier 3 support ([#13380](https://github.com/open-telemetry/opentelemetry-collector/issues/13380))
-- `all`: Upgrade the profiles stability status to alpha ([#14817](https://github.com/open-telemetry/opentelemetry-collector/issues/14817))
-  The following components have their profiles status upgraded from development to alpha:
-
-  * pdata/pprofile
-  * connector/forward
-  * exporter/debug
-  * receiver/nop
-  * exporter/nop
-  * exporter/otlp_grpc
-  * exporter/otlp_http
 - `processor/resourcedetection`: Added IBM Cloud VPC resource detector to the Resource Detection Processor ([#46874](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46874))
 - `receiver/prometheus`: Add support for reading instrumentation scope attributes from `otel_scope_<attribute-name>` labels while feature-gating deprecation of `otel_scope_info`. ([#41502](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41502))
   Scope attributes are always extracted from `otel_scope_<attribute-name>` labels on metrics.

@@ -5,7 +5,24 @@ import (
 )
 
 func TestParseManifest(t *testing.T) {
-	components, distVersion, err := ParseManifest("testdata/manifest.yaml")
+	index := map[string]string{
+		"receiver/otlp":               "receiver/otlp",
+		"receiver/filelog":            "receiver/file_log",
+		"receiver/hostmetrics":        "receiver/hostmetrics",
+		"receiver/prometheus":         "receiver/prometheus",
+		"exporter/otlp":               "exporter/otlp",
+		"exporter/otlphttp":           "exporter/otlp_http",
+		"exporter/loadbalancing":      "exporter/loadbalancing",
+		"extension/filestorage":       "extension/file_storage",
+		"extension/healthcheck":       "extension/health_check",
+		"processor/batch":             "processor/batch",
+		"processor/resourcedetection": "processor/resourcedetection",
+		"processor/k8sattributes":     "processor/k8s_attributes",
+		"processor/tailsampling":      "processor/tail_sampling",
+		"connector/spanmetrics":       "connector/spanmetrics",
+	}
+
+	components, distVersion, err := ParseManifest("testdata/manifest.yaml", index)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -13,21 +30,20 @@ func TestParseManifest(t *testing.T) {
 		t.Errorf("distVersion: got %q, want %q", distVersion, "0.44.0")
 	}
 
-	// Check a selection of expected component IDs.
 	expected := []string{
 		"receiver/otlp",
-		"receiver/filelog",
+		"receiver/file_log",
 		"receiver/hostmetrics",
 		"receiver/prometheus",
 		"exporter/otlp",
-		"exporter/otlphttp",
+		"exporter/otlp_http",
 		"exporter/loadbalancing",
-		"extension/filestorage",
-		"extension/healthcheck",
+		"extension/file_storage",
+		"extension/health_check",
 		"processor/batch",
 		"processor/resourcedetection",
-		"processor/k8sattributes",
-		"processor/tailsampling",
+		"processor/k8s_attributes",
+		"processor/tail_sampling",
 		"connector/spanmetrics",
 	}
 	for _, c := range expected {
@@ -36,7 +52,6 @@ func TestParseManifest(t *testing.T) {
 		}
 	}
 
-	// Providers should NOT be in the component set.
 	if components["provider/envprovider"] {
 		t.Error("providers should not be included in component set")
 	}
@@ -54,7 +69,7 @@ func TestGomodToComponentID(t *testing.T) {
 		},
 		{
 			"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.145.0",
-			"receiver", "receiver/filelog",
+			"receiver", "receiver/filelog", // intermediate form — "file_log" is resolved via index later
 		},
 		{
 			"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.145.0",

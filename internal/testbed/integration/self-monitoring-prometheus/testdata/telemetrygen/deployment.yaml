@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}-{{ .DataType }}-deployment
+  namespace: e2eselfmonitoringpromcheck
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Name }}-{{ .DataType }}-deployment
+  template:
+    metadata:
+      annotations:
+        workload: deployment
+      labels:
+        app: {{ .Name }}-{{ .DataType }}-deployment
+    spec:
+      containers:
+      - command:
+        - /telemetrygen
+        - traces
+        - --otlp-http
+        - --otlp-insecure
+        - --otlp-endpoint={{ .OTLPEndpoint }}:4318
+        - --duration=36000s
+        - --rate=1
+        - --batch=false
+        - --otlp-attributes=service.name="test-traces-deployment"
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.149.0@sha256:bc690011cc541a6c1ecf494e2fe9f8398ca91ef0b83a1c3f18e521de83967183
+        imagePullPolicy: IfNotPresent
+        name: telemetrygen-traces
+      - command:
+        - /telemetrygen
+        - metrics
+        - --otlp-http
+        - --otlp-insecure
+        - --otlp-endpoint={{ .OTLPEndpoint }}:4318
+        - --duration=36000s
+        - --rate=1
+        - --batch=false
+        - --otlp-attributes=service.name="test-metrics-deployment"
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.149.0@sha256:bc690011cc541a6c1ecf494e2fe9f8398ca91ef0b83a1c3f18e521de83967183
+        imagePullPolicy: IfNotPresent
+        name: telemetrygen-metrics
+      - command:
+        - /telemetrygen
+        - logs
+        - --otlp-http
+        - --otlp-insecure
+        - --otlp-endpoint={{ .OTLPEndpoint }}:4318
+        - --duration=36000s
+        - --rate=1
+        - --batch=false
+        - --otlp-attributes=service.name="test-logs-deployment"
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.149.0@sha256:bc690011cc541a6c1ecf494e2fe9f8398ca91ef0b83a1c3f18e521de83967183
+        imagePullPolicy: IfNotPresent
+        name: telemetrygen-logs
+      restartPolicy: Always

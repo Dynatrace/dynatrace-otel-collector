@@ -1,0 +1,2846 @@
+resourceMetrics:
+  - resource:
+      attributes:
+        - key: k8s.namespace.name
+          value:
+            stringValue: e2eselfmonitoringcheckmetrics
+        - key: k8s.node.name
+          value:
+            stringValue: kind-control-plane
+        - key: k8s.pod.name
+          value:
+            stringValue: otelcol-d44d05b4-868cf756d4-gls59
+        - key: service.instance.id
+          value:
+            stringValue: 4ac5306c-d9e3-4793-b274-ee69ac1f3d9f
+        - key: service.name
+          value:
+            stringValue: dynatrace-otel-collector
+        - key: service.version
+          value:
+            stringValue: 0.45.0
+    schemaUrl: https://opentelemetry.io/schemas/1.38.0
+    scopeMetrics:
+      - metrics:
+          - description: Number of units in the batch [Development]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  bucketCounts:
+                    - "14"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "14"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                  max: 5
+                  min: 4
+                  startTimeUnixNano: "1000000"
+                  sum: 64
+                  timeUnixNano: "2000000"
+            name: otelcol_processor_batch_batch_send_size
+            unit: '{unit}'
+          - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "2"
+                    - "8"
+                    - "0"
+                    - "4"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "14"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                    - 200000
+                    - 300000
+                    - 400000
+                    - 500000
+                    - 600000
+                    - 700000
+                    - 800000
+                    - 900000
+                    - 1e+06
+                    - 2e+06
+                    - 3e+06
+                    - 4e+06
+                    - 5e+06
+                    - 6e+06
+                    - 7e+06
+                    - 8e+06
+                    - 9e+06
+                  max: 1294
+                  min: 484
+                  startTimeUnixNano: "1000000"
+                  sum: 10646
+                  timeUnixNano: "2000000"
+            name: otelcol_processor_batch_batch_send_size_bytes
+            unit: By
+          - description: Number of times the batch was sent due to a size trigger [Development]
+            name: otelcol_processor_batch_batch_size_trigger_send
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "8"
+                  attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{time}'
+          - description: Number of distinct metadata value combinations being processed [Development]
+            name: otelcol_processor_batch_metadata_cardinality
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "6"
+                  attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{combination}'
+          - description: Number of times the batch was sent due to a timeout trigger [Development]
+            name: otelcol_processor_batch_timeout_trigger_send
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "6"
+                  attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{time}'
+        scope:
+          name: go.opentelemetry.io/collector/processor/batchprocessor
+      - metrics:
+          - description: Number of items passed to the processor. [Alpha]
+            name: otelcol_processor_incoming_items
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "19"
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: logs
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  exemplars:
+                    - asInt: "1"
+                      spanId: e7b95bb829f4a4ca
+                      timeUnixNano: "1773389128877231937"
+                      traceId: 8bb2dae0f53ee3030aa47b4deb71015d
+                    - asInt: "1"
+                      spanId: 5a54f32b6b67fb71
+                      timeUnixNano: "1773389126835671035"
+                      traceId: 398527feff874b3b49e0b94f460d2700
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "14"
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: cumulativetodelta
+                  exemplars:
+                    - asInt: "5"
+                      spanId: 1fa6ebcce4280807
+                      timeUnixNano: "1773389125782877989"
+                      traceId: 82aa2be4a442e8e359ebeaf5ea91877f
+                    - asInt: "4"
+                      spanId: 1bf43cb20103baf8
+                      timeUnixNano: "1773389130877908700"
+                      traceId: 71f6993d244dc910562b8dc1059e163a
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "24"
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  exemplars:
+                    - asInt: "1"
+                      spanId: 710a99a30d8cb76e
+                      timeUnixNano: "1773389125776496987"
+                      traceId: e4cba4c209ef2a7ea561268a929d7b4f
+                    - asInt: "1"
+                      spanId: 5f22a7d7f2c0626f
+                      timeUnixNano: "1773389132777906051"
+                      traceId: a2608e228e0b2022afa96330b8bd748f
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "19"
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: traces
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  exemplars:
+                    - asInt: "1"
+                      spanId: 8c975dab445e85af
+                      timeUnixNano: "1773389133722696600"
+                      traceId: d3ca64cd51a31847c266209c8df74395
+                    - asInt: "1"
+                      spanId: 8511e41df96256b4
+                      timeUnixNano: "1773389129725432743"
+                      traceId: 66722c5842abc8ea62c328f533abdc89
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{item}'
+          - description: Duration of time taken to process a batch of telemetry data through the processor. [Alpha]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: logs
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  bucketCounts:
+                    - "0"
+                    - "12"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "12"
+                  exemplars:
+                    - asDouble: 0.000302875
+                      spanId: aca451d9121aa00d
+                      timeUnixNano: "1773389134878873475"
+                      traceId: 0df3b93e20e3e13bf7ce72d7777f636a
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 0.000392667
+                  min: 0.000149041
+                  startTimeUnixNano: "1000000"
+                  sum: 0.0033748750000000003
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: cumulativetodelta
+                  bucketCounts:
+                    - "0"
+                    - "3"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "3"
+                  exemplars:
+                    - asDouble: 2.8667e-05
+                      spanId: f96e1c251579bb74
+                      timeUnixNano: "1773389134785412441"
+                      traceId: 70c6cacbf4f5bac7d20b828ad3755703
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 3.8833e-05
+                  min: 2.6375e-05
+                  startTimeUnixNano: "1000000"
+                  sum: 9.3875e-05
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  bucketCounts:
+                    - "0"
+                    - "13"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "13"
+                  exemplars:
+                    - asDouble: 0.000114584
+                      spanId: f96e1c251579bb74
+                      timeUnixNano: "1773389134785297150"
+                      traceId: 70c6cacbf4f5bac7d20b828ad3755703
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 0.00029175
+                  min: 0.000114584
+                  startTimeUnixNano: "1000000"
+                  sum: 0.0024802939999999996
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: traces
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  bucketCounts:
+                    - "0"
+                    - "12"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "12"
+                  exemplars:
+                    - asDouble: 0.000113792
+                      spanId: d0003655726febef
+                      timeUnixNano: "1773389133777720495"
+                      traceId: 34ba56066ca7f70379841731242dd87b
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 0.039452931
+                  min: 6.4709e-05
+                  startTimeUnixNano: "1000000"
+                  sum: 0.041150224
+                  timeUnixNano: "2000000"
+            name: otelcol_processor_internal_duration
+            unit: s
+          - description: Number of items emitted from the processor. [Alpha]
+            name: otelcol_processor_outgoing_items
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "19"
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: logs
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  exemplars:
+                    - asInt: "1"
+                      spanId: 3ec1cfdd8458b057
+                      timeUnixNano: "1773389133877964073"
+                      traceId: 115a05a4f7568aa78899b4df9826c1a2
+                    - asInt: "1"
+                      spanId: e7b95bb829f4a4ca
+                      timeUnixNano: "1773389128877257646"
+                      traceId: 8bb2dae0f53ee3030aa47b4deb71015d
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "14"
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: cumulativetodelta
+                  exemplars:
+                    - asInt: "5"
+                      spanId: 1fa6ebcce4280807
+                      timeUnixNano: "1773389125782926447"
+                      traceId: 82aa2be4a442e8e359ebeaf5ea91877f
+                    - asInt: "4"
+                      spanId: 1bf43cb20103baf8
+                      timeUnixNano: "1773389130877923908"
+                      traceId: 71f6993d244dc910562b8dc1059e163a
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "24"
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  exemplars:
+                    - asInt: "1"
+                      spanId: e43a296d4a72db61
+                      timeUnixNano: "1773389127776802291"
+                      traceId: 11f8d74e0888605b479dd6469127a5dc
+                    - asInt: "4"
+                      spanId: 1bf43cb20103baf8
+                      timeUnixNano: "1773389130877719408"
+                      traceId: 71f6993d244dc910562b8dc1059e163a
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "19"
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: traces
+                    - key: processor
+                      value:
+                        stringValue: filter
+                  exemplars:
+                    - asInt: "1"
+                      spanId: 437978a908722eeb
+                      timeUnixNano: "1773389125721774300"
+                      traceId: 7e8e9594fcc7d5f8e31c0561a5c2ecb8
+                    - asInt: "1"
+                      spanId: 8a9636ef610eaeca
+                      timeUnixNano: "1773389125724908676"
+                      traceId: 4bef2fa763805427ae1b4d336f3f33f6
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{item}'
+        scope:
+          name: go.opentelemetry.io/collector/processor/processorhelper
+      - metrics:
+          - description: Number of metric data points dropped by the filter processor [Development]
+            name: otelcol_processor_filter_datapoints.filtered
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: filter
+                      value:
+                        stringValue: filter
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 710a99a30d8cb76e
+                      timeUnixNano: "1773389125776385487"
+                      traceId: e4cba4c209ef2a7ea561268a929d7b4f
+                    - asInt: "0"
+                      spanId: 1fa6ebcce4280807
+                      timeUnixNano: "1773389125782565947"
+                      traceId: 82aa2be4a442e8e359ebeaf5ea91877f
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: Number of logs dropped by the filter processor [Development]
+            name: otelcol_processor_filter_logs.filtered
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: filter
+                      value:
+                        stringValue: filter
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 835724817d9f5feb
+                      timeUnixNano: "1773389130877590325"
+                      traceId: 825e6259ce989b4db3c6a9fc1a62157c
+                    - asInt: "0"
+                      spanId: b7e1a7f3d3e7fa7e
+                      timeUnixNano: "1773389129837352825"
+                      traceId: b10bf448f24cab841579e80162c4d3ed
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: Number of spans dropped by the filter processor [Development]
+            name: otelcol_processor_filter_spans.filtered
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: filter
+                      value:
+                        stringValue: filter
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 8511e41df96256b4
+                      timeUnixNano: "1773389129725260951"
+                      traceId: 66722c5842abc8ea62c328f533abdc89
+                    - asInt: "0"
+                      spanId: 8a9636ef610eaeca
+                      timeUnixNano: "1773389125724823385"
+                      traceId: 4bef2fa763805427ae1b4d336f3f33f6
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor
+      - metrics:
+          - description: Size of HTTP server request bodies.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: otelcol-d44d05b4
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "25"
+                    - "5"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "30"
+                  exemplars:
+                    - asInt: "139"
+                      spanId: f3285b9bf5b6c136
+                      timeUnixNano: "1773389134879637225"
+                      traceId: 0df3b93e20e3e13bf7ce72d7777f636a
+                    - asInt: "264"
+                      spanId: 9a6914b7b296d5ae
+                      timeUnixNano: "1773389133723471434"
+                      traceId: d3ca64cd51a31847c266209c8df74395
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 264
+                  min: 121
+                  startTimeUnixNano: "1000000"
+                  sum: 5165
+                  timeUnixNano: "2000000"
+            name: http.server.request.body.size
+            unit: By
+          - description: Size of HTTP server response bodies.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: otelcol-d44d05b4
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "30"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "30"
+                  exemplars:
+                    - asInt: "2"
+                      spanId: f3285b9bf5b6c136
+                      timeUnixNano: "1773389134879654350"
+                      traceId: 0df3b93e20e3e13bf7ce72d7777f636a
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 2
+                  min: 2
+                  startTimeUnixNano: "1000000"
+                  sum: 60
+                  timeUnixNano: "2000000"
+            name: http.server.response.body.size
+            unit: By
+          - description: Duration of HTTP server requests.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: otelcol-d44d05b4
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "30"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "30"
+                  exemplars:
+                    - asDouble: 0.0020779179999999998
+                      spanId: f3285b9bf5b6c136
+                      timeUnixNano: "1773389134879677059"
+                      traceId: 0df3b93e20e3e13bf7ce72d7777f636a
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.0026197919999999997
+                  min: 0.000770334
+                  startTimeUnixNano: "1000000"
+                  sum: 0.051627477
+                  timeUnixNano: "2000000"
+            name: http.server.request.duration
+            unit: s
+          - description: Size of HTTP client request bodies.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: host.docker.internal
+                    - key: server.port
+                      value:
+                        intValue: "4319"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asInt: "725"
+                      spanId: b82986245b40e7f2
+                      timeUnixNano: "1773389134083643230"
+                      traceId: e3161339b2e26fcdf5cfc7a7eebb39f0
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 725
+                  min: 580
+                  startTimeUnixNano: "1000000"
+                  sum: 1305
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: host.docker.internal
+                    - key: server.port
+                      value:
+                        intValue: "4320"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "3"
+                  exemplars:
+                    - asInt: "484"
+                      spanId: 2c929c0da279f1eb
+                      timeUnixNano: "1773389131047011261"
+                      traceId: 481c6a9e0921ef0254e677e1af7fa367
+                    - asInt: "605"
+                      spanId: ae740bf698676510
+                      timeUnixNano: "1773389134986644139"
+                      traceId: 9293206ac7f932dd16257378e8fd64c0
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 605
+                  min: 484
+                  startTimeUnixNano: "1000000"
+                  sum: 1694
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: host.docker.internal
+                    - key: server.port
+                      value:
+                        intValue: "4321"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asInt: "1294"
+                      spanId: ca9f372a4f91db83
+                      timeUnixNano: "1773389133975451733"
+                      traceId: 3cb8f2147043fbcd4e8e1b651e405f73
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 1294
+                  min: 1030
+                  startTimeUnixNano: "1000000"
+                  sum: 2324
+                  timeUnixNano: "2000000"
+            name: http.client.request.body.size
+            unit: By
+          - description: Duration of HTTP client requests.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: host.docker.internal
+                    - key: server.port
+                      value:
+                        intValue: "4319"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 0.0054919190000000005
+                      spanId: b82986245b40e7f2
+                      timeUnixNano: "1773389134083669897"
+                      traceId: e3161339b2e26fcdf5cfc7a7eebb39f0
+                    - asDouble: 0.10069462
+                      spanId: 0496839a70018a9f
+                      timeUnixNano: "1773389129986625712"
+                      traceId: b190cfb2c99c38a88ef37069eb580d33
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.10069462
+                  min: 0.0054919190000000005
+                  startTimeUnixNano: "1000000"
+                  sum: 0.106186539
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: host.docker.internal
+                    - key: server.port
+                      value:
+                        intValue: "4320"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "3"
+                  exemplars:
+                    - asDouble: 0.004642294
+                      spanId: 93fe52ef4b062526
+                      timeUnixNano: "1773389125883866942"
+                      traceId: 62e25b9dcaf12cc6ee004f64ff41bd9c
+                    - asDouble: 0.068653566
+                      spanId: 2c929c0da279f1eb
+                      timeUnixNano: "1773389131047050678"
+                      traceId: 481c6a9e0921ef0254e677e1af7fa367
+                    - asDouble: 0.106657664
+                      spanId: ae740bf698676510
+                      timeUnixNano: "1773389134986764347"
+                      traceId: 9293206ac7f932dd16257378e8fd64c0
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.106657664
+                  min: 0.004642294
+                  startTimeUnixNano: "1000000"
+                  sum: 0.179953524
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: host.docker.internal
+                    - key: server.port
+                      value:
+                        intValue: "4321"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 0.010894046
+                      spanId: ba90eda71ebd894b
+                      timeUnixNano: "1773389128886424982"
+                      traceId: e027b4c9efafdab3213cc1a71436ca9e
+                    - asDouble: 0.191944195
+                      spanId: ca9f372a4f91db83
+                      timeUnixNano: "1773389133975497400"
+                      traceId: 3cb8f2147043fbcd4e8e1b651e405f73
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.191944195
+                  min: 0.010894046
+                  startTimeUnixNano: "1000000"
+                  sum: 0.202838241
+                  timeUnixNano: "2000000"
+            name: http.client.request.duration
+            unit: s
+        scope:
+          name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+          version: 0.67.0
+      - metrics:
+          - description: Measures the duration of an outgoing Remote Procedure Call (RPC).
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: rpc.method
+                      value:
+                        stringValue: opentelemetry.proto.collector.logs.v1.LogsService/Export
+                    - key: rpc.response.status_code
+                      value:
+                        stringValue: OK
+                    - key: rpc.system.name
+                      value:
+                        stringValue: grpc
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 42.312849
+                      spanId: bff40c6210990cf3
+                      timeUnixNano: "1773389129881714758"
+                      traceId: bf2a6eee7c700a78ea005db24502be46
+                    - asDouble: 196.436362
+                      spanId: 307cb07a02057589
+                      timeUnixNano: "1773389134077992645"
+                      traceId: 8e0c30618ba79aab742b8c52d0f3bda5
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 196.436362
+                  min: 42.312849
+                  startTimeUnixNano: "1000000"
+                  sum: 238.749211
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: rpc.method
+                      value:
+                        stringValue: opentelemetry.proto.collector.metrics.v1.MetricsService/Export
+                    - key: rpc.response.status_code
+                      value:
+                        stringValue: OK
+                    - key: rpc.system.name
+                      value:
+                        stringValue: grpc
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "3"
+                  exemplars:
+                    - asDouble: 98.677119
+                      spanId: ff8824230d9b1ff3
+                      timeUnixNano: "1773389125877462148"
+                      traceId: 0cf4fad671f4a224353b8c6fa6b77866
+                    - asDouble: 101.295536
+                      spanId: bb4b1c89457bface
+                      timeUnixNano: "1773389134882037101"
+                      traceId: b86aac6d85a17050a7bf7819d8d095b8
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 194.84957
+                  min: 98.677119
+                  startTimeUnixNano: "1000000"
+                  sum: 394.822225
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: rpc.method
+                      value:
+                        stringValue: opentelemetry.proto.collector.trace.v1.TraceService/Export
+                    - key: rpc.response.status_code
+                      value:
+                        stringValue: OK
+                    - key: rpc.system.name
+                      value:
+                        stringValue: grpc
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 57.030437
+                      spanId: 835f609717f40186
+                      timeUnixNano: "1773389133879690115"
+                      traceId: 4ce56de5b625f200029efa3000ffeb26
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 57.030437
+                  min: 52.465686
+                  startTimeUnixNano: "1000000"
+                  sum: 109.496123
+                  timeUnixNano: "2000000"
+            name: rpc.client.call.duration
+            unit: s
+          - description: Measures the duration of an incoming Remote Procedure Call (RPC).
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: rpc.method
+                      value:
+                        stringValue: opentelemetry.proto.collector.logs.v1.LogsService/Export
+                    - key: rpc.response.status_code
+                      value:
+                        stringValue: OK
+                    - key: rpc.system.name
+                      value:
+                        stringValue: grpc
+                  bucketCounts:
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 4.76721
+                      spanId: f6ac29014fec5af7
+                      timeUnixNano: "1773389129880718591"
+                      traceId: 45b9b4047a4c2f717e674dc9b26fd2f4
+                    - asDouble: 67.423108
+                      spanId: 376ae554cae7bb5e
+                      timeUnixNano: "1773389134076246561"
+                      traceId: 8d3b40cce0eb31492fb3e99a6bbab38d
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 67.423108
+                  min: 4.76721
+                  startTimeUnixNano: "1000000"
+                  sum: 72.190318
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: rpc.method
+                      value:
+                        stringValue: opentelemetry.proto.collector.metrics.v1.MetricsService/Export
+                    - key: rpc.response.status_code
+                      value:
+                        stringValue: OK
+                    - key: rpc.system.name
+                      value:
+                        stringValue: grpc
+                  bucketCounts:
+                    - "0"
+                    - "3"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "3"
+                  exemplars:
+                    - asDouble: 3.038835
+                      spanId: 7807dd1ecd9994ab
+                      timeUnixNano: "1773389134786610734"
+                      traceId: 70c6cacbf4f5bac7d20b828ad3755703
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 4.732669
+                  min: 3.038835
+                  startTimeUnixNano: "1000000"
+                  sum: 12.104214
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: rpc.method
+                      value:
+                        stringValue: opentelemetry.proto.collector.trace.v1.TraceService/Export
+                    - key: rpc.response.status_code
+                      value:
+                        stringValue: OK
+                    - key: rpc.system.name
+                      value:
+                        stringValue: grpc
+                  bucketCounts:
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 4.198043
+                      spanId: 6bd412ffa939e2fd
+                      timeUnixNano: "1773389133779894537"
+                      traceId: 34ba56066ca7f70379841731242dd87b
+                    - asDouble: 44.686266
+                      spanId: 52f3b78fa73ec15d
+                      timeUnixNano: "1773389128779339319"
+                      traceId: ceedaf9e5e3b0d91c6e72d91ddf9e4b3
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 44.686266
+                  min: 4.198043
+                  startTimeUnixNano: "1000000"
+                  sum: 48.884309
+                  timeUnixNano: "2000000"
+            name: rpc.server.call.duration
+            unit: s
+        schemaUrl: https://opentelemetry.io/schemas/1.40.0
+        scope:
+          name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
+          version: 0.67.0
+      - metrics:
+          - description: Total CPU user and system time in seconds [Alpha]
+            name: otelcol_process_cpu_seconds
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: s
+          - description: Total physical memory (resident set size) [Alpha]
+            gauge:
+              dataPoints:
+                - asInt: "185470976"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: otelcol_process_memory_rss
+            unit: By
+          - description: Bytes of allocated heap objects (see 'go doc runtime.MemStats.HeapAlloc') [Alpha]
+            gauge:
+              dataPoints:
+                - asInt: "25015608"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: otelcol_process_runtime_heap_alloc_bytes
+            unit: By
+          - description: Cumulative bytes allocated for heap objects (see 'go doc runtime.MemStats.TotalAlloc') [Alpha]
+            name: otelcol_process_runtime_total_alloc_bytes
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "1884920"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: By
+          - description: Total bytes of memory obtained from the OS (see 'go doc runtime.MemStats.Sys') [Alpha]
+            gauge:
+              dataPoints:
+                - asInt: "35739912"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: otelcol_process_runtime_total_sys_memory_bytes
+            unit: By
+          - description: Uptime of the process [Alpha]
+            name: otelcol_process_uptime
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 9.997752686999995
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: s
+        scope:
+          name: go.opentelemetry.io/collector/service
+      - metrics:
+          - description: Number of units in the batch [Development]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  bucketCounts:
+                    - "7"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "7"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                  max: 5
+                  min: 4
+                  startTimeUnixNano: "1000000"
+                  sum: 32
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/logs
+                  bucketCounts:
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                  max: 5
+                  min: 4
+                  startTimeUnixNano: "1000000"
+                  sum: 9
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/metrics
+                  bucketCounts:
+                    - "3"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "3"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                  max: 5
+                  min: 4
+                  startTimeUnixNano: "1000000"
+                  sum: 14
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/traces
+                  bucketCounts:
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                  max: 5
+                  min: 4
+                  startTimeUnixNano: "1000000"
+                  sum: 9
+                  timeUnixNano: "2000000"
+            name: otelcol_exporter_queue_batch_send_size
+            unit: '{unit}'
+          - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "4"
+                    - "0"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "7"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                  max: 1294
+                  min: 484
+                  startTimeUnixNano: "1000000"
+                  sum: 5323
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/logs
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                  max: 725
+                  min: 580
+                  startTimeUnixNano: "1000000"
+                  sum: 1305
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/metrics
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "3"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                  max: 605
+                  min: 484
+                  startTimeUnixNano: "1000000"
+                  sum: 1694
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/traces
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                  max: 1294
+                  min: 1030
+                  startTimeUnixNano: "1000000"
+                  sum: 2324
+                  timeUnixNano: "2000000"
+            name: otelcol_exporter_queue_batch_send_size_bytes
+            unit: By
+          - description: Fixed capacity of the retry queue (in batches). [Alpha]
+            gauge:
+              dataPoints:
+                - asInt: "1000"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: logs
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1000"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: logs
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/logs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1000"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1000"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/metrics
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1000"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: traces
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1000"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: traces
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/traces
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: otelcol_exporter_queue_capacity
+            unit: '{batch}'
+          - description: Current size of the retry queue (in batches). [Alpha]
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: logs
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: logs
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/logs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/metrics
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: traces
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: traces
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/traces
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: otelcol_exporter_queue_size
+            unit: '{batch}'
+          - description: Number of log record successfully sent to destination. [Alpha]
+            name: otelcol_exporter_sent_log_records
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "9"
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  exemplars:
+                    - asInt: "4"
+                      spanId: e268ea2966492b44
+                      timeUnixNano: "1773389129883978842"
+                      traceId: 540254597b46225b272fadd368d0872f
+                    - asInt: "5"
+                      spanId: 44a00e44e5d3161b
+                      timeUnixNano: "1773389134076630686"
+                      traceId: 54ce12e3c032b6c948944019fe95e1ee
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "9"
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  exemplars:
+                    - asInt: "4"
+                      spanId: 8ecdd17502edbea2
+                      timeUnixNano: "1773389129881905549"
+                      traceId: bf2a6eee7c700a78ea005db24502be46
+                    - asInt: "5"
+                      spanId: cf41ac1437525597
+                      timeUnixNano: "1773389134078089270"
+                      traceId: 8e0c30618ba79aab742b8c52d0f3bda5
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "9"
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/logs
+                  exemplars:
+                    - asInt: "4"
+                      spanId: 992290c5b1806aad
+                      timeUnixNano: "1773389129987436129"
+                      traceId: b190cfb2c99c38a88ef37069eb580d33
+                    - asInt: "5"
+                      spanId: 61af41276b24b26f
+                      timeUnixNano: "1773389134084104647"
+                      traceId: e3161339b2e26fcdf5cfc7a7eebb39f0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{record}'
+          - description: Number of metric points successfully sent to destination. [Alpha]
+            name: otelcol_exporter_sent_metric_points
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "14"
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  exemplars:
+                    - asInt: "5"
+                      spanId: fe5c4efd5bbb1a9a
+                      timeUnixNano: "1773389125877334065"
+                      traceId: abdcb28b656837ebc458fd6289d7c593
+                    - asInt: "4"
+                      spanId: 1bbab8d9dbd804da
+                      timeUnixNano: "1773389130976627236"
+                      traceId: 81742f61ffb0a899510349d2edd8ff03
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "14"
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  exemplars:
+                    - asInt: "5"
+                      spanId: a7864214e97564a5
+                      timeUnixNano: "1773389125877641898"
+                      traceId: 0cf4fad671f4a224353b8c6fa6b77866
+                    - asInt: "4"
+                      spanId: 1c6018ed098df008
+                      timeUnixNano: "1773389130976183402"
+                      traceId: 3ada92728bbb592dbe1de739b9394d30
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "14"
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/metrics
+                  exemplars:
+                    - asInt: "5"
+                      spanId: aba67610254fa57a
+                      timeUnixNano: "1773389125884224275"
+                      traceId: 62e25b9dcaf12cc6ee004f64ff41bd9c
+                    - asInt: "4"
+                      spanId: 3bcb1cc110464bf2
+                      timeUnixNano: "1773389131047525969"
+                      traceId: 481c6a9e0921ef0254e677e1af7fa367
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{datapoint}'
+          - description: Number of spans successfully sent to destination. [Alpha]
+            name: otelcol_exporter_sent_spans
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "9"
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  exemplars:
+                    - asInt: "4"
+                      spanId: 39de73985065d316
+                      timeUnixNano: "1773389128782903778"
+                      traceId: 310d0e8ef8ff303dbc456b37aeefa51c
+                    - asInt: "5"
+                      spanId: 161964ceca0a62c4
+                      timeUnixNano: "1773389133782135538"
+                      traceId: 418b2c3e91cdf8fd1109505b67e23413
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "9"
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  exemplars:
+                    - asInt: "4"
+                      spanId: 45f0b335f260e47e
+                      timeUnixNano: "1773389128783166028"
+                      traceId: 7383e2db879090b9bd1f056809a54a9d
+                    - asInt: "5"
+                      spanId: fa63fdf07d4afdd0
+                      timeUnixNano: "1773389133879958990"
+                      traceId: 4ce56de5b625f200029efa3000ffeb26
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "9"
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/traces
+                  exemplars:
+                    - asInt: "4"
+                      spanId: f73cae4bc7ff8ae3
+                      timeUnixNano: "1773389128945522712"
+                      traceId: e027b4c9efafdab3213cc1a71436ca9e
+                    - asInt: "5"
+                      spanId: aff78a76fb112484
+                      timeUnixNano: "1773389133976152442"
+                      traceId: 3cb8f2147043fbcd4e8e1b651e405f73
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{span}'
+        scope:
+          name: go.opentelemetry.io/collector/exporter/exporterhelper
+      - metrics:
+          - description: Number of log records successfully pushed into the pipeline. [Alpha]
+            name: otelcol_receiver_accepted_log_records
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "9"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  exemplars:
+                    - asInt: "4"
+                      spanId: 6bba962e07306df9
+                      timeUnixNano: "1773389129878426340"
+                      traceId: 45b9b4047a4c2f717e674dc9b26fd2f4
+                    - asInt: "5"
+                      spanId: eeab579cb759979c
+                      timeUnixNano: "1773389133980004110"
+                      traceId: 8d3b40cce0eb31492fb3e99a6bbab38d
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "10"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp/2
+                    - key: transport
+                      value:
+                        stringValue: http
+                  exemplars:
+                    - asInt: "1"
+                      spanId: 11affa9eab4561f1
+                      timeUnixNano: "1773389125879408065"
+                      traceId: 12ed76069044a16e85c45b8a5bb20c72
+                    - asInt: "1"
+                      spanId: e7b95bb829f4a4ca
+                      timeUnixNano: "1773389128877335646"
+                      traceId: 8bb2dae0f53ee3030aa47b4deb71015d
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{record}'
+          - description: Number of metric points successfully pushed into the pipeline. [Alpha]
+            name: otelcol_receiver_accepted_metric_points
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "14"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  exemplars:
+                    - asInt: "5"
+                      spanId: 1fa6ebcce4280807
+                      timeUnixNano: "1773389125783031739"
+                      traceId: 82aa2be4a442e8e359ebeaf5ea91877f
+                    - asInt: "4"
+                      spanId: 1bf43cb20103baf8
+                      timeUnixNano: "1773389130877984992"
+                      traceId: 71f6993d244dc910562b8dc1059e163a
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "10"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp/2
+                    - key: transport
+                      value:
+                        stringValue: http
+                  exemplars:
+                    - asInt: "1"
+                      spanId: 5f22a7d7f2c0626f
+                      timeUnixNano: "1773389132778091843"
+                      traceId: a2608e228e0b2022afa96330b8bd748f
+                    - asInt: "1"
+                      spanId: 65146aee1fcb8969
+                      timeUnixNano: "1773389134778593814"
+                      traceId: fd016d302f836b8e8dbd17aa7892cf68
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{datapoint}'
+          - description: Number of spans successfully pushed into the pipeline. [Alpha]
+            name: otelcol_receiver_accepted_spans
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "9"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  exemplars:
+                    - asInt: "4"
+                      spanId: f07a960fbcf24ed1
+                      timeUnixNano: "1773389128776459234"
+                      traceId: ceedaf9e5e3b0d91c6e72d91ddf9e4b3
+                    - asInt: "5"
+                      spanId: d0003655726febef
+                      timeUnixNano: "1773389133777865495"
+                      traceId: 34ba56066ca7f70379841731242dd87b
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "10"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp/2
+                    - key: transport
+                      value:
+                        stringValue: http
+                  exemplars:
+                    - asInt: "1"
+                      spanId: acec65d69dfc97f7
+                      timeUnixNano: "1773389133725484268"
+                      traceId: 18582cc69813c6b1a4b1e4f784a57f55
+                    - asInt: "1"
+                      spanId: 9b0aa4bbd228da66
+                      timeUnixNano: "1773389129728013827"
+                      traceId: c40d7daf9debabc3b0e0b7122059d6ec
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{span}'
+          - description: The number of log records that failed to be processed by the receiver due to internal errors. [Alpha]
+            name: otelcol_receiver_failed_log_records
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 6bba962e07306df9
+                      timeUnixNano: "1773389129878598798"
+                      traceId: 45b9b4047a4c2f717e674dc9b26fd2f4
+                    - asInt: "0"
+                      spanId: eeab579cb759979c
+                      timeUnixNano: "1773389133980026693"
+                      traceId: 8d3b40cce0eb31492fb3e99a6bbab38d
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp/2
+                    - key: transport
+                      value:
+                        stringValue: http
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 11affa9eab4561f1
+                      timeUnixNano: "1773389125879461649"
+                      traceId: 12ed76069044a16e85c45b8a5bb20c72
+                    - asInt: "0"
+                      spanId: d11634e918d777ca
+                      timeUnixNano: "1773389131835542003"
+                      traceId: 16fb1d75e8d8e704bc69eeff41ca6042
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{record}'
+          - description: The number of metric points that failed to be processed by the receiver due to internal errors. [Alpha]
+            name: otelcol_receiver_failed_metric_points
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 1fa6ebcce4280807
+                      timeUnixNano: "1773389125783124031"
+                      traceId: 82aa2be4a442e8e359ebeaf5ea91877f
+                    - asInt: "0"
+                      spanId: 1bf43cb20103baf8
+                      timeUnixNano: "1773389130878016075"
+                      traceId: 71f6993d244dc910562b8dc1059e163a
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp/2
+                    - key: transport
+                      value:
+                        stringValue: http
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 544bcd67e338aa23
+                      timeUnixNano: "1773389133777159703"
+                      traceId: d0e8d369998f1c4fa84d75e5f59742f7
+                    - asInt: "0"
+                      spanId: 5f22a7d7f2c0626f
+                      timeUnixNano: "1773389132778134718"
+                      traceId: a2608e228e0b2022afa96330b8bd748f
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{datapoint}'
+          - description: The number of spans that failed to be processed by the receiver due to internal errors. [Alpha]
+            name: otelcol_receiver_failed_spans
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  exemplars:
+                    - asInt: "0"
+                      spanId: f07a960fbcf24ed1
+                      timeUnixNano: "1773389128776554651"
+                      traceId: ceedaf9e5e3b0d91c6e72d91ddf9e4b3
+                    - asInt: "0"
+                      spanId: d0003655726febef
+                      timeUnixNano: "1773389133777970953"
+                      traceId: 34ba56066ca7f70379841731242dd87b
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp/2
+                    - key: transport
+                      value:
+                        stringValue: http
+                  exemplars:
+                    - asInt: "0"
+                      spanId: b3d60ca8c01cbf49
+                      timeUnixNano: "1773389131724208172"
+                      traceId: 0c3fcc56c53e65c28ada0665e2079cad
+                    - asInt: "0"
+                      spanId: 8a9636ef610eaeca
+                      timeUnixNano: "1773389125725008426"
+                      traceId: 4bef2fa763805427ae1b4d336f3f33f6
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{span}'
+          - description: Number of log records that could not be pushed into the pipeline. [Alpha]
+            name: otelcol_receiver_refused_log_records
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 6bba962e07306df9
+                      timeUnixNano: "1773389129878546173"
+                      traceId: 45b9b4047a4c2f717e674dc9b26fd2f4
+                    - asInt: "0"
+                      spanId: eeab579cb759979c
+                      timeUnixNano: "1773389133980015151"
+                      traceId: 8d3b40cce0eb31492fb3e99a6bbab38d
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp/2
+                    - key: transport
+                      value:
+                        stringValue: http
+                  exemplars:
+                    - asInt: "0"
+                      spanId: b7e1a7f3d3e7fa7e
+                      timeUnixNano: "1773389129837577825"
+                      traceId: b10bf448f24cab841579e80162c4d3ed
+                    - asInt: "0"
+                      spanId: 835724817d9f5feb
+                      timeUnixNano: "1773389130877890075"
+                      traceId: 825e6259ce989b4db3c6a9fc1a62157c
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{record}'
+          - description: Number of metric points that could not be pushed into the pipeline. [Alpha]
+            name: otelcol_receiver_refused_metric_points
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 1fa6ebcce4280807
+                      timeUnixNano: "1773389125783082739"
+                      traceId: 82aa2be4a442e8e359ebeaf5ea91877f
+                    - asInt: "0"
+                      spanId: 1bf43cb20103baf8
+                      timeUnixNano: "1773389130877998825"
+                      traceId: 71f6993d244dc910562b8dc1059e163a
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp/2
+                    - key: transport
+                      value:
+                        stringValue: http
+                  exemplars:
+                    - asInt: "0"
+                      spanId: a9c569de2e08c59b
+                      timeUnixNano: "1773389130779542165"
+                      traceId: 37dc9fbd29a33f4fbb7758f3ae449aa4
+                    - asInt: "0"
+                      spanId: 0ce729a087ccfaf3
+                      timeUnixNano: "1773389126779507931"
+                      traceId: a488e8b04e768c63ebe3c373f5aedaa5
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{datapoint}'
+          - description: Number of spans that could not be pushed into the pipeline. [Alpha]
+            name: otelcol_receiver_refused_spans
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  exemplars:
+                    - asInt: "0"
+                      spanId: f07a960fbcf24ed1
+                      timeUnixNano: "1773389128776508568"
+                      traceId: ceedaf9e5e3b0d91c6e72d91ddf9e4b3
+                    - asInt: "0"
+                      spanId: d0003655726febef
+                      timeUnixNano: "1773389133777953995"
+                      traceId: 34ba56066ca7f70379841731242dd87b
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp/2
+                    - key: transport
+                      value:
+                        stringValue: http
+                  exemplars:
+                    - asInt: "0"
+                      spanId: 5760e36347ccaf36
+                      timeUnixNano: "1773389131727584506"
+                      traceId: 8d92bb997e7515fec660574010a532b7
+                    - asInt: "0"
+                      spanId: b3d60ca8c01cbf49
+                      timeUnixNano: "1773389131724176838"
+                      traceId: 0c3fcc56c53e65c28ada0665e2079cad
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{span}'
+        scope:
+          name: go.opentelemetry.io/collector/receiver/receiverhelper

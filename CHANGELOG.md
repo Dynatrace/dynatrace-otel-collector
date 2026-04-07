@@ -41,16 +41,6 @@ v0.149.0:
 
 ### 💡 Enhancements 💡
 
-- `all`: Upgrade the profiles stability status to alpha ([#14817](https://github.com/open-telemetry/opentelemetry-collector/issues/14817))
-  The following components have their profiles status upgraded from development to alpha:
-
-  * pdata/pprofile
-  * connector/forward
-  * exporter/debug
-  * receiver/nop
-  * exporter/nop
-  * exporter/otlp_grpc
-  * exporter/otlp_http
 - `all`: Move aix/ppc64 to tier 3 support ([#13380](https://github.com/open-telemetry/opentelemetry-collector/issues/13380))
 - `receiver/hostmetrics`: Enable re-aggregation for system scraper ([#46624](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46624))
   Enabled the reaggregation feature gate for the system scraper.

@@ -14,10 +14,6 @@ data:
           grpc:
             endpoint: ${env:MY_POD_IP}:4317
     processors:
-      batch:
-        send_batch_max_size: 1000
-        timeout: 10s
-        send_batch_size : 800
       memory_limiter:
         check_interval: 1s
         limit_percentage: 100
@@ -27,14 +23,21 @@ data:
         endpoint: {{ .HostEndpoint }}:4327
         tls:
           insecure: true
+        sending_queue: &queue_settings
+          batch:
+            min_size : 800
+            max_size: 1000
+            flush_timeout: 10s
       otlp_grpc/2:
         endpoint: {{ .HostEndpoint }}:4328
         tls:
           insecure: true
+        sending_queue: *queue_settings
       otlp_grpc/3:
         endpoint: {{ .HostEndpoint }}:4329
         tls:
           insecure: true
+        sending_queue: *queue_settings
 
     service:
       extensions:
@@ -44,7 +47,6 @@ data:
           receivers:
             - otlp
           processors:
-            - batch
             - memory_limiter
           exporters:
             - otlp_grpc
@@ -52,7 +54,6 @@ data:
           receivers:
             - otlp
           processors:
-            - batch
             - memory_limiter
           exporters:
             - otlp_grpc/2
@@ -60,7 +61,6 @@ data:
           receivers:
             - otlp
           processors:
-            - batch
             - memory_limiter
           exporters:
             - otlp_grpc/3

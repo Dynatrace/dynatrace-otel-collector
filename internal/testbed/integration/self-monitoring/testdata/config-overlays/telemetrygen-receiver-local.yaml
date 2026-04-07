@@ -1,39 +1,51 @@
   otlp_http/traces:
     endpoint: http://%[1]s:4321
+    sending_queue:
+      batch:
+        min_size: 5
+        flush_timeout: 5s
   otlp_http/metrics:
     endpoint: http://%[1]s:4320
+    sending_queue:
+      batch:
+        min_size: 5
+        flush_timeout: 5s
   otlp_http/logs:
     endpoint: http://%[1]s:4319
+    sending_queue:
+      batch:
+        min_size: 5
+        flush_timeout: 5s
 service:
   extensions:
     - health_check
   pipelines:
     traces/self2:
       receivers: [otlp/2]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [otlp_grpc/self]
 
     logs/self2:
       receivers: [otlp/2]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [otlp_grpc/self]
 
     metrics/self2:
       receivers: [otlp/2]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [otlp_grpc/self]
 
     traces:
       receivers: [otlp]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [debug, otlp_http/traces]
 
     logs:
       receivers: [otlp]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [debug, otlp_http/logs]
 
     metrics:
       receivers: [otlp]
-      processors: [filter, cumulativetodelta, batch]
+      processors: [filter, cumulativetodelta]
       exporters: [debug, otlp_http/metrics]

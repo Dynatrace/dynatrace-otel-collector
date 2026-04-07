@@ -253,10 +253,6 @@ processors:
     metric_conditions:
       - resource.attributes["low-memory-process"] != nil
 
-  batch:
-    send_batch_size: 3000
-    send_batch_max_size: 3000
-    timeout: 60s
   cumulativetodelta:
     max_staleness: 25h
   resourcedetection:
@@ -303,15 +299,20 @@ exporters:
     endpoint: "${env:DT_ENDPOINT}"
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
+    sending_queue:
+      batch:
+        min_size: 3000
+        max_size: 3000
+        flush_timeout: 60s
 
 service:
   extensions: [health_check]
   pipelines:
     metrics:
       receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
-      processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta, batch]
+      processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta]
       exporters: [otlp_http]
     logs:
       receivers: [otlp, journald]
-      processors: [resourcedetection, batch]
+      processors: [resourcedetection]
       exporters: [otlp_http]

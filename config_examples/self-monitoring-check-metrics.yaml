@@ -12,9 +12,6 @@ receivers:
         endpoint: 0.0.0.0:4318
 processors:
   cumulativetodelta:
-  batch:
-    send_batch_size: 5
-    timeout: 5s
   filter:
     error_mode: ignore
     traces:
@@ -33,46 +30,58 @@ exporters:
     endpoint: 0.0.0.0:4317
     tls:
       insecure: true
+    sending_queue:
+      batch:
+        min_size: 5
+        flush_timeout: 5s
   otlp_http/self:
     endpoint: http://0.0.0.0:4318
     tls:
       insecure: true
+    sending_queue:
+      batch:
+        min_size: 5
+        flush_timeout: 5s
   otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
+    sending_queue:
+      batch:
+        min_size: 5
+        flush_timeout: 5s
 service:
   extensions:
     - health_check
   pipelines:
     traces/self2:
       receivers: [otlp/2]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [otlp_grpc/self]
 
     logs/self2:
       receivers: [otlp/2]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [otlp_grpc/self]
 
     metrics/self2:
       receivers: [otlp/2]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [otlp_grpc/self]
 
     traces:
       receivers: [otlp]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [debug, otlp_http]
 
     logs:
       receivers: [otlp]
-      processors: [filter, batch]
+      processors: [filter]
       exporters: [debug, otlp_http]
 
     metrics:
       receivers: [otlp]
-      processors: [filter, cumulativetodelta, batch]
+      processors: [filter, cumulativetodelta]
       exporters: [debug, otlp_http]
   # turn on self-monitoring
   telemetry:

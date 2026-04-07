@@ -19,7 +19,6 @@ allowlist:
   - "pkg/exporterhelper"
   - "pkg/kafka/configkafka"
   - "pkg/config/configoptional"
-  - "receiver/file_log"
   # Global entries affecting all components
   - "all"
 

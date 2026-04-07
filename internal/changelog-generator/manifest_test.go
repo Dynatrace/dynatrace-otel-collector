@@ -5,29 +5,22 @@ import (
 )
 
 func TestParseManifest(t *testing.T) {
-	// Build a fake chloggen index from the expected IDs so the test
-	// doesn't make real HTTP calls.
-	expected := []string{
-		"receiver/otlp",
-		"receiver/file_log", // canonical chloggen form
-		"receiver/hostmetrics",
-		"receiver/prometheus",
-		"exporter/otlp",
-		"exporter/otlp_http", // canonical chloggen form
-		"exporter/loadbalancing",
-		"extension/file_storage", // canonical chloggen form
-		"extension/health_check", // canonical chloggen form
-		"processor/batch",
-		"processor/resourcedetection",
-		"processor/k8s_attributes", // canonical chloggen form
-		"processor/tail_sampling",  // canonical chloggen form
-		"connector/spanmetrics",
+	index := map[string]string{
+		"receiver/otlp":               "receiver/otlp",
+		"receiver/filelog":            "receiver/file_log",
+		"receiver/hostmetrics":        "receiver/hostmetrics",
+		"receiver/prometheus":         "receiver/prometheus",
+		"exporter/otlp":               "exporter/otlp",
+		"exporter/otlphttp":           "exporter/otlp_http",
+		"exporter/loadbalancing":      "exporter/loadbalancing",
+		"extension/filestorage":       "extension/file_storage",
+		"extension/healthcheck":       "extension/health_check",
+		"processor/batch":             "processor/batch",
+		"processor/resourcedetection": "processor/resourcedetection",
+		"processor/k8sattributes":     "processor/k8s_attributes",
+		"processor/tailsampling":      "processor/tail_sampling",
+		"connector/spanmetrics":       "connector/spanmetrics",
 	}
-	fakeChloggen := make(map[string]bool, len(expected))
-	for _, id := range expected {
-		fakeChloggen[id] = true
-	}
-	index := BuildChloggenIndex(fakeChloggen)
 
 	components, distVersion, err := ParseManifest("testdata/manifest.yaml", index)
 	if err != nil {
@@ -37,14 +30,28 @@ func TestParseManifest(t *testing.T) {
 		t.Errorf("distVersion: got %q, want %q", distVersion, "0.44.0")
 	}
 
-	// Check using canonical chloggen IDs (with underscores where applicable).
+	expected := []string{
+		"receiver/otlp",
+		"receiver/file_log",
+		"receiver/hostmetrics",
+		"receiver/prometheus",
+		"exporter/otlp",
+		"exporter/otlp_http",
+		"exporter/loadbalancing",
+		"extension/file_storage",
+		"extension/health_check",
+		"processor/batch",
+		"processor/resourcedetection",
+		"processor/k8s_attributes",
+		"processor/tail_sampling",
+		"connector/spanmetrics",
+	}
 	for _, c := range expected {
 		if !components[c] {
 			t.Errorf("expected component %q to be in set", c)
 		}
 	}
 
-	// Providers should NOT be in the component set.
 	if components["provider/envprovider"] {
 		t.Error("providers should not be included in component set")
 	}

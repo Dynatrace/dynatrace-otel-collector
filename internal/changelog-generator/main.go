@@ -33,15 +33,14 @@ func run(manifestPath, configPath, changelogPath string, dryRun bool, prURLs []s
 		return FillUpstreamPlaceholders(changelogPath, UpstreamContent{})
 	}
 
-	// 1. Fetch upstream chloggen configs and build lookup index.
-	chloggen, err := ParseChloggenConfig(ChloggenCoreURL, ChloggenContribURL)
+	// 1. Fetch upstream chloggen configs — returns normalized -> canonical index.
+	index, err := ParseChloggenConfig(ChloggenCoreURL, ChloggenContribURL)
 	if err != nil {
 		return fmt.Errorf("fetching chloggen config: %w", err)
 	}
-	index := BuildChloggenIndex(chloggen)
-	fmt.Fprintf(os.Stderr, "info: %d upstream components loaded from chloggen\n", len(chloggen))
+	fmt.Fprintf(os.Stderr, "info: %d upstream components loaded from chloggen\n", len(index))
 
-	// 2. Parse manifest.yaml.
+	// 2. Parse manifest.yaml — only components present in the index survive.
 	components, distVersion, err := ParseManifest(manifestPath, index)
 	if err != nil {
 		return fmt.Errorf("parsing manifest: %w", err)

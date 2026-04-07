@@ -39,9 +39,10 @@ type ChloggenConfig struct {
 }
 
 // ParseChloggenConfig fetches and parses one or more chloggen configs from URLs
-// or local paths, merging all components into a single set.
-func ParseChloggenConfig(urlsOrPaths ...string) (map[string]bool, error) {
-	set := make(map[string]bool)
+// or local paths, returning a map of normalized ID -> canonical chloggen ID.
+// e.g. "receiver/filelog" -> "receiver/file_log"
+func ParseChloggenConfig(urlsOrPaths ...string) (map[string]string, error) {
+	index := make(map[string]string)
 	for _, urlOrPath := range urlsOrPaths {
 		var data []byte
 		var err error
@@ -69,28 +70,17 @@ func ParseChloggenConfig(urlsOrPaths ...string) (map[string]bool, error) {
 		}
 
 		for _, c := range cfg.Components {
-			set[c] = true
+			normalized := strings.ReplaceAll(c, "_", "")
+			index[normalized] = c
 		}
 	}
-	return set, nil
-}
-
-// BuildChloggenIndex returns a map from normalized name (underscores removed)
-// to the canonical chloggen ID.
-// e.g. "receiver/filelog" -> "receiver/file_log"
-func BuildChloggenIndex(chloggen map[string]bool) map[string]string {
-	index := make(map[string]string, len(chloggen))
-	for id := range chloggen {
-		normalized := strings.ReplaceAll(id, "_", "")
-		index[normalized] = id
-	}
-	return index
+	return index, nil
 }
 
 // ParseManifest reads manifest.yaml and returns the set of canonical upstream
 // chloggen component IDs present in the manifest, plus the dist version.
 // Only components found in the provided chloggen index are included.
-func ParseManifest(path string, chloggenIndex map[string]string) (components map[string]bool, distVersion string, err error) {
+func ParseManifest(path string, index map[string]string) (components map[string]bool, distVersion string, err error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, "", fmt.Errorf("reading manifest: %w", err)
@@ -102,11 +92,11 @@ func ParseManifest(path string, chloggenIndex map[string]string) (components map
 	}
 
 	components = make(map[string]bool)
-	addComponents(components, "receiver", m.Receivers, chloggenIndex)
-	addComponents(components, "exporter", m.Exporters, chloggenIndex)
-	addComponents(components, "extension", m.Extensions, chloggenIndex)
-	addComponents(components, "processor", m.Processors, chloggenIndex)
-	addComponents(components, "connector", m.Connectors, chloggenIndex)
+	addComponents(components, "receiver", m.Receivers, index)
+	addComponents(components, "exporter", m.Exporters, index)
+	addComponents(components, "extension", m.Extensions, index)
+	addComponents(components, "processor", m.Processors, index)
+	addComponents(components, "connector", m.Connectors, index)
 	// Providers are not referenced in upstream changelogs — skip.
 
 	return components, m.Dist.Version, nil
@@ -129,7 +119,7 @@ func addComponents(dst map[string]bool, compType string, mods []GoMod, index map
 // gomodToComponentID converts a gomod string + component type into a
 // derived component ID (e.g. "receiver/filelog").
 // This is an intermediate form — the canonical chloggen ID is resolved
-// via BuildChloggenIndex.
+// via the chloggen index.
 //
 // Input example:
 //

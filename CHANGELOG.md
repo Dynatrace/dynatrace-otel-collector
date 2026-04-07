@@ -4,6 +4,129 @@
 
 <!-- next version -->
 
+## 0.47.0
+
+This release includes version v0.149.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.149.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.149.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.149.0>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/service`: Remove `service_name`, `service_instance_id`, and `service_version` as constant labels on every internal metric datapoint. These attributes are already present in `target_info` and were being duplicated on each series for OpenCensus backwards compatibility. ([#14811](https://github.com/open-telemetry/opentelemetry-collector/issues/14811))
+  Previously, the collector stamped every internal metric series (e.g. `otelcol_process_runtime_heap_alloc_bytes`)
+  with `service_name`, `service_instance_id`, and `service_version` labels to match the old OpenCensus behavior.
+  These attributes are now only present in the `target_info` metric, which is the correct Prometheus/OTel convention.
+  Users who filter or group by these labels on individual metrics will need to update their queries to use
+  `target_info` joins instead.
+- `receiver/prometheus`: Remove the deprecated `report_extra_scrape_metrics` receiver configuration option and obsolete extra scrape metric feature gates. ([#44181](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44181))
+  `report_extra_scrape_metrics` is no longer accepted in `prometheusreceiver` configuration.
+  Control extra scrape metrics through the PromConfig.ScrapeConfigs.ExtraScrapeMetrics setting instead.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### ⚠️ Deprecations ⚠️
+
+- `receiver/file_log`: Rename `filelog` receiver to `file_log` with deprecated alias `filelog` ([#45339](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45339))
+- `receiver/kafka`: Deprecate the built-in `azure_resource_logs` encoding in favour of `azureencodingextension`. ([#46267](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46267))
+  The built-in `azure_resource_logs` encoding does not support all timestamp formats
+  emitted by Azure services (e.g. US-format timestamps from Azure Functions).
+  Users should migrate to the [`azureencodingextension`](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/encoding/azureencodingextension),
+  which provides full control over time formats and is actively maintained.
+
+### 💡 Enhancements 💡
+
+- `all`: Move aix/ppc64 to tier 3 support ([#13380](https://github.com/open-telemetry/opentelemetry-collector/issues/13380))
+- `all`: Upgrade the profiles stability status to alpha ([#14817](https://github.com/open-telemetry/opentelemetry-collector/issues/14817))
+  The following components have their profiles status upgraded from development to alpha:
+
+  * pdata/pprofile
+  * connector/forward
+  * exporter/debug
+  * receiver/nop
+  * exporter/nop
+  * exporter/otlp_grpc
+  * exporter/otlp_http
+- `processor/resourcedetection`: Added IBM Cloud VPC resource detector to the Resource Detection Processor ([#46874](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46874))
+- `receiver/prometheus`: Add support for reading instrumentation scope attributes from `otel_scope_<attribute-name>` labels while feature-gating deprecation of `otel_scope_info`. ([#41502](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41502))
+  Scope attributes are always extracted from `otel_scope_<attribute-name>` labels on metrics.
+  The `receiver.prometheusreceiver.IgnoreScopeInfoMetric` feature gate (alpha, disabled by default)
+  controls only whether the legacy `otel_scope_info` metric is ignored for scope attribute extraction.
+  When the gate is disabled, both mechanisms coexist to support migration.
+  See the specification change for motivation: https://github.com/open-telemetry/opentelemetry-specification/pull/4505
+- `pkg/stanza`: Parse all Windows Event XML fields into the log body, including RenderingInfo (with Culture, Channel, Provider, Task, Opcode, Keywords, Message), UserData, ProcessingErrorData, DebugData, and BinaryEventData. ([#46943](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46943))
+  Previously, RenderingInfo was only used to derive the top-level level/task/opcode/keywords/message
+  fields. It is now also emitted as a top-level `rendering_info` key containing all fields including
+  `culture`, `channel`, and `provider`. UserData (an alternative to EventData used by some providers)
+  is now parsed into a `user_data` key. Rare schema elements ProcessingErrorData, DebugData, and
+  BinaryEventData are also captured when present.
+- `receiver/hostmetrics`: Enable re-aggregation for process scraper ([#46623](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46623))
+  Enabled the reaggregation feature gate for the process scraper and set all metric attributes (context_switch_type, direction, paging_fault_type, state) with requirement_level recommended.
+- `processor/resourcedetection`: Added IBM Cloud Classic resource detector to the Resource Detection Processor ([#46874](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46874))
+- `exporter/kafka`: Cache OTel metric attribute sets in OnBrokerE2E hook to reduce per-export allocations ([#47186](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47186))
+  `OnBrokerE2E` previously rebuilt `attribute.NewSet` + `metric.WithAttributeSet` on every
+    call. The set of distinct (nodeID, host, outcome) combinations is bounded by
+    2 × number-of-brokers, so the computed `MeasurementOption` is now cached per key.
+- `receiver/file_log`: Add `max_log_size_behavior` config option to control oversized log entry behavior ([#44371](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44371))
+  The new `max_log_size_behavior` setting controls what happens when a log entry exceeds `max_log_size`.
+  - `split` (default): Splits oversized log entries into multiple log entries. This is the existing behavior.
+  - `truncate`: Truncates oversized log entries and drops the remainder, emitting only a single truncated log entry.
+- `pkg/stanza`: Ensure router operator does not split batches of entries ([#42393](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42393))
+- `receiver/hostmetrics`: Enable re-aggregation for system scraper ([#46624](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46624))
+  Enabled the reaggregation feature gate for the system scraper.
+- `extension/health_check`: Add component event attributes to serialized output. ([#43606](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43606))
+  When `http.status.include_attributes` is enabled in the healthcheckv2 extension (with `use_v2: true`),
+  users will see additional attributes in the status output. These attributes provide more
+  context about component states, including details like error messages and affected components.
+  For example:
+  ```json
+  {
+    "healthy": false,
+    "status": "error",
+    "attributes": {
+      "error_msg": "not enough permissions to read cpu data",
+      "scrapers": ["cpu", "memory", "network"]
+    }
+  }
+  ```
+- `processor/tail_sampling`: Add `sampling_strategy` config with `trace-complete` and `span-ingest` modes for tail sampling decision timing and evaluation behavior. ([#46600](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46600))
+
+### 🧰 Bug fixes 🧰
+
+- `receiver/file_log`: Fixes bug where File Log receiver did not read the last line of gzip compressed files. ([#45572](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45572))
+- `receiver/hostmetrics`: Align HugePages metric instrument types with the semantic conventions by emitting page_size, reserved, and surplus as non-monotonic sums instead of gauges. ([#42650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42650))
+- `exporter/kafka`: Fixes the validation for `topic_from_metadata_key` to use partition keys. ([#46994](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46994))
+- `receiver/file_log`: Fix data corruption after file compression ([#46105](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46105))
+  After a log file is compressed (e.g. test.log → test.log.gz), the receiver configured with `compression: auto` will now correctly decompress the content and continue reading from where the plaintext file left off.
+- `processor/filter`: Fix validation of include and exclude severity configurations so they run independently of LogConditions. ([#46883](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46883))
+- `receiver/k8s_events`: Exclude DELETED watch events to prevent duplicate event ingestion. ([#47035](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47035))
+- `exporter/kafka`: Fix topic routing for multi-resource batches when `topic_from_attribute` is set without resource-level partitioning ([#46872](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46872))
+  Previously, when a batch contained multiple resources with different
+  topic attribute values, all data was silently sent to the topic of the
+  first resource. Each resource is now correctly routed to its own topic.
+- `receiver/journald`: Fix emitting of historical entries on startup ([#46556](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46556))
+  When start_at is "end" (the default), pass --lines=0 to journalctl to suppress
+  the 10 historical entries it emits by default in follow mode.
+- `receiver/hostmetrics`: Handle nil PageFaultsStat in process scraper to prevent panic on zombie processes. ([#47095](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47095))
+
+---
+
+</details>
+
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `config_examples`: Add process entity controls - filter out low-memory processes (<1 MiB) with an opt-in allowlist to always ingest specific processes (#901)
+
+<!-- previous-version -->
+
 ## 0.46.0
 
 This release includes version v0.148.0 of the upstream Collector components.

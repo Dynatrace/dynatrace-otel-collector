@@ -46,7 +46,7 @@ receivers:
     endpoint: "localhost:8125"
   zipkin:
     endpoint: "localhost:9411"
-  filelog:
+  file_log:
     include: [/dev/null]
   fluentforward:
     endpoint: 0.0.0.0:8006
@@ -215,7 +215,7 @@ extensions:
 service:
   pipelines:
     logs:
-      receivers: [filelog]
+      receivers: [file_log]
       exporters: [debug]
   telemetry:
     metrics:

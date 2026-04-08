@@ -13,7 +13,7 @@ extensions:
       check_interval: 5s
 
 receivers:
-  filelog:
+  file_log:
     include: [/var/log/app/*.log]
     storage: file_storage
 
@@ -43,6 +43,6 @@ service:
   extensions: [health_check, file_storage]
   pipelines:
     logs:
-      receivers: [filelog]
+      receivers: [file_log]
       processors: [memory_limiter]
       exporters: [otlp_http]

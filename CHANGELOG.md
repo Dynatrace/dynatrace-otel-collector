@@ -22,7 +22,7 @@ v0.149.0:
   with `service_name`, `service_instance_id`, and `service_version` labels to match the old OpenCensus behavior.
   These attributes are now only present in the `target_info` metric, which is the correct Prometheus/OTel convention.
   Users who filter or group by these labels on individual metrics will need to update their queries to use
-  `target_info` joins instead.
+  `target_info` joins instead. _Note: Upstream deprecation does not affect customers using the OTLP exporter to send telemetry to Dynatrace — continue to send standard OpenTelemetry attributes to the Dynatrace OTLP endpoints as documented._
 - `receiver/prometheus`: Remove the deprecated `report_extra_scrape_metrics` receiver configuration option and obsolete extra scrape metric feature gates. ([#44181](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44181))
   `report_extra_scrape_metrics` is no longer accepted in `prometheusreceiver` configuration.
   Control extra scrape metrics through the PromConfig.ScrapeConfigs.ExtraScrapeMetrics setting instead.

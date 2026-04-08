@@ -1,7 +1,7 @@
 receivers:
-  # configure the filelog receiver to access the pod logs
+  # configure the file_log receiver to access the pod logs
   # from the mounted volumes
-  filelog:
+  file_log:
     include:
       - /var/log/pods/*/*/*.log
     include_file_name: false
@@ -88,6 +88,6 @@ service:
   extensions: [health_check]
   pipelines:
     logs:
-      receivers: [filelog]
+      receivers: [file_log]
       processors: [k8sattributes,transform]
       exporters: [otlp_http]

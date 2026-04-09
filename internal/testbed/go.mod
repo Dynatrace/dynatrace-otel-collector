@@ -337,4 +337,4 @@ require (
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
-replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => testcommon/testutil	/testcommon
+replace github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0 => testcommon/testutil/testcommon

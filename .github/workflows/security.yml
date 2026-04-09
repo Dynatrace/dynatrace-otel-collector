@@ -42,9 +42,7 @@ jobs:
       - name: Run Snyk
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: monitor
-          args: --file=build/go.mod
+        run: snyk monitor --file=build/go.mod
 
   notify-slack:
     runs-on: ubuntu-24.04

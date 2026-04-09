@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/testing-setups/kafka
 
-go 1.26.1
+go 1.26.2
 
 tool github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemetrygen
 

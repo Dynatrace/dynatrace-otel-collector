@@ -63,13 +63,13 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": [
-        "(^|\\/)Makefile$",
-        "(^|\\/)Makefile.Common$",
-        "(^|\\/)Dockerfile",
-        "(^|\\/).*\\.ya?ml$",
-        "(^|\\/).*\\.toml$",
-        "(^|\\/).*\\.sh$"
+      "managerFilePatterns": [
+        "/(^|\\/)Makefile$/",
+        "/(^|\\/)Makefile.Common$/",
+        "/(^|\\/)Dockerfile/",
+        "/(^|\\/).*\\.ya?ml$/",
+        "/(^|\\/).*\\.toml$/",
+        "/(^|\\/).*\\.sh$/"
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\s.*(:|=|\\?=|:=|\\+=) ?\\\"?(?<currentValue>.+?)?\\\"?\\s"

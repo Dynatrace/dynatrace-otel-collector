@@ -13,7 +13,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079449988933503"
@@ -39,7 +39,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079449988933503"
@@ -64,7 +64,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079451987674781"
@@ -90,7 +90,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079451987674781"
@@ -115,7 +115,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079453990747849"
@@ -141,7 +141,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079453990747849"
@@ -166,7 +166,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079455983374006"
@@ -192,7 +192,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079455983374006"
@@ -217,7 +217,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079457989452488"
@@ -243,7 +243,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079457989452488"
@@ -268,7 +268,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079459992135222"
@@ -294,7 +294,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079459992135222"
@@ -319,7 +319,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079461989831210"
@@ -345,7 +345,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079461989831210"
@@ -370,7 +370,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079463993330818"
@@ -396,7 +396,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079463993330818"
@@ -421,7 +421,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079465987604142"
@@ -447,7 +447,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079465987604142"
@@ -472,7 +472,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079467986759587"
@@ -498,7 +498,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079467986759587"
@@ -523,7 +523,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079469987539114"
@@ -549,7 +549,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079469987539114"
@@ -574,7 +574,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079471989084432"
@@ -600,7 +600,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079471989084432"
@@ -625,7 +625,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079473989793918"
@@ -651,7 +651,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079473989793918"
@@ -676,7 +676,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079475989798570"
@@ -702,7 +702,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079475989798570"
@@ -727,7 +727,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1769079477987076558"
@@ -753,7 +753,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1769079477987076558"

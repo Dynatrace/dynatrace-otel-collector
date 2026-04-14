@@ -55,7 +55,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
             endTimeUnixNano: "1757662938283073814"
@@ -71,7 +71,7 @@ resourceSpans:
               - key: network.peer.address
                 value:
                   stringValue: 1.2.3.4
-              - key: peer.service
+              - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
             endTimeUnixNano: "1757662938283073814"

@@ -23,6 +23,6 @@ spec:
             - --duration=36000s
             - --rate=1
             - --otlp-attributes=service.name="test-{{ .DataType }}-daemonset"
-          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.149.0@sha256:bc690011cc541a6c1ecf494e2fe9f8398ca91ef0b83a1c3f18e521de83967183
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.150.0@sha256:5ab93ee0566ad12715f0560ecd22820f6a3e93f6edcec97654457c55f980542e
           name: telemetrygen
       restartPolicy: Always

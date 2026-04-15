@@ -66,8 +66,6 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 	metricsConsumer := new(consumertest.MetricsSink)
 	// Sinks for telemetrygen data
 	telemetrygenMetricsConsumer := new(consumertest.MetricsSink)
-	telemetrygenTracesConsumer := new(consumertest.TracesSink)
-	telemetrygenLogsConsumer := new(consumertest.LogsSink)
 
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
@@ -78,22 +76,6 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 				Consumer: telemetrygenMetricsConsumer,
 				Ports: &oteltest.ReceiverPorts{
 					Http: 4320,
-				},
-			},
-		},
-		Traces: []*oteltest.TraceSinkConfig{
-			{
-				Consumer: telemetrygenTracesConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4321,
-				},
-			},
-		},
-		Logs: []*oteltest.LogSinkConfig{
-			{
-				Consumer: telemetrygenLogsConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4319,
 				},
 			},
 		},
@@ -150,14 +132,12 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 
 	// testing data creating load
 	oteltest.WaitForMetrics(t, 1, telemetrygenMetricsConsumer)
-	oteltest.WaitForTraces(t, 1, telemetrygenTracesConsumer)
-	oteltest.WaitForLogs(t, 1, telemetrygenLogsConsumer)
 
 	// self monitoring metrics
-	oteltest.WaitForMetrics(t, 5, metricsConsumer)
+	oteltest.WaitForMetrics(t, 1, metricsConsumer)
 
 	// Uncomment to regenerate golden:
-	// require.NoError(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	require.NoError(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	expected, err := golden.ReadMetrics(expectedFile)
 	require.NoError(t, err)

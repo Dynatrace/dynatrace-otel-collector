@@ -39,6 +39,24 @@ processors:
         action: delete
       - key: k8s_node_name
         action: delete
+      - key: service.name
+        from_attribute: service_name
+        action: upsert
+
+      - key: service_name
+        action: delete
+
+      - key: service.instance.id
+        from_attribute: service_instance_id
+        action: upsert
+      - key: service_instance_id
+        action: delete
+
+      - key: service.version
+        from_attribute: service_version
+        action: upsert
+      - key: service_version
+        action: delete
 
 exporters:
   otlp_http:

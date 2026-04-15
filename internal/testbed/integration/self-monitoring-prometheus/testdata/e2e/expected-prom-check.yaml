@@ -9,574 +9,23 @@ resourceMetrics:
             stringValue: kind-control-plane
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-9a99afdb-6989944f5b-bv4mk
+            stringValue: otelcol-eb0966a7-9cb864cc4-cdt7j
         - key: server.port
           value:
             stringValue: "8888"
         - key: service.instance.id
           value:
-            stringValue: localhost:8888
+            stringValue: d1b784c0-05d3-482a-a9f1-b18aa80150eb
         - key: service.name
           value:
-            stringValue: otel-collector
-        - key: service_instance_id
-          value:
-            stringValue: bd2c77e8-5798-4130-89d6-4abf5de04b4e
-        - key: service_name
-          value:
             stringValue: dynatrace-otel-collector
-        - key: service_version
+        - key: service.version
           value:
             stringValue: 0.47.0
         - key: url.scheme
           value:
             stringValue: http
     scopeMetrics:
-      - metrics:
-          - description: Number of units in the batch [Development]
-            histogram:
-              aggregationTemporality: 1
-              dataPoints:
-                - attributes:
-                    - key: processor
-                      value:
-                        stringValue: batch
-                  bucketCounts:
-                    - "3"
-                    - "0"
-                    - "1"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "4"
-                  explicitBounds:
-                    - 10
-                    - 25
-                    - 50
-                    - 75
-                    - 100
-                    - 250
-                    - 500
-                    - 750
-                    - 1000
-                    - 2000
-                    - 3000
-                    - 4000
-                    - 5000
-                    - 6000
-                    - 7000
-                    - 8000
-                    - 9000
-                    - 10000
-                    - 20000
-                    - 30000
-                    - 50000
-                    - 100000
-                  startTimeUnixNano: "1000000"
-                  sum: 59
-                  timeUnixNano: "2000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: histogram
-            name: otelcol_processor_batch_batch_send_size
-          - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
-            histogram:
-              aggregationTemporality: 1
-              dataPoints:
-                - attributes:
-                    - key: processor
-                      value:
-                        stringValue: batch
-                  bucketCounts:
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "1"
-                    - "2"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "1"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "4"
-                  explicitBounds:
-                    - 10
-                    - 25
-                    - 50
-                    - 75
-                    - 100
-                    - 250
-                    - 500
-                    - 750
-                    - 1000
-                    - 2000
-                    - 3000
-                    - 4000
-                    - 5000
-                    - 6000
-                    - 7000
-                    - 8000
-                    - 9000
-                    - 10000
-                    - 20000
-                    - 30000
-                    - 50000
-                    - 100000
-                    - 200000
-                    - 300000
-                    - 400000
-                    - 500000
-                    - 600000
-                    - 700000
-                    - 800000
-                    - 900000
-                    - 1e+06
-                    - 2e+06
-                    - 3e+06
-                    - 4e+06
-                    - 5e+06
-                    - 6e+06
-                    - 7e+06
-                    - 8e+06
-                    - 9e+06
-                  startTimeUnixNano: "1000000"
-                  sum: 14359
-                  timeUnixNano: "2000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: histogram
-            name: otelcol_processor_batch_batch_send_size_bytes
-          - description: Number of times the batch was sent due to a size trigger [Development]
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: otelcol_processor_batch_batch_size_trigger_send
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 3
-                  attributes:
-                    - key: processor
-                      value:
-                        stringValue: batch
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-          - description: Number of distinct metadata value combinations being processed [Development]
-            gauge:
-              dataPoints:
-                - asDouble: 2
-                  attributes:
-                    - key: processor
-                      value:
-                        stringValue: batch
-                  timeUnixNano: "1000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: gauge
-            name: otelcol_processor_batch_metadata_cardinality
-          - description: Number of times the batch was sent due to a timeout trigger [Development]
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: otelcol_processor_batch_timeout_trigger_send
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 1
-                  attributes:
-                    - key: processor
-                      value:
-                        stringValue: batch
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-        scope:
-          name: go.opentelemetry.io/collector/processor/batchprocessor
-      - metrics:
-          - description: Number of items passed to the processor. [Alpha]
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: otelcol_processor_incoming_items
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 60
-                  attributes:
-                    - key: otel_signal
-                      value:
-                        stringValue: metrics
-                    - key: processor
-                      value:
-                        stringValue: cumulativetodelta
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 45
-                  attributes:
-                    - key: otel_signal
-                      value:
-                        stringValue: metrics
-                    - key: processor
-                      value:
-                        stringValue: resource/self
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-          - description: Duration of time taken to process a batch of telemetry data through the processor. [Alpha]
-            histogram:
-              aggregationTemporality: 1
-              dataPoints:
-                - attributes:
-                    - key: otel_signal
-                      value:
-                        stringValue: metrics
-                    - key: processor
-                      value:
-                        stringValue: cumulativetodelta
-                  bucketCounts:
-                    - "0"
-                    - "16"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "16"
-                  explicitBounds:
-                    - 0
-                    - 5
-                    - 10
-                    - 25
-                    - 50
-                    - 75
-                    - 100
-                    - 250
-                    - 500
-                    - 750
-                    - 1000
-                    - 2500
-                    - 5000
-                    - 7500
-                    - 10000
-                  startTimeUnixNano: "1000000"
-                  sum: 0.000506752
-                  timeUnixNano: "2000000"
-                - attributes:
-                    - key: otel_signal
-                      value:
-                        stringValue: metrics
-                    - key: processor
-                      value:
-                        stringValue: resource/self
-                  bucketCounts:
-                    - "0"
-                    - "1"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "1"
-                  explicitBounds:
-                    - 0
-                    - 5
-                    - 10
-                    - 25
-                    - 50
-                    - 75
-                    - 100
-                    - 250
-                    - 500
-                    - 750
-                    - 1000
-                    - 2500
-                    - 5000
-                    - 7500
-                    - 10000
-                  startTimeUnixNano: "1000000"
-                  sum: 4.542e-06
-                  timeUnixNano: "2000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: histogram
-            name: otelcol_processor_internal_duration
-          - description: Number of items emitted from the processor. [Alpha]
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: otelcol_processor_outgoing_items
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 60
-                  attributes:
-                    - key: otel_signal
-                      value:
-                        stringValue: metrics
-                    - key: processor
-                      value:
-                        stringValue: cumulativetodelta
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 45
-                  attributes:
-                    - key: otel_signal
-                      value:
-                        stringValue: metrics
-                    - key: processor
-                      value:
-                        stringValue: resource/self
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-        scope:
-          name: go.opentelemetry.io/collector/processor/processorhelper
-      - metrics:
-          - description: Number of metric points that could not be pushed into the pipeline. [Alpha]
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: otelcol_receiver_refused_metric_points
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 0
-                  attributes:
-                    - key: receiver
-                      value:
-                        stringValue: otlp
-                    - key: transport
-                      value:
-                        stringValue: grpc
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: receiver
-                      value:
-                        stringValue: prometheus/collector-self
-                    - key: transport
-                      value:
-                        stringValue: http
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-          - description: Number of metric points successfully pushed into the pipeline. [Alpha]
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: otelcol_receiver_accepted_metric_points
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 15
-                  attributes:
-                    - key: receiver
-                      value:
-                        stringValue: otlp
-                    - key: transport
-                      value:
-                        stringValue: grpc
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 45
-                  attributes:
-                    - key: receiver
-                      value:
-                        stringValue: prometheus/collector-self
-                    - key: transport
-                      value:
-                        stringValue: http
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-          - description: The number of metric points that failed to be processed by the receiver due to internal errors. [Alpha]
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: otelcol_receiver_failed_metric_points
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 0
-                  attributes:
-                    - key: receiver
-                      value:
-                        stringValue: otlp
-                    - key: transport
-                      value:
-                        stringValue: grpc
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: receiver
-                      value:
-                        stringValue: prometheus/collector-self
-                    - key: transport
-                      value:
-                        stringValue: http
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-        scope:
-          name: go.opentelemetry.io/collector/receiver/receiverhelper
-      - metrics:
-          - description: The number of samples the target exposed
-            gauge:
-              dataPoints:
-                - asDouble: 302
-                  timeUnixNano: "1000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: gauge
-            name: scrape_samples_scraped
-          - description: The number of samples remaining after metric relabeling was applied
-            gauge:
-              dataPoints:
-                - asDouble: 302
-                  timeUnixNano: "1000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: gauge
-            name: scrape_samples_post_metric_relabeling
-          - description: The approximate number of new series in this scrape
-            gauge:
-              dataPoints:
-                - asDouble: 1
-                  timeUnixNano: "1000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: gauge
-            name: scrape_series_added
-          - description: Total number of internal errors encountered by the promhttp metric handler.
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: promhttp_metric_handler_errors_total
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 0
-                  attributes:
-                    - key: cause
-                      value:
-                        stringValue: encoding
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 0
-                  attributes:
-                    - key: cause
-                      value:
-                        stringValue: gathering
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-          - description: The scraping was successful
-            gauge:
-              dataPoints:
-                - asDouble: 1
-                  timeUnixNano: "1000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: gauge
-            name: up
-          - description: Duration of the scrape
-            gauge:
-              dataPoints:
-                - asDouble: 0.00181375
-                  timeUnixNano: "1000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: gauge
-            name: scrape_duration_seconds
-            unit: s
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
-          version: 0.47.0
       - metrics:
           - description: Measures the duration of an incoming Remote Procedure Call (RPC).
             histogram:
@@ -625,7 +74,7 @@ resourceMetrics:
                     - 7.5
                     - 10
                   startTimeUnixNano: "1000000"
-                  sum: 0.0008128340000000001
+                  sum: 0.0009693750000000002
                   timeUnixNano: "2000000"
             metadata:
               - key: prometheus.type
@@ -698,7 +147,7 @@ resourceMetrics:
                     - 7500
                     - 10000
                   startTimeUnixNano: "1000000"
-                  sum: 12665
+                  sum: 12589
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: http_request_method
@@ -823,7 +272,7 @@ resourceMetrics:
                     - 7.5
                     - 10
                   startTimeUnixNano: "1000000"
-                  sum: 0.002196624999999999
+                  sum: 0.0015331670000000002
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: http_request_method
@@ -880,7 +329,7 @@ resourceMetrics:
                     - 7.5
                     - 10
                   startTimeUnixNano: "1000000"
-                  sum: 0.002616666
+                  sum: 0.0031768319999999992
                   timeUnixNano: "2000000"
             metadata:
               - key: prometheus.type
@@ -891,30 +340,6 @@ resourceMetrics:
           name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
           version: 0.67.0
       - metrics:
-          - description: Number of metric points successfully sent to destination. [Alpha]
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: otelcol_exporter_sent_metric_points
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 14
-                  attributes:
-                    - key: exporter
-                      value:
-                        stringValue: otlp_http
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 45
-                  attributes:
-                    - key: exporter
-                      value:
-                        stringValue: otlphttp/selfmon
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
           - description: Number of units in the batch [Development]
             histogram:
               aggregationTemporality: 1
@@ -1114,7 +539,7 @@ resourceMetrics:
                     - 5000
                     - 6000
                   startTimeUnixNano: "1000000"
-                  sum: 12665
+                  sum: 12589
                   timeUnixNano: "2000000"
             metadata:
               - key: prometheus.type
@@ -1173,9 +598,46 @@ resourceMetrics:
                 value:
                   stringValue: gauge
             name: otelcol_exporter_queue_size
+          - description: Number of metric points successfully sent to destination. [Alpha]
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_exporter_sent_metric_points
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 14
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 45
+                  attributes:
+                    - key: exporter
+                      value:
+                        stringValue: otlphttp/selfmon
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
         scope:
           name: go.opentelemetry.io/collector/exporter/exporterhelper
       - metrics:
+          - description: Uptime of the process [Alpha]
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_process_uptime
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 15.000121549
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
           - description: Total CPU user and system time in seconds [Alpha]
             metadata:
               - key: prometheus.type
@@ -1185,14 +647,14 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 0.020000000000000004
+                - asDouble: 0
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
           - description: Total physical memory (resident set size) [Alpha]
             gauge:
               dataPoints:
-                - asDouble: 1.04218624e+08
+                - asDouble: 1.06749952e+08
                   timeUnixNano: "1000000"
             metadata:
               - key: prometheus.type
@@ -1202,7 +664,7 @@ resourceMetrics:
           - description: Bytes of allocated heap objects (see 'go doc runtime.MemStats.HeapAlloc') [Alpha]
             gauge:
               dataPoints:
-                - asDouble: 1.5504832e+07
+                - asDouble: 1.8976208e+07
                   timeUnixNano: "1000000"
             metadata:
               - key: prometheus.type
@@ -1218,32 +680,564 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 1.213112e+06
+                - asDouble: 1.859328e+06
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
           - description: Total bytes of memory obtained from the OS (see 'go doc runtime.MemStats.Sys') [Alpha]
             gauge:
               dataPoints:
-                - asDouble: 3.5825944e+07
+                - asDouble: 3.1893784e+07
                   timeUnixNano: "1000000"
             metadata:
               - key: prometheus.type
                 value:
                   stringValue: gauge
             name: otelcol_process_runtime_total_sys_memory_bytes
-          - description: Uptime of the process [Alpha]
+        scope:
+          name: go.opentelemetry.io/collector/service
+      - metrics:
+          - description: Number of times the batch was sent due to a timeout trigger [Development]
             metadata:
               - key: prometheus.type
                 value:
                   stringValue: counter
-            name: otelcol_process_uptime
+            name: otelcol_processor_batch_timeout_trigger_send
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 15.000864174
+                - asDouble: 1
+                  attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+          - description: Number of units in the batch [Development]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  bucketCounts:
+                    - "3"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "4"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                  startTimeUnixNano: "1000000"
+                  sum: 59
+                  timeUnixNano: "2000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: histogram
+            name: otelcol_processor_batch_batch_send_size
+          - description: Number of bytes in batch that was sent. Only available on detailed level. [Development]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "4"
+                  explicitBounds:
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2000
+                    - 3000
+                    - 4000
+                    - 5000
+                    - 6000
+                    - 7000
+                    - 8000
+                    - 9000
+                    - 10000
+                    - 20000
+                    - 30000
+                    - 50000
+                    - 100000
+                    - 200000
+                    - 300000
+                    - 400000
+                    - 500000
+                    - 600000
+                    - 700000
+                    - 800000
+                    - 900000
+                    - 1e+06
+                    - 2e+06
+                    - 3e+06
+                    - 4e+06
+                    - 5e+06
+                    - 6e+06
+                    - 7e+06
+                    - 8e+06
+                    - 9e+06
+                  startTimeUnixNano: "1000000"
+                  sum: 14283
+                  timeUnixNano: "2000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: histogram
+            name: otelcol_processor_batch_batch_send_size_bytes
+          - description: Number of times the batch was sent due to a size trigger [Development]
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_processor_batch_batch_size_trigger_send
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 3
+                  attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+          - description: Number of distinct metadata value combinations being processed [Development]
+            gauge:
+              dataPoints:
+                - asDouble: 2
+                  attributes:
+                    - key: processor
+                      value:
+                        stringValue: batch
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: otelcol_processor_batch_metadata_cardinality
+        scope:
+          name: go.opentelemetry.io/collector/processor/batchprocessor
+      - metrics:
+          - description: Duration of time taken to process a batch of telemetry data through the processor. [Alpha]
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: otel_signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: cumulativetodelta
+                  bucketCounts:
+                    - "0"
+                    - "16"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "16"
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  startTimeUnixNano: "1000000"
+                  sum: 6.783099999999997e-05
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: otel_signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: resource/self
+                  bucketCounts:
+                    - "0"
+                    - "1"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "1"
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  startTimeUnixNano: "1000000"
+                  sum: 3.082999999999999e-06
+                  timeUnixNano: "2000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: histogram
+            name: otelcol_processor_internal_duration
+          - description: Number of items emitted from the processor. [Alpha]
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_processor_outgoing_items
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 60
+                  attributes:
+                    - key: otel_signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: cumulativetodelta
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 45
+                  attributes:
+                    - key: otel_signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: resource/self
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+          - description: Number of items passed to the processor. [Alpha]
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_processor_incoming_items
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 60
+                  attributes:
+                    - key: otel_signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: cumulativetodelta
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 45
+                  attributes:
+                    - key: otel_signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: resource/self
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
         scope:
-          name: go.opentelemetry.io/collector/service
+          name: go.opentelemetry.io/collector/processor/processorhelper
+      - metrics:
+          - description: Number of metric points successfully pushed into the pipeline. [Alpha]
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_receiver_accepted_metric_points
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 15
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 45
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: prometheus/collector-self
+                    - key: transport
+                      value:
+                        stringValue: http
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+          - description: The number of metric points that failed to be processed by the receiver due to internal errors. [Alpha]
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_receiver_failed_metric_points
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: prometheus/collector-self
+                    - key: transport
+                      value:
+                        stringValue: http
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+          - description: Number of metric points that could not be pushed into the pipeline. [Alpha]
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_receiver_refused_metric_points
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: otlp
+                    - key: transport
+                      value:
+                        stringValue: grpc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: receiver
+                      value:
+                        stringValue: prometheus/collector-self
+                    - key: transport
+                      value:
+                        stringValue: http
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+        scope:
+          name: go.opentelemetry.io/collector/receiver/receiverhelper
+      - metrics:
+          - description: Total number of internal errors encountered by the promhttp metric handler.
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: promhttp_metric_handler_errors_total
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  attributes:
+                    - key: cause
+                      value:
+                        stringValue: encoding
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 0
+                  attributes:
+                    - key: cause
+                      value:
+                        stringValue: gathering
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+          - description: The scraping was successful
+            gauge:
+              dataPoints:
+                - asDouble: 1
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: up
+          - description: Duration of the scrape
+            gauge:
+              dataPoints:
+                - asDouble: 0.002022209
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: scrape_duration_seconds
+            unit: s
+          - description: The number of samples the target exposed
+            gauge:
+              dataPoints:
+                - asDouble: 302
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: scrape_samples_scraped
+          - description: The number of samples remaining after metric relabeling was applied
+            gauge:
+              dataPoints:
+                - asDouble: 302
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: scrape_samples_post_metric_relabeling
+          - description: The approximate number of new series in this scrape
+            gauge:
+              dataPoints:
+                - asDouble: 1
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: scrape_series_added
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+          version: 0.47.0

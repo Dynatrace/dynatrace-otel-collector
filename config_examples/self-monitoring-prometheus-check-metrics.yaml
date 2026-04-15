@@ -1,44 +1,64 @@
 extensions:
   health_check:
     endpoint: 0.0.0.0:13133
-
 receivers:
   otlp:
     protocols:
       grpc:
         endpoint: 0.0.0.0:4317
-  prometheus/selfmon:
+  prometheus/collector-self:
     config:
       scrape_configs:
-        - job_name: 'otel-collector-selfmon'
-          scrape_interval: 10s
+        - job_name: "otel-collector"
+          scrape_interval: 15s
           static_configs:
-            - targets: ['localhost:8888']
-
+            - targets: ["localhost:8888"]
 processors:
+  cumulativetodelta:
   batch:
     send_batch_size: 5
     timeout: 5s
-
 exporters:
+  debug:
+    verbosity: detailed
+  otlp_grpc/self:
+    endpoint: 0.0.0.0:4317
+    tls:
+      insecure: true
+  otlp_http/self:
+    endpoint: http://0.0.0.0:4318
+    tls:
+      insecure: true
   otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
-
 service:
   extensions:
     - health_check
   pipelines:
-    metrics/selfmon:
-      receivers: [prometheus/selfmon]
-      processors: [batch]
-      exporters: [otlp_http]
+
+    metrics/self:
+      receivers: [prometheus/collector-self]
+      processors: [ batch]
+      exporters: [otlp_grpc/self]
+
+    traces:
+      receivers: [otlp]
+      processors: [ batch]
+      exporters: [debug, otlp_http]
+
+    logs:
+      receivers: [otlp]
+      processors: [ batch]
+      exporters: [debug, otlp_http]
+
+    metrics:
+      receivers: [otlp]
+      processors: [ cumulativetodelta, batch]
+      exporters: [debug, otlp_http]
+  # turn on self-monitoring
   telemetry:
-    resource:
-      k8s.namespace.name: "${env:MY_POD_NAMESPACE}"
-      k8s.pod.name: "${env:MY_POD_NAME}"
-      k8s.node.name: "${env:MY_NODE_NAME}"
     metrics:
       level: detailed
       readers:

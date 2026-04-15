@@ -62,37 +62,49 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		}
 	}()
 
-	// Selfmon metrics sink (4320) + telemetrygen sinks (defaults / explicit)
-	// Selfmon metrics → default 4318 (NO explicit port)
+	// Sink for internal metrics (self-monitoring)
 	metricsConsumer := new(consumertest.MetricsSink)
-	// Telemetrygen data metrics → 4320
+	// Sinks for telemetrygen data
 	telemetrygenMetricsConsumer := new(consumertest.MetricsSink)
+	telemetrygenTracesConsumer := new(consumertest.TracesSink)
+	telemetrygenLogsConsumer := new(consumertest.LogsSink)
 
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
 		Metrics: []*oteltest.MetricSinkConfig{
 			{
 				Consumer: metricsConsumer,
-				// NO Ports → defaults to 4318 (selfmon goes here)
 			},
 			{
 				Consumer: telemetrygenMetricsConsumer,
 				Ports: &oteltest.ReceiverPorts{
-					Http: 4320, // telemetrygen data goes here
+					Http: 4320,
+				},
+			},
+		},
+		Traces: []*oteltest.TraceSinkConfig{
+			{
+				Consumer: telemetrygenTracesConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4321,
+				},
+			},
+		},
+		Logs: []*oteltest.LogSinkConfig{
+			{
+				Consumer: telemetrygenLogsConsumer,
+				Ports: &oteltest.ReceiverPorts{
+					Http: 4319,
 				},
 			},
 		},
 	})
-
 	defer shutdownSinks()
 
 	collectorConfigPath := path.Join(configExamplesDir, "self-monitoring-prometheus-check-metrics.yaml")
 
-	// Prometheus-specific overlays (split data vs selfmon exporters)
+	// Read overlay from files
+	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "prom-selfmon-local.yaml")), host)
 	originalOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "prom-selfmon-original.yaml"))
-	localOverlay := fmt.Sprintf(
-		k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "prom-selfmon-local.yaml")),
-		host, host,
-	)
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
@@ -102,7 +114,6 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	t.Logf("CONFIG: %s", collectorConfig)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
 		t,
 		k8sClient,
@@ -117,11 +128,13 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		host,
 	)
 
+	t.Logf("config: %+v", collectorConfig)
+
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
 		TestID:       testID,
 		OtlpEndpoint: fmt.Sprintf("otelcol-%s", testID),
-		DataTypes:    []string{"traces", "metrics", "logs"},
+		DataTypes:    []string{"traces"},
 	}
 	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
 
@@ -135,9 +148,12 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
 
-	// telemetrygen load visible on data sinks
+	// testing data creating load
 	oteltest.WaitForMetrics(t, 1, telemetrygenMetricsConsumer)
-	// self-monitoring metrics (via Prometheus scrape path)
+	oteltest.WaitForTraces(t, 1, telemetrygenTracesConsumer)
+	oteltest.WaitForLogs(t, 1, telemetrygenLogsConsumer)
+
+	// self monitoring metrics
 	oteltest.WaitForMetrics(t, 5, metricsConsumer)
 
 	// Uncomment to regenerate golden:

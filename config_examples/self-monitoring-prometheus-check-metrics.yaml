@@ -21,6 +21,24 @@ processors:
   batch:
     send_batch_size: 5
     timeout: 5s
+  resource/self:
+    attributes:
+      - key: k8s.namespace.name
+        value: "${env:MY_POD_NAMESPACE}"
+        action: upsert
+      - key: k8s.pod.name
+        value: "${env:MY_POD_NAME}"
+        action: upsert
+      - key: k8s.node.name
+        value: "${env:MY_NODE_NAME}"
+        action: upsert
+      # Clean up the underscore versions created by Prometheus scrape
+      - key: k8s_namespace_name
+        action: delete
+      - key: k8s_pod_name
+        action: delete
+      - key: k8s_node_name
+        action: delete
 
 exporters:
   otlp_http:
@@ -41,7 +59,7 @@ service:
     # Self-monitoring: scrapes Prometheus, exports to DT
     metrics/selfmon:
       receivers: [prometheus/collector-self]
-      processors: [cumulativetodelta, batch]
+      processors: [resource/self, cumulativetodelta, batch]
       exporters: [otlp_http]
 
   telemetry:

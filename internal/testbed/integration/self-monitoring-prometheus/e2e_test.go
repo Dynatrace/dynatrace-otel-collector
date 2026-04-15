@@ -173,5 +173,3 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		assert.NoError(tt, err)
 	}, 3*time.Minute, 1*time.Second)
 }
-
-func substituteWithStar(_ string) string { return "*" }

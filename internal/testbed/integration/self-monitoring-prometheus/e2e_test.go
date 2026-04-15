@@ -135,7 +135,7 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 	oteltest.WaitForMetrics(t, 5, metricsConsumer)
 
 	// Uncomment to regenerate golden:
-	//require.NoError(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	// require.NoError(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	expected, err := golden.ReadMetrics(expectedFile)
 	require.NoError(t, err)

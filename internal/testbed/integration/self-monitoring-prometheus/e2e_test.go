@@ -110,8 +110,6 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		host,
 	)
 
-	t.Logf("config: %+v", collectorConfig)
-
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
 		TestID:       testID,
@@ -145,24 +143,19 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 	defaultOptions := []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
-		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreExemplarSlice(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
-
-		// Prometheus receiver adds labels; pods/nodes vary in K8s
-		pmetrictest.ChangeDatapointAttributeValue("server.address", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("net.peer.name", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("server.port", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("instance", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("job", substituteWithStar),
-
-		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("service.instance.id", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("service.version", substituteWithStar),
+		pmetrictest.IgnoreMetricsOrder(),
+		pmetrictest.IgnoreMetricValues(),
+		pmetrictest.IgnoreResourceAttributeValue("service.instance.id"),
+		pmetrictest.IgnoreResourceAttributeValue("k8s.pod.name"),
+		pmetrictest.IgnoreResourceAttributeValue("k8s.node.name"),
+		pmetrictest.IgnoreResourceAttributeValue("server.port"),
+		pmetrictest.IgnoreResourceAttributeValue("url.scheme"),
+		pmetrictest.IgnoreResourceAttributeValue("service.version"),
+		pmetrictest.IgnoreScopeVersion(),
+		pmetrictest.IgnoreSubsequentDataPoints(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

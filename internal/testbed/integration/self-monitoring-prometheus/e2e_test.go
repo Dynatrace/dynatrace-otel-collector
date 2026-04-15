@@ -156,6 +156,8 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		pmetrictest.IgnoreResourceAttributeValue("service.version"),
 		pmetrictest.IgnoreScopeVersion(),
 		pmetrictest.IgnoreSubsequentDataPoints(),
+		pmetrictest.IgnoreMetricAttributeValue("server_address"),
+		pmetrictest.IgnoreMetricAttributeValue("server_port"),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

@@ -16,7 +16,7 @@ service:
     # Self-monitoring: scrapes Prometheus, exports to DT
     metrics/selfmon:
       receivers: [prometheus/collector-self]
-      processors: [batch]
+      processors: [cumulativetodelta, batch]
       exporters: [otlp_http]
 
   telemetry:

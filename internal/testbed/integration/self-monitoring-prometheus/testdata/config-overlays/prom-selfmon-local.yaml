@@ -16,7 +16,7 @@ service:
 
     metrics/selfmon:
       receivers: [prometheus/collector-self]
-      processors: [batch]
+      processors: [cumulativetodelta, batch]
       exporters: [otlphttp/selfmon]
 
   telemetry:

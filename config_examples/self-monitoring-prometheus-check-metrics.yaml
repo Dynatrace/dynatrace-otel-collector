@@ -10,6 +10,12 @@ receivers:
 
   prometheus/collector-self:
     config:
+      global:
+        scrape_protocols:
+          - PrometheusProto
+          - OpenMetricsText1.0.0
+          - OpenMetricsText0.0.1
+          - PrometheusText0.0.4
       scrape_configs:
         - job_name: "otel-collector"
           scrape_interval: 15s
@@ -63,45 +69,43 @@ receivers:
               replacement: 'rpc.server.duration'
 
             # ── Label renames (_ → .) ──
-            # HTTP metric attributes
             - source_labels: [ http_request_method ]
-              target_label: http.request.method
+              target_label:  http.request.method
+            - source_labels: [ http_response_status_code ]
+              target_label:  http.response.status_code
             - source_labels: [ network_protocol_name ]
-              target_label: network.protocol.name
+              target_label:  network.protocol.name
             - source_labels: [ network_protocol_version ]
-              target_label: network.protocol.version
-            - source_labels: [ server_address ]
-              target_label: server.address
-            - source_labels: [ server_port ]
-              target_label: server.port
-            - source_labels: [ url_scheme ]
-              target_label: url.scheme
-
-            # RPC metric attributes
+              target_label:  network.protocol.version
             - source_labels: [ rpc_method ]
-              target_label: rpc.method
+              target_label:  rpc.method
             - source_labels: [ rpc_response_status_code ]
-              target_label: rpc.response.status_code
+              target_label:  rpc.response.status_code
             - source_labels: [ rpc_system_name ]
-              target_label: rpc.system.name
-
-            # Resource attributes
+              target_label:  rpc.system.name
+            - source_labels: [ server_address ]
+              target_label:  server.address
+            - source_labels: [ server_port ]
+              target_label:  server.port
+            - source_labels: [ url_scheme ]
+              target_label:  url.scheme
             - source_labels: [ k8s_namespace_name ]
-              target_label: k8s.namespace.name
+              target_label:  k8s.namespace.name
             - source_labels: [ k8s_node_name ]
-              target_label: k8s.node.name
+              target_label:  k8s.node.name
             - source_labels: [ k8s_pod_name ]
-              target_label: k8s.pod.name
+              target_label:  k8s.pod.name
             - source_labels: [ service_instance_id ]
-              target_label: service.instance.id
+              target_label:  service.instance.id
             - source_labels: [ service_name ]
-              target_label: service.name
+              target_label:  service.name
             - source_labels: [ service_version ]
-              target_label: service.version
+              target_label:  service.version
 
-            # ── Drop all original underscore labels ──
-            - regex: http_request_method|network_protocol_name|network_protocol_version|server_address|server_port|url_scheme|rpc_method|rpc_response_status_code|rpc_system_name|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_instance_id|service_name|service_version
+            # ── Drop original underscore labels ──
+            - regex: http_request_method|http_response_status_code|network_protocol_name|network_protocol_version|rpc_method|rpc_response_status_code|rpc_system_name|server_address|server_port|url_scheme|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_instance_id|service_name|service_version
               action: labeldrop
+
 
 processors:
   cumulativetodelta:

@@ -10,8 +10,8 @@ exporters:
 service:
   extensions: [health_check]
   pipelines:
-    metrics/1m:
-      receivers: [hostmetrics/1m]
+    metrics/10s:
+      receivers: [hostmetrics/10s]
       processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta]
       exporters: [otlp_http/1]
     metrics/5m:

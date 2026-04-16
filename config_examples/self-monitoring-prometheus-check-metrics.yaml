@@ -16,20 +16,72 @@ receivers:
           static_configs:
             - targets: ["localhost:8888"]
           metric_relabel_configs:
+            # ── Metric name renames (Prometheus _ → OTLP .) via __name__ ──
+            - source_labels: [ __name__ ]
+              regex: 'http_client_request_body_size'
+              target_label: __name__
+              replacement: 'http.client.request.body.size'
+            - source_labels: [ __name__ ]
+              regex: 'http_client_request_duration'
+              target_label: __name__
+              replacement: 'http.client.request.duration'
+            - source_labels: [ __name__ ]
+              regex: 'http_server_request_body_size'
+              target_label: __name__
+              replacement: 'http.server.request.body.size'
+            - source_labels: [ __name__ ]
+              regex: 'http_server_request_duration'
+              target_label: __name__
+              replacement: 'http.server.request.duration'
+            - source_labels: [ __name__ ]
+              regex: 'otelcol_processor_filter_datapoints_filtered'
+              target_label: __name__
+              replacement: 'otelcol_processor_filter_datapoints.filtered'
+            - source_labels: [ __name__ ]
+              regex: 'otelcol_processor_filter_logs_filtered'
+              target_label: __name__
+              replacement: 'otelcol_processor_filter_logs.filtered'
+            - source_labels: [ __name__ ]
+              regex: 'otelcol_processor_filter_spans_filtered'
+              target_label: __name__
+              replacement: 'otelcol_processor_filter_spans.filtered'
+            - source_labels: [ __name__ ]
+              regex: 'rpc_client_call_duration'
+              target_label: __name__
+              replacement: 'rpc.client.call.duration'
+            - source_labels: [ __name__ ]
+              regex: 'rpc_client_duration'
+              target_label: __name__
+              replacement: 'rpc.client.duration'
+            - source_labels: [ __name__ ]
+              regex: 'rpc_server_call_duration'
+              target_label: __name__
+              replacement: 'rpc.server.call.duration'
+            - source_labels: [ __name__ ]
+              regex: 'rpc_server_duration'
+              target_label: __name__
+              replacement: 'rpc.server.duration'
+
+            # ── Label / dimension renames (_ → .) ──
+            - source_labels: [ http_response_status_code ]
+              target_label: http.response.status_code
             - source_labels: [ k8s_namespace_name ]
-              target_label:  k8s.namespace.name
+              target_label: k8s.namespace.name
+            - source_labels: [ k8s_node_name ]
+              target_label: k8s.node.name
             - source_labels: [ k8s_pod_name ]
               target_label: k8s.pod.name
-            - source_labels: [ k8s_node_name ]
-              target_label:  k8s.node.name
-            - source_labels: [ service_name ]
-              target_label: service.name
             - source_labels: [ service_instance_id ]
               target_label: service.instance.id
+            - source_labels: [ service_name ]
+              target_label: service.name
             - source_labels: [ service_version ]
               target_label: service.version
-            - regex: service_name|service_instance_id|service_version
+
+            # ── Drop original underscore labels after rename ──
+            - regex: http_response_status_code|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_name|service_instance_id|service_version
               action: labeldrop
+
 processors:
   cumulativetodelta:
 

@@ -105,7 +105,8 @@ processors:
           - set(name, "rpc.server.duration") where name == "rpc_server_duration"
           - set(name, "rpc.client.duration") where name == "rpc_client_duration"
 
-  cumulativetodelta: {}
+  cumulativetodelta:
+    max_staleness: 25h
 
 exporters:
   otlp_http:

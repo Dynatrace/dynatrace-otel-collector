@@ -22,6 +22,7 @@ service:
       processors: [cumulativetodelta]
       exporters: [otlp_http]
 
+    # Self-monitoring: scrapes Prometheus, exports to DT
     metrics/selfmon:
       receivers: [prometheus/collector-self]
       processors: [transform/selfmon_rename, cumulativetodelta]

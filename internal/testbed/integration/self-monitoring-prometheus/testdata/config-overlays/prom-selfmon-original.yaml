@@ -2,6 +2,10 @@
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:API_TOKEN}"
+    sending_queue:
+      batch:
+        min_size: 5
+        flush_timeout: 5s
 
 service:
   extensions:
@@ -10,13 +14,13 @@ service:
     # Data pipeline: receives telemetrygen metrics, exports to DT
     metrics:
       receivers: [otlp]
-      processors: [cumulativetodelta, batch]
+      processors: [cumulativetodelta]
       exporters: [otlp_http]
 
     # Self-monitoring: scrapes Prometheus, exports to DT
     metrics/selfmon:
       receivers: [prometheus/collector-self]
-      processors: [resource/self, cumulativetodelta, batch]
+      processors: [resource/self, cumulativetodelta]
       exporters: [otlp_http]
 
   telemetry:

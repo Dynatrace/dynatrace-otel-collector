@@ -2,8 +2,16 @@
     endpoint: http://%[1]s:4320
     headers:
       Authorization: "Api-Token noop"
-  otlphttp/selfmon:
+    sending_queue:
+      batch:
+        min_size: 5
+        flush_timeout: 5s
+  otlp_http/selfmon:
     endpoint: http://%[1]s:4318
+    sending_queue:
+      batch:
+        min_size: 5
+        flush_timeout: 5s
 
 service:
   extensions:
@@ -11,13 +19,13 @@ service:
   pipelines:
     metrics:
       receivers: [otlp]
-      processors: [cumulativetodelta, batch]
+      processors: [cumulativetodelta]
       exporters: [otlp_http]
 
     metrics/selfmon:
       receivers: [prometheus/collector-self]
-      processors: [resource/self, cumulativetodelta, batch]
-      exporters: [otlphttp/selfmon]
+      processors: [resource/self, cumulativetodelta]
+      exporters: [otlp_http/selfmon]
 
   telemetry:
     resource:

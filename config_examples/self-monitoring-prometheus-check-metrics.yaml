@@ -14,7 +14,7 @@ receivers:
         - job_name: "otel-collector"
           scrape_interval: 15s
           static_configs:
-            - targets: ["127.0.0.1:8888"]
+            - targets: ["localhost:8888"]
 
           metric_relabel_configs:
             # ── Label renames (_ → .) ──
@@ -70,25 +70,6 @@ receivers:
             # ── Drop original underscore labels ──
             - action: labeldrop
               regex: http_request_method|http_response_status_code|network_protocol_name|network_protocol_version|rpc_method|rpc_response_status_code|rpc_system_name|server_address|server_port|url_scheme|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_instance_id|service_name|service_version
-
-            # ── Optional: normalize summary quantiles like "1.000000" → "1", "0.500000" → "0.5"
-            - action: replace
-              source_labels: [quantile]
-              target_label: quantile
-              regex: ^(\d+)\.0+$
-              replacement: $1
-            - action: replace
-              source_labels: [quantile]
-              target_label: quantile
-              regex: ^(\d+)\.(\d*[1-9])0+$
-              replacement: $1.$2
-
-            # ── Optional: normalize histogram le="10.000000" → "10" for *_bucket series
-            - action: replace
-              source_labels: [le, __name__]
-              target_label: le
-              regex: ^(\d+)\.0+;(.*_bucket)$
-              replacement: $1
 
 processors:
   transform/selfmon_rename:

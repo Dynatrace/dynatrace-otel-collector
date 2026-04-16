@@ -14,9 +14,9 @@ receivers:
         - job_name: "otel-collector"
           scrape_interval: 15s
           static_configs:
-            - targets: ["localhost:8888"]
+            - targets: [ "localhost:8888" ]
           metric_relabel_configs:
-            # ── Metric name renames (Prometheus _ → OTLP .) via __name__ ──
+            # ── Metric name renames (__name__: _ → .) ──
             - source_labels: [ __name__ ]
               regex: 'http_client_request_body_size'
               target_label: __name__
@@ -62,9 +62,30 @@ receivers:
               target_label: __name__
               replacement: 'rpc.server.duration'
 
-            # ── Label / dimension renames (_ → .) ──
-            - source_labels: [ http_response_status_code ]
-              target_label: http.response.status_code
+            # ── Label renames (_ → .) ──
+            # HTTP metric attributes
+            - source_labels: [ http_request_method ]
+              target_label: http.request.method
+            - source_labels: [ network_protocol_name ]
+              target_label: network.protocol.name
+            - source_labels: [ network_protocol_version ]
+              target_label: network.protocol.version
+            - source_labels: [ server_address ]
+              target_label: server.address
+            - source_labels: [ server_port ]
+              target_label: server.port
+            - source_labels: [ url_scheme ]
+              target_label: url.scheme
+
+            # RPC metric attributes
+            - source_labels: [ rpc_method ]
+              target_label: rpc.method
+            - source_labels: [ rpc_response_status_code ]
+              target_label: rpc.response.status_code
+            - source_labels: [ rpc_system_name ]
+              target_label: rpc.system.name
+
+            # Resource attributes
             - source_labels: [ k8s_namespace_name ]
               target_label: k8s.namespace.name
             - source_labels: [ k8s_node_name ]
@@ -78,8 +99,8 @@ receivers:
             - source_labels: [ service_version ]
               target_label: service.version
 
-            # ── Drop original underscore labels after rename ──
-            - regex: http_response_status_code|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_name|service_instance_id|service_version
+            # ── Drop all original underscore labels ──
+            - regex: http_request_method|network_protocol_name|network_protocol_version|server_address|server_port|url_scheme|rpc_method|rpc_response_status_code|rpc_system_name|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_instance_id|service_name|service_version
               action: labeldrop
 
 processors:

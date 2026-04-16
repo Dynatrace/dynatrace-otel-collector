@@ -10,105 +10,102 @@ receivers:
 
   prometheus/collector-self:
     config:
-      global:
-        scrape_protocols:
-          - PrometheusProto
-          - OpenMetricsText1.0.0
-          - OpenMetricsText0.0.1
-          - PrometheusText0.0.4
       scrape_configs:
         - job_name: "otel-collector"
           scrape_interval: 15s
           static_configs:
-            - targets: [ "localhost:8888" ]
-          metric_relabel_configs:
-            # ── Metric name renames (__name__: _ → .) ──
-            - source_labels: [ __name__ ]
-              regex: 'http_client_request_body_size'
-              target_label: __name__
-              replacement: 'http.client.request.body.size'
-            - source_labels: [ __name__ ]
-              regex: 'http_client_request_duration'
-              target_label: __name__
-              replacement: 'http.client.request.duration'
-            - source_labels: [ __name__ ]
-              regex: 'http_server_request_body_size'
-              target_label: __name__
-              replacement: 'http.server.request.body.size'
-            - source_labels: [ __name__ ]
-              regex: 'http_server_request_duration'
-              target_label: __name__
-              replacement: 'http.server.request.duration'
-            - source_labels: [ __name__ ]
-              regex: 'otelcol_processor_filter_datapoints_filtered'
-              target_label: __name__
-              replacement: 'otelcol_processor_filter_datapoints.filtered'
-            - source_labels: [ __name__ ]
-              regex: 'otelcol_processor_filter_logs_filtered'
-              target_label: __name__
-              replacement: 'otelcol_processor_filter_logs.filtered'
-            - source_labels: [ __name__ ]
-              regex: 'otelcol_processor_filter_spans_filtered'
-              target_label: __name__
-              replacement: 'otelcol_processor_filter_spans.filtered'
-            - source_labels: [ __name__ ]
-              regex: 'rpc_client_call_duration'
-              target_label: __name__
-              replacement: 'rpc.client.call.duration'
-            - source_labels: [ __name__ ]
-              regex: 'rpc_client_duration'
-              target_label: __name__
-              replacement: 'rpc.client.duration'
-            - source_labels: [ __name__ ]
-              regex: 'rpc_server_call_duration'
-              target_label: __name__
-              replacement: 'rpc.server.call.duration'
-            - source_labels: [ __name__ ]
-              regex: 'rpc_server_duration'
-              target_label: __name__
-              replacement: 'rpc.server.duration'
+            - targets: ["127.0.0.1:8888"]
 
+          metric_relabel_configs:
             # ── Label renames (_ → .) ──
-            - source_labels: [ http_request_method ]
-              target_label:  http.request.method
-            - source_labels: [ http_response_status_code ]
-              target_label:  http.response.status_code
-            - source_labels: [ network_protocol_name ]
-              target_label:  network.protocol.name
-            - source_labels: [ network_protocol_version ]
-              target_label:  network.protocol.version
-            - source_labels: [ rpc_method ]
-              target_label:  rpc.method
-            - source_labels: [ rpc_response_status_code ]
-              target_label:  rpc.response.status_code
-            - source_labels: [ rpc_system_name ]
-              target_label:  rpc.system.name
-            - source_labels: [ server_address ]
-              target_label:  server.address
-            - source_labels: [ server_port ]
-              target_label:  server.port
-            - source_labels: [ url_scheme ]
-              target_label:  url.scheme
-            - source_labels: [ k8s_namespace_name ]
-              target_label:  k8s.namespace.name
-            - source_labels: [ k8s_node_name ]
-              target_label:  k8s.node.name
-            - source_labels: [ k8s_pod_name ]
-              target_label:  k8s.pod.name
-            - source_labels: [ service_instance_id ]
-              target_label:  service.instance.id
-            - source_labels: [ service_name ]
-              target_label:  service.name
-            - source_labels: [ service_version ]
-              target_label:  service.version
+            - action: replace
+              source_labels: [http_request_method]
+              target_label: http.request.method
+            - action: replace
+              source_labels: [http_response_status_code]
+              target_label: http.response.status_code
+            - action: replace
+              source_labels: [network_protocol_name]
+              target_label: network.protocol.name
+            - action: replace
+              source_labels: [network_protocol_version]
+              target_label: network.protocol.version
+            - action: replace
+              source_labels: [rpc_method]
+              target_label: rpc.method
+            - action: replace
+              source_labels: [rpc_response_status_code]
+              target_label: rpc.response.status_code
+            - action: replace
+              source_labels: [rpc_system_name]
+              target_label: rpc.system.name
+            - action: replace
+              source_labels: [server_address]
+              target_label: server.address
+            - action: replace
+              source_labels: [server_port]
+              target_label: server.port
+            - action: replace
+              source_labels: [url_scheme]
+              target_label: url.scheme
+            - action: replace
+              source_labels: [k8s_namespace_name]
+              target_label: k8s.namespace.name
+            - action: replace
+              source_labels: [k8s_node_name]
+              target_label: k8s.node.name
+            - action: replace
+              source_labels: [k8s_pod_name]
+              target_label: k8s.pod.name
+            - action: replace
+              source_labels: [service_instance_id]
+              target_label: service.instance.id
+            - action: replace
+              source_labels: [service_name]
+              target_label: service.name
+            - action: replace
+              source_labels: [service_version]
+              target_label: service.version
 
             # ── Drop original underscore labels ──
-            - regex: http_request_method|http_response_status_code|network_protocol_name|network_protocol_version|rpc_method|rpc_response_status_code|rpc_system_name|server_address|server_port|url_scheme|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_instance_id|service_name|service_version
-              action: labeldrop
+            - action: labeldrop
+              regex: http_request_method|http_response_status_code|network_protocol_name|network_protocol_version|rpc_method|rpc_response_status_code|rpc_system_name|server_address|server_port|url_scheme|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_instance_id|service_name|service_version
 
+            # ── Optional: normalize summary quantiles like "1.000000" → "1", "0.500000" → "0.5"
+            - action: replace
+              source_labels: [quantile]
+              target_label: quantile
+              regex: ^(\d+)\.0+$
+              replacement: $1
+            - action: replace
+              source_labels: [quantile]
+              target_label: quantile
+              regex: ^(\d+)\.(\d*[1-9])0+$
+              replacement: $1.$2
+
+            # ── Optional: normalize histogram le="10.000000" → "10" for *_bucket series
+            - action: replace
+              source_labels: [le, __name__]
+              target_label: le
+              regex: ^(\d+)\.0+;(.*_bucket)$
+              replacement: $1
 
 processors:
-  cumulativetodelta:
+  transform/selfmon_rename:
+    error_mode: ignore
+    metric_statements:
+      - context: metric
+        statements:
+          - set(name, "http.client.request.duration") where name == "http_client_request_duration"
+          - set(name, "http.client.request.body.size") where name == "http_client_request_body_size"
+          - set(name, "http.server.request.duration") where name == "http_server_request_duration"
+          - set(name, "http.server.request.body.size") where name == "http_server_request_body_size"
+          - set(name, "rpc.server.call.duration") where name == "rpc_server_call_duration"
+          - set(name, "rpc.client.call.duration") where name == "rpc_client_call_duration"
+          - set(name, "rpc.server.duration") where name == "rpc_server_duration"
+          - set(name, "rpc.client.duration") where name == "rpc_client_duration"
+
+  cumulativetodelta: {}
 
 exporters:
   otlp_http:
@@ -121,8 +118,8 @@ exporters:
         flush_timeout: 5s
 
 service:
-  extensions:
-    - health_check
+  extensions: [health_check]
+
   pipelines:
     # Data pipeline: receives telemetrygen metrics, exports to DT
     metrics:
@@ -133,7 +130,7 @@ service:
     # Self-monitoring: scrapes Prometheus, exports to DT
     metrics/selfmon:
       receivers: [prometheus/collector-self]
-      processors: [cumulativetodelta]
+      processors: [transform/selfmon_rename, cumulativetodelta]
       exporters: [otlp_http]
 
   telemetry:

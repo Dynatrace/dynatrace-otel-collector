@@ -114,7 +114,7 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
 		TestID:       testID,
 		OtlpEndpoint: fmt.Sprintf("otelcol-%s", testID),
-		DataTypes:    []string{"traces"},
+		DataTypes:    []string{"metrics"},
 	}
 	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
 

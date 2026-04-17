@@ -13,7 +13,7 @@ service:
   extensions: [health_check]
   pipelines:
     metrics:
-      receivers: [hostmetrics/1m, hostmetrics/5m, hostmetrics/1h]
+      receivers: [hostmetrics/10s, hostmetrics/5m, hostmetrics/1h]
       processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta]
       exporters: [otlp_http]
     logs:

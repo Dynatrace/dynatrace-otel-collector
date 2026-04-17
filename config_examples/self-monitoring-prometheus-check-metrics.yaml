@@ -17,6 +17,9 @@ receivers:
             - targets: ["localhost:8888"]
           metric_relabel_configs:
             # ── Label renames (_ → .) ──
+            # The Prometheus receiver's relabeling reliably rewrites label names
+            # from underscores to dots (e.g. server_address → server.address).
+            # This is needed so dashboards receive OTel-convention dotted attribute names.
             - action: replace
               source_labels: [http_request_method]
               target_label: http.request.method
@@ -66,11 +69,15 @@ receivers:
               source_labels: [service_version]
               target_label: service.version
 
-            # ── Drop original underscore labels ──
+            # ── Drop original underscore labels after copying to dotted versions ──
             - action: labeldrop
               regex: http_request_method|http_response_status_code|network_protocol_name|network_protocol_version|rpc_method|rpc_response_status_code|rpc_system_name|server_address|server_port|url_scheme|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_instance_id|service_name|service_version
 
 processors:
+  # Metric name renames (_ → .) via OTTL transform.
+  # Rewriting __name__ in metric_relabel_configs does NOT work reliably
+  # in the Collector's Prometheus receiver — the transform processor
+  # is the only reliable way to rename metric names to dotted OTel conventions.
   transform/selfmon_rename:
     error_mode: ignore
     metric_statements:
@@ -102,13 +109,13 @@ service:
   extensions: [health_check]
 
   pipelines:
-    # Data pipeline: receives telemetrygen metrics, exports to DT
     metrics:
       receivers: [otlp]
       processors: [cumulativetodelta]
       exporters: [otlp_http]
 
-    # Self-monitoring: scrapes Prometheus, exports to DT
+    # Self-monitoring pipeline: transform must come before cumulativetodelta
+    # so metric names are dotted before delta conversion
     metrics/selfmon:
       receivers: [prometheus/collector-self]
       processors: [transform/selfmon_rename, cumulativetodelta]
@@ -127,5 +134,7 @@ service:
               prometheus:
                 host: "0.0.0.0"
                 port: 8888
+                # With this configuration, otelcol_process_uptime_seconds_total
+                # is exported as otelcol_process_uptime
                 without_type_suffix: true
                 without_units: true

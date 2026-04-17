@@ -1,3 +1,4 @@
+exporters:
   otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
@@ -8,8 +9,8 @@
         flush_timeout: 5s
 
 service:
-  extensions:
-    - health_check
+  extensions: [health_check]
+
   pipelines:
     # Data pipeline: receives telemetrygen metrics, exports to DT
     metrics:

@@ -15,7 +15,6 @@ receivers:
           scrape_interval: 15s
           static_configs:
             - targets: ["localhost:8888"]
-
           metric_relabel_configs:
             # ── Label renames (_ → .) ──
             - action: replace

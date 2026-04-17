@@ -1,7 +1,6 @@
+exporters:
   otlp_http:
     endpoint: http://%[1]s:4320
-    headers:
-      Authorization: "Api-Token noop"
     sending_queue:
       batch:
         min_size: 5
@@ -14,9 +13,10 @@
         flush_timeout: 5s
 
 service:
-  extensions:
-    - health_check
+  extensions: [health_check]
+
   pipelines:
+    # Data pipeline: receives telemetrygen metrics, exports to DT
     metrics:
       receivers: [otlp]
       processors: [cumulativetodelta]

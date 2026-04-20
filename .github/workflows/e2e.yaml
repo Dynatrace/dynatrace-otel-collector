@@ -130,6 +130,7 @@ jobs:
           - resource-detection
           - netflow
           - self-monitoring
+          - self-monitoring-prometheus
           - k8sobjects
           - kubeletstats
           - k8scluster

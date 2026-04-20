@@ -88,27 +88,31 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 }
 
 // mergeNodes deep-merges src into dst at the yaml.Node level.
-func mergeNodes(dst, src *yaml.Node) {
-	index := map[string]int{}
-	for i := 0; i < len(dst.Content)-1; i += 2 {
-		index[dst.Content[i].Value] = i
-	}
-
-	for i := 0; i < len(src.Content)-1; i += 2 {
-		srcKey := src.Content[i]
-		srcVal := src.Content[i+1]
-
-		if pos, exists := index[srcKey.Value]; exists {
-			dstVal := dst.Content[pos+1]
-			if srcVal.Kind == yaml.MappingNode && dstVal.Kind == yaml.MappingNode {
-				mergeNodes(dstVal, srcVal)
-			} else {
-				dst.Content[pos+1] = cloneNode(srcVal) // ← clone, not reference
+func mergeNodes(base, overlay *yaml.Node) *yaml.Node {
+	if base.Kind == yaml.MappingNode && overlay.Kind == yaml.MappingNode {
+		for oi := 0; oi < len(overlay.Content)-1; oi += 2 {
+			overlayKey := overlay.Content[oi].Value
+			found := false
+			for bi := 0; bi < len(base.Content)-1; bi += 2 {
+				if base.Content[bi].Value == overlayKey {
+					// ✅ Key exists in base — recurse, don't replace
+					base.Content[bi+1] = mergeNodes(base.Content[bi+1], overlay.Content[oi+1])
+					found = true
+					break
+				}
 			}
-		} else {
-			dst.Content = append(dst.Content, cloneNode(srcKey), cloneNode(srcVal)) // ← clone
+			if !found {
+				// ✅ New key — append cloned nodes
+				base.Content = append(base.Content,
+					cloneNode(overlay.Content[oi]),
+					cloneNode(overlay.Content[oi+1]),
+				)
+			}
 		}
+		return base
 	}
+	// ✅ Scalar or sequence — overlay wins, return a clone
+	return cloneNode(overlay)
 }
 
 // cloneNode returns a deep copy of a yaml.Node so no two nodes

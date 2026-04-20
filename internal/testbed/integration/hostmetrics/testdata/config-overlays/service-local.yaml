@@ -9,16 +9,16 @@ exporters:
     endpoint: http://%[1]s:4323
 
 receivers:
-  hostmetrics/1m:
-    collection_interval: 10s
-  hostmetrics/1h:
+  hostmetrics/10s:
     collection_interval: 10s
   hostmetrics/5m:
     collection_interval: 10s
     scrapers:
       filesystem:
         include_virtual_filesystems: true
-
+  hostmetrics/1h:
+    collection_interval: 10s
+    
 service:
   pipelines:
     metrics/10s:

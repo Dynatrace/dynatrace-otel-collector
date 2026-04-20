@@ -39,22 +39,42 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 		"${env:API_TOKEN}", "",
 		"${env:NAMESPACE}", template.Namespace,
 	)
+
+	// Replace BEFORE parsing so ${env:...} in flow sequences doesn't break yaml
 	baseStr := replacer.Replace(string(baseBytes))
 
+	// 1) Parse base into yaml.Node tree
+	var baseDoc yaml.Node
+	if err := yaml.Unmarshal([]byte(baseStr), &baseDoc); err != nil {
+		return "", fmt.Errorf("unmarshal base config %q: %w", path, err)
+	}
+
+	// 2) Apply overlays via deep node merge
 	for i, ov := range template.Templates {
 		if strings.TrimSpace(ov) == "" {
 			continue
 		}
 		ov = replacer.Replace(ov)
-		baseStr, err = mergeYAMLText(baseStr, ov)
-		if err != nil {
-			return "", fmt.Errorf("applying overlay %d: %w", i, err)
+		var overlayDoc yaml.Node
+		if err := yaml.Unmarshal([]byte(ov), &overlayDoc); err != nil {
+			return "", fmt.Errorf("unmarshal overlay %d: %w", i, err)
 		}
+		mergeNodes(baseDoc.Content[0], overlayDoc.Content[0])
 	}
 
-	// Indent for ConfigMap
+	// 3) Encode back — use yaml.Encoder with explicit settings to avoid
+	// mangling key names or adding document separators
+	var buf strings.Builder
+	enc := yaml.NewEncoder(&buf)
+	enc.SetIndent(2)
+	if err := enc.Encode(baseDoc.Content[0]); err != nil {
+		return "", fmt.Errorf("marshal merged config: %w", err)
+	}
+	enc.Close()
+
+	// 4) Indent for ConfigMap
 	var b strings.Builder
-	sc := bufio.NewScanner(strings.NewReader(baseStr))
+	sc := bufio.NewScanner(strings.NewReader(buf.String()))
 	for sc.Scan() {
 		b.WriteString("    ")
 		b.WriteString(sc.Text())
@@ -66,99 +86,36 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 	return b.String(), nil
 }
 
-// mergeYAMLText merges overlay into base at the text level.
-// For each top-level key in overlay, it replaces the entire block
-// under that key in base with the overlay's version — no re-marshaling.
-func mergeYAMLText(base, overlay string) (string, error) {
-	// Parse overlay to find which top-level keys it touches
-	var overlayMap yaml.Node
-	if err := yaml.Unmarshal([]byte(overlay), &overlayMap); err != nil {
-		return "", fmt.Errorf("parse overlay: %w", err)
-	}
-	if len(overlayMap.Content) == 0 {
-		return base, nil
-	}
-
-	// Top-level keys in overlay
-	overlayKeys := map[string]struct{}{}
-	root := overlayMap.Content[0]
-	for i := 0; i < len(root.Content)-1; i += 2 {
-		overlayKeys[root.Content[i].Value] = struct{}{}
+// mergeNodes deep-merges src into dst at the yaml.Node level.
+// - Both must be MappingNodes.
+// - Existing keys: recurse if both are maps, otherwise src value wins.
+// - New keys: appended from src.
+// - Keys only in dst: untouched.
+func mergeNodes(dst, src *yaml.Node) {
+	// Index dst keys
+	index := map[string]int{}
+	for i := 0; i < len(dst.Content)-1; i += 2 {
+		index[dst.Content[i].Value] = i
 	}
 
-	// Split base into top-level sections, replacing touched ones
-	result := replaceTopLevelSections(base, overlay, overlayKeys)
-	return result, nil
-}
+	for i := 0; i < len(src.Content)-1; i += 2 {
+		srcKey := src.Content[i]
+		srcVal := src.Content[i+1]
 
-// replaceTopLevelSections replaces sections in base whose top-level key
-// appears in overlayKeys with the corresponding block from overlay.
-// Keys in base not present in overlay are kept as-is.
-// Keys in overlay not present in base are appended.
-func replaceTopLevelSections(base, overlay string, overlayKeys map[string]struct{}) string {
-	baseSections := splitTopLevelSections(base)
-	overlaySections := splitTopLevelSections(overlay)
-
-	seen := map[string]bool{}
-	var out strings.Builder
-
-	for _, sec := range baseSections {
-		if _, replace := overlayKeys[sec.key]; replace {
-			// Use overlay's version of this section
-			if ovSec, ok := overlaySections[sec.key]; ok {
-				out.WriteString(ovSec.raw)
-				out.WriteString("\n")
+		if pos, exists := index[srcKey.Value]; exists {
+			dstVal := dst.Content[pos+1]
+			if srcVal.Kind == yaml.MappingNode && dstVal.Kind == yaml.MappingNode {
+				// Both maps → recurse deeper
+				mergeNodes(dstVal, srcVal)
+			} else {
+				// Scalar, sequence, or type mismatch → overlay wins
+				dst.Content[pos+1] = srcVal
 			}
-			seen[sec.key] = true
 		} else {
-			out.WriteString(sec.raw)
-			out.WriteString("\n")
+			// New key from overlay → append
+			dst.Content = append(dst.Content, srcKey, srcVal)
 		}
 	}
-
-	// Append overlay keys not present in base
-	for key, ovSec := range overlaySections {
-		if !seen[key] {
-			out.WriteString(ovSec.raw)
-			out.WriteString("\n")
-		}
-	}
-
-	return strings.TrimRight(out.String(), "\n") + "\n"
-}
-
-type section struct {
-	key string
-	raw string
-}
-
-// splitTopLevelSections splits a YAML string into top-level key blocks.
-// Each block starts at a line matching /^[a-z_]+:/ and ends before the next such line.
-func splitTopLevelSections(text string) map[string]section {
-	lines := strings.Split(text, "\n")
-	sections := map[string]section{}
-	var currentKey string
-	var currentLines []string
-
-	flush := func() {
-		if currentKey != "" {
-			raw := strings.TrimRight(strings.Join(currentLines, "\n"), "\n")
-			sections[currentKey] = section{key: currentKey, raw: raw}
-		}
-	}
-
-	for _, line := range lines {
-		// Top-level key: starts with a letter/underscore, no leading spaces, ends with ':'
-		if len(line) > 0 && line[0] != ' ' && line[0] != '\t' && line[0] != '#' && line[0] != '-' && strings.Contains(line, ":") {
-			flush()
-			currentKey = strings.TrimRight(strings.SplitN(line, ":", 2)[0], " ")
-			currentLines = []string{line}
-		} else if currentKey != "" {
-			currentLines = append(currentLines, line)
-		}
-	}
-	flush()
-	return sections
 }
 
 func KubeconfigFromEnvOrDefault() string {

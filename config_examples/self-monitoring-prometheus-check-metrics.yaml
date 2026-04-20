@@ -1,3 +1,5 @@
+# If you must use Prometheus for self-monitoring of the collector, configure it carefully — this is NOT a recommended pattern.
+# Prefer the self-monitoring.yaml configuration instead.
 extensions:
   health_check:
     endpoint: 0.0.0.0:13133

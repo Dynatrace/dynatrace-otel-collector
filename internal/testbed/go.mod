@@ -17,7 +17,7 @@ require (
 	go.opentelemetry.io/collector/pdata v1.55.0
 	go.opentelemetry.io/otel v1.43.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/apimachinery v0.35.3
+	k8s.io/apimachinery v0.35.4
 )
 
 require (

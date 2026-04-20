@@ -3,7 +3,7 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/renderworkloads
 go 1.26.2
 
 require (
-	k8s.io/apimachinery v0.35.3
+	k8s.io/apimachinery v0.35.4
 	sigs.k8s.io/yaml v1.6.0
 )
 

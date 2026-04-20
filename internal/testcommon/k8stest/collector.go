@@ -4,6 +4,7 @@
 package k8stest // import "github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8stest"
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -11,50 +12,95 @@ import (
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 type ConfigTemplate struct {
 	Host      string
 	Namespace string
+	// Overlays are YAML strings applied in order; later ones win.
 	Templates []string
 }
 
+// mergeMaps merges src into dst. Both must be map[string]any.
+// - map keys are merged recursively
+// - lists and scalars are replaced wholesale (src wins)
+func mergeMaps(dst, src map[string]any) map[string]any {
+	for k, v := range src {
+		// If both sides are maps, merge recursively
+		if vMap, ok := v.(map[string]any); ok {
+			if dv, ok := dst[k]; ok {
+				if dvMap, ok := dv.(map[string]any); ok {
+					dst[k] = mergeMaps(dvMap, vMap)
+					continue
+				}
+			}
+		}
+		// Otherwise, src wins
+		dst[k] = v
+	}
+	return dst
+}
 func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 	if path == "" {
 		return "", nil
 	}
-	cfg, err := os.ReadFile(path)
+
+	baseBytes, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
 
-	parsedConfig := string(cfg)
-
-	replacerSlice := []string{
-		"${env:DT_ENDPOINT}",
-		fmt.Sprintf("http://%s:4318", template.Host),
-		"${env:DT_API_TOKEN}",
-		"",
-		"${env:API_TOKEN}",
-		"",
-		"${env:NAMESPACE}",
-		template.Namespace,
+	// 1) Unmarshal base YAML into a map
+	var cfg map[string]any
+	if err := yaml.Unmarshal(baseBytes, &cfg); err != nil {
+		return "", fmt.Errorf("unmarshal base config %q: %w", path, err)
 	}
-	replacerSlice = append(replacerSlice, template.Templates...)
 
-	r := strings.NewReplacer(
-		replacerSlice...,
+	// 2) Apply overlays in order: later overlays win
+	for i, ov := range template.Templates {
+		if strings.TrimSpace(ov) == "" {
+			continue
+		}
+
+		var overlayCfg map[string]any
+		if err := yaml.Unmarshal([]byte(ov), &overlayCfg); err != nil {
+			return "", fmt.Errorf("unmarshal overlay %d: %w", i, err)
+		}
+
+		cfg = mergeMaps(cfg, overlayCfg)
+	}
+
+	// 3) Marshal merged YAML back to bytes
+	mergedBytes, err := yaml.Marshal(cfg)
+	if err != nil {
+		return "", fmt.Errorf("marshal merged config: %w", err)
+	}
+	merged := string(mergedBytes)
+
+	// 4) Apply env/host/namespace replacements (same semantics as before)
+	replacer := strings.NewReplacer(
+		"${env:DT_ENDPOINT}", fmt.Sprintf("http://%s:4318", template.Host),
+		"${env:DT_API_TOKEN}", "",
+		"${env:API_TOKEN}", "",
+		"${env:NAMESPACE}", template.Namespace,
 	)
-	parsedConfig = r.Replace(parsedConfig)
+	parsedConfig := replacer.Replace(merged)
 
-	res := ""
-	// prepend two tabs to each line to enable embedding the content in a k8s ConfigMap
-	for _, line := range strings.Split(strings.TrimSuffix(parsedConfig, "\n"), "\n") {
-		res += fmt.Sprintf("    %s\n", line)
+	// 5) Indent for ConfigMap
+	var b strings.Builder
+	sc := bufio.NewScanner(strings.NewReader(parsedConfig))
+	for sc.Scan() {
+		b.WriteString("    ")
+		b.WriteString(sc.Text())
+		b.WriteByte('\n')
+	}
+	if err := sc.Err(); err != nil {
+		return "", fmt.Errorf("building indented config: %w", err)
 	}
 
-	return res, nil
+	return b.String(), nil
 }
 
 func KubeconfigFromEnvOrDefault() string {

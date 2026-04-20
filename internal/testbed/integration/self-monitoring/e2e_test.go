@@ -249,7 +249,6 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			originalOverlay,
 			localOverlay,
 		},
 	})

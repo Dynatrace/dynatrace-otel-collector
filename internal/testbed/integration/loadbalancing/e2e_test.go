@@ -18,11 +18,12 @@ import (
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
-const OTLPConfig = `
-      otlp:`
-
 const replacementOTLPConfig = `
-      otlp:
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
         tls:
           insecure: true`
 
@@ -128,8 +129,6 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		},
 		host,
 	)
-
-	t.Logf("=== MERGED CONFIG for %s ===\n%s\n=== END ===", collectorObjs[0].GetName(), collectorConfig)
 
 	// create telemetrygen
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{

@@ -356,8 +356,6 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		host,
 	)
 
-	t.Logf("=== MERGED CONFIG for %s ===\n%s\n=== END ===", collectorObjs[0].GetName(), collectorConfig)
-
 	defer func() {
 		for _, obj := range collectorObjs2 {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())

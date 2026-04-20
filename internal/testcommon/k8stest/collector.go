@@ -64,19 +64,29 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 		return "", err
 	}
 
+	// Apply replacements BEFORE parsing so ${env:...} doesn't break the YAML parser
+	replacer := strings.NewReplacer(
+		"${env:DT_ENDPOINT}", fmt.Sprintf("http://%s:4318", template.Host),
+		"${env:DT_API_TOKEN}", "",
+		"${env:API_TOKEN}", "",
+		"${env:NAMESPACE}", template.Namespace,
+	)
+	replaced := replacer.Replace(string(baseBytes))
+
 	// 1) Parse base YAML preserving structure via yaml.Node
 	var baseDoc yaml.Node
-	if err := yaml.Unmarshal(baseBytes, &baseDoc); err != nil {
+	if err := yaml.Unmarshal([]byte(replaced), &baseDoc); err != nil {
 		return "", fmt.Errorf("unmarshal base config %q: %w", path, err)
 	}
-	// baseDoc is a Document node; its first child is the root mapping
 	root := baseDoc.Content[0]
 
-	// 2) Apply overlays in order using node-level merge
+	// 2) Apply overlays in order
 	for i, ov := range template.Templates {
 		if strings.TrimSpace(ov) == "" {
 			continue
 		}
+		// Also replace in overlays
+		ov = replacer.Replace(ov)
 		var overlayDoc yaml.Node
 		if err := yaml.Unmarshal([]byte(ov), &overlayDoc); err != nil {
 			return "", fmt.Errorf("unmarshal overlay %d: %w", i, err)
@@ -84,25 +94,15 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 		mergeNodes(root, overlayDoc.Content[0])
 	}
 
-	// 3) Marshal merged node back — preserves key names (including slashes) exactly
+	// 3) Marshal merged node back
 	mergedBytes, err := yaml.Marshal(&baseDoc)
 	if err != nil {
 		return "", fmt.Errorf("marshal merged config: %w", err)
 	}
-	merged := string(mergedBytes)
 
-	// 4) Apply env/host/namespace replacements
-	replacer := strings.NewReplacer(
-		"${env:DT_ENDPOINT}", fmt.Sprintf("http://%s:4318", template.Host),
-		"${env:DT_API_TOKEN}", "",
-		"${env:API_TOKEN}", "",
-		"${env:NAMESPACE}", template.Namespace,
-	)
-	parsedConfig := replacer.Replace(merged)
-
-	// 5) Indent for ConfigMap
+	// 4) Indent for ConfigMap
 	var b strings.Builder
-	sc := bufio.NewScanner(strings.NewReader(parsedConfig))
+	sc := bufio.NewScanner(strings.NewReader(string(mergedBytes)))
 	for sc.Scan() {
 		b.WriteString("    ")
 		b.WriteString(sc.Text())

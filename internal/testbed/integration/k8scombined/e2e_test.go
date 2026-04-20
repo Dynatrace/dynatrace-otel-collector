@@ -140,69 +140,8 @@ var (
 		ptracetest.IgnoreResourceAttributeValue("k8s.node.name"),
 	}
 
-	templateOriginFilterProc = `  filter:
-    error_mode: ignore
-    metrics:
-      metric:
-        - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
-        - 'resource.attributes["k8s.volume.type"] == "configMap"'
-        - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
-        - 'resource.attributes["k8s.volume.type"] == "secret"'`
-
-	templateNewFilterProc = `  filter:
-    error_mode: ignore
-    metrics:
-      metric:
-        - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
-        - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
-        - 'resource.attributes["k8s.volume.type"] == "secret"'`
-
-	templateOrigin = `
-  otlp_http:
-    endpoint: ${env:DT_ENDPOINT}
-    headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
-
-service:
-  extensions:
-    - health_check
-    - k8s_leader_elector
-  pipelines:
-    metrics/node:
-      receivers:
-        - kubeletstats
-      processors:
-        - filter
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlp_http
-    metrics:
-      receivers:
-        - k8s_cluster
-      processors:
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlp_http
-    logs:
-      receivers:
-        - k8s_events
-      processors:
-        - transform
-      exporters:
-        - otlp_http
-    traces:
-      receivers:
-        - otlp
-      processors:
-        - k8sattributes
-        - transform
-      exporters:
-        - otlp_http`
 	templateNew = `
+exporters:
   otlp_http/node:
     endpoint: http://%s:4321
   otlp_http/cluster:
@@ -336,9 +275,6 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			templateOriginFilterProc,
-			templateNewFilterProc,
-			templateOrigin,
 			fmt.Sprintf(templateNew, host, host, host, host),
 		},
 	})

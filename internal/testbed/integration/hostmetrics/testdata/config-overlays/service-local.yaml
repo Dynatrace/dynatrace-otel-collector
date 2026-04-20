@@ -7,8 +7,14 @@ exporters:
     endpoint: http://%[1]s:4322
   otlp_http/logs:
     endpoint: http://%[1]s:4323
+
+receivers:
+  hostmetrics/5m:
+    scrapers:
+      filesystem:
+        include_virtual_filesystems: true
+
 service:
-  extensions: [health_check]
   pipelines:
     metrics/10s:
       receivers: [hostmetrics/10s]

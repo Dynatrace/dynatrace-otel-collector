@@ -135,7 +135,6 @@ func TestE2E_Kafka(t *testing.T) {
 	collectorConfigKMReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathKMReceiver, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			envOverlay,
 			localOverlay,
 		},
 	})

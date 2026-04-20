@@ -102,28 +102,12 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	host := otelk8stest.HostEndpoint(t)
 
 	// Read overlay from file
-	envOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-env.yaml"))
 	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-local.yaml")), host)
-	intervalOverlay1m := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "collection-interval-1m.yaml"))
-	intervalOverlay5m := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "collection-interval-5m.yaml"))
-	intervalOverlay1h := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "collection-interval-1h.yaml"))
-	shortIntervalOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "collection-interval-short.yaml"))
-	filesystemNoVirtualOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "filesystem-no-virtual.yaml"))
-	filesystemIncludeVirtualOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "filesystem-include-virtual.yaml"))
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			envOverlay,
 			localOverlay,
-			intervalOverlay1m,
-			shortIntervalOverlay,
-			intervalOverlay5m,
-			shortIntervalOverlay,
-			intervalOverlay1h,
-			shortIntervalOverlay,
-			filesystemNoVirtualOverlay,
-			filesystemIncludeVirtualOverlay,
 		},
 	})
 

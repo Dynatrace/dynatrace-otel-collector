@@ -5,9 +5,7 @@ exporters:
     endpoint: http://%[1]s:4318
 
 service:
-
-    # Self-monitoring pipeline: transform must come before cumulativetodelta
-    # so metric names are dotted before delta conversion
+  pipelines:
     metrics/selfmon:
       receivers: [prometheus/collector-self]
       processors: [transform/selfmon_rename, cumulativetodelta]

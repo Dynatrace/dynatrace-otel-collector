@@ -139,57 +139,6 @@ var (
 		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.node.name"),
 	}
-
-	templateNew = `
-exporters:
-  otlp_http/node:
-    endpoint: http://%s:4321
-  otlp_http/cluster:
-    endpoint: http://%s:4320
-  otlp_http/traces:
-    endpoint: http://%s:4322
-  otlp_http/logs:
-    endpoint: http://%s:4319
-
-service:
-  extensions:
-    - health_check
-    - k8s_leader_elector
-  pipelines:
-    traces:
-      receivers:
-        - otlp
-      processors:
-        - k8sattributes
-        - transform
-      exporters:
-        - otlp_http/traces
-    metrics/node:
-      receivers:
-        - kubeletstats
-      processors:
-        - filter
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlp_http/node
-    metrics:
-      receivers:
-        - k8s_cluster
-      processors:
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlp_http/cluster
-    logs:
-      receivers:
-        - k8s_events
-      processors:
-        - transform
-      exporters:
-        - otlp_http/logs`
 )
 
 func TestE2E_K8sCombinedReceiver(t *testing.T) {
@@ -272,11 +221,12 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	require.NoError(t, err)
 	host := otelk8stest.HostEndpoint(t)
 	collectorConfigPath := path.Join(configExamplesDir, "k8scombined.yaml")
+	localOverlay = fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "local.yaml")), host)
+
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			fmt.Sprintf(templateNew, host, host, host, host),
-		},
+			localOverlay},
 	})
 
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)

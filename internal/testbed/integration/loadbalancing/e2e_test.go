@@ -18,14 +18,6 @@ import (
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
-const replacementOTLPConfig = `
-receivers:
-  otlp:
-    protocols:
-      grpc:
-        tls:
-          insecure: true`
-
 const metricsPortGrpc = 4327
 const metricsPortHttp = 4328
 const tracesPortGrpc = 4337
@@ -111,10 +103,8 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	require.NoError(t, err)
 	collectorConfigPath := path.Join(configExamplesDir, "load-balancing.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host: host,
-		Templates: []string{
-			replacementOTLPConfig,
-		},
+		Host:      host,
+		Templates: []string{},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(

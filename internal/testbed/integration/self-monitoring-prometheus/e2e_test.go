@@ -19,7 +19,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
-	"go.opentelemetry.io/collector/pdata/pmetric"
 )
 
 // Test_Selfmonitoring_Prometheus_checkMetrics verifies the full self-monitoring
@@ -163,15 +162,6 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
 		err := pmetrictest.CompareMetrics(expected, actual, defaultOptions...)
-		if err != nil {
-			marshaler := &pmetric.JSONMarshaler{}
-			actualJSON, marshalErr := marshaler.MarshalMetrics(actual)
-			if marshalErr == nil {
-				t.Logf("Actual metrics received via Prometheus path:\n%s", string(actualJSON))
-			} else {
-				t.Logf("Failed to marshal actual metrics: %v", marshalErr)
-			}
-		}
 		assert.NoError(tt, err)
 	}, 3*time.Minute, 1*time.Second)
 }

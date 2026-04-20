@@ -87,12 +87,7 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 }
 
 // mergeNodes deep-merges src into dst at the yaml.Node level.
-// - Both must be MappingNodes.
-// - Existing keys: recurse if both are maps, otherwise src value wins.
-// - New keys: appended from src.
-// - Keys only in dst: untouched.
 func mergeNodes(dst, src *yaml.Node) {
-	// Index dst keys
 	index := map[string]int{}
 	for i := 0; i < len(dst.Content)-1; i += 2 {
 		index[dst.Content[i].Value] = i
@@ -105,17 +100,33 @@ func mergeNodes(dst, src *yaml.Node) {
 		if pos, exists := index[srcKey.Value]; exists {
 			dstVal := dst.Content[pos+1]
 			if srcVal.Kind == yaml.MappingNode && dstVal.Kind == yaml.MappingNode {
-				// Both maps → recurse deeper
 				mergeNodes(dstVal, srcVal)
 			} else {
-				// Scalar, sequence, or type mismatch → overlay wins
-				dst.Content[pos+1] = srcVal
+				dst.Content[pos+1] = cloneNode(srcVal) // ← clone, not reference
 			}
 		} else {
-			// New key from overlay → append
-			dst.Content = append(dst.Content, srcKey, srcVal)
+			dst.Content = append(dst.Content, cloneNode(srcKey), cloneNode(srcVal)) // ← clone
 		}
 	}
+}
+
+// cloneNode returns a deep copy of a yaml.Node so no two nodes
+// in the tree share the same pointer — prevents yaml.v3 from
+// emitting anchors/aliases which corrupt key names on marshal.
+func cloneNode(n *yaml.Node) *yaml.Node {
+	if n == nil {
+		return nil
+	}
+	clone := *n // copy all scalar fields (Kind, Tag, Value, Style, etc.)
+	if len(n.Content) > 0 {
+		clone.Content = make([]*yaml.Node, len(n.Content))
+		for i, child := range n.Content {
+			clone.Content[i] = cloneNode(child)
+		}
+	}
+	// Clear anchor/alias fields so yaml.v3 doesn't reuse them
+	clone.Anchor = ""
+	return &clone
 }
 
 func KubeconfigFromEnvOrDefault() string {

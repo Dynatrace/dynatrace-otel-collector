@@ -129,6 +129,8 @@ func TestE2E_LoadBalancing(t *testing.T) {
 		host,
 	)
 
+	t.Logf("=== MERGED CONFIG for %s ===\n%s\n=== END ===", collectorObjs[0].GetName(), collectorConfig)
+
 	// create telemetrygen
 	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
 		ManifestsDir: filepath.Join(testDir, "telemetrygen"),

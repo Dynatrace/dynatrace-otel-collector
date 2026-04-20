@@ -83,6 +83,7 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 	if err := sc.Err(); err != nil {
 		return "", fmt.Errorf("building indented config: %w", err)
 	}
+
 	return b.String(), nil
 }
 

@@ -23,25 +23,37 @@ type ConfigTemplate struct {
 	Templates []string
 }
 
-// mergeMaps merges src into dst. Both must be map[string]any.
-// - map keys are merged recursively
-// - lists and scalars are replaced wholesale (src wins)
-func mergeMaps(dst, src map[string]any) map[string]any {
-	for k, v := range src {
-		// If both sides are maps, merge recursively
-		if vMap, ok := v.(map[string]any); ok {
-			if dv, ok := dst[k]; ok {
-				if dvMap, ok := dv.(map[string]any); ok {
-					dst[k] = mergeMaps(dvMap, vMap)
-					continue
-				}
-			}
-		}
-		// Otherwise, src wins
-		dst[k] = v
+// mergeNodes merges src yaml.Node into dst yaml.Node, both must be mapping nodes.
+// Keys present in src are added or overwrite dst; missing keys are left as-is.
+// This preserves the original formatting/style of dst for untouched keys.
+func mergeNodes(dst, src *yaml.Node) {
+	// Build an index of dst mapping keys → value-node positions
+	index := map[string]int{}
+	for i := 0; i < len(dst.Content)-1; i += 2 {
+		index[dst.Content[i].Value] = i
 	}
-	return dst
+
+	for i := 0; i < len(src.Content)-1; i += 2 {
+		key := src.Content[i]
+		val := src.Content[i+1]
+
+		if pos, exists := index[key.Value]; exists {
+			// Key exists in dst
+			dstVal := dst.Content[pos+1]
+			if val.Kind == yaml.MappingNode && dstVal.Kind == yaml.MappingNode {
+				// Both are maps: recurse
+				mergeNodes(dstVal, val)
+			} else {
+				// Scalar or sequence: src wins, replace value node only
+				dst.Content[pos+1] = val
+			}
+		} else {
+			// New key: append both key and value nodes from src
+			dst.Content = append(dst.Content, key, val)
+		}
+	}
 }
+
 func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 	if path == "" {
 		return "", nil
@@ -52,34 +64,34 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 		return "", err
 	}
 
-	// 1) Unmarshal base YAML into a map
-	var cfg map[string]any
-	if err := yaml.Unmarshal(baseBytes, &cfg); err != nil {
+	// 1) Parse base YAML preserving structure via yaml.Node
+	var baseDoc yaml.Node
+	if err := yaml.Unmarshal(baseBytes, &baseDoc); err != nil {
 		return "", fmt.Errorf("unmarshal base config %q: %w", path, err)
 	}
+	// baseDoc is a Document node; its first child is the root mapping
+	root := baseDoc.Content[0]
 
-	// 2) Apply overlays in order: later overlays win
+	// 2) Apply overlays in order using node-level merge
 	for i, ov := range template.Templates {
 		if strings.TrimSpace(ov) == "" {
 			continue
 		}
-
-		var overlayCfg map[string]any
-		if err := yaml.Unmarshal([]byte(ov), &overlayCfg); err != nil {
+		var overlayDoc yaml.Node
+		if err := yaml.Unmarshal([]byte(ov), &overlayDoc); err != nil {
 			return "", fmt.Errorf("unmarshal overlay %d: %w", i, err)
 		}
-
-		cfg = mergeMaps(cfg, overlayCfg)
+		mergeNodes(root, overlayDoc.Content[0])
 	}
 
-	// 3) Marshal merged YAML back to bytes
-	mergedBytes, err := yaml.Marshal(cfg)
+	// 3) Marshal merged node back — preserves key names (including slashes) exactly
+	mergedBytes, err := yaml.Marshal(&baseDoc)
 	if err != nil {
 		return "", fmt.Errorf("marshal merged config: %w", err)
 	}
 	merged := string(mergedBytes)
 
-	// 4) Apply env/host/namespace replacements (same semantics as before)
+	// 4) Apply env/host/namespace replacements
 	replacer := strings.NewReplacer(
 		"${env:DT_ENDPOINT}", fmt.Sprintf("http://%s:4318", template.Host),
 		"${env:DT_API_TOKEN}", "",

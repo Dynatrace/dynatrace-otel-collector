@@ -102,13 +102,11 @@ func TestE2E_Kafka(t *testing.T) {
 	collectorConfigPathReceiver := filepath.Join(configExamplesDir, "kafka-receiver.yaml")
 
 	// Read overlays from files
-	envOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "receiver-env.yaml"))
 	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "receiver-local.yaml")), host)
 
 	collectorConfigReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathReceiver, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			envOverlay,
 			localOverlay,
 		},
 	})
@@ -132,7 +130,6 @@ func TestE2E_Kafka(t *testing.T) {
 	collectorConfigPathKMReceiver := filepath.Join(configExamplesDir, "kafka-metrics-receiver.yaml")
 
 	// Read overlays from files
-	envOverlay = k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "kafkametrics-receiver-env.yaml"))
 	localOverlay = fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "kafkametrics-receiver-local.yaml")), host)
 
 	collectorConfigKMReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathKMReceiver, k8stest.ConfigTemplate{

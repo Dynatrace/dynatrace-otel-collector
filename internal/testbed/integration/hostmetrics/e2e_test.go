@@ -139,7 +139,6 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 		},
 		host,
 	)
-	t.Logf("=== MERGED CONFIG for %s ===\n%s\n=== END ===", collectorObjs[0].GetName(), collectorConfig)
 
 	defer func() {
 		for _, obj := range collectorObjs {

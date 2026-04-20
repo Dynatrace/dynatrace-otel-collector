@@ -114,7 +114,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			OTLPConfig, replacementOTLPConfig,
+			replacementOTLPConfig,
 		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)

@@ -23,37 +23,6 @@ type ConfigTemplate struct {
 	Templates []string
 }
 
-// mergeNodes merges src yaml.Node into dst yaml.Node, both must be mapping nodes.
-// Keys present in src are added or overwrite dst; missing keys are left as-is.
-// This preserves the original formatting/style of dst for untouched keys.
-func mergeNodes(dst, src *yaml.Node) {
-	// Build an index of dst mapping keys → value-node positions
-	index := map[string]int{}
-	for i := 0; i < len(dst.Content)-1; i += 2 {
-		index[dst.Content[i].Value] = i
-	}
-
-	for i := 0; i < len(src.Content)-1; i += 2 {
-		key := src.Content[i]
-		val := src.Content[i+1]
-
-		if pos, exists := index[key.Value]; exists {
-			// Key exists in dst
-			dstVal := dst.Content[pos+1]
-			if val.Kind == yaml.MappingNode && dstVal.Kind == yaml.MappingNode {
-				// Both are maps: recurse
-				mergeNodes(dstVal, val)
-			} else {
-				// Scalar or sequence: src wins, replace value node only
-				dst.Content[pos+1] = val
-			}
-		} else {
-			// New key: append both key and value nodes from src
-			dst.Content = append(dst.Content, key, val)
-		}
-	}
-}
-
 func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 	if path == "" {
 		return "", nil
@@ -64,45 +33,28 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 		return "", err
 	}
 
-	// Apply replacements BEFORE parsing so ${env:...} doesn't break the YAML parser
 	replacer := strings.NewReplacer(
 		"${env:DT_ENDPOINT}", fmt.Sprintf("http://%s:4318", template.Host),
 		"${env:DT_API_TOKEN}", "",
 		"${env:API_TOKEN}", "",
 		"${env:NAMESPACE}", template.Namespace,
 	)
-	replaced := replacer.Replace(string(baseBytes))
+	baseStr := replacer.Replace(string(baseBytes))
 
-	// 1) Parse base YAML preserving structure via yaml.Node
-	var baseDoc yaml.Node
-	if err := yaml.Unmarshal([]byte(replaced), &baseDoc); err != nil {
-		return "", fmt.Errorf("unmarshal base config %q: %w", path, err)
-	}
-	root := baseDoc.Content[0]
-
-	// 2) Apply overlays in order
 	for i, ov := range template.Templates {
 		if strings.TrimSpace(ov) == "" {
 			continue
 		}
-		// Also replace in overlays
 		ov = replacer.Replace(ov)
-		var overlayDoc yaml.Node
-		if err := yaml.Unmarshal([]byte(ov), &overlayDoc); err != nil {
-			return "", fmt.Errorf("unmarshal overlay %d: %w", i, err)
+		baseStr, err = mergeYAMLText(baseStr, ov)
+		if err != nil {
+			return "", fmt.Errorf("applying overlay %d: %w", i, err)
 		}
-		mergeNodes(root, overlayDoc.Content[0])
 	}
 
-	// 3) Marshal merged node back
-	mergedBytes, err := yaml.Marshal(&baseDoc)
-	if err != nil {
-		return "", fmt.Errorf("marshal merged config: %w", err)
-	}
-
-	// 4) Indent for ConfigMap
+	// Indent for ConfigMap
 	var b strings.Builder
-	sc := bufio.NewScanner(strings.NewReader(string(mergedBytes)))
+	sc := bufio.NewScanner(strings.NewReader(baseStr))
 	for sc.Scan() {
 		b.WriteString("    ")
 		b.WriteString(sc.Text())
@@ -111,8 +63,102 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 	if err := sc.Err(); err != nil {
 		return "", fmt.Errorf("building indented config: %w", err)
 	}
-
 	return b.String(), nil
+}
+
+// mergeYAMLText merges overlay into base at the text level.
+// For each top-level key in overlay, it replaces the entire block
+// under that key in base with the overlay's version — no re-marshaling.
+func mergeYAMLText(base, overlay string) (string, error) {
+	// Parse overlay to find which top-level keys it touches
+	var overlayMap yaml.Node
+	if err := yaml.Unmarshal([]byte(overlay), &overlayMap); err != nil {
+		return "", fmt.Errorf("parse overlay: %w", err)
+	}
+	if len(overlayMap.Content) == 0 {
+		return base, nil
+	}
+
+	// Top-level keys in overlay
+	overlayKeys := map[string]struct{}{}
+	root := overlayMap.Content[0]
+	for i := 0; i < len(root.Content)-1; i += 2 {
+		overlayKeys[root.Content[i].Value] = struct{}{}
+	}
+
+	// Split base into top-level sections, replacing touched ones
+	result := replaceTopLevelSections(base, overlay, overlayKeys)
+	return result, nil
+}
+
+// replaceTopLevelSections replaces sections in base whose top-level key
+// appears in overlayKeys with the corresponding block from overlay.
+// Keys in base not present in overlay are kept as-is.
+// Keys in overlay not present in base are appended.
+func replaceTopLevelSections(base, overlay string, overlayKeys map[string]struct{}) string {
+	baseSections := splitTopLevelSections(base)
+	overlaySections := splitTopLevelSections(overlay)
+
+	seen := map[string]bool{}
+	var out strings.Builder
+
+	for _, sec := range baseSections {
+		if _, replace := overlayKeys[sec.key]; replace {
+			// Use overlay's version of this section
+			if ovSec, ok := overlaySections[sec.key]; ok {
+				out.WriteString(ovSec.raw)
+				out.WriteString("\n")
+			}
+			seen[sec.key] = true
+		} else {
+			out.WriteString(sec.raw)
+			out.WriteString("\n")
+		}
+	}
+
+	// Append overlay keys not present in base
+	for key, ovSec := range overlaySections {
+		if !seen[key] {
+			out.WriteString(ovSec.raw)
+			out.WriteString("\n")
+		}
+	}
+
+	return strings.TrimRight(out.String(), "\n") + "\n"
+}
+
+type section struct {
+	key string
+	raw string
+}
+
+// splitTopLevelSections splits a YAML string into top-level key blocks.
+// Each block starts at a line matching /^[a-z_]+:/ and ends before the next such line.
+func splitTopLevelSections(text string) map[string]section {
+	lines := strings.Split(text, "\n")
+	sections := map[string]section{}
+	var currentKey string
+	var currentLines []string
+
+	flush := func() {
+		if currentKey != "" {
+			raw := strings.TrimRight(strings.Join(currentLines, "\n"), "\n")
+			sections[currentKey] = section{key: currentKey, raw: raw}
+		}
+	}
+
+	for _, line := range lines {
+		// Top-level key: starts with a letter/underscore, no leading spaces, ends with ':'
+		if len(line) > 0 && line[0] != ' ' && line[0] != '\t' && line[0] != '#' && line[0] != '-' && strings.Contains(line, ":") {
+			flush()
+			currentKey = strings.TrimRight(strings.SplitN(line, ":", 2)[0], " ")
+			currentLines = []string{line}
+		} else if currentKey != "" {
+			currentLines = append(currentLines, line)
+		}
+	}
+	flush()
+	return sections
 }
 
 func KubeconfigFromEnvOrDefault() string {

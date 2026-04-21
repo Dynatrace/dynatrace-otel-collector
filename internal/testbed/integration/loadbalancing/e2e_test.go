@@ -105,8 +105,10 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	localOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-local.yaml"))
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host:      host,
-		Templates: localOverlay,
+		Host: host,
+		Templates: []string{
+			localOverlay,
+		},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(

@@ -102,7 +102,7 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
 	collectorConfigPath := path.Join(configExamplesDir, "load-balancing.yaml")
-	localOverlay = fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-local.yaml")), host)
+	localOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-local.yaml"))
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host:      host,

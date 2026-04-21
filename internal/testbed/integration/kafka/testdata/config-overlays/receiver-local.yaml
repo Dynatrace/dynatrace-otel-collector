@@ -1,20 +1,17 @@
 exporters:
-  otlp_http/traces:
+  otlp_http:
     endpoint: http://%[1]s:4321
+    headers: {}
   otlp_http/metrics:
     endpoint: http://%[1]s:4320
   otlp_http/logs:
     endpoint: http://%[1]s:4319
 
 service:
-  extensions: [health_check]
   pipelines:
     traces:
-      receivers: [kafka]
-      exporters: [otlp_http/traces]
+      exporters: [otlp_http]
     metrics:
-      receivers: [kafka]
       exporters: [otlp_http/metrics]
     logs:
-      receivers: [kafka]
       exporters: [otlp_http/logs]

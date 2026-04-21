@@ -2,6 +2,22 @@
 
 package loadbalancing
 
+import (
+	"fmt"
+	"os"
+	"path"
+	"path/filepath"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/consumer/consumertest"
+
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
+	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+)
+
 const metricsPortGrpc = 4327
 const metricsPortHttp = 4328
 const tracesPortGrpc = 4337

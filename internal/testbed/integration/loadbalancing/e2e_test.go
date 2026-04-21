@@ -2,22 +2,6 @@
 
 package loadbalancing
 
-import (
-	"fmt"
-	"os"
-	"path"
-	"path/filepath"
-	"testing"
-
-	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/consumer/consumertest"
-
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
-	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
-)
-
 const metricsPortGrpc = 4327
 const metricsPortHttp = 4328
 const tracesPortGrpc = 4337
@@ -102,9 +86,11 @@ func TestE2E_LoadBalancing(t *testing.T) {
 	testID, err := testutil.GenerateRandomString(10)
 	require.NoError(t, err)
 	collectorConfigPath := path.Join(configExamplesDir, "load-balancing.yaml")
+	localOverlay = fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-local.yaml")), host)
+
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host:      host,
-		Templates: []string{},
+		Templates: localOverlay,
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(

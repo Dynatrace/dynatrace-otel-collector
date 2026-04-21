@@ -1,6 +1,7 @@
 exporters:
-  otlp_http/node:
+  otlp_http:
     endpoint: http://%s:4321
+    headers: {}
   otlp_http/cluster:
     endpoint: http://%s:4320
   otlp_http/traces:
@@ -36,7 +37,7 @@ service:
         - transform
         - cumulativetodelta
       exporters:
-        - otlp_http/node
+        - otlp_http
     metrics:
       receivers:
         - k8s_cluster

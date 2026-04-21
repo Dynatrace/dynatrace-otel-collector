@@ -221,7 +221,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	require.NoError(t, err)
 	host := otelk8stest.HostEndpoint(t)
 	collectorConfigPath := path.Join(configExamplesDir, "k8scombined.yaml")
-	localOverlay = fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "service-local.yaml")), host)
+	localOverlay = fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "local.yaml")), host)
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,

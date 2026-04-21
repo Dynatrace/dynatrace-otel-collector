@@ -95,14 +95,14 @@ func mergeNodes(base, overlay *yaml.Node) *yaml.Node {
 			found := false
 			for bi := 0; bi < len(base.Content)-1; bi += 2 {
 				if base.Content[bi].Value == overlayKey {
-					// ✅ Key exists in base — recurse, don't replace
+					//  Key exists in base — recurse, don't replace
 					base.Content[bi+1] = mergeNodes(base.Content[bi+1], overlay.Content[oi+1])
 					found = true
 					break
 				}
 			}
 			if !found {
-				// ✅ New key — append cloned nodes
+				//  New key — append cloned nodes
 				base.Content = append(base.Content,
 					cloneNode(overlay.Content[oi]),
 					cloneNode(overlay.Content[oi+1]),
@@ -111,7 +111,7 @@ func mergeNodes(base, overlay *yaml.Node) *yaml.Node {
 		}
 		return base
 	}
-	// ✅ Scalar or sequence — overlay wins, return a clone
+	// Scalar or sequence — overlay wins, return a clone
 	return cloneNode(overlay)
 }
 

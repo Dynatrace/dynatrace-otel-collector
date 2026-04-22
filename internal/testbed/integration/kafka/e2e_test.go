@@ -301,7 +301,9 @@ func TestE2E_Kafka(t *testing.T) {
 		all := kmetricsConsumer.AllMetrics()
 		require.NotEmpty(tt, all)
 		got := all[len(all)-1]
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...))
+		err := pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...)
+		testutil.Debug(err, tt, expectedKMetrics, got)
+		assert.NoError(tt, err)
 	}, compareTimeout, compareTick)
 
 	t.Logf("Kafka Metrics checked successfully")

@@ -139,118 +139,6 @@ var (
 		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.node.name"),
 	}
-
-	templateOriginFilterProc = `  filter:
-    error_mode: ignore
-    metrics:
-      metric:
-        - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
-        - 'resource.attributes["k8s.volume.type"] == "configMap"'
-        - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
-        - 'resource.attributes["k8s.volume.type"] == "secret"'`
-
-	templateNewFilterProc = `  filter:
-    error_mode: ignore
-    metrics:
-      metric:
-        - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
-        - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
-        - 'resource.attributes["k8s.volume.type"] == "secret"'`
-
-	templateOrigin = `
-  otlp_http:
-    endpoint: ${env:DT_ENDPOINT}
-    headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
-
-service:
-  extensions:
-    - health_check
-    - k8s_leader_elector
-  pipelines:
-    metrics/node:
-      receivers:
-        - kubeletstats
-      processors:
-        - filter
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlp_http
-    metrics:
-      receivers:
-        - k8s_cluster
-      processors:
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlp_http
-    logs:
-      receivers:
-        - k8s_events
-      processors:
-        - transform
-      exporters:
-        - otlp_http
-    traces:
-      receivers:
-        - otlp
-      processors:
-        - k8sattributes
-        - transform
-      exporters:
-        - otlp_http`
-	templateNew = `
-  otlp_http/node:
-    endpoint: http://%s:4321
-  otlp_http/cluster:
-    endpoint: http://%s:4320
-  otlp_http/traces:
-    endpoint: http://%s:4322
-  otlp_http/logs:
-    endpoint: http://%s:4319
-
-service:
-  extensions:
-    - health_check
-    - k8s_leader_elector
-  pipelines:
-    traces:
-      receivers:
-        - otlp
-      processors:
-        - k8sattributes
-        - transform
-      exporters:
-        - otlp_http/traces
-    metrics/node:
-      receivers:
-        - kubeletstats
-      processors:
-        - filter
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlp_http/node
-    metrics:
-      receivers:
-        - k8s_cluster
-      processors:
-        - k8sattributes
-        - transform
-        - cumulativetodelta
-      exporters:
-        - otlp_http/cluster
-    logs:
-      receivers:
-        - k8s_events
-      processors:
-        - transform
-      exporters:
-        - otlp_http/logs`
 )
 
 func TestE2E_K8sCombinedReceiver(t *testing.T) {
@@ -333,13 +221,12 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	require.NoError(t, err)
 	host := otelk8stest.HostEndpoint(t)
 	collectorConfigPath := path.Join(configExamplesDir, "k8scombined.yaml")
+	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "local.yaml")), host)
+
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			templateOriginFilterProc,
-			templateNewFilterProc,
-			templateOrigin,
-			fmt.Sprintf(templateNew, host, host, host, host),
+			localOverlay,
 		},
 	})
 

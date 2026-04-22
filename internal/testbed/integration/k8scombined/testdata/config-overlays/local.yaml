@@ -1,0 +1,34 @@
+exporters:
+  otlp_http:
+    endpoint: http://%[1]s:4321
+    headers: {}
+  otlp_http/cluster:
+    endpoint: http://%[1]s:4320
+  otlp_http/traces:
+    endpoint: http://%[1]s:4322
+  otlp_http/logs:
+    endpoint: http://%[1]s:4319
+
+processors:
+  filter:
+    error_mode: ignore
+    metrics:
+      metric:
+        - 'IsMatch(name, "k8s.volume.*") and resource.attributes["k8s.volume.type"] == nil'
+        - 'resource.attributes["k8s.volume.type"] == "emptyDir"'
+        - 'resource.attributes["k8s.volume.type"] == "secret"'
+
+service:
+  pipelines:
+    traces:
+      exporters:
+        - otlp_http/traces
+    metrics/node:
+      exporters:
+        - otlp_http
+    metrics:
+      exporters:
+        - otlp_http/cluster
+    logs:
+      exporters:
+        - otlp_http/logs

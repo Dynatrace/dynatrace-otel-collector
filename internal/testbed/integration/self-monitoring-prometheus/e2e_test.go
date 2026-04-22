@@ -85,12 +85,10 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 
 	// Read overlay from files
 	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "prom-selfmon-local.yaml")), host)
-	originalOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "prom-selfmon-original.yaml"))
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			originalOverlay,
 			localOverlay,
 		},
 	})

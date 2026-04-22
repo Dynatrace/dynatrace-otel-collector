@@ -244,12 +244,10 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 
 	// Read overlay from files
 	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "telemetrygen-receiver-local.yaml")), host)
-	originalOverlay := k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "telemetrygen-receiver-original.yaml"))
 
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 		Templates: []string{
-			originalOverlay,
 			localOverlay,
 		},
 	})

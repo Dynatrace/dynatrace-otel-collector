@@ -205,7 +205,9 @@ func TestE2E_Kafka(t *testing.T) {
 		all := metricsConsumer.AllMetrics()
 		require.NotEmpty(tt, all)
 		got := all[len(all)-1]
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMetrics, got, metricsCompareOptions...))
+		err := pmetrictest.CompareMetrics(expectedMetrics, got, metricsCompareOptions...)
+		testutil.Debug(err, t, expectedMetrics, got)
+		assert.NoError(tt, err)
 	}, compareTimeout, compareTick)
 
 	t.Logf("Metrics checked successfully")
@@ -302,7 +304,6 @@ func TestE2E_Kafka(t *testing.T) {
 		require.NotEmpty(tt, all)
 		got := all[len(all)-1]
 		err := pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...)
-		testutil.Debug(err, t, expectedKMetrics, got)
 		assert.NoError(tt, err)
 	}, compareTimeout, compareTick)
 

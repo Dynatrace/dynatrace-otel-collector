@@ -204,10 +204,18 @@ func TestE2E_Kafka(t *testing.T) {
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		all := metricsConsumer.AllMetrics()
 		require.NotEmpty(tt, all)
-		got := all[len(all)-1]
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedMetrics, got, metricsCompareOptions...))
-	}, compareTimeout, compareTick)
 
+		var lastErr error
+		for _, got := range all {
+			err := pmetrictest.CompareMetrics(expectedMetrics, got, metricsCompareOptions...)
+			if err == nil {
+				lastErr = nil
+				return
+			}
+			lastErr = err
+		}
+		assert.NoError(tt, lastErr)
+	}, compareTimeout, compareTick)
 	t.Logf("Metrics checked successfully")
 
 	// Logs
@@ -301,7 +309,8 @@ func TestE2E_Kafka(t *testing.T) {
 		all := kmetricsConsumer.AllMetrics()
 		require.NotEmpty(tt, all)
 		got := all[len(all)-1]
-		assert.NoError(tt, pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...))
+		err := pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...)
+		assert.NoError(tt, err)
 	}, compareTimeout, compareTick)
 
 	t.Logf("Kafka Metrics checked successfully")

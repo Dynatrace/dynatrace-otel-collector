@@ -214,8 +214,6 @@ func TestE2E_Kafka(t *testing.T) {
 			}
 			lastErr = err
 		}
-
-		testutil.Debug(lastErr, t, expectedMetrics, all[len(all)-1])
 		assert.NoError(tt, lastErr)
 	}, compareTimeout, compareTick)
 	t.Logf("Metrics checked successfully")

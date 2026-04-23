@@ -1,0 +1,35 @@
+# OpAMP Supervisor configuration for BindPlane BYOC integration.
+#
+# The supervisor manages the Dynatrace OTel Collector process and relays
+# OpAMP communication between the collector and BindPlane server.
+#
+# Environment variables referenced:
+#   OPAMP_ENDPOINT  - BindPlane OpAMP WebSocket endpoint (required)
+#   OPAMP_SECRET_KEY - BindPlane secret key for auth (optional)
+#   OPAMP_LABELS    - Comma-separated labels, e.g. "env=prod,team=platform"
+
+server:
+  endpoint: ${OPAMP_ENDPOINT}
+  # Uncomment for TLS:
+  # tls:
+  #   insecure_skip_verify: false
+  #   ca_file: /opt/tls/ca.crt
+  # Uncomment for BindPlane secret key auth:
+  # headers:
+  #   X-Bindplane-Secret-Key: ${OPAMP_SECRET_KEY}
+
+capabilities:
+  reports_effective_config: true
+  reports_own_metrics: true
+  reports_own_logs: true
+  reports_own_traces: true
+  reports_health: true
+  accepts_remote_config: true
+  reports_remote_config: true
+  reports_available_components: true
+
+agent:
+  executable: /opt/collector/dynatrace-otel-collector
+
+storage:
+  directory: /var/lib/otelcol/supervisor

@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dynatrace-collector
+  namespace: dynatrace-collector
+  labels:
+    app.kubernetes.io/name: dynatrace-collector
+    app.kubernetes.io/part-of: bindplane-poc
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dynatrace-collector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dynatrace-collector
+        app.kubernetes.io/part-of: bindplane-poc
+    spec:
+      serviceAccountName: dynatrace-collector
+      # The supervisor container manages the collector process.
+      # They share a volume for supervisor state and the collector binary.
+      containers:
+        # ------------------------------------------------------------------
+        # OpAMP Supervisor — manages the collector lifecycle via OpAMP
+        # ------------------------------------------------------------------
+        - name: opamp-supervisor
+          # Use the upstream OpAMP Supervisor image.
+          # Pin to a specific version for reproducibility.
+          image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-opampsupervisor:0.149.0
+          args:
+            - --config=/etc/supervisor/supervisor.yaml
+          env:
+            # REQUIRED: BindPlane OpAMP endpoint.
+            # For in-cluster BindPlane (Helm): ws://bindplane.bindplane.svc.cluster.local:3001/v1/opamp
+            # For external BindPlane: ws://<HOST>:3001/v1/opamp
+            - name: OPAMP_ENDPOINT
+              value: "ws://bindplane.bindplane.svc.cluster.local:3001/v1/opamp"
+            # Optional: BindPlane secret key
+            # - name: OPAMP_SECRET_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: bindplane-secret
+            #       key: secret-key
+          volumeMounts:
+            - name: supervisor-config
+              mountPath: /etc/supervisor
+              readOnly: true
+            - name: supervisor-storage
+              mountPath: /var/lib/otelcol/supervisor
+            # Shared volume with the collector binary (copied by initContainer)
+            - name: collector-binary
+              mountPath: /opt/collector
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+
+        # ------------------------------------------------------------------
+        # Dynatrace OTel Collector — the actual collector binary
+        # This container exists solely to provide the binary to the supervisor.
+        # The supervisor will start/stop the collector process itself.
+        # ------------------------------------------------------------------
+        # NOTE: Because the supervisor starts the collector as a child process,
+        # we use an initContainer to copy the binary to a shared volume.
+        # The collector container below is kept as a placeholder/documentation.
+        # See initContainers section.
+
+      initContainers:
+        # Copy the Dynatrace collector binary to a shared volume
+        # so the supervisor can execute it.
+        - name: copy-collector
+          # TODO: Replace with your Dynatrace OTel Collector image (with opampextension)
+          image: dynatrace-otel-collector:bindplane-poc
+          command: ["cp", "/dynatrace-otel-collector", "/opt/collector/dynatrace-otel-collector"]
+          volumeMounts:
+            - name: collector-binary
+              mountPath: /opt/collector
+
+      volumes:
+        - name: supervisor-config
+          configMap:
+            name: supervisor-config
+            items:
+              - key: supervisor.yaml
+                path: supervisor.yaml
+        - name: supervisor-storage
+          emptyDir: {}
+        - name: collector-binary
+          emptyDir: {}

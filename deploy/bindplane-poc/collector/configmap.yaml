@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supervisor-config
+  namespace: dynatrace-collector
+  labels:
+    app.kubernetes.io/name: dynatrace-collector
+    app.kubernetes.io/part-of: bindplane-poc
+data:
+  supervisor.yaml: |
+    server:
+      endpoint: ${OPAMP_ENDPOINT}
+
+    capabilities:
+      reports_effective_config: true
+      reports_own_metrics: true
+      reports_own_logs: true
+      reports_own_traces: true
+      reports_health: true
+      accepts_remote_config: true
+      reports_remote_config: true
+      reports_available_components: true
+
+    agent:
+      executable: /opt/collector/dynatrace-otel-collector
+
+    storage:
+      directory: /var/lib/otelcol/supervisor

@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: dynatrace-collector
-  labels:
-    app.kubernetes.io/part-of: bindplane-poc

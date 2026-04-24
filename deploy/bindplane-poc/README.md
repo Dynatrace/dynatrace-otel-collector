@@ -41,6 +41,7 @@ monitoring health, and viewing available components — all through the OpAMP pr
 │  │ child process: DT OTel Collector  │  │
 │  │   with opampextension +           │  │
 │  │   bindplaneextension +            │  │
+│  │   bearertokenauthextension +      │  │
 │  │   snapshotprocessor +             │  │
 │  │   throughputmeasurement +         │  │
 │  │   metricstransformprocessor       │  │
@@ -58,6 +59,17 @@ The following components were added to `manifest.yaml` to enable BindPlane BYOC:
 # manifest.yaml — extensions section:
 - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/opampextension v0.149.0
 ```
+
+### Required by BindPlane destinations (e.g., Dynatrace exporter)
+
+```yaml
+# manifest.yaml — extensions section:
+- gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/bearertokenauthextension v0.149.0
+```
+
+The Dynatrace exporter destination in BindPlane uses `bearertokenauthextension` to attach
+API tokens to outgoing requests. Without it, adding a Dynatrace destination will fail with
+an "Unavailable Components" error.
 
 ### Required by BindPlane-generated configurations
 
@@ -78,6 +90,7 @@ Without them, BindPlane will reject the config rollout with:
 These components enable:
 - `opampextension` — reports effective config, available components, and health to the supervisor
 - `bindplaneextension` — BindPlane-specific measurements, topology reporting, and custom OpAMP messages
+- `bearertokenauthextension` — attaches bearer tokens (e.g., Dynatrace API tokens) to outgoing HTTP requests
 - `snapshotprocessor` — allows BindPlane to request telemetry snapshots via OpAMP custom messages
 - `throughputmeasurementprocessor` — measures pipeline throughput (data sizes, record counts)
 - `metricstransformprocessor` — metric renaming/aggregation used by BindPlane's internal health pipeline

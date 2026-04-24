@@ -37,6 +37,7 @@ extensions:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension v0.149.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/storage/filestorage v0.149.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/opampextension v0.149.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/bearertokenauthextension v0.149.0
   - gomod: github.com/observiq/bindplane-otel-contrib/extension/bindplaneextension v1.3.0
 
 processors:

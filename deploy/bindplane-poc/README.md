@@ -195,7 +195,7 @@ This is the critical step. BindPlane has specific requirements for BYOC agents.
 ### 3a. Create a Configuration
 
 1. In BindPlane UI, go to **Configurations** → **Create Configuration**
-2. **Platform**: Select **Kubernetes — Gateway** (not Cluster or DaemonSet)
+2. **Platform**: Select **Kubernetes — Gateway** (not Cluster or Node)
 3. **Agent Type**: Must match the collector's `service.name` which is `dynatrace-otel-collector`
    - BindPlane auto-detects this from the agent's OpAMP registration
    - If creating the config before the agent connects, you need to specify this type manually
@@ -203,7 +203,7 @@ This is the critical step. BindPlane has specific requirements for BYOC agents.
 
 ### 3b. Create a Fleet
 
-1. Go to **Fleets** → **Create Fleet** - same parameters as for configuration
+1. Go to **Fleets** → **Create Fleet** - same parameters as for configuration above^^
 2. Assign the configuration to the fleet
 
 ### 3c. Assign Agent to Fleet
@@ -215,21 +215,16 @@ which uses the proprietary `OPAMP_LABELS` env var.
 
 **You must manually assign the agent to the fleet in the BindPlane UI:**
 
-1. Go to **Agents** — find the connected agent
+1. Go to **Agents** — find the connected agent and assign it to the fleet you created
 2. The agent should now appear in the fleet and receive the configuration
 
 ### 3d. Roll Out Configuration
 
 Once the agent is in the fleet:
+
 1. Go to the Fleet page
 2. Click **Roll out** on the configuration
 3. The supervisor will receive the config, start the collector, and report "Everything is ready"
-
-> **Key limitation:** BindPlane injects its own components (`bindplane` extension,
-> `snapshotprocessor`, `throughputmeasurementprocessor`, `metricstransformprocessor`)
-> into every generated configuration. If the collector binary doesn't include these
-> components, BindPlane will block the rollout with an "Unavailable Components" error.
-> This is why we added them to `manifest.yaml`.
 
 ## Step 4: Verify the Collector is Running
 
@@ -264,6 +259,7 @@ kubectl apply -f telemetrygen.yaml
 ```
 
 This creates:
+
 - A **Service** (`bindplane-cluster-agent`) exposing ports 4317/4318
 - A **Deployment** with 3 containers generating traces, metrics, and logs at 1/sec each
 
@@ -274,6 +270,8 @@ Verify data is flowing:
 kubectl exec -n bindplane-agent deploy/bindplane-cluster-agent -c opamp-supervisor \
   -- tail -50 /var/lib/otelcol/supervisor/agent.log
 ```
+
+You can see the flowing telemetry in the agent details page in BindPlane Cloud.
 
 ## How It Works
 
@@ -292,40 +290,6 @@ kubectl exec -n bindplane-agent deploy/bindplane-cluster-agent -c opamp-supervis
    the UI with its full component list, health status, and effective config
 8. When you **update the config** in BindPlane, it pushes the new config via OpAMP,
    the supervisor writes it to disk, and restarts the collector
-
-### Key Insight: Authentication Header
-
-BindPlane expects the secret key in the `Authorization` HTTP header:
-
-```
-Authorization: Secret-Key <your-secret-key>
-```
-
-This was discovered by reading the [observIQ BindPlane agent source code](https://github.com/observIQ/bindplane-otel-collector/blob/main/opamp/observiq/observiq_client.go)
-which sets:
-
-```go
-header.Set("Authorization", fmt.Sprintf("Secret-Key %s", c.currentConfig.GetSecretKey()))
-```
-
-### Key Insight: Agent Type Matching
-
-BindPlane identifies agents by their `service.name` reported via OpAMP. The Dynatrace
-collector reports `service.name: dynatrace-otel-collector`. When creating a configuration
-in BindPlane, the agent type must match — otherwise BindPlane won't show the agent
-when trying to assign it to a config or fleet.
-
-### Key Insight: Required BindPlane Components
-
-BindPlane injects the following into every generated config:
-- `bindplane` extension — measurements and topology reporting
-- `snapshotprocessor` — telemetry snapshot capture via OpAMP custom messages
-- `throughputmeasurementprocessor` — pipeline throughput metrics
-- `metricstransformprocessor` — metric renaming for BindPlane's internal health pipeline
-
-If the collector doesn't have these components compiled in, BindPlane blocks
-the config rollout. The components are open source in the
-[bindplane-otel-contrib](https://github.com/observiq/bindplane-otel-contrib) repo.
 
 ## Cleanup
 

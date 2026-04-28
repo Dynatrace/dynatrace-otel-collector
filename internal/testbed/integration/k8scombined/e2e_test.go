@@ -132,6 +132,8 @@ var (
 		ptracetest.IgnoreTraceID(),
 		ptracetest.IgnoreSpanID(),
 		ptracetest.IgnoreSpansOrder(),
+		ptracetest.IgnoreResourceSpansOrder(),
+		ptracetest.IgnoreScopeSpansOrder(),
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.uid"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.ip"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.name"),
@@ -314,7 +316,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		for i := 0; i < r.ResourceLogs().Len(); i++ {
 			clusterName, okCluster := r.ResourceLogs().At(i).Resource().Attributes().Get("k8s.cluster.name")
 			if !okCluster || clusterName.AsString() != "k8s-testing-cluster" {
-				break
+				continue
 			}
 			sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
 			for j := 0; j < sm.Len(); j++ {

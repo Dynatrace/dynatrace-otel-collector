@@ -67,10 +67,6 @@ The following components were added to `manifest.yaml` to enable BindPlane BYOC:
 - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/bearertokenauthextension v0.149.0
 ```
 
-The Dynatrace exporter destination in BindPlane uses `bearertokenauthextension` to attach
-API tokens to outgoing requests. Without it, adding a Dynatrace destination will fail with
-an "Unavailable Components" error.
-
 ### Required by BindPlane-generated configurations
 
 BindPlane automatically injects these components into every config it generates.
@@ -87,25 +83,8 @@ Without them, BindPlane will reject the config rollout with:
 - gomod: github.com/observiq/bindplane-otel-contrib/processor/throughputmeasurementprocessor v1.3.0
 ```
 
-These components enable:
-- `opampextension` — reports effective config, available components, and health to the supervisor
-- `bindplaneextension` — BindPlane-specific measurements, topology reporting, and custom OpAMP messages
-- `bearertokenauthextension` — attaches bearer tokens (e.g., Dynatrace API tokens) to outgoing HTTP requests
-- `snapshotprocessor` — allows BindPlane to request telemetry snapshots via OpAMP custom messages
-- `throughputmeasurementprocessor` — measures pipeline throughput (data sizes, record counts)
-- `metricstransformprocessor` — metric renaming/aggregation used by BindPlane's internal health pipeline
-
 > **Important:** The `bindplane-otel-contrib` components are open source (Apache 2.0)
 > and maintained by observIQ at https://github.com/observiq/bindplane-otel-contrib.
-
-## Files
-
-| File | Purpose |
-|------|---------|
-| `dynatrace-collector.yaml` | Single-file K8s manifest (Namespace, RBAC, ConfigMap, Deployment) |
-| `collector-config.yaml` | Sample collector pipeline config (OTLP receiver + debug exporter) — reference only |
-| `telemetrygen.yaml` | Telemetrygen deployment + Service — generates test traces/metrics/logs |
-| `README.md` | This documentation |
 
 ## Prerequisites
 
@@ -273,7 +252,6 @@ kubectl apply -f telemetrygen.yaml
 
 This creates:
 
-- A **Service** (`bindplane-cluster-agent`) exposing ports 4317/4318
 - A **Deployment** with 3 containers generating traces, metrics, and logs at 1/sec each
 
 Verify data is flowing:
@@ -303,6 +281,72 @@ You can see the flowing telemetry in the agent details page in BindPlane Cloud.
    the UI with its full component list, health status, and effective config
 8. When you **update the config** in BindPlane, it pushes the new config via OpAMP,
    the supervisor writes it to disk, and restarts the collector
+
+## Alternative Approaches
+
+This PoC uses the **upstream OpAMP Supervisor + initContainer** pattern, which requires
+no code changes to the collector. There are several alternative approaches worth considering
+for a production deployment:
+
+### Option 1: Single Image with Both Binaries
+
+Build one Docker image containing both the supervisor and the collector binary,
+eliminating the initContainer:
+
+```dockerfile
+FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-opampsupervisor:0.149.0
+COPY --chmod=755 dynatrace-otel-collector /opt/collector/dynatrace-otel-collector
+```
+
+The K8s manifest simplifies to a single container with no `initContainers` or shared
+volumes. Still runs two processes (supervisor + collector) but with cleaner packaging.
+
+| Pros | Cons |
+|------|------|
+| Simpler K8s manifest | Must maintain a custom image combining both binaries |
+| No initContainer/shared volume | Two processes in one container (less idiomatic K8s) |
+| No code changes needed | Must rebuild when either component updates |
+
+### Option 2: OpAMP Confmap Provider (No Supervisor)
+
+The upstream OTel Collector has an **OpAMP confmap provider** that lets the collector
+connect directly to an OpAMP server and receive config without a supervisor:
+
+```bash
+# Collector started with:
+dynatrace-otel-collector --config "opamp:wss://app.bindplane.com/v1/opamp?headers=Authorization%3DSecret-Key%20..."
+```
+
+This uses the collector's built-in config reload mechanism — no external process needed.
+Single container, single process.
+
+| Pros | Cons |
+|------|------|
+| Single process, simplest deployment | Still maturing in upstream OTel |
+| No supervisor needed | May not support all BindPlane features (snapshots, topology) |
+| Standard config reload mechanism | Auth header must be URL-encoded in the config URI |
+
+### Option 3: Custom Embedded OpAMP Client (What observIQ Did)
+
+Build the OpAMP client directly into the collector binary, like the official BindPlane
+agent (`observiq/bindplane-otel-collector`). This is a single binary that is both the
+collector and the OpAMP client.
+
+Requires significant custom Go code (~5-10k lines):
+
+- **Custom OpAMP client** — connects to BindPlane, handles auth, custom messages
+- **Config management** — receives config via OpAMP, writes to disk, triggers reload
+- **Self-restart logic** — re-exec the binary when config changes require a full restart
+- **Throughput/topology reporting** — custom OpAMP capability messages
+- **Package management** — remote binary updates
+
+Reference: [observIQ BindPlane agent OpAMP code](https://github.com/observIQ/bindplane-otel-collector/tree/main/opamp)
+
+| Pros | Cons |
+|------|------|
+| Single process, cleanest deployment | Substantial engineering investment |
+| Full BindPlane feature support | Must maintain custom OpAMP client code |
+| No external dependencies | Tightly coupled to BindPlane API |
 
 ## Cleanup
 

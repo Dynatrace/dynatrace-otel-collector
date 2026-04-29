@@ -123,6 +123,7 @@ var (
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreResourceEntityRefs(),
 	}
 
 	traceCompareOptions = []ptracetest.CompareTracesOption{

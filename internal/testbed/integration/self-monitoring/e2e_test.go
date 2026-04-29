@@ -300,8 +300,6 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	require.NoError(t, err)
 
 	defaultOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreTimestamp(),
-		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreMetricValues(
 			"otelcol_processor_filter_datapoints.filtered",
 			"otelcol_processor_filter_logs.filtered",
@@ -347,11 +345,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 			"otelcol_exporter_sent_spans",
 			"otelcol_exporter_queue_batch_send_size_bytes",
 			"otelcol_exporter_queue_batch_send_size"),
-		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreExemplarSlice(),
-		pmetrictest.IgnoreMetricsOrder(),
-		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreResourceMetricsOrder(),
+
 		pmetrictest.ChangeDatapointAttributeValue("server.address", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("net.peer.name", substituteWithStar),
 		pmetrictest.ChangeDatapointAttributeValue("server.port", substituteWithStar),
@@ -359,10 +353,15 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("service.instance.id", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("service.version", substituteWithStar),
-		// IgnoreMetricDataPointsOrder must come after ChangeDatapointAttributeValue
-		// so that sorting uses the masked attribute values (e.g. "*") rather than
-		// the original values which differ between expected and actual.
+
 		pmetrictest.IgnoreMetricDataPointsOrder(),
+		pmetrictest.IgnoreScopeVersion(),
+		pmetrictest.IgnoreExemplarSlice(),
+		pmetrictest.IgnoreMetricsOrder(),
+		pmetrictest.IgnoreScopeMetricsOrder(),
+		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreTimestamp(),
+		pmetrictest.IgnoreStartTimestamp(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

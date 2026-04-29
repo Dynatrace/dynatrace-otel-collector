@@ -15,6 +15,162 @@ resourceMetrics:
             stringValue: http
     scopeMetrics:
       - metrics:
+          - description: Size of HTTP client request bodies.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "3"
+                    - "0"
+                    - "18446744073709551613"
+                    - "0"
+                    - "3"
+                    - "18446744073709551613"
+                    - "3"
+                    - "18446744073709551613"
+                    - "3"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                  count: "3"
+                  explicitBounds:
+                    - 0
+                    - 0
+                    - 5
+                    - 5
+                    - 10
+                    - 10
+                    - 25
+                    - 25
+                    - 50
+                    - 50
+                    - 75
+                    - 75
+                    - 100
+                    - 100
+                    - 250
+                    - 250
+                    - 500
+                    - 500
+                    - 750
+                    - 750
+                    - 1000
+                    - 1000
+                    - 2500
+                    - 2500
+                    - 5000
+                    - 5000
+                    - 7500
+                    - 7500
+                    - 10000
+                    - 10000
+                    - Infinity
+                  startTimeUnixNano: "1000000"
+                  sum: 1815
+                  timeUnixNano: "2000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: histogram
+            name: http.client.request.body.size
+          - description: Duration of HTTP client requests.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - bucketCounts:
+                    - "1"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "0"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "0"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "0"
+                    - "18446744073709551614"
+                    - "0"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                  count: "3"
+                  explicitBounds:
+                    - 0.005
+                    - 0.005
+                    - 0.01
+                    - 0.01
+                    - 0.025
+                    - 0.025
+                    - 0.05
+                    - 0.05
+                    - 0.075
+                    - 0.075
+                    - 0.1
+                    - 0.1
+                    - 0.25
+                    - 0.25
+                    - 0.5
+                    - 0.5
+                    - 0.75
+                    - 0.75
+                    - 1
+                    - 1
+                    - 2.5
+                    - 2.5
+                    - 5
+                    - 5
+                    - 7.5
+                    - 7.5
+                    - 10
+                    - 10
+                    - Infinity
+                  startTimeUnixNano: "1000000"
+                  sum: 0.002827177
+                  timeUnixNano: "2000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: histogram
+            name: http.client.request.duration
+        scope:
+          name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+          version: 0.68.0
+      - metrics:
           - description: Number of units in the batch [Development]
             histogram:
               aggregationTemporality: 1
@@ -751,160 +907,4 @@ resourceMetrics:
         schemaUrl: https://opentelemetry.io/schemas/1.40.0
         scope:
           name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
-          version: 0.68.0
-      - metrics:
-          - description: Size of HTTP client request bodies.
-            histogram:
-              aggregationTemporality: 1
-              dataPoints:
-                - bucketCounts:
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "3"
-                    - "0"
-                    - "18446744073709551613"
-                    - "0"
-                    - "3"
-                    - "18446744073709551613"
-                    - "3"
-                    - "18446744073709551613"
-                    - "3"
-                    - "18446744073709551614"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                  count: "3"
-                  explicitBounds:
-                    - 0
-                    - 0
-                    - 5
-                    - 5
-                    - 10
-                    - 10
-                    - 25
-                    - 25
-                    - 50
-                    - 50
-                    - 75
-                    - 75
-                    - 100
-                    - 100
-                    - 250
-                    - 250
-                    - 500
-                    - 500
-                    - 750
-                    - 750
-                    - 1000
-                    - 1000
-                    - 2500
-                    - 2500
-                    - 5000
-                    - 5000
-                    - 7500
-                    - 7500
-                    - 10000
-                    - 10000
-                    - Infinity
-                  startTimeUnixNano: "1000000"
-                  sum: 1815
-                  timeUnixNano: "2000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: histogram
-            name: http.client.request.body.size
-          - description: Duration of HTTP client requests.
-            histogram:
-              aggregationTemporality: 1
-              dataPoints:
-                - bucketCounts:
-                    - "1"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                    - "0"
-                    - "18446744073709551614"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                    - "18446744073709551614"
-                    - "0"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                    - "0"
-                    - "18446744073709551614"
-                    - "0"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                    - "18446744073709551614"
-                    - "2"
-                  count: "3"
-                  explicitBounds:
-                    - 0.005
-                    - 0.005
-                    - 0.01
-                    - 0.01
-                    - 0.025
-                    - 0.025
-                    - 0.05
-                    - 0.05
-                    - 0.075
-                    - 0.075
-                    - 0.1
-                    - 0.1
-                    - 0.25
-                    - 0.25
-                    - 0.5
-                    - 0.5
-                    - 0.75
-                    - 0.75
-                    - 1
-                    - 1
-                    - 2.5
-                    - 2.5
-                    - 5
-                    - 5
-                    - 7.5
-                    - 7.5
-                    - 10
-                    - 10
-                    - Infinity
-                  startTimeUnixNano: "1000000"
-                  sum: 0.002827177
-                  timeUnixNano: "2000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: histogram
-            name: http.client.request.duration
-        scope:
-          name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
           version: 0.68.0

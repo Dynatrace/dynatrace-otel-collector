@@ -1,285 +1,19 @@
 resourceMetrics:
   - resource:
       attributes:
-        - key: k8s.namespace.name
-          value:
-            stringValue: e2eselfmonitoringpromcheck
-        - key: k8s.node.name
-          value:
-            stringValue: kind-control-plane
-        - key: k8s.pod.name
-          value:
-            stringValue: otelcol-7e00182a-778b449d58-jb8xm
         - key: server.port
           value:
             stringValue: "8888"
         - key: service.instance.id
           value:
-            stringValue: 39974258-868e-4547-8949-4b0073c84589
+            stringValue: localhost:8888
         - key: service.name
           value:
-            stringValue: dynatrace-otel-collector
-        - key: service.version
-          value:
-            stringValue: 0.47.0
+            stringValue: otel-collector
         - key: url.scheme
           value:
             stringValue: http
     scopeMetrics:
-      - metrics:
-          - description: Size of HTTP client request bodies.
-            histogram:
-              aggregationTemporality: 1
-              dataPoints:
-                - attributes:
-                    - key: http.request.method
-                      value:
-                        stringValue: POST
-                    - key: http.response.status_code
-                      value:
-                        stringValue: "200"
-                    - key: network.protocol.name
-                      value:
-                        stringValue: http
-                    - key: network.protocol.version
-                      value:
-                        stringValue: "1.1"
-                    - key: server.address
-                      value:
-                        stringValue: host.docker.internal
-                    - key: server.port
-                      value:
-                        stringValue: "4318"
-                    - key: url.scheme
-                      value:
-                        stringValue: http
-                  bucketCounts:
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "1"
-                  count: "1"
-                  explicitBounds:
-                    - 0
-                    - 5
-                    - 10
-                    - 25
-                    - 50
-                    - 75
-                    - 100
-                    - 250
-                    - 500
-                    - 750
-                    - 1000
-                    - 2500
-                    - 5000
-                    - 7500
-                    - 10000
-                  startTimeUnixNano: "1000000"
-                  sum: 10519
-                  timeUnixNano: "2000000"
-                - attributes:
-                    - key: http.request.method
-                      value:
-                        stringValue: POST
-                    - key: http.response.status_code
-                      value:
-                        stringValue: "200"
-                    - key: network.protocol.name
-                      value:
-                        stringValue: http
-                    - key: network.protocol.version
-                      value:
-                        stringValue: "1.1"
-                    - key: server.address
-                      value:
-                        stringValue: host.docker.internal
-                    - key: server.port
-                      value:
-                        stringValue: "4320"
-                    - key: url.scheme
-                      value:
-                        stringValue: http
-                  bucketCounts:
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "3"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "3"
-                  explicitBounds:
-                    - 0
-                    - 5
-                    - 10
-                    - 25
-                    - 50
-                    - 75
-                    - 100
-                    - 250
-                    - 500
-                    - 750
-                    - 1000
-                    - 2500
-                    - 5000
-                    - 7500
-                    - 10000
-                  startTimeUnixNano: "1000000"
-                  sum: 1815
-                  timeUnixNano: "2000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: histogram
-            name: http.client.request.body.size
-          - description: Duration of HTTP client requests.
-            histogram:
-              aggregationTemporality: 1
-              dataPoints:
-                - attributes:
-                    - key: http.request.method
-                      value:
-                        stringValue: POST
-                    - key: http.response.status_code
-                      value:
-                        stringValue: "200"
-                    - key: network.protocol.name
-                      value:
-                        stringValue: http
-                    - key: network.protocol.version
-                      value:
-                        stringValue: "1.1"
-                    - key: server.address
-                      value:
-                        stringValue: host.docker.internal
-                    - key: server.port
-                      value:
-                        stringValue: "4318"
-                    - key: url.scheme
-                      value:
-                        stringValue: http
-                  bucketCounts:
-                    - "1"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "1"
-                  explicitBounds:
-                    - 0.005
-                    - 0.01
-                    - 0.025
-                    - 0.05
-                    - 0.075
-                    - 0.1
-                    - 0.25
-                    - 0.5
-                    - 0.75
-                    - 1
-                    - 2.5
-                    - 5
-                    - 7.5
-                    - 10
-                  startTimeUnixNano: "1000000"
-                  sum: 0.0010119580000000003
-                  timeUnixNano: "2000000"
-                - attributes:
-                    - key: http.request.method
-                      value:
-                        stringValue: POST
-                    - key: http.response.status_code
-                      value:
-                        stringValue: "200"
-                    - key: network.protocol.name
-                      value:
-                        stringValue: http
-                    - key: network.protocol.version
-                      value:
-                        stringValue: "1.1"
-                    - key: server.address
-                      value:
-                        stringValue: host.docker.internal
-                    - key: server.port
-                      value:
-                        stringValue: "4320"
-                    - key: url.scheme
-                      value:
-                        stringValue: http
-                  bucketCounts:
-                    - "3"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "3"
-                  explicitBounds:
-                    - 0.005
-                    - 0.01
-                    - 0.025
-                    - 0.05
-                    - 0.075
-                    - 0.1
-                    - 0.25
-                    - 0.5
-                    - 0.75
-                    - 1
-                    - 2.5
-                    - 5
-                    - 7.5
-                    - 10
-                  startTimeUnixNano: "1000000"
-                  sum: 0.0028146249999999994
-                  timeUnixNano: "2000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: histogram
-            name: http.client.request.duration
-        scope:
-          name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
-          version: 0.67.0
       - metrics:
           - description: Number of units in the batch [Development]
             histogram:
@@ -393,7 +127,7 @@ resourceMetrics:
                     - 50000
                     - 100000
                   startTimeUnixNano: "1000000"
-                  sum: 40
+                  sum: 38
                   timeUnixNano: "2000000"
             metadata:
               - key: prometheus.type
@@ -480,7 +214,7 @@ resourceMetrics:
                     - 5000
                     - 6000
                   startTimeUnixNano: "1000000"
-                  sum: 10519
+                  sum: 9216
                   timeUnixNano: "2000000"
             metadata:
               - key: prometheus.type
@@ -516,7 +250,7 @@ resourceMetrics:
           - description: Current size of the retry queue (in batches). [Alpha]
             gauge:
               dataPoints:
-                - asDouble: 0
+                - asDouble: 2
                   attributes:
                     - key: data_type
                       value:
@@ -555,7 +289,7 @@ resourceMetrics:
                         stringValue: otlp_http
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 40
+                - asDouble: 38
                   attributes:
                     - key: exporter
                       value:
@@ -575,7 +309,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 14.999818215999994
+                - asDouble: 14.999586621000006
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -588,14 +322,14 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 0.010000000000000009
+                - asDouble: 0.04999999999999999
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
           - description: Total physical memory (resident set size) [Alpha]
             gauge:
               dataPoints:
-                - asDouble: 1.07155456e+08
+                - asDouble: 1.18321152e+08
                   timeUnixNano: "1000000"
             metadata:
               - key: prometheus.type
@@ -605,7 +339,7 @@ resourceMetrics:
           - description: Bytes of allocated heap objects (see 'go doc runtime.MemStats.HeapAlloc') [Alpha]
             gauge:
               dataPoints:
-                - asDouble: 1.8435832e+07
+                - asDouble: 2.0727856e+07
                   timeUnixNano: "1000000"
             metadata:
               - key: prometheus.type
@@ -621,14 +355,14 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 1.905264e+06
+                - asDouble: 1.973016e+06
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
           - description: Total bytes of memory obtained from the OS (see 'go doc runtime.MemStats.Sys') [Alpha]
             gauge:
               dataPoints:
-                - asDouble: 3.1561992e+07
+                - asDouble: 3.5756296e+07
                   timeUnixNano: "1000000"
             metadata:
               - key: prometheus.type
@@ -638,36 +372,6 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/service
       - metrics:
-          - description: Number of items emitted from the processor. [Alpha]
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: counter
-            name: otelcol_processor_outgoing_items
-            sum:
-              aggregationTemporality: 1
-              dataPoints:
-                - asDouble: 55
-                  attributes:
-                    - key: otel_signal
-                      value:
-                        stringValue: metrics
-                    - key: processor
-                      value:
-                        stringValue: cumulativetodelta
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 40
-                  attributes:
-                    - key: otel_signal
-                      value:
-                        stringValue: metrics
-                    - key: processor
-                      value:
-                        stringValue: transform/selfmon_rename
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
           - description: Number of items passed to the processor. [Alpha]
             metadata:
               - key: prometheus.type
@@ -677,9 +381,9 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 55
+                - asDouble: 53
                   attributes:
-                    - key: otel_signal
+                    - key: otel.signal
                       value:
                         stringValue: metrics
                     - key: processor
@@ -687,9 +391,9 @@ resourceMetrics:
                         stringValue: cumulativetodelta
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 40
+                - asDouble: 38
                   attributes:
-                    - key: otel_signal
+                    - key: otel.signal
                       value:
                         stringValue: metrics
                     - key: processor
@@ -703,7 +407,7 @@ resourceMetrics:
               aggregationTemporality: 1
               dataPoints:
                 - attributes:
-                    - key: otel_signal
+                    - key: otel.signal
                       value:
                         stringValue: metrics
                     - key: processor
@@ -744,10 +448,10 @@ resourceMetrics:
                     - 7500
                     - 10000
                   startTimeUnixNano: "1000000"
-                  sum: 5.7625000000000005e-05
+                  sum: 0.0001501099999999999
                   timeUnixNano: "2000000"
                 - attributes:
-                    - key: otel_signal
+                    - key: otel.signal
                       value:
                         stringValue: metrics
                     - key: processor
@@ -788,13 +492,43 @@ resourceMetrics:
                     - 7500
                     - 10000
                   startTimeUnixNano: "1000000"
-                  sum: 1.5874999999999993e-05
+                  sum: 6.280000000000001e-05
                   timeUnixNano: "2000000"
             metadata:
               - key: prometheus.type
                 value:
                   stringValue: histogram
             name: otelcol_processor_internal_duration
+          - description: Number of items emitted from the processor. [Alpha]
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_processor_outgoing_items
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 53
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: cumulativetodelta
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 38
+                  attributes:
+                    - key: otel.signal
+                      value:
+                        stringValue: metrics
+                    - key: processor
+                      value:
+                        stringValue: transform/selfmon_rename
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
         scope:
           name: go.opentelemetry.io/collector/processor/processorhelper
       - metrics:
@@ -817,7 +551,7 @@ resourceMetrics:
                         stringValue: grpc
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 40
+                - asDouble: 38
                   attributes:
                     - key: receiver
                       value:
@@ -891,6 +625,26 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/receiver/receiverhelper
       - metrics:
+          - description: The number of samples remaining after metric relabeling was applied
+            gauge:
+              dataPoints:
+                - asDouble: 232
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: scrape_samples_post_metric_relabeling
+          - description: The approximate number of new series in this scrape
+            gauge:
+              dataPoints:
+                - asDouble: 1
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: scrape_series_added
           - description: Total number of internal errors encountered by the promhttp metric handler.
             metadata:
               - key: prometheus.type
@@ -928,7 +682,7 @@ resourceMetrics:
           - description: Duration of the scrape
             gauge:
               dataPoints:
-                - asDouble: 0.001782417
+                - asDouble: 0.004879725
                   timeUnixNano: "1000000"
             metadata:
               - key: prometheus.type
@@ -946,26 +700,6 @@ resourceMetrics:
                 value:
                   stringValue: gauge
             name: scrape_samples_scraped
-          - description: The number of samples remaining after metric relabeling was applied
-            gauge:
-              dataPoints:
-                - asDouble: 232
-                  timeUnixNano: "1000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: gauge
-            name: scrape_samples_post_metric_relabeling
-          - description: The approximate number of new series in this scrape
-            gauge:
-              dataPoints:
-                - asDouble: 1
-                  timeUnixNano: "1000000"
-            metadata:
-              - key: prometheus.type
-                value:
-                  stringValue: gauge
-            name: scrape_series_added
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
           version: 0.47.0
@@ -974,17 +708,7 @@ resourceMetrics:
             histogram:
               aggregationTemporality: 1
               dataPoints:
-                - attributes:
-                    - key: rpc.method
-                      value:
-                        stringValue: opentelemetry.proto.collector.metrics.v1.MetricsService/Export
-                    - key: rpc.response.status_code
-                      value:
-                        stringValue: OK
-                    - key: rpc.system.name
-                      value:
-                        stringValue: grpc
-                  bucketCounts:
+                - bucketCounts:
                     - "15"
                     - "0"
                     - "0"
@@ -1017,7 +741,7 @@ resourceMetrics:
                     - 7.5
                     - 10
                   startTimeUnixNano: "1000000"
-                  sum: 0.001057167999999999
+                  sum: 0.0017807149999999987
                   timeUnixNano: "2000000"
             metadata:
               - key: prometheus.type
@@ -1027,4 +751,160 @@ resourceMetrics:
         schemaUrl: https://opentelemetry.io/schemas/1.40.0
         scope:
           name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
-          version: 0.67.0
+          version: 0.68.0
+      - metrics:
+          - description: Size of HTTP client request bodies.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "3"
+                    - "0"
+                    - "18446744073709551613"
+                    - "0"
+                    - "3"
+                    - "18446744073709551613"
+                    - "3"
+                    - "18446744073709551613"
+                    - "3"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                  count: "3"
+                  explicitBounds:
+                    - 0
+                    - 0
+                    - 5
+                    - 5
+                    - 10
+                    - 10
+                    - 25
+                    - 25
+                    - 50
+                    - 50
+                    - 75
+                    - 75
+                    - 100
+                    - 100
+                    - 250
+                    - 250
+                    - 500
+                    - 500
+                    - 750
+                    - 750
+                    - 1000
+                    - 1000
+                    - 2500
+                    - 2500
+                    - 5000
+                    - 5000
+                    - 7500
+                    - 7500
+                    - 10000
+                    - 10000
+                    - Infinity
+                  startTimeUnixNano: "1000000"
+                  sum: 1815
+                  timeUnixNano: "2000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: histogram
+            name: http.client.request.body.size
+          - description: Duration of HTTP client requests.
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - bucketCounts:
+                    - "1"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "0"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "0"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "0"
+                    - "18446744073709551614"
+                    - "0"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                    - "18446744073709551614"
+                    - "2"
+                  count: "3"
+                  explicitBounds:
+                    - 0.005
+                    - 0.005
+                    - 0.01
+                    - 0.01
+                    - 0.025
+                    - 0.025
+                    - 0.05
+                    - 0.05
+                    - 0.075
+                    - 0.075
+                    - 0.1
+                    - 0.1
+                    - 0.25
+                    - 0.25
+                    - 0.5
+                    - 0.5
+                    - 0.75
+                    - 0.75
+                    - 1
+                    - 1
+                    - 2.5
+                    - 2.5
+                    - 5
+                    - 5
+                    - 7.5
+                    - 7.5
+                    - 10
+                    - 10
+                    - Infinity
+                  startTimeUnixNano: "1000000"
+                  sum: 0.002827177
+                  timeUnixNano: "2000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: histogram
+            name: http.client.request.duration
+        scope:
+          name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+          version: 0.68.0

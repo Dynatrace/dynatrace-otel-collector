@@ -93,8 +93,6 @@ var (
 			"k8s.daemonset.misscheduled_nodes",
 			"k8s.deployment.desired",
 			"k8s.node.allocatable_pods"),
-		pmetrictest.IgnoreScopeVersion(),
-
 		pmetrictest.ChangeDatapointAttributeValue("interface", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.pod.uid", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.pod.ip", substituteWithStar),
@@ -119,6 +117,7 @@ var (
 		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.workload.name", substituteRandomPartWithStar),
 
+		pmetrictest.IgnoreScopeVersion(),
 		pmetrictest.IgnoreDatapointAttributesOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),
@@ -127,6 +126,12 @@ var (
 	}
 
 	traceCompareOptions = []ptracetest.CompareTracesOption{
+		ptracetest.IgnoreResourceAttributeValue("k8s.pod.uid"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.pod.ip"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.pod.name"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.deployment.uid"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
+		ptracetest.IgnoreResourceAttributeValue("k8s.node.name"),
 		ptracetest.IgnoreStartTimestamp(),
 		ptracetest.IgnoreEndTimestamp(),
 		ptracetest.IgnoreTraceID(),
@@ -134,12 +139,6 @@ var (
 		ptracetest.IgnoreSpansOrder(),
 		ptracetest.IgnoreResourceSpansOrder(),
 		ptracetest.IgnoreScopeSpansOrder(),
-		ptracetest.IgnoreResourceAttributeValue("k8s.pod.uid"),
-		ptracetest.IgnoreResourceAttributeValue("k8s.pod.ip"),
-		ptracetest.IgnoreResourceAttributeValue("k8s.pod.name"),
-		ptracetest.IgnoreResourceAttributeValue("k8s.deployment.uid"),
-		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
-		ptracetest.IgnoreResourceAttributeValue("k8s.node.name"),
 	}
 )
 

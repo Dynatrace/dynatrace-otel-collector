@@ -132,12 +132,20 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 	oteltest.WaitForMetrics(t, 5, metricsConsumer)
 
 	// Uncomment to regenerate golden:
-	//require.NoError(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	// require.NoError(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	expected, err := golden.ReadMetrics(expectedFile)
 	require.NoError(t, err)
 
 	defaultOptions := []pmetrictest.CompareMetricsOption{
+		pmetrictest.IgnoreResourceAttributeValue("service.instance.id"),
+		pmetrictest.IgnoreResourceAttributeValue("k8s.pod.name"),
+		pmetrictest.IgnoreResourceAttributeValue("k8s.node.name"),
+		pmetrictest.IgnoreResourceAttributeValue("server.port"),
+		pmetrictest.IgnoreResourceAttributeValue("url.scheme"),
+		pmetrictest.IgnoreResourceAttributeValue("service.version"),
+		pmetrictest.IgnoreMetricAttributeValue("server.address"),
+		pmetrictest.IgnoreMetricAttributeValue("server.port"),
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
@@ -145,16 +153,8 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		pmetrictest.IgnoreResourceMetricsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreMetricValues(),
-		pmetrictest.IgnoreResourceAttributeValue("service.instance.id"),
-		pmetrictest.IgnoreResourceAttributeValue("k8s.pod.name"),
-		pmetrictest.IgnoreResourceAttributeValue("k8s.node.name"),
-		pmetrictest.IgnoreResourceAttributeValue("server.port"),
-		pmetrictest.IgnoreResourceAttributeValue("url.scheme"),
-		pmetrictest.IgnoreResourceAttributeValue("service.version"),
 		pmetrictest.IgnoreScopeVersion(),
 		pmetrictest.IgnoreSubsequentDataPoints(),
-		pmetrictest.IgnoreMetricAttributeValue("server.address"),
-		pmetrictest.IgnoreMetricAttributeValue("server.port"),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

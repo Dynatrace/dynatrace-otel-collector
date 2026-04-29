@@ -349,7 +349,6 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 			"otelcol_exporter_queue_batch_send_size"),
 		pmetrictest.IgnoreScopeVersion(),
 		pmetrictest.IgnoreExemplarSlice(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
@@ -360,6 +359,10 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("service.instance.id", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("service.version", substituteWithStar),
+		// IgnoreMetricDataPointsOrder must come after ChangeDatapointAttributeValue
+		// so that sorting uses the masked attribute values (e.g. "*") rather than
+		// the original values which differ between expected and actual.
+		pmetrictest.IgnoreMetricDataPointsOrder(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

@@ -6,31 +6,31 @@ resourceSpans:
             stringValue: test-traces-deployment
         - key: k8s.pod.ip
           value:
-            stringValue: 10.244.0.27
+            stringValue: 10.244.0.33
         - key: k8s.workload.kind
           value:
             stringValue: deployment
+        - key: k8s.namespace.name
+          value:
+            stringValue: e2ek8scombined
         - key: k8s.workload.name
           value:
             stringValue: telemetrygen-deployment
-        - key: k8s.namespace.annotation.myAnnotationKey
-          value:
-            stringValue: custom_test
-        - key: k8s.pod.name
-          value:
-            stringValue: telemetrygen-deployment-69948c948c-t9ds2
         - key: k8s.node.name
           value:
             stringValue: kind-control-plane
         - key: k8s.cluster.uid
           value:
-            stringValue: b9835ab3-b4e0-4b63-abb0-27891f140b40
-        - key: k8s.namespace.name
+            stringValue: c01bc7e5-fee9-4f98-84b2-187a26b31769
+        - key: k8s.namespace.annotation.myAnnotationKey
           value:
-            stringValue: e2ek8scombined
+            stringValue: custom_test
+        - key: k8s.pod.name
+          value:
+            stringValue: telemetrygen-deployment-69948c948c-gtgsk
         - key: k8s.pod.uid
           value:
-            stringValue: c5d7407e-bff4-4537-bde2-58ef808e0e7c
+            stringValue: de1ab0bb-d0d3-44ab-a806-84fc0407d680
         - key: k8s.container.name
           value:
             stringValue: telemetrygen
@@ -58,15 +58,15 @@ resourceSpans:
               - key: service.peer.name
                 value:
                   stringValue: telemetrygen-client
-            endTimeUnixNano: "1777396758438561151"
+            endTimeUnixNano: "1777477533077748068"
             flags: 257
             kind: 2
             name: okey-dokey-0
-            parentSpanId: 851eac69782f954b
-            spanId: 64039c25b0391fa3
-            startTimeUnixNano: "1777396758438438151"
+            parentSpanId: 519435c03e9816aa
+            spanId: 7971e7e5811df8f7
+            startTimeUnixNano: "1777477533077625068"
             status: {}
-            traceId: 94120ebf051a6c2c5f99e2e76311087d
+            traceId: 0bc3ec8cba33d0ef63f950cb6acdc798
           - attributes:
               - key: network.peer.address
                 value:
@@ -74,11 +74,11 @@ resourceSpans:
               - key: service.peer.name
                 value:
                   stringValue: telemetrygen-server
-            endTimeUnixNano: "1777396758438561151"
+            endTimeUnixNano: "1777477533077748068"
             flags: 257
             kind: 3
             name: lets-go
-            spanId: 851eac69782f954b
-            startTimeUnixNano: "1777396758438438151"
+            spanId: 519435c03e9816aa
+            startTimeUnixNano: "1777477533077625068"
             status: {}
-            traceId: 94120ebf051a6c2c5f99e2e76311087d
+            traceId: 0bc3ec8cba33d0ef63f950cb6acdc798

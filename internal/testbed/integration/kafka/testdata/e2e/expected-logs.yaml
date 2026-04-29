@@ -15,7 +15,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079420403300002"
+            timeUnixNano: "1777487653768509315"
         scope: {}
   - resource:
       attributes:
@@ -33,7 +33,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079421400183144"
+            timeUnixNano: "1777487654769723342"
         scope: {}
   - resource:
       attributes:
@@ -51,7 +51,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079422403657831"
+            timeUnixNano: "1777487655768914363"
         scope: {}
   - resource:
       attributes:
@@ -69,7 +69,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079423402798058"
+            timeUnixNano: "1777487656769122662"
         scope: {}
   - resource:
       attributes:
@@ -87,7 +87,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079424400799284"
+            timeUnixNano: "1777487657769286700"
         scope: {}
   - resource:
       attributes:
@@ -105,7 +105,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079425401282761"
+            timeUnixNano: "1777487658769627535"
         scope: {}
   - resource:
       attributes:
@@ -123,7 +123,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079426401737571"
+            timeUnixNano: "1777487659768960467"
         scope: {}
   - resource:
       attributes:
@@ -141,7 +141,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079427403532382"
+            timeUnixNano: "1777487660769384572"
         scope: {}
   - resource:
       attributes:
@@ -159,7 +159,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079428399999566"
+            timeUnixNano: "1777487661769520069"
         scope: {}
   - resource:
       attributes:
@@ -177,7 +177,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079429400495585"
+            timeUnixNano: "1777487662769990281"
         scope: {}
   - resource:
       attributes:
@@ -195,7 +195,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079430400955812"
+            timeUnixNano: "1777487663769263962"
         scope: {}
   - resource:
       attributes:
@@ -213,7 +213,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079431402517414"
+            timeUnixNano: "1777487664769508949"
         scope: {}
   - resource:
       attributes:
@@ -231,7 +231,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079432401340932"
+            timeUnixNano: "1777487665769771160"
         scope: {}
   - resource:
       attributes:
@@ -249,7 +249,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079433402420618"
+            timeUnixNano: "1777487666769577246"
         scope: {}
   - resource:
       attributes:
@@ -267,7 +267,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079434401014094"
+            timeUnixNano: "1777487667769784289"
         scope: {}
   - resource:
       attributes:
@@ -285,7 +285,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079435400212071"
+            timeUnixNano: "1777487668768844830"
         scope: {}
   - resource:
       attributes:
@@ -303,7 +303,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079436400354931"
+            timeUnixNano: "1777487669769133994"
         scope: {}
   - resource:
       attributes:
@@ -321,7 +321,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079437400799049"
+            timeUnixNano: "1777487670769070282"
         scope: {}
   - resource:
       attributes:
@@ -339,7 +339,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079438400538084"
+            timeUnixNano: "1777487671769398486"
         scope: {}
   - resource:
       attributes:
@@ -357,7 +357,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079439401491159"
+            timeUnixNano: "1777487672769873871"
         scope: {}
   - resource:
       attributes:
@@ -375,7 +375,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079440400778695"
+            timeUnixNano: "1777487673769360253"
         scope: {}
   - resource:
       attributes:
@@ -393,7 +393,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079441402858311"
+            timeUnixNano: "1777487674769736955"
         scope: {}
   - resource:
       attributes:
@@ -411,7 +411,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079442402525763"
+            timeUnixNano: "1777487675769434924"
         scope: {}
   - resource:
       attributes:
@@ -429,7 +429,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079443403566422"
+            timeUnixNano: "1777487676768695139"
         scope: {}
   - resource:
       attributes:
@@ -447,7 +447,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079444400463834"
+            timeUnixNano: "1777487677769448267"
         scope: {}
   - resource:
       attributes:
@@ -465,7 +465,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079445402371575"
+            timeUnixNano: "1777487678769589606"
         scope: {}
   - resource:
       attributes:
@@ -483,7 +483,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079446401764902"
+            timeUnixNano: "1777487679769457098"
         scope: {}
   - resource:
       attributes:
@@ -501,7 +501,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079447402463686"
+            timeUnixNano: "1777487680769834232"
         scope: {}
   - resource:
       attributes:
@@ -519,7 +519,7 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079448401516680"
+            timeUnixNano: "1777487681768915299"
         scope: {}
   - resource:
       attributes:
@@ -537,5 +537,23 @@ resourceLogs:
               stringValue: the message
             severityNumber: 9
             severityText: Info
-            timeUnixNano: "1769079449400938882"
+            timeUnixNano: "1777487682769214122"
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-logs-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeLogs:
+      - logRecords:
+          - attributes:
+              - key: app
+                value:
+                  stringValue: server
+            body:
+              stringValue: the message
+            severityNumber: 9
+            severityText: Info
+            timeUnixNano: "1777487683769486700"
         scope: {}

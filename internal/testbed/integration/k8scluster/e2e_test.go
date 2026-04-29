@@ -146,6 +146,7 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreResourceEntityRefs(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

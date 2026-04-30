@@ -1,0 +1,90 @@
+# Telemetrygen — generates traces, metrics, and logs via OTLP
+#
+# Sends data to the Dynatrace collector managed by BindPlane.
+# Requires the collector to have an OTLP receiver configured on port 4317.
+#
+# Deploy:
+#   kubectl apply -f telemetrygen.yaml
+#
+# The collector must be reachable at:
+#   bindplane-cluster-agent.bindplane-agent.svc.cluster.local:4317
+#
+# To verify data flow, check collector logs:
+#   kubectl logs -n bindplane-agent deploy/bindplane-cluster-agent -c opamp-supervisor | grep -i "debug"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bindplane-cluster-agent
+  namespace: bindplane-agent
+  labels:
+    app.kubernetes.io/name: bindplane-agent
+spec:
+  selector:
+    app.kubernetes.io/name: bindplane-agent
+    app.kubernetes.io/component: cluster
+  ports:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+      protocol: TCP
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telemetrygen
+  namespace: bindplane-agent
+  labels:
+    app: telemetrygen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telemetrygen
+  template:
+    metadata:
+      labels:
+        app: telemetrygen
+    spec:
+      containers:
+        - name: telemetrygen-traces
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.150.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /telemetrygen
+            - traces
+            - --otlp-insecure
+            - --otlp-endpoint=bindplane-cluster-agent.bindplane-agent.svc.cluster.local:4317
+            - --duration=36000s
+            - --rate=1
+            - --batch=false
+            - --otlp-attributes=service.name="demo-traces"
+        - name: telemetrygen-metrics
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.150.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /telemetrygen
+            - metrics
+            - --otlp-insecure
+            - --otlp-endpoint=bindplane-cluster-agent.bindplane-agent.svc.cluster.local:4317
+            - --duration=36000s
+            - --rate=1
+            - --batch=false
+            - --otlp-attributes=service.name="demo-metrics"
+        - name: telemetrygen-logs
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.150.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /telemetrygen
+            - logs
+            - --otlp-insecure
+            - --otlp-endpoint=bindplane-cluster-agent.bindplane-agent.svc.cluster.local:4317
+            - --duration=36000s
+            - --rate=1
+            - --batch=false
+            - --otlp-attributes=service.name="demo-logs"
+      restartPolicy: Always

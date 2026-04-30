@@ -1,0 +1,31 @@
+# Simple collector config for BindPlane PoC
+#
+# Use this as the pipeline configuration in BindPlane UI.
+# It accepts OTLP data on ports 4317 (gRPC) and 4318 (HTTP)
+# and outputs everything to the debug exporter (stdout).
+#
+# This is useful for verifying end-to-end data flow:
+# telemetrygen → collector (OTLP) → debug (logs)
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug]
+    metrics:
+      receivers: [otlp]
+      exporters: [debug]
+    logs:
+      receivers: [otlp]
+      exporters: [debug]

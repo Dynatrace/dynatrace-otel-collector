@@ -1,0 +1,202 @@
+# Dynatrace OTel Collector managed by BindPlane via OpAMP (BYOC)
+#
+# Uses the OpAMP Supervisor to manage the Dynatrace collector.
+# The supervisor connects to BindPlane Cloud, receives remote config,
+# and manages the collector as a child process.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/name: bindplane-agent
+  name: bindplane-agent
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: bindplane-agent
+  name: bindplane-agent
+  namespace: bindplane-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: bindplane-agent
+  labels:
+    app.kubernetes.io/name: bindplane-agent
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  - namespaces
+  - namespaces/status
+  - nodes
+  - nodes/spec
+  - nodes/stats
+  - nodes/proxy
+  - pods
+  - pods/status
+  - replicationcontrollers
+  - replicationcontrollers/status
+  - resourcequotas
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  - deployments
+  - replicasets
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  resources:
+  - daemonsets
+  - deployments
+  - replicasets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  - cronjobs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - autoscaling
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: bindplane-agent
+  labels:
+    app.kubernetes.io/name: bindplane-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: bindplane-agent
+subjects:
+- kind: ServiceAccount
+  name: bindplane-agent
+  namespace: bindplane-agent
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supervisor-config
+  namespace: bindplane-agent
+  labels:
+    app.kubernetes.io/name: bindplane-agent
+data:
+  supervisor.yaml: |
+    server:
+      endpoint: wss://app.bindplane.com/v1/opamp
+      headers:
+        Authorization: "Secret-Key key"
+
+    capabilities:
+      reports_effective_config: true
+      reports_own_metrics: true
+      reports_own_logs: true
+      reports_own_traces: true
+      reports_health: true
+      accepts_remote_config: true
+      reports_remote_config: true
+      reports_available_components: true
+
+    agent:
+      executable: /opt/collector/dynatrace-otel-collector
+      bootstrap_timeout: 30s
+      description:
+        non_identifying_attributes:
+          container-platform: kubernetes-gateway
+          fleet: odubaj-poc-fleet
+
+    storage:
+      directory: /var/lib/otelcol/supervisor
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bindplane-cluster-agent
+  labels:
+    app.kubernetes.io/name: bindplane-agent
+    app.kubernetes.io/component: cluster
+  namespace: bindplane-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bindplane-agent
+      app.kubernetes.io/component: cluster
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bindplane-agent
+        app.kubernetes.io/component: cluster
+    spec:
+      serviceAccount: bindplane-agent
+      initContainers:
+        - name: copy-collector
+          image: localhost/dynatrace-otel-collector:bindplane-poc
+          imagePullPolicy: Never
+          command: ["cp", "/dynatrace-otel-collector", "/opt/collector/dynatrace-otel-collector"]
+          volumeMounts:
+            - name: collector-binary
+              mountPath: /opt/collector
+      containers:
+        - name: opamp-supervisor
+          image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-opampsupervisor:0.149.0
+          args:
+            - --config=/etc/supervisor/supervisor.yaml
+          env:
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: supervisor-config
+              mountPath: /etc/supervisor
+              readOnly: true
+            - name: supervisor-storage
+              mountPath: /var/lib/otelcol/supervisor
+            - name: collector-binary
+              mountPath: /opt/collector
+              readOnly: true
+          resources:
+            requests:
+              memory: 200Mi
+              cpu: 100m
+            limits:
+              memory: 200Mi
+      volumes:
+        - name: supervisor-config
+          configMap:
+            name: supervisor-config
+            items:
+              - key: supervisor.yaml
+                path: supervisor.yaml
+        - name: supervisor-storage
+          emptyDir: {}
+        - name: collector-binary
+          emptyDir: {}

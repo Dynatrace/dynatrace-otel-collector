@@ -154,7 +154,6 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreMetricValues(),
 		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreSubsequentDataPoints(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

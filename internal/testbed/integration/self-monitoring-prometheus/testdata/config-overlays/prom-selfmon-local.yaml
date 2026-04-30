@@ -8,5 +8,5 @@ service:
   pipelines:
     metrics/selfmon:
       receivers: [prometheus/collector-self]
-      processors: [transform/selfmon_rename, cumulativetodelta]
+      processors: [transform/selfmon_rename, metric_start_time, cumulativetodelta]
       exporters: [otlp_http/selfmon]

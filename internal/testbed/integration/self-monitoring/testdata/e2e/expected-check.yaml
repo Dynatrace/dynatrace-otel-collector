@@ -2520,6 +2520,12 @@ resourceMetrics:
                     - key: exporter
                       value:
                         stringValue: otlp_grpc/self
+                    - key: server.address
+                      value:
+                        stringValue: "*"
+                    - key: server.port
+                      value:
+                        stringValue: "*"
                   exemplars:
                     - asInt: "5"
                       spanId: 4765c89fe807ec8d
@@ -2536,6 +2542,15 @@ resourceMetrics:
                     - key: exporter
                       value:
                         stringValue: otlp_http/logs
+                    - key: server.address
+                      value:
+                        stringValue: "*"
+                    - key: server.port
+                      value:
+                        stringValue: "*"
+                    - key: url.path
+                      value:
+                        stringValue: /v1/logs
                   exemplars:
                     - asInt: "5"
                       spanId: 40c087a2e7dd4c92
@@ -2575,6 +2590,12 @@ resourceMetrics:
                     - key: exporter
                       value:
                         stringValue: otlp_grpc/self
+                    - key: server.address
+                      value:
+                        stringValue: "*"
+                    - key: server.port
+                      value:
+                        stringValue: "*"
                   exemplars:
                     - asInt: "5"
                       spanId: ddc51e4ad6abe3eb
@@ -2591,6 +2612,15 @@ resourceMetrics:
                     - key: exporter
                       value:
                         stringValue: otlp_http/metrics
+                    - key: server.address
+                      value:
+                        stringValue: "*"
+                    - key: server.port
+                      value:
+                        stringValue: "*"
+                    - key: url.path
+                      value:
+                        stringValue: /v1/metrics
                   exemplars:
                     - asInt: "5"
                       spanId: 1680755c70bca0a6
@@ -2630,6 +2660,12 @@ resourceMetrics:
                     - key: exporter
                       value:
                         stringValue: otlp_grpc/self
+                    - key: server.address
+                      value:
+                        stringValue: "*"
+                    - key: server.port
+                      value:
+                        stringValue: "*"
                   exemplars:
                     - asInt: "5"
                       spanId: dda2129f29e65914
@@ -2646,6 +2682,15 @@ resourceMetrics:
                     - key: exporter
                       value:
                         stringValue: otlp_http/traces
+                    - key: server.address
+                      value:
+                        stringValue: "*"
+                    - key: server.port
+                      value:
+                        stringValue: "*"
+                    - key: url.path
+                      value:
+                        stringValue: /v1/traces
                   exemplars:
                     - asInt: "5"
                       spanId: 8c036689553ef0c1

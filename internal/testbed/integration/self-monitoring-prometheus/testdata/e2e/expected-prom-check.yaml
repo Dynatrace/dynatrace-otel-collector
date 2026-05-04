@@ -553,6 +553,15 @@ resourceMetrics:
                     - key: exporter
                       value:
                         stringValue: otlp_http
+                    - key: server.address
+                      value:
+                        stringValue: ""
+                    - key: server.port
+                      value:
+                        stringValue: ""
+                    - key: url.path
+                      value:
+                        stringValue: /v1/metrics
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asDouble: 43
@@ -560,6 +569,15 @@ resourceMetrics:
                     - key: exporter
                       value:
                         stringValue: otlp_http/selfmon
+                    - key: server.address
+                      value:
+                        stringValue: ""
+                    - key: server.port
+                      value:
+                        stringValue: ""
+                    - key: url.path
+                      value:
+                        stringValue: /v1/metrics
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true

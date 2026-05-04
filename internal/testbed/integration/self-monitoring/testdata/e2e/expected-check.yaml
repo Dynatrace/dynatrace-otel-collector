@@ -9,17 +9,17 @@ resourceMetrics:
             stringValue: kind-control-plane
         - key: k8s.pod.name
           value:
-            stringValue: otelcol-3b0f50ae-688857fbf8-dwsgg
+            stringValue: otelcol-80e28b57-5cf88d4fc6-m45tk
         - key: service.instance.id
           value:
-            stringValue: 20056f37-4de3-4487-9cfb-33690b85b59f
+            stringValue: fb34abec-baa2-4d61-a5b4-fee14cf848f4
         - key: service.name
           value:
             stringValue: dynatrace-otel-collector
         - key: service.version
           value:
             stringValue: 0.47.0
-    schemaUrl: https://opentelemetry.io/schemas/1.38.0
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
     scopeMetrics:
       - metrics:
           - description: Number of items passed to the processor. [Alpha]
@@ -37,13 +37,13 @@ resourceMetrics:
                         stringValue: filter
                   exemplars:
                     - asInt: "1"
-                      spanId: 9b6cc90cdd87a69e
-                      timeUnixNano: "1775664118572929775"
-                      traceId: 4328676ad06544b0d2e374bf402fc212
+                      spanId: 74a1c2acc76cea57
+                      timeUnixNano: "1777414559167675214"
+                      traceId: c75e76e1d07bf2394d29ad560aea78a7
                     - asInt: "1"
-                      spanId: 753500b0920f8f9b
-                      timeUnixNano: "1775664120572303495"
-                      traceId: 4ef1dea58d0195aaf3ddd8451b487216
+                      spanId: 3f1828903189685c
+                      timeUnixNano: "1777414560167721817"
+                      traceId: 923330f06e44216e31aea217da8fe664
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -55,14 +55,14 @@ resourceMetrics:
                       value:
                         stringValue: cumulativetodelta
                   exemplars:
-                    - asInt: "1"
-                      spanId: 0d50592b90726da3
-                      timeUnixNano: "1775664114446260184"
-                      traceId: 2ac60fdc8997685d4605ff268c3e5e75
-                    - asInt: "1"
-                      spanId: 122661307c2739c3
-                      timeUnixNano: "1775664118446600806"
-                      traceId: 2889de27bd0b50337eccc340b683e816
+                    - asInt: "5"
+                      spanId: db7400efa52e4e6f
+                      timeUnixNano: "1777414560931808701"
+                      traceId: 4386cfde7769b051d1ed57e01c0fd088
+                    - asInt: "5"
+                      spanId: 36d30e887d037b3e
+                      timeUnixNano: "1777414565931271320"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "20"
@@ -75,13 +75,13 @@ resourceMetrics:
                         stringValue: filter
                   exemplars:
                     - asInt: "1"
-                      spanId: 9e595b7a2839aee1
-                      timeUnixNano: "1775664123446165564"
-                      traceId: 356f57145eab449a850fdde3ee750f61
+                      spanId: 822d9f15f5ba1d43
+                      timeUnixNano: "1777414563931002728"
+                      traceId: 504b8c67afdc74e314e14ecd5cfb8252
                     - asInt: "1"
-                      spanId: 0d50592b90726da3
-                      timeUnixNano: "1775664114446241583"
-                      traceId: 2ac60fdc8997685d4605ff268c3e5e75
+                      spanId: 8bbf6fee92b0102e
+                      timeUnixNano: "1777414561931092478"
+                      traceId: dd3e174956c387d430a7a2ea6d01c136
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "20"
@@ -94,13 +94,13 @@ resourceMetrics:
                         stringValue: filter
                   exemplars:
                     - asInt: "1"
-                      spanId: a0ec4096a6c98671
-                      timeUnixNano: "1775664123257235442"
-                      traceId: 08a2776f3995b8351d01592ba4dab9f5
+                      spanId: acabe1e580039efa
+                      timeUnixNano: "1777414568700190621"
+                      traceId: a8ccdae3fd173febdb4b0d2770cc5202
                     - asInt: "1"
-                      spanId: 78d572cb1c50b2a7
-                      timeUnixNano: "1775664119258990025"
-                      traceId: 61bd3bb9aa21d6edbee4d3b3b5cca39a
+                      spanId: b20de86df41f70a8
+                      timeUnixNano: "1777414564699757260"
+                      traceId: 8e8d4d57d431a0d037f8cfacdf30905b
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -118,7 +118,7 @@ resourceMetrics:
                         stringValue: filter
                   bucketCounts:
                     - "0"
-                    - "20"
+                    - "12"
                     - "0"
                     - "0"
                     - "0"
@@ -133,12 +133,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "20"
+                  count: "12"
                   exemplars:
-                    - asDouble: 1.3354e-05
-                      spanId: 9967e018d2365893
-                      timeUnixNano: "1775664123572649603"
-                      traceId: 30ae9f05e4656036194818687c8c9566
+                    - asDouble: 2.0065e-05
+                      spanId: 8fe77ad777d21fbd
+                      timeUnixNano: "1777414568166776910"
+                      traceId: 529794021b8eb561bc91cb2ec3ba2130
                   explicitBounds:
                     - 0
                     - 5
@@ -155,10 +155,10 @@ resourceMetrics:
                     - 5000
                     - 7500
                     - 10000
-                  max: 2.8372e-05
-                  min: 1.1566e-05
+                  max: 5.8016e-05
+                  min: 8.918e-06
                   startTimeUnixNano: "1000000"
-                  sum: 0.000375566
+                  sum: 0.000358625
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: otel.signal
@@ -169,7 +169,7 @@ resourceMetrics:
                         stringValue: cumulativetodelta
                   bucketCounts:
                     - "0"
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -184,12 +184,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asDouble: 2.058e-06
-                      spanId: 9e595b7a2839aee1
-                      timeUnixNano: "1775664123446176202"
-                      traceId: 356f57145eab449a850fdde3ee750f61
+                    - asDouble: 1.251e-06
+                      spanId: 36d30e887d037b3e
+                      timeUnixNano: "1777414565931270303"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   explicitBounds:
                     - 0
                     - 5
@@ -206,10 +206,10 @@ resourceMetrics:
                     - 5000
                     - 7500
                     - 10000
-                  max: 2.445e-06
-                  min: 9.42e-07
+                  max: 2.17e-06
+                  min: 1.251e-06
                   startTimeUnixNano: "1000000"
-                  sum: 1.8675e-05
+                  sum: 3.421e-06
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: otel.signal
@@ -220,7 +220,7 @@ resourceMetrics:
                         stringValue: filter
                   bucketCounts:
                     - "0"
-                    - "20"
+                    - "12"
                     - "0"
                     - "0"
                     - "0"
@@ -235,12 +235,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "20"
+                  count: "12"
                   exemplars:
-                    - asDouble: 1.7234e-05
-                      spanId: 9e595b7a2839aee1
-                      timeUnixNano: "1775664123446162061"
-                      traceId: 356f57145eab449a850fdde3ee750f61
+                    - asDouble: 2.0714e-05
+                      spanId: c7183e46f2981ff6
+                      timeUnixNano: "1777414568930814422"
+                      traceId: 2c5a87c2f3bdc706578c646fa3ee7180
                   explicitBounds:
                     - 0
                     - 5
@@ -257,10 +257,10 @@ resourceMetrics:
                     - 5000
                     - 7500
                     - 10000
-                  max: 4.3497e-05
-                  min: 6.104e-06
+                  max: 5.3865e-05
+                  min: 1.0288e-05
                   startTimeUnixNano: "1000000"
-                  sum: 0.000354618
+                  sum: 0.00029671600000000004
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: otel.signal
@@ -271,7 +271,7 @@ resourceMetrics:
                         stringValue: filter
                   bucketCounts:
                     - "0"
-                    - "20"
+                    - "12"
                     - "0"
                     - "0"
                     - "0"
@@ -286,12 +286,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "20"
+                  count: "12"
                   exemplars:
-                    - asDouble: 7.176e-06
-                      spanId: f9e9be009271ec0d
-                      timeUnixNano: "1775664123257992137"
-                      traceId: 03f27753b7b09e21db971445368e1c26
+                    - asDouble: 6.527e-06
+                      spanId: 31ee4609ba393a89
+                      timeUnixNano: "1777414568700972496"
+                      traceId: 9218c12e88c8fb5b0eadd75ae5bfcb34
                   explicitBounds:
                     - 0
                     - 5
@@ -308,10 +308,10 @@ resourceMetrics:
                     - 5000
                     - 7500
                     - 10000
-                  max: 2.6227e-05
-                  min: 6.379e-06
+                  max: 3.2974e-05
+                  min: 6.527e-06
                   startTimeUnixNano: "1000000"
-                  sum: 0.000255777
+                  sum: 0.00023784799999999998
                   timeUnixNano: "2000000"
             name: otelcol_processor_internal_duration
             unit: s
@@ -330,13 +330,13 @@ resourceMetrics:
                         stringValue: filter
                   exemplars:
                     - asInt: "1"
-                      spanId: f7eb9070480219b1
-                      timeUnixNano: "1775664119572778629"
-                      traceId: 2c0285350d84b0c8dbb59e47d3a9798b
+                      spanId: 8c7847a2af784a0f
+                      timeUnixNano: "1777414566166894489"
+                      traceId: fe7d324985604779a0b139667836b701
                     - asInt: "1"
-                      spanId: abe98436c9f01e38
-                      timeUnixNano: "1775664114572875761"
-                      traceId: 5a53b45ef779d47e7ec1b2f67cf979f1
+                      spanId: d4da80820d4103d2
+                      timeUnixNano: "1777414567167890783"
+                      traceId: 67af0d4907d78cd4c4a9f6ad7b08775d
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -348,14 +348,14 @@ resourceMetrics:
                       value:
                         stringValue: cumulativetodelta
                   exemplars:
-                    - asInt: "1"
-                      spanId: 0d50592b90726da3
-                      timeUnixNano: "1775664114446261893"
-                      traceId: 2ac60fdc8997685d4605ff268c3e5e75
-                    - asInt: "1"
-                      spanId: 122661307c2739c3
-                      timeUnixNano: "1775664118446603248"
-                      traceId: 2889de27bd0b50337eccc340b683e816
+                    - asInt: "5"
+                      spanId: db7400efa52e4e6f
+                      timeUnixNano: "1777414560931811464"
+                      traceId: 4386cfde7769b051d1ed57e01c0fd088
+                    - asInt: "5"
+                      spanId: 36d30e887d037b3e
+                      timeUnixNano: "1777414565931271871"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "20"
@@ -368,13 +368,13 @@ resourceMetrics:
                         stringValue: filter
                   exemplars:
                     - asInt: "1"
-                      spanId: e88b708f17b60862
-                      timeUnixNano: "1775664121446615928"
-                      traceId: 4dd866a9d086c83b7023d49fa44fde33
+                      spanId: 63f312489fdf2f89
+                      timeUnixNano: "1777414565930831571"
+                      traceId: 6c390cb6e9c615a7f68aa1b7f7195e73
                     - asInt: "1"
-                      spanId: a97a264af752fd86
-                      timeUnixNano: "1775664119445849907"
-                      traceId: fe1edb3e60665b615ff73c85756e1e1e
+                      spanId: c6282948633ad40d
+                      timeUnixNano: "1777414560930917456"
+                      traceId: 4e17b1d3a4aa772a324475db0ac0c32b
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "20"
@@ -387,13 +387,13 @@ resourceMetrics:
                         stringValue: filter
                   exemplars:
                     - asInt: "1"
-                      spanId: 7d88ce89936917cb
-                      timeUnixNano: "1775664115258701948"
-                      traceId: f15a62a61b9582dd709dd7a17ef9e219
+                      spanId: 31ee4609ba393a89
+                      timeUnixNano: "1777414568700975313"
+                      traceId: 9218c12e88c8fb5b0eadd75ae5bfcb34
                     - asInt: "1"
-                      spanId: 91e826da538b3b39
-                      timeUnixNano: "1775664121259124898"
-                      traceId: 75b191f7695a028a033d81ae653f8f4f
+                      spanId: b20de86df41f70a8
+                      timeUnixNano: "1777414564699759021"
+                      traceId: 8e8d4d57d431a0d037f8cfacdf30905b
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -413,13 +413,13 @@ resourceMetrics:
                         stringValue: filter
                   exemplars:
                     - asInt: "0"
-                      spanId: 8eb7129ba429775d
-                      timeUnixNano: "1775664118445901059"
-                      traceId: 514698216d57b6078f615cf415387131
+                      spanId: f4821ee1dbc5f494
+                      timeUnixNano: "1777414559930664694"
+                      traceId: b06812337ec20cdbcebb91e1f62bd3e9
                     - asInt: "0"
-                      spanId: a97a264af752fd86
-                      timeUnixNano: "1775664119445837800"
-                      traceId: fe1edb3e60665b615ff73c85756e1e1e
+                      spanId: b2baf722e23bdc2d
+                      timeUnixNano: "1777414567930729055"
+                      traceId: 742c0151358f285201089bacefdaa567
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -436,13 +436,13 @@ resourceMetrics:
                         stringValue: filter
                   exemplars:
                     - asInt: "0"
-                      spanId: 9b6cc90cdd87a69e
-                      timeUnixNano: "1775664118572920916"
-                      traceId: 4328676ad06544b0d2e374bf402fc212
+                      spanId: 8fe77ad777d21fbd
+                      timeUnixNano: "1777414568166771356"
+                      traceId: 529794021b8eb561bc91cb2ec3ba2130
                     - asInt: "0"
-                      spanId: abe98436c9f01e38
-                      timeUnixNano: "1775664114572866617"
-                      traceId: 5a53b45ef779d47e7ec1b2f67cf979f1
+                      spanId: 7e9a23136f119ea2
+                      timeUnixNano: "1777414563167222333"
+                      traceId: f89158f63be5afeb964568f181e78624
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -459,13 +459,13 @@ resourceMetrics:
                         stringValue: filter
                   exemplars:
                     - asInt: "0"
-                      spanId: 78d572cb1c50b2a7
-                      timeUnixNano: "1775664119258981487"
-                      traceId: 61bd3bb9aa21d6edbee4d3b3b5cca39a
+                      spanId: 655790e9805bbec9
+                      timeUnixNano: "1777414560699668509"
+                      traceId: e8f6af5769be35f19db812bebcb22e93
                     - asInt: "0"
-                      spanId: deebdbecbac46588
-                      timeUnixNano: "1775664115258215786"
-                      traceId: d92d0cba557d0abe6002e41cad81d21f
+                      spanId: 2ded7678755148ec
+                      timeUnixNano: "1777414564700572543"
+                      traceId: fea8cb95b7eac2572706f4b02a7c0c2f
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -484,6 +484,9 @@ resourceMetrics:
                     - key: http.response.status_code
                       value:
                         intValue: "200"
+                    - key: http.route
+                      value:
+                        stringValue: /v1/logs
                     - key: network.protocol.name
                       value:
                         stringValue: http
@@ -492,7 +495,7 @@ resourceMetrics:
                         stringValue: "1.1"
                     - key: server.address
                       value:
-                        stringValue: otelcol-3b0f50ae
+                        stringValue: otelcol-80e28b57
                     - key: server.port
                       value:
                         intValue: "4318"
@@ -507,8 +510,7 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "25"
-                    - "5"
+                    - "10"
                     - "0"
                     - "0"
                     - "0"
@@ -516,16 +518,13 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "30"
+                    - "0"
+                  count: "10"
                   exemplars:
                     - asInt: "139"
-                      spanId: b561c5a11df539c1
-                      timeUnixNano: "1775664123572174035"
-                      traceId: 955218d7d476c8237c35c5a0c05c3f99
-                    - asInt: "264"
-                      spanId: c86bf124fd0bdcc8
-                      timeUnixNano: "1775664123256638059"
-                      traceId: 0ad632af64a6ce1530d4ac5c254fa778
+                      spanId: 7af587cea4924fc1
+                      timeUnixNano: "1777414568166814163"
+                      traceId: 529794021b8eb561bc91cb2ec3ba2130
                   explicitBounds:
                     - 0
                     - 5
@@ -542,10 +541,148 @@ resourceMetrics:
                     - 5000
                     - 7500
                     - 10000
-                  max: 264
+                  max: 139
+                  min: 139
+                  startTimeUnixNano: "1000000"
+                  sum: 1390
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: http.route
+                      value:
+                        stringValue: /v1/metrics
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: otelcol-80e28b57
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "10"
+                  exemplars:
+                    - asInt: "121"
+                      spanId: 8e7ad23cde907e86
+                      timeUnixNano: "1777414568930879109"
+                      traceId: 2c5a87c2f3bdc706578c646fa3ee7180
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 121
                   min: 121
                   startTimeUnixNano: "1000000"
-                  sum: 5165
+                  sum: 1210
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: http.route
+                      value:
+                        stringValue: /v1/traces
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: otelcol-80e28b57
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "10"
+                  exemplars:
+                    - asInt: "254"
+                      spanId: 61e3cdf47cac1553
+                      timeUnixNano: "1777414568701006710"
+                      traceId: 9218c12e88c8fb5b0eadd75ae5bfcb34
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 269
+                  min: 254
+                  startTimeUnixNano: "1000000"
+                  sum: 2615
                   timeUnixNano: "2000000"
             name: http.server.request.body.size
             unit: By
@@ -560,6 +697,9 @@ resourceMetrics:
                     - key: http.response.status_code
                       value:
                         intValue: "200"
+                    - key: http.route
+                      value:
+                        stringValue: /v1/logs
                     - key: network.protocol.name
                       value:
                         stringValue: http
@@ -568,7 +708,7 @@ resourceMetrics:
                         stringValue: "1.1"
                     - key: server.address
                       value:
-                        stringValue: otelcol-3b0f50ae
+                        stringValue: otelcol-80e28b57
                     - key: server.port
                       value:
                         intValue: "4318"
@@ -577,7 +717,7 @@ resourceMetrics:
                         stringValue: http
                   bucketCounts:
                     - "0"
-                    - "30"
+                    - "10"
                     - "0"
                     - "0"
                     - "0"
@@ -592,12 +732,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "30"
+                  count: "10"
                   exemplars:
                     - asInt: "2"
-                      spanId: b561c5a11df539c1
-                      timeUnixNano: "1775664123572175035"
-                      traceId: 955218d7d476c8237c35c5a0c05c3f99
+                      spanId: 7af587cea4924fc1
+                      timeUnixNano: "1777414568166815231"
+                      traceId: 529794021b8eb561bc91cb2ec3ba2130
                   explicitBounds:
                     - 0
                     - 5
@@ -617,7 +757,145 @@ resourceMetrics:
                   max: 2
                   min: 2
                   startTimeUnixNano: "1000000"
-                  sum: 60
+                  sum: 20
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: http.route
+                      value:
+                        stringValue: /v1/metrics
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: otelcol-80e28b57
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "10"
+                  exemplars:
+                    - asInt: "2"
+                      spanId: 8e7ad23cde907e86
+                      timeUnixNano: "1777414568930880306"
+                      traceId: 2c5a87c2f3bdc706578c646fa3ee7180
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 2
+                  min: 2
+                  startTimeUnixNano: "1000000"
+                  sum: 20
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: http.route
+                      value:
+                        stringValue: /v1/traces
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: otelcol-80e28b57
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "0"
+                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "10"
+                  exemplars:
+                    - asInt: "2"
+                      spanId: 61e3cdf47cac1553
+                      timeUnixNano: "1777414568701007292"
+                      traceId: 9218c12e88c8fb5b0eadd75ae5bfcb34
+                  explicitBounds:
+                    - 0
+                    - 5
+                    - 10
+                    - 25
+                    - 50
+                    - 75
+                    - 100
+                    - 250
+                    - 500
+                    - 750
+                    - 1000
+                    - 2500
+                    - 5000
+                    - 7500
+                    - 10000
+                  max: 2
+                  min: 2
+                  startTimeUnixNano: "1000000"
+                  sum: 20
                   timeUnixNano: "2000000"
             name: http.server.response.body.size
             unit: By
@@ -632,6 +910,9 @@ resourceMetrics:
                     - key: http.response.status_code
                       value:
                         intValue: "200"
+                    - key: http.route
+                      value:
+                        stringValue: /v1/logs
                     - key: network.protocol.name
                       value:
                         stringValue: http
@@ -640,7 +921,7 @@ resourceMetrics:
                         stringValue: "1.1"
                     - key: server.address
                       value:
-                        stringValue: otelcol-3b0f50ae
+                        stringValue: otelcol-80e28b57
                     - key: server.port
                       value:
                         intValue: "4318"
@@ -648,7 +929,7 @@ resourceMetrics:
                       value:
                         stringValue: http
                   bucketCounts:
-                    - "30"
+                    - "10"
                     - "0"
                     - "0"
                     - "0"
@@ -663,12 +944,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "30"
+                  count: "10"
                   exemplars:
-                    - asDouble: 0.000149291
-                      spanId: b561c5a11df539c1
-                      timeUnixNano: "1775664123572176602"
-                      traceId: 955218d7d476c8237c35c5a0c05c3f99
+                    - asDouble: 0.000110092
+                      spanId: 7af587cea4924fc1
+                      timeUnixNano: "1777414568166816023"
+                      traceId: 529794021b8eb561bc91cb2ec3ba2130
                   explicitBounds:
                     - 0.005
                     - 0.01
@@ -684,10 +965,144 @@ resourceMetrics:
                     - 5
                     - 7.5
                     - 10
-                  max: 0.000233281
-                  min: 7.4229e-05
+                  max: 0.000285095
+                  min: 0.000110092
                   startTimeUnixNano: "1000000"
-                  sum: 0.004578579
+                  sum: 0.0020166850000000003
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: http.route
+                      value:
+                        stringValue: /v1/metrics
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: otelcol-80e28b57
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "10"
+                  exemplars:
+                    - asDouble: 0.000152025
+                      spanId: 8e7ad23cde907e86
+                      timeUnixNano: "1777414568930881375"
+                      traceId: 2c5a87c2f3bdc706578c646fa3ee7180
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.000310129
+                  min: 9.1464e-05
+                  startTimeUnixNano: "1000000"
+                  sum: 0.002006712
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: http.request.method
+                      value:
+                        stringValue: POST
+                    - key: http.response.status_code
+                      value:
+                        intValue: "200"
+                    - key: http.route
+                      value:
+                        stringValue: /v1/traces
+                    - key: network.protocol.name
+                      value:
+                        stringValue: http
+                    - key: network.protocol.version
+                      value:
+                        stringValue: "1.1"
+                    - key: server.address
+                      value:
+                        stringValue: otelcol-80e28b57
+                    - key: server.port
+                      value:
+                        intValue: "4318"
+                    - key: url.scheme
+                      value:
+                        stringValue: http
+                  bucketCounts:
+                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "10"
+                  exemplars:
+                    - asDouble: 8.4131e-05
+                      spanId: 61e3cdf47cac1553
+                      timeUnixNano: "1777414568701008157"
+                      traceId: 9218c12e88c8fb5b0eadd75ae5bfcb34
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.000213713
+                  min: 8.4131e-05
+                  startTimeUnixNano: "1000000"
+                  sum: 0.0015692450000000001
                   timeUnixNano: "2000000"
             name: http.server.request.duration
             unit: s
@@ -725,21 +1140,21 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "10"
+                    - "0"
+                    - "0"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
-                    - "0"
-                    - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asInt: "145"
-                      spanId: 2a39490179717f8e
-                      timeUnixNano: "1775664123573597821"
-                      traceId: 30ae9f05e4656036194818687c8c9566
+                    - asInt: "725"
+                      spanId: b46d2d09dcdb88dc
+                      timeUnixNano: "1777414566168169084"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   explicitBounds:
                     - 0
                     - 5
@@ -756,8 +1171,8 @@ resourceMetrics:
                     - 5000
                     - 7500
                     - 10000
-                  max: 145
-                  min: 145
+                  max: 725
+                  min: 725
                   startTimeUnixNano: "1000000"
                   sum: 1450
                   timeUnixNano: "2000000"
@@ -791,21 +1206,21 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "10"
+                    - "0"
+                    - "0"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
-                    - "0"
-                    - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asInt: "121"
-                      spanId: dd79a9168004dc87
-                      timeUnixNano: "1775664123447348891"
-                      traceId: 356f57145eab449a850fdde3ee750f61
+                    - asInt: "605"
+                      spanId: 2ec5d4793f2790a0
+                      timeUnixNano: "1777414565931787962"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   explicitBounds:
                     - 0
                     - 5
@@ -822,8 +1237,8 @@ resourceMetrics:
                     - 5000
                     - 7500
                     - 10000
-                  max: 121
-                  min: 121
+                  max: 605
+                  min: 605
                   startTimeUnixNano: "1000000"
                   sum: 1210
                   timeUnixNano: "2000000"
@@ -858,20 +1273,20 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asInt: "251"
-                      spanId: 11c70c578d7a4064
-                      timeUnixNano: "1775664123259019202"
-                      traceId: 03f27753b7b09e21db971445368e1c26
+                    - asInt: "1319"
+                      spanId: ce690fc0111b50e2
+                      timeUnixNano: "1777414566702299527"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   explicitBounds:
                     - 0
                     - 5
@@ -888,10 +1303,10 @@ resourceMetrics:
                     - 5000
                     - 7500
                     - 10000
-                  max: 264
-                  min: 251
+                  max: 1319
+                  min: 1306
                   startTimeUnixNano: "1000000"
-                  sum: 2575
+                  sum: 2625
                   timeUnixNano: "2000000"
             name: http.client.request.body.size
             unit: By
@@ -922,7 +1337,7 @@ resourceMetrics:
                       value:
                         stringValue: http
                   bucketCounts:
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -937,12 +1352,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asDouble: 0.00078318
-                      spanId: 2a39490179717f8e
-                      timeUnixNano: "1775664123573601493"
-                      traceId: 30ae9f05e4656036194818687c8c9566
+                    - asDouble: 0.000631696
+                      spanId: b46d2d09dcdb88dc
+                      timeUnixNano: "1777414566168171158"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   explicitBounds:
                     - 0.005
                     - 0.01
@@ -958,10 +1373,10 @@ resourceMetrics:
                     - 5
                     - 7.5
                     - 10
-                  max: 0.000923292
-                  min: 0.000399514
+                  max: 0.000748816
+                  min: 0.000631696
                   startTimeUnixNano: "1000000"
-                  sum: 0.006997568999999999
+                  sum: 0.001380512
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: http.request.method
@@ -986,7 +1401,7 @@ resourceMetrics:
                       value:
                         stringValue: http
                   bucketCounts:
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1001,12 +1416,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asDouble: 0.000871936
-                      spanId: dd79a9168004dc87
-                      timeUnixNano: "1775664123447351856"
-                      traceId: 356f57145eab449a850fdde3ee750f61
+                    - asDouble: 0.000386636
+                      spanId: 2ec5d4793f2790a0
+                      timeUnixNano: "1777414565931789339"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   explicitBounds:
                     - 0.005
                     - 0.01
@@ -1022,10 +1437,10 @@ resourceMetrics:
                     - 5
                     - 7.5
                     - 10
-                  max: 0.001071584
-                  min: 0.000419581
+                  max: 0.000827889
+                  min: 0.000386636
                   startTimeUnixNano: "1000000"
-                  sum: 0.007873835000000001
+                  sum: 0.001214525
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: http.request.method
@@ -1050,7 +1465,7 @@ resourceMetrics:
                       value:
                         stringValue: http
                   bucketCounts:
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1065,12 +1480,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asDouble: 0.000702508
-                      spanId: 11c70c578d7a4064
-                      timeUnixNano: "1775664123259020346"
-                      traceId: 03f27753b7b09e21db971445368e1c26
+                    - asDouble: 0.000886479
+                      spanId: ce690fc0111b50e2
+                      timeUnixNano: "1777414566702302151"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   explicitBounds:
                     - 0.005
                     - 0.01
@@ -1086,179 +1501,17 @@ resourceMetrics:
                     - 5
                     - 7.5
                     - 10
-                  max: 0.001252218
-                  min: 0.000547687
+                  max: 0.001010761
+                  min: 0.000886479
                   startTimeUnixNano: "1000000"
-                  sum: 0.008025779
+                  sum: 0.0018972400000000001
                   timeUnixNano: "2000000"
             name: http.client.request.duration
             unit: s
         scope:
           name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
-          version: 0.67.0
+          version: 0.68.0
       - metrics:
-          - description: Measures the duration of an outgoing Remote Procedure Call (RPC).
-            histogram:
-              aggregationTemporality: 1
-              dataPoints:
-                - attributes:
-                    - key: rpc.method
-                      value:
-                        stringValue: opentelemetry.proto.collector.logs.v1.LogsService/Export
-                    - key: rpc.response.status_code
-                      value:
-                        stringValue: OK
-                    - key: rpc.system.name
-                      value:
-                        stringValue: grpc
-                  bucketCounts:
-                    - "10"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "10"
-                  exemplars:
-                    - asDouble: 0.001252636
-                      spanId: f5c2ddb6cdafe710
-                      timeUnixNano: "1775664123573515025"
-                      traceId: 955218d7d476c8237c35c5a0c05c3f99
-                  explicitBounds:
-                    - 0.005
-                    - 0.01
-                    - 0.025
-                    - 0.05
-                    - 0.075
-                    - 0.1
-                    - 0.25
-                    - 0.5
-                    - 0.75
-                    - 1
-                    - 2.5
-                    - 5
-                    - 7.5
-                    - 10
-                  max: 0.001252636
-                  min: 0.000587037
-                  startTimeUnixNano: "1000000"
-                  sum: 0.008942059
-                  timeUnixNano: "2000000"
-                - attributes:
-                    - key: rpc.method
-                      value:
-                        stringValue: opentelemetry.proto.collector.metrics.v1.MetricsService/Export
-                    - key: rpc.response.status_code
-                      value:
-                        stringValue: OK
-                    - key: rpc.system.name
-                      value:
-                        stringValue: grpc
-                  bucketCounts:
-                    - "10"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "10"
-                  exemplars:
-                    - asDouble: 0.000979009
-                      spanId: e147c7276ed5ca01
-                      timeUnixNano: "1775664123446712593"
-                      traceId: fe025ec2f311872759f23a9a923a69e1
-                  explicitBounds:
-                    - 0.005
-                    - 0.01
-                    - 0.025
-                    - 0.05
-                    - 0.075
-                    - 0.1
-                    - 0.25
-                    - 0.5
-                    - 0.75
-                    - 1
-                    - 2.5
-                    - 5
-                    - 7.5
-                    - 10
-                  max: 0.001281746
-                  min: 0.000412545
-                  startTimeUnixNano: "1000000"
-                  sum: 0.009925554
-                  timeUnixNano: "2000000"
-                - attributes:
-                    - key: rpc.method
-                      value:
-                        stringValue: opentelemetry.proto.collector.trace.v1.TraceService/Export
-                    - key: rpc.response.status_code
-                      value:
-                        stringValue: OK
-                    - key: rpc.system.name
-                      value:
-                        stringValue: grpc
-                  bucketCounts:
-                    - "10"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "10"
-                  exemplars:
-                    - asDouble: 0.000856611
-                      spanId: 2dccff5cd33e53f6
-                      timeUnixNano: "1775664123258379096"
-                      traceId: 9fa198f966bddf5f0417d5e7616c37e0
-                  explicitBounds:
-                    - 0.005
-                    - 0.01
-                    - 0.025
-                    - 0.05
-                    - 0.075
-                    - 0.1
-                    - 0.25
-                    - 0.5
-                    - 0.75
-                    - 1
-                    - 2.5
-                    - 5
-                    - 7.5
-                    - 10
-                  max: 0.001589562
-                  min: 0.000807665
-                  startTimeUnixNano: "1000000"
-                  sum: 0.011741486
-                  timeUnixNano: "2000000"
-            name: rpc.client.call.duration
-            unit: s
           - description: Measures the duration of an incoming Remote Procedure Call (RPC).
             histogram:
               aggregationTemporality: 1
@@ -1274,7 +1527,7 @@ resourceMetrics:
                       value:
                         stringValue: grpc
                   bucketCounts:
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1289,12 +1542,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asDouble: 0.000358846
-                      spanId: 1f1e7aa90468472e
-                      timeUnixNano: "1775664123572934578"
-                      traceId: 30ae9f05e4656036194818687c8c9566
+                    - asDouble: 0.00017902
+                      spanId: bc85d7da82b24a78
+                      timeUnixNano: "1777414566167484494"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   explicitBounds:
                     - 0.005
                     - 0.01
@@ -1310,10 +1563,10 @@ resourceMetrics:
                     - 5
                     - 7.5
                     - 10
-                  max: 0.000417414
-                  min: 0.000211227
+                  max: 0.000466773
+                  min: 0.00017902
                   startTimeUnixNano: "1000000"
-                  sum: 0.0034003290000000005
+                  sum: 0.000645793
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: rpc.method
@@ -1326,7 +1579,7 @@ resourceMetrics:
                       value:
                         stringValue: grpc
                   bucketCounts:
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1341,12 +1594,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asDouble: 0.000387915
-                      spanId: 7b695f0e0cb831b0
-                      timeUnixNano: "1775664123446465394"
-                      traceId: 356f57145eab449a850fdde3ee750f61
+                    - asDouble: 0.00026125
+                      spanId: 8964bafbdcc148c5
+                      timeUnixNano: "1777414565931469131"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   explicitBounds:
                     - 0.005
                     - 0.01
@@ -1362,10 +1615,10 @@ resourceMetrics:
                     - 5
                     - 7.5
                     - 10
-                  max: 0.000570221
-                  min: 0.000136447
+                  max: 0.000410591
+                  min: 0.00026125
                   startTimeUnixNano: "1000000"
-                  sum: 0.00383581
+                  sum: 0.0006718410000000001
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: rpc.method
@@ -1378,7 +1631,7 @@ resourceMetrics:
                       value:
                         stringValue: grpc
                   bucketCounts:
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1393,12 +1646,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asDouble: 0.000341353
-                      spanId: 9b4a9f0bdac408e0
-                      timeUnixNano: "1775664123258264194"
-                      traceId: 03f27753b7b09e21db971445368e1c26
+                    - asDouble: 0.000874556
+                      spanId: ac06cf89f9be786c
+                      timeUnixNano: "1777414566701578017"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   explicitBounds:
                     - 0.005
                     - 0.01
@@ -1414,24 +1667,204 @@ resourceMetrics:
                     - 5
                     - 7.5
                     - 10
-                  max: 0.000455882
-                  min: 0.000239966
+                  max: 0.000874556
+                  min: 0.000623572
                   startTimeUnixNano: "1000000"
-                  sum: 0.00366764
+                  sum: 0.001498128
                   timeUnixNano: "2000000"
             name: rpc.server.call.duration
+            unit: s
+          - description: Measures the duration of an outgoing Remote Procedure Call (RPC).
+            histogram:
+              aggregationTemporality: 1
+              dataPoints:
+                - attributes:
+                    - key: rpc.method
+                      value:
+                        stringValue: opentelemetry.proto.collector.logs.v1.LogsService/Export
+                    - key: rpc.response.status_code
+                      value:
+                        stringValue: OK
+                    - key: rpc.system.name
+                      value:
+                        stringValue: grpc
+                    - key: server.address
+                      value:
+                        stringValue: 127.0.0.1
+                    - key: server.port
+                      value:
+                        intValue: "4317"
+                  bucketCounts:
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 0.000513013
+                      spanId: a4af7f2da8fc89ba
+                      timeUnixNano: "1777414566167597862"
+                      traceId: 385e56b014b8ccd8c5be47864eccb335
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.001157003
+                  min: 0.000513013
+                  startTimeUnixNano: "1000000"
+                  sum: 0.0016700159999999999
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: rpc.method
+                      value:
+                        stringValue: opentelemetry.proto.collector.metrics.v1.MetricsService/Export
+                    - key: rpc.response.status_code
+                      value:
+                        stringValue: OK
+                    - key: rpc.system.name
+                      value:
+                        stringValue: grpc
+                    - key: server.address
+                      value:
+                        stringValue: 127.0.0.1
+                    - key: server.port
+                      value:
+                        intValue: "4317"
+                  bucketCounts:
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 0.000556407
+                      spanId: 1e83f7be6756515b
+                      timeUnixNano: "1777414565931532853"
+                      traceId: 72d03f7c58f739b640630397ca21f4be
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.001100363
+                  min: 0.000556407
+                  startTimeUnixNano: "1000000"
+                  sum: 0.0016567700000000001
+                  timeUnixNano: "2000000"
+                - attributes:
+                    - key: rpc.method
+                      value:
+                        stringValue: opentelemetry.proto.collector.trace.v1.TraceService/Export
+                    - key: rpc.response.status_code
+                      value:
+                        stringValue: OK
+                    - key: rpc.system.name
+                      value:
+                        stringValue: grpc
+                    - key: server.address
+                      value:
+                        stringValue: 127.0.0.1
+                    - key: server.port
+                      value:
+                        intValue: "4317"
+                  bucketCounts:
+                    - "2"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "0"
+                  count: "2"
+                  exemplars:
+                    - asDouble: 0.001522355
+                      spanId: 7ede141faf0712f3
+                      timeUnixNano: "1777414566701770174"
+                      traceId: 97bf8f3648588c2bc1ebd0493eef472d
+                  explicitBounds:
+                    - 0.005
+                    - 0.01
+                    - 0.025
+                    - 0.05
+                    - 0.075
+                    - 0.1
+                    - 0.25
+                    - 0.5
+                    - 0.75
+                    - 1
+                    - 2.5
+                    - 5
+                    - 7.5
+                    - 10
+                  max: 0.001522355
+                  min: 0.001444165
+                  startTimeUnixNano: "1000000"
+                  sum: 0.0029665200000000003
+                  timeUnixNano: "2000000"
+            name: rpc.client.call.duration
             unit: s
         schemaUrl: https://opentelemetry.io/schemas/1.40.0
         scope:
           name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
-          version: 0.67.0
+          version: 0.68.0
       - metrics:
           - description: Total CPU user and system time in seconds [Alpha]
             name: otelcol_process_cpu_seconds
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 0.06
+                - asDouble: 0.02999999999999997
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -1439,7 +1872,7 @@ resourceMetrics:
           - description: Total physical memory (resident set size) [Alpha]
             gauge:
               dataPoints:
-                - asInt: "198529024"
+                - asInt: "122699776"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: otelcol_process_memory_rss
@@ -1447,7 +1880,7 @@ resourceMetrics:
           - description: Bytes of allocated heap objects (see 'go doc runtime.MemStats.HeapAlloc') [Alpha]
             gauge:
               dataPoints:
-                - asInt: "31160792"
+                - asInt: "25233704"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: otelcol_process_runtime_heap_alloc_bytes
@@ -1457,7 +1890,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asInt: "3300976"
+                - asInt: "1587272"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -1465,7 +1898,7 @@ resourceMetrics:
           - description: Total bytes of memory obtained from the OS (see 'go doc runtime.MemStats.Sys') [Alpha]
             gauge:
               dataPoints:
-                - asInt: "44144904"
+                - asInt: "40020248"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: otelcol_process_runtime_total_sys_memory_bytes
@@ -1475,7 +1908,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 1
               dataPoints:
-                - asDouble: 10.000394901
+                - asDouble: 10.000257253999997
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -1518,9 +1951,9 @@ resourceMetrics:
                   count: "30"
                   exemplars:
                     - asInt: "1"
-                      spanId: f9878d77899ded5e
-                      timeUnixNano: "1775664123572127186"
-                      traceId: 955218d7d476c8237c35c5a0c05c3f99
+                      spanId: c7183e46f2981ff6
+                      timeUnixNano: "1777414568930825540"
+                      traceId: 2c5a87c2f3bdc706578c646fa3ee7180
                   explicitBounds:
                     - 10
                     - 25
@@ -1554,7 +1987,7 @@ resourceMetrics:
                       value:
                         stringValue: otlp_http/logs
                   bucketCounts:
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1577,12 +2010,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asInt: "1"
-                      spanId: 9967e018d2365893
-                      timeUnixNano: "1775664123572677360"
-                      traceId: 30ae9f05e4656036194818687c8c9566
+                    - asInt: "5"
+                      spanId: d0a1c8e4460dba85
+                      timeUnixNano: "1777414566167355999"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   explicitBounds:
                     - 10
                     - 25
@@ -1606,8 +2039,8 @@ resourceMetrics:
                     - 30000
                     - 50000
                     - 100000
-                  max: 1
-                  min: 1
+                  max: 5
+                  min: 5
                   startTimeUnixNano: "1000000"
                   sum: 10
                   timeUnixNano: "2000000"
@@ -1616,7 +2049,7 @@ resourceMetrics:
                       value:
                         stringValue: otlp_http/metrics
                   bucketCounts:
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1639,12 +2072,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asInt: "1"
-                      spanId: 9e595b7a2839aee1
-                      timeUnixNano: "1775664123446291752"
-                      traceId: 356f57145eab449a850fdde3ee750f61
+                    - asInt: "5"
+                      spanId: 36d30e887d037b3e
+                      timeUnixNano: "1777414565931280658"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   explicitBounds:
                     - 10
                     - 25
@@ -1668,8 +2101,8 @@ resourceMetrics:
                     - 30000
                     - 50000
                     - 100000
-                  max: 1
-                  min: 1
+                  max: 5
+                  min: 5
                   startTimeUnixNano: "1000000"
                   sum: 10
                   timeUnixNano: "2000000"
@@ -1678,7 +2111,7 @@ resourceMetrics:
                       value:
                         stringValue: otlp_http/traces
                   bucketCounts:
-                    - "10"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1701,12 +2134,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asInt: "1"
-                      spanId: f9e9be009271ec0d
-                      timeUnixNano: "1775664123258149507"
-                      traceId: 03f27753b7b09e21db971445368e1c26
+                    - asInt: "5"
+                      spanId: 765752f3afddcc09
+                      timeUnixNano: "1777414566701116735"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   explicitBounds:
                     - 10
                     - 25
@@ -1730,8 +2163,8 @@ resourceMetrics:
                     - 30000
                     - 50000
                     - 100000
-                  max: 1
-                  min: 1
+                  max: 5
+                  min: 5
                   startTimeUnixNano: "1000000"
                   sum: 10
                   timeUnixNano: "2000000"
@@ -1763,14 +2196,14 @@ resourceMetrics:
                     - "0"
                   count: "30"
                   exemplars:
-                    - asInt: "145"
-                      spanId: f9878d77899ded5e
-                      timeUnixNano: "1775664123572131317"
-                      traceId: 955218d7d476c8237c35c5a0c05c3f99
-                    - asInt: "251"
-                      spanId: eb6e95c17a2452bb
-                      timeUnixNano: "1775664123257359281"
-                      traceId: 9fa198f966bddf5f0417d5e7616c37e0
+                    - asInt: "121"
+                      spanId: c7183e46f2981ff6
+                      timeUnixNano: "1777414568930830402"
+                      traceId: 2c5a87c2f3bdc706578c646fa3ee7180
+                    - asInt: "256"
+                      spanId: 31ee4609ba393a89
+                      timeUnixNano: "1777414568700980302"
+                      traceId: 9218c12e88c8fb5b0eadd75ae5bfcb34
                   explicitBounds:
                     - 10
                     - 25
@@ -1786,10 +2219,10 @@ resourceMetrics:
                     - 4000
                     - 5000
                     - 6000
-                  max: 264
+                  max: 269
                   min: 121
                   startTimeUnixNano: "1000000"
-                  sum: 5235
+                  sum: 5285
                   timeUnixNano: "2000000"
                 - attributes:
                     - key: exporter
@@ -1801,7 +2234,9 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "10"
+                    - "0"
+                    - "0"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1809,14 +2244,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "0"
-                    - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asInt: "145"
-                      spanId: 9967e018d2365893
-                      timeUnixNano: "1775664123572680316"
-                      traceId: 30ae9f05e4656036194818687c8c9566
+                    - asInt: "725"
+                      spanId: d0a1c8e4460dba85
+                      timeUnixNano: "1777414566167357191"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   explicitBounds:
                     - 10
                     - 25
@@ -1832,8 +2265,8 @@ resourceMetrics:
                     - 4000
                     - 5000
                     - 6000
-                  max: 145
-                  min: 145
+                  max: 725
+                  min: 725
                   startTimeUnixNano: "1000000"
                   sum: 1450
                   timeUnixNano: "2000000"
@@ -1847,7 +2280,9 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "10"
+                    - "0"
+                    - "0"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
@@ -1855,14 +2290,12 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "0"
-                    - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asInt: "121"
-                      spanId: 9e595b7a2839aee1
-                      timeUnixNano: "1775664123446295420"
-                      traceId: 356f57145eab449a850fdde3ee750f61
+                    - asInt: "605"
+                      spanId: 36d30e887d037b3e
+                      timeUnixNano: "1777414565931282733"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   explicitBounds:
                     - 10
                     - 25
@@ -1878,8 +2311,8 @@ resourceMetrics:
                     - 4000
                     - 5000
                     - 6000
-                  max: 121
-                  min: 121
+                  max: 605
+                  min: 605
                   startTimeUnixNano: "1000000"
                   sum: 1210
                   timeUnixNano: "2000000"
@@ -1894,21 +2327,21 @@ resourceMetrics:
                     - "0"
                     - "0"
                     - "0"
-                    - "10"
+                    - "0"
+                    - "0"
+                    - "0"
+                    - "2"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
                     - "0"
-                    - "0"
-                    - "0"
-                    - "0"
-                  count: "10"
+                  count: "2"
                   exemplars:
-                    - asInt: "251"
-                      spanId: f9e9be009271ec0d
-                      timeUnixNano: "1775664123258152355"
-                      traceId: 03f27753b7b09e21db971445368e1c26
+                    - asInt: "1319"
+                      spanId: 765752f3afddcc09
+                      timeUnixNano: "1777414566701121240"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   explicitBounds:
                     - 10
                     - 25
@@ -1924,10 +2357,10 @@ resourceMetrics:
                     - 4000
                     - 5000
                     - 6000
-                  max: 264
-                  min: 251
+                  max: 1319
+                  min: 1306
                   startTimeUnixNano: "1000000"
-                  sum: 2575
+                  sum: 2625
                   timeUnixNano: "2000000"
             name: otelcol_exporter_queue_batch_send_size_bytes
             unit: By
@@ -1999,7 +2432,7 @@ resourceMetrics:
           - description: Current size of the retry queue (in batches). [Alpha]
             gauge:
               dataPoints:
-                - asInt: "0"
+                - asInt: "2"
                   attributes:
                     - key: data_type
                       value:
@@ -2019,7 +2452,7 @@ resourceMetrics:
                         stringValue: otlp_http/logs
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "0"
+                - asInt: "3"
                   attributes:
                     - key: data_type
                       value:
@@ -2039,7 +2472,7 @@ resourceMetrics:
                         stringValue: otlp_http/metrics
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "0"
+                - asInt: "3"
                   attributes:
                     - key: data_type
                       value:
@@ -2072,14 +2505,14 @@ resourceMetrics:
                       value:
                         stringValue: debug
                   exemplars:
-                    - asInt: "1"
-                      spanId: 5ea29808a44771ab
-                      timeUnixNano: "1775664123572803806"
-                      traceId: 30ae9f05e4656036194818687c8c9566
-                    - asInt: "1"
-                      spanId: 05ff5c1d17f7594d
-                      timeUnixNano: "1775664121572544416"
-                      traceId: 50b8f70db32782a13254639ad4d63fe2
+                    - asInt: "5"
+                      spanId: 33119157071ad6b8
+                      timeUnixNano: "1777414561168842492"
+                      traceId: 26bb25aa69a45cc41a21f9af9c13fb84
+                    - asInt: "5"
+                      spanId: e521941523f26889
+                      timeUnixNano: "1777414566167437611"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -2088,14 +2521,14 @@ resourceMetrics:
                       value:
                         stringValue: otlp_grpc/self
                   exemplars:
-                    - asInt: "1"
-                      spanId: c88da13f049e0348
-                      timeUnixNano: "1775664114573331043"
-                      traceId: d75ca2191ed36de1c1593b0a6b64f940
-                    - asInt: "1"
-                      spanId: 368888855836d3c2
-                      timeUnixNano: "1775664121572811436"
-                      traceId: df845fe05df17af8e3b1aef1c00848f7
+                    - asInt: "5"
+                      spanId: 4765c89fe807ec8d
+                      timeUnixNano: "1777414561169281781"
+                      traceId: a6f80e3c3d8f5d03e055c393a8925354
+                    - asInt: "5"
+                      spanId: ba78f220ce634790
+                      timeUnixNano: "1777414566167602898"
+                      traceId: 385e56b014b8ccd8c5be47864eccb335
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -2104,14 +2537,14 @@ resourceMetrics:
                       value:
                         stringValue: otlp_http/logs
                   exemplars:
-                    - asInt: "1"
-                      spanId: f4332eba937bf764
-                      timeUnixNano: "1775664122574812083"
-                      traceId: cbddd801021b8108abb9099126d15fec
-                    - asInt: "1"
-                      spanId: 31758974b9d6f8a8
-                      timeUnixNano: "1775664123573686318"
-                      traceId: 30ae9f05e4656036194818687c8c9566
+                    - asInt: "5"
+                      spanId: 40c087a2e7dd4c92
+                      timeUnixNano: "1777414561169728334"
+                      traceId: 26bb25aa69a45cc41a21f9af9c13fb84
+                    - asInt: "5"
+                      spanId: 9e0525491199039f
+                      timeUnixNano: "1777414566168204357"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2127,14 +2560,14 @@ resourceMetrics:
                       value:
                         stringValue: debug
                   exemplars:
-                    - asInt: "1"
-                      spanId: 288a6ff584f88f50
-                      timeUnixNano: "1775664123446284044"
-                      traceId: 356f57145eab449a850fdde3ee750f61
-                    - asInt: "1"
-                      spanId: e9efbb9782d8aed9
-                      timeUnixNano: "1775664118446724455"
-                      traceId: 2889de27bd0b50337eccc340b683e816
+                    - asInt: "5"
+                      spanId: aec8483e2de55333
+                      timeUnixNano: "1777414560932006885"
+                      traceId: 4386cfde7769b051d1ed57e01c0fd088
+                    - asInt: "5"
+                      spanId: 8950f42c749641fd
+                      timeUnixNano: "1777414565931375012"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -2143,14 +2576,14 @@ resourceMetrics:
                       value:
                         stringValue: otlp_grpc/self
                   exemplars:
-                    - asInt: "1"
-                      spanId: 5035fe00b4e82178
-                      timeUnixNano: "1775664121447185510"
-                      traceId: 04fafeb51607b68274d61ed5bde82f11
-                    - asInt: "1"
-                      spanId: fef3c695401a9915
-                      timeUnixNano: "1775664123446723010"
-                      traceId: fe025ec2f311872759f23a9a923a69e1
+                    - asInt: "5"
+                      spanId: ddc51e4ad6abe3eb
+                      timeUnixNano: "1777414560932415545"
+                      traceId: 62ec2c3792ef231f2a3760f44dc7c2e5
+                    - asInt: "5"
+                      spanId: c447e11556f49b7f
+                      timeUnixNano: "1777414565931537413"
+                      traceId: 72d03f7c58f739b640630397ca21f4be
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -2159,14 +2592,14 @@ resourceMetrics:
                       value:
                         stringValue: otlp_http/metrics
                   exemplars:
-                    - asInt: "1"
-                      spanId: 839e5414ab5f6a70
-                      timeUnixNano: "1775664119447463631"
-                      traceId: b23fbfaa8aa27326a51ccb4e7eb8934e
-                    - asInt: "1"
-                      spanId: e3f9ae71d0b606ba
-                      timeUnixNano: "1775664115447572243"
-                      traceId: 2a8ba7487ea653d0aab0b1eeddcb6289
+                    - asInt: "5"
+                      spanId: 1680755c70bca0a6
+                      timeUnixNano: "1777414560933047872"
+                      traceId: 4386cfde7769b051d1ed57e01c0fd088
+                    - asInt: "5"
+                      spanId: a1d85147630dd1d1
+                      timeUnixNano: "1777414565931815646"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2182,14 +2615,14 @@ resourceMetrics:
                       value:
                         stringValue: debug
                   exemplars:
-                    - asInt: "1"
-                      spanId: c07766e3c432c354
-                      timeUnixNano: "1775664115258535640"
-                      traceId: ac0715e4c7a90934ba13618540c0e5e1
-                    - asInt: "1"
-                      spanId: dfc9ffee08e916dc
-                      timeUnixNano: "1775664121259213306"
-                      traceId: 75b191f7695a028a033d81ae653f8f4f
+                    - asInt: "5"
+                      spanId: 9353b096bc169fb3
+                      timeUnixNano: "1777414560701621221"
+                      traceId: 3989ba8579f54a53e123624abfd14462
+                    - asInt: "5"
+                      spanId: 105ae0dfb40f4528
+                      timeUnixNano: "1777414566701393607"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -2198,14 +2631,14 @@ resourceMetrics:
                       value:
                         stringValue: otlp_grpc/self
                   exemplars:
-                    - asInt: "1"
-                      spanId: 77943422770ef920
-                      timeUnixNano: "1775664115259295613"
-                      traceId: d92d0cba557d0abe6002e41cad81d21f
-                    - asInt: "1"
-                      spanId: 49251a117fc57164
-                      timeUnixNano: "1775664117259466313"
-                      traceId: 0f39259e68cd0520e22340d80159669e
+                    - asInt: "5"
+                      spanId: dda2129f29e65914
+                      timeUnixNano: "1777414560702078708"
+                      traceId: 9c5c3f4e4ff4b28e7bbf4904ab214ab1
+                    - asInt: "5"
+                      spanId: 74b3213112827616
+                      timeUnixNano: "1777414566701782367"
+                      traceId: 97bf8f3648588c2bc1ebd0493eef472d
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -2214,14 +2647,14 @@ resourceMetrics:
                       value:
                         stringValue: otlp_http/traces
                   exemplars:
-                    - asInt: "1"
-                      spanId: e3b2e9dd78f049f3
-                      timeUnixNano: "1775664121259811978"
-                      traceId: e598f97ae1b2c3813985119fedfeb18c
-                    - asInt: "1"
-                      spanId: 604e1bf4341ed2f2
-                      timeUnixNano: "1775664119260146988"
-                      traceId: 61bd3bb9aa21d6edbee4d3b3b5cca39a
+                    - asInt: "5"
+                      spanId: 8c036689553ef0c1
+                      timeUnixNano: "1777414560702736431"
+                      traceId: 3989ba8579f54a53e123624abfd14462
+                    - asInt: "5"
+                      spanId: ec13e989ee4d11db
+                      timeUnixNano: "1777414566702342907"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2243,14 +2676,14 @@ resourceMetrics:
                       value:
                         stringValue: grpc
                   exemplars:
-                    - asInt: "1"
-                      spanId: da9d87907c6b3e23
-                      timeUnixNano: "1775664120573171152"
-                      traceId: 19a00d1f1d8e9c10597f09bf098759ac
-                    - asInt: "1"
-                      spanId: ee752c5b32e4358f
-                      timeUnixNano: "1775664122573940771"
-                      traceId: cbddd801021b8108abb9099126d15fec
+                    - asInt: "5"
+                      spanId: 83c4c17fe815518f
+                      timeUnixNano: "1777414561168850071"
+                      traceId: 26bb25aa69a45cc41a21f9af9c13fb84
+                    - asInt: "5"
+                      spanId: d0a1c8e4460dba85
+                      timeUnixNano: "1777414566167439425"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -2263,13 +2696,13 @@ resourceMetrics:
                         stringValue: http
                   exemplars:
                     - asInt: "1"
-                      spanId: 3a1c6135859798a3
-                      timeUnixNano: "1775664122573122844"
-                      traceId: 7e060fc1bfb860f1c59f038408c58ec3
+                      spanId: 74dc5bf385714489
+                      timeUnixNano: "1777414565167903578"
+                      traceId: 6c5c7822aeedb2a5807541607e258a3e
                     - asInt: "1"
-                      spanId: fd23df53f26a2e90
-                      timeUnixNano: "1775664115572324980"
-                      traceId: 7d73805cb37e3bc61545576e247e05c3
+                      spanId: 8c7847a2af784a0f
+                      timeUnixNano: "1777414566166915039"
+                      traceId: fe7d324985604779a0b139667836b701
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2288,14 +2721,14 @@ resourceMetrics:
                       value:
                         stringValue: grpc
                   exemplars:
-                    - asInt: "1"
-                      spanId: 9f3cdd337aa48530
-                      timeUnixNano: "1775664122446287390"
-                      traceId: 555f872638e249999cba543e87583b0c
-                    - asInt: "1"
-                      spanId: 6bd44ca9c871f3ba
-                      timeUnixNano: "1775664115446558601"
-                      traceId: 2a8ba7487ea653d0aab0b1eeddcb6289
+                    - asInt: "5"
+                      spanId: db7400efa52e4e6f
+                      timeUnixNano: "1777414560932012438"
+                      traceId: 4386cfde7769b051d1ed57e01c0fd088
+                    - asInt: "5"
+                      spanId: 36d30e887d037b3e
+                      timeUnixNano: "1777414565931377649"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -2308,13 +2741,13 @@ resourceMetrics:
                         stringValue: http
                   exemplars:
                     - asInt: "1"
-                      spanId: c6717ce1c36bf490
-                      timeUnixNano: "1775664114445615426"
-                      traceId: 64be87cfa3be900f431d4592400a02c6
+                      spanId: 63f312489fdf2f89
+                      timeUnixNano: "1777414565930845179"
+                      traceId: 6c390cb6e9c615a7f68aa1b7f7195e73
                     - asInt: "1"
-                      spanId: f213c8870e06bee6
-                      timeUnixNano: "1775664123445581691"
-                      traceId: fe025ec2f311872759f23a9a923a69e1
+                      spanId: da3a46c8cbce8649
+                      timeUnixNano: "1777414564931005490"
+                      traceId: 0aa0dc0a81c782dcec042c22d24f724d
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2333,14 +2766,14 @@ resourceMetrics:
                       value:
                         stringValue: grpc
                   exemplars:
-                    - asInt: "1"
-                      spanId: 197020bdff8249d7
-                      timeUnixNano: "1775664117259071257"
-                      traceId: 63f49c12e2c389160037bc87ec3928b7
-                    - asInt: "1"
-                      spanId: cd4aa3eabbefae23
-                      timeUnixNano: "1775664119258379824"
-                      traceId: ee36978164ce9e88625929fc6d1c5203
+                    - asInt: "5"
+                      spanId: f172d68a792a4769
+                      timeUnixNano: "1777414560701630248"
+                      traceId: 3989ba8579f54a53e123624abfd14462
+                    - asInt: "5"
+                      spanId: 765752f3afddcc09
+                      timeUnixNano: "1777414566701404438"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "10"
@@ -2353,13 +2786,13 @@ resourceMetrics:
                         stringValue: http
                   exemplars:
                     - asInt: "1"
-                      spanId: 94e9b6813b542a86
-                      timeUnixNano: "1775664121257835598"
-                      traceId: 55350d42f01996eeb8ccb5a4fc6fbdf9
+                      spanId: 655790e9805bbec9
+                      timeUnixNano: "1777414560699708307"
+                      traceId: e8f6af5769be35f19db812bebcb22e93
                     - asInt: "1"
-                      spanId: ebcc051cc1662862
-                      timeUnixNano: "1775664121258536416"
-                      traceId: 304932a0f0e98b6478176c17a7424dd0
+                      spanId: b1931d56d60b4a9f
+                      timeUnixNano: "1777414566700834872"
+                      traceId: 456b8d3f1b637ee8232b467514ad688e
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2379,13 +2812,13 @@ resourceMetrics:
                         stringValue: grpc
                   exemplars:
                     - asInt: "0"
-                      spanId: da9d87907c6b3e23
-                      timeUnixNano: "1775664120573236081"
-                      traceId: 19a00d1f1d8e9c10597f09bf098759ac
+                      spanId: 83c4c17fe815518f
+                      timeUnixNano: "1777414561168855348"
+                      traceId: 26bb25aa69a45cc41a21f9af9c13fb84
                     - asInt: "0"
-                      spanId: c13257b7b8a3759b
-                      timeUnixNano: "1775664115573027849"
-                      traceId: ab2bf9c374f076322ce2cc4072640d41
+                      spanId: d0a1c8e4460dba85
+                      timeUnixNano: "1777414566167440188"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "0"
@@ -2398,13 +2831,13 @@ resourceMetrics:
                         stringValue: http
                   exemplars:
                     - asInt: "0"
-                      spanId: da7f730e92edf987
-                      timeUnixNano: "1775664114572340911"
-                      traceId: d75ca2191ed36de1c1593b0a6b64f940
+                      spanId: 8c7847a2af784a0f
+                      timeUnixNano: "1777414566166917073"
+                      traceId: fe7d324985604779a0b139667836b701
                     - asInt: "0"
-                      spanId: d5ebcaf5403fcfd5
-                      timeUnixNano: "1775664118572272968"
-                      traceId: 90e56fb6b96370ca615104830d4fb766
+                      spanId: 74dc5bf385714489
+                      timeUnixNano: "1777414565167908276"
+                      traceId: 6c5c7822aeedb2a5807541607e258a3e
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2424,13 +2857,13 @@ resourceMetrics:
                         stringValue: grpc
                   exemplars:
                     - asInt: "0"
-                      spanId: e88b708f17b60862
-                      timeUnixNano: "1775664121446783297"
-                      traceId: 4dd866a9d086c83b7023d49fa44fde33
+                      spanId: db7400efa52e4e6f
+                      timeUnixNano: "1777414560932017362"
+                      traceId: 4386cfde7769b051d1ed57e01c0fd088
                     - asInt: "0"
-                      spanId: 122661307c2739c3
-                      timeUnixNano: "1775664118446763033"
-                      traceId: 2889de27bd0b50337eccc340b683e816
+                      spanId: 36d30e887d037b3e
+                      timeUnixNano: "1777414565931379271"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "0"
@@ -2443,13 +2876,13 @@ resourceMetrics:
                         stringValue: http
                   exemplars:
                     - asInt: "0"
-                      spanId: ec3496bb0a35f6cc
-                      timeUnixNano: "1775664122445321884"
-                      traceId: 5dc95ec2911682d929a89fe06062d9f5
+                      spanId: f4821ee1dbc5f494
+                      timeUnixNano: "1777414559930713103"
+                      traceId: b06812337ec20cdbcebb91e1f62bd3e9
                     - asInt: "0"
-                      spanId: f213c8870e06bee6
-                      timeUnixNano: "1775664123445585963"
-                      traceId: fe025ec2f311872759f23a9a923a69e1
+                      spanId: 20404eed99b37520
+                      timeUnixNano: "1777414566930652109"
+                      traceId: 6f2f65c84af7f31a3d83b239891c92a9
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2469,13 +2902,13 @@ resourceMetrics:
                         stringValue: grpc
                   exemplars:
                     - asInt: "0"
-                      spanId: 0cba22e826789ed7
-                      timeUnixNano: "1775664115258573647"
-                      traceId: ac0715e4c7a90934ba13618540c0e5e1
+                      spanId: f172d68a792a4769
+                      timeUnixNano: "1777414560701636036"
+                      traceId: 3989ba8579f54a53e123624abfd14462
                     - asInt: "0"
-                      spanId: 0aa87e04c5d9ce15
-                      timeUnixNano: "1775664121258703902"
-                      traceId: e598f97ae1b2c3813985119fedfeb18c
+                      spanId: 765752f3afddcc09
+                      timeUnixNano: "1777414566701407148"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "0"
@@ -2488,13 +2921,13 @@ resourceMetrics:
                         stringValue: http
                   exemplars:
                     - asInt: "0"
-                      spanId: 9e8d646fdd03ac59
-                      timeUnixNano: "1775664119258217875"
-                      traceId: 2d823e43d5e2a59aef84a8970c782f62
+                      spanId: 655790e9805bbec9
+                      timeUnixNano: "1777414560699713054"
+                      traceId: e8f6af5769be35f19db812bebcb22e93
                     - asInt: "0"
-                      spanId: 1e885075655dee83
-                      timeUnixNano: "1775664119257479206"
-                      traceId: 4c47d1e56ba9700041becfeb55a7f55c
+                      spanId: 31ee4609ba393a89
+                      timeUnixNano: "1777414568700988266"
+                      traceId: 9218c12e88c8fb5b0eadd75ae5bfcb34
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2514,13 +2947,13 @@ resourceMetrics:
                         stringValue: grpc
                   exemplars:
                     - asInt: "0"
-                      spanId: c317f930b9774962
-                      timeUnixNano: "1775664121572549134"
-                      traceId: 50b8f70db32782a13254639ad4d63fe2
+                      spanId: 83c4c17fe815518f
+                      timeUnixNano: "1777414561168852426"
+                      traceId: 26bb25aa69a45cc41a21f9af9c13fb84
                     - asInt: "0"
-                      spanId: 9967e018d2365893
-                      timeUnixNano: "1775664123572811266"
-                      traceId: 30ae9f05e4656036194818687c8c9566
+                      spanId: d0a1c8e4460dba85
+                      timeUnixNano: "1777414566167439798"
+                      traceId: 810a6dafa5176135103fdfd2721d9b86
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "0"
@@ -2533,13 +2966,13 @@ resourceMetrics:
                         stringValue: http
                   exemplars:
                     - asInt: "0"
-                      spanId: 837862d990d0a45a
-                      timeUnixNano: "1775664117572172148"
-                      traceId: 46717ed94fa281f22a14e36c1d3db4e8
+                      spanId: 74a1c2acc76cea57
+                      timeUnixNano: "1777414559167713944"
+                      traceId: c75e76e1d07bf2394d29ad560aea78a7
                     - asInt: "0"
-                      spanId: 753500b0920f8f9b
-                      timeUnixNano: "1775664120572360269"
-                      traceId: 4ef1dea58d0195aaf3ddd8451b487216
+                      spanId: 27b117d560ee7831
+                      timeUnixNano: "1777414564167483538"
+                      traceId: 9605925b569060c41915fb4be242e96e
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2559,13 +2992,13 @@ resourceMetrics:
                         stringValue: grpc
                   exemplars:
                     - asInt: "0"
-                      spanId: 0d50592b90726da3
-                      timeUnixNano: "1775664114446398489"
-                      traceId: 2ac60fdc8997685d4605ff268c3e5e75
+                      spanId: db7400efa52e4e6f
+                      timeUnixNano: "1777414560932015550"
+                      traceId: 4386cfde7769b051d1ed57e01c0fd088
                     - asInt: "0"
-                      spanId: e88b708f17b60862
-                      timeUnixNano: "1775664121446775660"
-                      traceId: 4dd866a9d086c83b7023d49fa44fde33
+                      spanId: 36d30e887d037b3e
+                      timeUnixNano: "1777414565931378618"
+                      traceId: 7ce1b399ae0599839516107e5bbc4451
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "0"
@@ -2578,13 +3011,13 @@ resourceMetrics:
                         stringValue: http
                   exemplars:
                     - asInt: "0"
-                      spanId: 74993bd2e0783710
-                      timeUnixNano: "1775664117445884023"
-                      traceId: a1bb5b097f212bc72508e1b1bdf60572
+                      spanId: f4821ee1dbc5f494
+                      timeUnixNano: "1777414559930710847"
+                      traceId: b06812337ec20cdbcebb91e1f62bd3e9
                     - asInt: "0"
-                      spanId: b21c11c7da335dee
-                      timeUnixNano: "1775664115445538425"
-                      traceId: 313fd50beaad2ab3e19384df9ba82c37
+                      spanId: c7183e46f2981ff6
+                      timeUnixNano: "1777414568930844266"
+                      traceId: 2c5a87c2f3bdc706578c646fa3ee7180
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -2604,13 +3037,13 @@ resourceMetrics:
                         stringValue: grpc
                   exemplars:
                     - asInt: "0"
-                      spanId: 197020bdff8249d7
-                      timeUnixNano: "1775664117259073830"
-                      traceId: 63f49c12e2c389160037bc87ec3928b7
+                      spanId: f172d68a792a4769
+                      timeUnixNano: "1777414560701633220"
+                      traceId: 3989ba8579f54a53e123624abfd14462
                     - asInt: "0"
-                      spanId: 0aa87e04c5d9ce15
-                      timeUnixNano: "1775664121258701241"
-                      traceId: e598f97ae1b2c3813985119fedfeb18c
+                      spanId: 765752f3afddcc09
+                      timeUnixNano: "1777414566701406034"
+                      traceId: 1fb13c09f933e0fcba46d57f8abea01d
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
                 - asInt: "0"
@@ -2623,13 +3056,13 @@ resourceMetrics:
                         stringValue: http
                   exemplars:
                     - asInt: "0"
-                      spanId: ebcc051cc1662862
-                      timeUnixNano: "1775664121258538196"
-                      traceId: 304932a0f0e98b6478176c17a7424dd0
+                      spanId: 655790e9805bbec9
+                      timeUnixNano: "1777414560699710783"
+                      traceId: e8f6af5769be35f19db812bebcb22e93
                     - asInt: "0"
-                      spanId: adf21c0f170819b9
-                      timeUnixNano: "1775664123256608492"
-                      traceId: 0ad632af64a6ce1530d4ac5c254fa778
+                      spanId: acabe1e580039efa
+                      timeUnixNano: "1777414568700220522"
+                      traceId: a8ccdae3fd173febdb4b0d2770cc5202
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true

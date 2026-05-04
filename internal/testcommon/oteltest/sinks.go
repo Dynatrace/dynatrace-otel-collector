@@ -269,6 +269,7 @@ func ScanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink, expectedS
 			service, exist := resource.Attributes().Get(ServiceNameAttribute)
 			assert.Equal(t, true, exist, "resource does not have the 'service.name' attribute")
 			if service.AsString() != expectedService {
+				t.Logf("skipping resource with service.name %s", service.AsString())
 				continue
 			}
 

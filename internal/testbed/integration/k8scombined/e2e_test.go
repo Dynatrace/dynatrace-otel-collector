@@ -93,8 +93,6 @@ var (
 			"k8s.daemonset.misscheduled_nodes",
 			"k8s.deployment.desired",
 			"k8s.node.allocatable_pods"),
-		pmetrictest.IgnoreScopeVersion(),
-
 		pmetrictest.ChangeDatapointAttributeValue("interface", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.pod.uid", substituteWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.pod.ip", substituteWithStar),
@@ -119,25 +117,29 @@ var (
 		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
 		pmetrictest.ChangeResourceAttributeValue("k8s.workload.name", substituteRandomPartWithStar),
 
+		pmetrictest.IgnoreScopeVersion(),
 		pmetrictest.IgnoreDatapointAttributesOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreResourceEntityRefs(),
 	}
 
 	traceCompareOptions = []ptracetest.CompareTracesOption{
-		ptracetest.IgnoreStartTimestamp(),
-		ptracetest.IgnoreEndTimestamp(),
-		ptracetest.IgnoreTraceID(),
-		ptracetest.IgnoreSpanID(),
-		ptracetest.IgnoreSpansOrder(),
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.uid"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.ip"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.pod.name"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.deployment.uid"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.cluster.uid"),
 		ptracetest.IgnoreResourceAttributeValue("k8s.node.name"),
+		ptracetest.IgnoreStartTimestamp(),
+		ptracetest.IgnoreEndTimestamp(),
+		ptracetest.IgnoreTraceID(),
+		ptracetest.IgnoreSpanID(),
+		ptracetest.IgnoreSpansOrder(),
+		ptracetest.IgnoreResourceSpansOrder(),
+		ptracetest.IgnoreScopeSpansOrder(),
 	}
 )
 
@@ -314,7 +316,7 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		for i := 0; i < r.ResourceLogs().Len(); i++ {
 			clusterName, okCluster := r.ResourceLogs().At(i).Resource().Attributes().Get("k8s.cluster.name")
 			if !okCluster || clusterName.AsString() != "k8s-testing-cluster" {
-				break
+				continue
 			}
 			sm := r.ResourceLogs().At(i).ScopeLogs().At(0).LogRecords()
 			for j := 0; j < sm.Len(); j++ {

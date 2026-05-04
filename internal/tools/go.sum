@@ -767,8 +767,8 @@ go.opentelemetry.io/auto/sdk v1.2.1 h1:jXsnJ4Lmnqd11kwkBV2LgLoFMZKizbCi5fNZ/ipaZ
 go.opentelemetry.io/auto/sdk v1.2.1/go.mod h1:KRTj+aOaElaLi+wW1kO/DZRXwkF4C5xPbEe3ZiIhN7Y=
 go.opentelemetry.io/build-tools/chloggen v0.30.0 h1:vAHRnY59kRHqIUrsnmBYAcJ0+p8ukaenHostePk3Hf8=
 go.opentelemetry.io/build-tools/chloggen v0.30.0/go.mod h1:7ZVQIvfBkhncKSyk6WY1F0Kkg/9ibxRZkUrHP7EJ9XY=
-go.opentelemetry.io/collector/cmd/builder v0.149.0 h1:ITeN3IiQT6Kiqc+Mo7M40Uh3B3yVhKOfugEiV9osauQ=
-go.opentelemetry.io/collector/cmd/builder v0.149.0/go.mod h1:ElmxpyeQW5fQSZAG5WnLfsKustgglJcI1SPlJRjLQxg=
+go.opentelemetry.io/collector/cmd/builder v0.150.0 h1:y0hMAWqvVBkSFLlmrIWHIt9tcgxL0AlkOwBT3ximy7s=
+go.opentelemetry.io/collector/cmd/builder v0.150.0/go.mod h1:ElmxpyeQW5fQSZAG5WnLfsKustgglJcI1SPlJRjLQxg=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0 h1:YH4g8lQroajqUwWbq/tr2QX1JFmEXaDLgG+ew9bLMWo=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0/go.mod h1:fvPi2qXDqFs8M4B4fmJhE92TyQs9Ydjlg3RvfUp+NbQ=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.65.0 h1:7iP2uCb7sGddAr30RRS6xjKy7AZ2JtTOPA3oolgVSw8=

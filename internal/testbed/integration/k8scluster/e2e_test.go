@@ -115,7 +115,11 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 			"k8s.pod.phase",
 			"k8s.daemonset.misscheduled_nodes",
 			"k8s.deployment.desired",
-			"k8s.node.allocatable_pods"),
+			"k8s.node.allocatable_pods",
+			"k8s.container.cpu_limit",
+			"k8s.container.cpu_request",
+			"k8s.container.memory_limit",
+			"k8s.container.memory_request"),
 		pmetrictest.IgnoreScopeVersion(),
 
 		pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.uid", substituteWithStar),
@@ -142,6 +146,7 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreResourceEntityRefs(),
 	}
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {

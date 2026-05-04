@@ -17,82 +17,27 @@ receivers:
           scrape_interval: 15s
           static_configs:
             - targets: ["localhost:8888"]
-          metric_relabel_configs:
-            # ── Label renames (_ → .) ──
-            # The Prometheus receiver's relabeling reliably rewrites label names
-            # from underscores to dots (e.g. server_address → server.address).
-            # This is needed so dashboards receive OTel-convention dotted attribute names.
-            - action: replace
-              source_labels: [http_request_method]
-              target_label: http.request.method
-            - action: replace
-              source_labels: [http_response_status_code]
-              target_label: http.response.status_code
-            - action: replace
-              source_labels: [network_protocol_name]
-              target_label: network.protocol.name
-            - action: replace
-              source_labels: [network_protocol_version]
-              target_label: network.protocol.version
-            - action: replace
-              source_labels: [rpc_method]
-              target_label: rpc.method
-            - action: replace
-              source_labels: [rpc_response_status_code]
-              target_label: rpc.response.status_code
-            - action: replace
-              source_labels: [rpc_system_name]
-              target_label: rpc.system.name
-            - action: replace
-              source_labels: [server_address]
-              target_label: server.address
-            - action: replace
-              source_labels: [server_port]
-              target_label: server.port
-            - action: replace
-              source_labels: [url_scheme]
-              target_label: url.scheme
-            - action: replace
-              source_labels: [k8s_namespace_name]
-              target_label: k8s.namespace.name
-            - action: replace
-              source_labels: [k8s_node_name]
-              target_label: k8s.node.name
-            - action: replace
-              source_labels: [k8s_pod_name]
-              target_label: k8s.pod.name
-            - action: replace
-              source_labels: [service_instance_id]
-              target_label: service.instance.id
-            - action: replace
-              source_labels: [service_name]
-              target_label: service.name
-            - action: replace
-              source_labels: [service_version]
-              target_label: service.version
-
-            # ── Drop original underscore labels after copying to dotted versions ──
-            - action: labeldrop
-              regex: http_request_method|http_response_status_code|network_protocol_name|network_protocol_version|rpc_method|rpc_response_status_code|rpc_system_name|server_address|server_port|url_scheme|k8s_namespace_name|k8s_node_name|k8s_pod_name|service_instance_id|service_name|service_version
 
 processors:
-  # Metric name renames (_ → .) via OTTL transform.
-  # Rewriting __name__ in metric_relabel_configs does NOT work reliably
-  # in the Collector's Prometheus receiver — the transform processor
-  # is the only reliable way to rename metric names to dotted OTel conventions.
+  metric_start_time:
   transform/selfmon_rename:
     error_mode: ignore
     metric_statements:
-      - context: metric
-        statements:
-          - set(name, "http.client.request.duration") where name == "http_client_request_duration"
-          - set(name, "http.client.request.body.size") where name == "http_client_request_body_size"
-          - set(name, "http.server.request.duration") where name == "http_server_request_duration"
-          - set(name, "http.server.request.body.size") where name == "http_server_request_body_size"
-          - set(name, "rpc.server.call.duration") where name == "rpc_server_call_duration"
-          - set(name, "rpc.client.call.duration") where name == "rpc_client_call_duration"
-          - set(name, "rpc.server.duration") where name == "rpc_server_duration"
-          - set(name, "rpc.client.duration") where name == "rpc_client_duration"
+      - statements:
+          # Dynatrace dashboards expect attributes to be dotted, but Prometheus uses underscores.
+          - replace_all_patterns(resource.attributes, "key", "_", ".")
+          # Metric name renames (_ → .) via OTTL transform.
+          # Rewriting __name__ in metric_relabel_configs does NOT work reliably
+          # in the Collector's Prometheus receiver — the transform processor
+          # is the only reliable way to rename metric names to dotted OTel conventions.
+          - set(metric.name, "http.client.request.duration") where metric.name == "http_client_request_duration"
+          - set(metric.name, "http.client.request.body.size") where metric.name == "http_client_request_body_size"
+          - set(metric.name, "http.server.request.duration") where metric.name == "http_server_request_duration"
+          - set(metric.name, "http.server.request.body.size") where metric.name == "http_server_request_body_size"
+          - set(metric.name, "rpc.server.call.duration") where metric.name == "rpc_server_call_duration"
+          - set(metric.name, "rpc.client.call.duration") where metric.name == "rpc_client_call_duration"
+          - set(metric.name, "rpc.server.duration") where metric.name == "rpc_server_duration"
+          - set(metric.name, "rpc.client.duration") where metric.name == "rpc_client_duration"
 
   cumulativetodelta:
     max_staleness: 25h
@@ -116,11 +61,11 @@ service:
       processors: [cumulativetodelta]
       exporters: [otlp_http]
 
-    # Self-monitoring pipeline: transform must come before cumulativetodelta
+    # Self-monitoring pipeline: transform must come first
     # so metric names are dotted before delta conversion
     metrics/selfmon:
       receivers: [prometheus/collector-self]
-      processors: [transform/selfmon_rename, cumulativetodelta]
+      processors: [transform/selfmon_rename, metric_start_time, cumulativetodelta]
       exporters: [otlp_http]
 
   telemetry:

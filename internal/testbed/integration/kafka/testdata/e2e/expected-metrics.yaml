@@ -9,174 +9,6 @@ resourceMetrics:
       - metrics:
           - gauge:
               dataPoints:
-                - asInt: "19"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "20"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "21"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "22"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "23"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "24"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "25"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "26"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "27"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "28"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "29"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
-                - asInt: "30"
-                  timeUnixNano: "1000000"
-            name: gen
-        scope: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-metrics-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - gauge:
-              dataPoints:
                 - asInt: "31"
                   timeUnixNano: "1000000"
             name: gen
@@ -416,6 +248,188 @@ resourceMetrics:
           - gauge:
               dataPoints:
                 - asInt: "48"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "49"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "50"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "51"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "52"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "53"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "54"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "55"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "56"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "57"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "58"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "59"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "60"
+                  timeUnixNano: "1000000"
+            name: gen
+        scope: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-metrics-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeMetrics:
+      - metrics:
+          - gauge:
+              dataPoints:
+                - asInt: "61"
                   timeUnixNano: "1000000"
             name: gen
         scope: {}

@@ -764,3 +764,29 @@ resourceSpans:
             startTimeUnixNano: "1777487674419496904"
             status: {}
             traceId: b7aab6888dffebf8489bf1c8150c5cac
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-traces-deployment
+    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    scopeSpans:
+      - scope:
+          name: telemetrygen
+        spans:
+          - attributes:
+              - key: network.peer.address
+                value:
+                  stringValue: 1.2.3.4
+              - key: service.peer.name
+                value:
+                  stringValue: telemetrygen-client
+            endTimeUnixNano: "1777487674419619904"
+            flags: 257
+            kind: 2
+            name: okey-dokey-0
+            parentSpanId: fbb1a6bbd7fd7666
+            spanId: 61d1c6f4a9ba9ad9
+            startTimeUnixNano: "1777487674419496904"
+            status: {}
+            traceId: b7aab6888dffebf8489bf1c8150c5cac

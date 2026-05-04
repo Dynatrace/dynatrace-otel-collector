@@ -135,20 +135,20 @@ func InsertDefault[T any](opt *configoptional.Optional[T]) error {
 }
 
 func setupReceiverPorts(cfg *otlpreceiver.Config, ports *ReceiverPorts) {
-	if err := InsertDefault(&cfg.GRPC); err != nil {
+	if err := InsertDefault(&cfg.Protocols.GRPC); err != nil {
 		panic(fmt.Sprintf("failed to insert default for gRPC config: %v", err))
 	}
 
-	if err := InsertDefault(&cfg.HTTP); err != nil {
+	if err := InsertDefault(&cfg.Protocols.HTTP); err != nil {
 		panic(fmt.Sprintf("failed to insert default for gRPC config: %v", err))
 	}
 
 	if ports != nil {
-		cfg.GRPC.Get().NetAddr.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Grpc)
-		cfg.HTTP.Get().ServerConfig.NetAddr.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Http)
+		cfg.Protocols.GRPC.Get().NetAddr.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Grpc)
+		cfg.Protocols.HTTP.Get().ServerConfig.NetAddr.Endpoint = "0.0.0.0:" + strconv.Itoa(ports.Http)
 	} else {
-		cfg.GRPC.Get().NetAddr.Endpoint = "0.0.0.0:4317"
-		cfg.HTTP.Get().ServerConfig.NetAddr.Endpoint = "0.0.0.0:4318"
+		cfg.Protocols.GRPC.Get().NetAddr.Endpoint = "0.0.0.0:4317"
+		cfg.Protocols.HTTP.Get().ServerConfig.NetAddr.Endpoint = "0.0.0.0:4318"
 	}
 }
 

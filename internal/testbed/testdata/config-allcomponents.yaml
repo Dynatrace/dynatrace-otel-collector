@@ -19,7 +19,7 @@ receivers:
       - cpu
       - memory
       - pods
-  k8sobjects:
+  k8s_objects:
     objects:
     - name: pods
       mode: pull
@@ -132,12 +132,12 @@ processors:
       log_record:
         - 'IsMatch(body, ".*password.*")'
         - 'severity_number < SEVERITY_NUMBER_WARN'
-  k8sattributes:
+  k8s_attributes:
   memory_limiter:
     check_interval: 1s
     limit_mib: 4000
     spike_limit_mib: 800
-  metricstarttime:
+  metric_start_time:
   probabilistic_sampler:
   resourcedetection:
     detectors: [env]
@@ -189,7 +189,7 @@ exporters:
 
 connectors:
   forward:
-  spanmetrics:
+  span_metrics:
 
 extensions:
   file_storage:

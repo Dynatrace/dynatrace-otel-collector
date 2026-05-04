@@ -48,7 +48,7 @@ receivers:
     endpoint: "localhost:9411"
   file_log:
     include: [/dev/null]
-  fluentforward:
+  fluent_forward:
     endpoint: 0.0.0.0:8006
   hostmetrics:
     scrapers:

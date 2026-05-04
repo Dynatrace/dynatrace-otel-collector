@@ -50,7 +50,7 @@ receivers:
     include: [/dev/null]
   fluent_forward:
     endpoint: 0.0.0.0:8006
-  hostmetrics:
+  host_metrics:
     scrapers:
       cpu:
   jaeger:

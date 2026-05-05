@@ -13,7 +13,7 @@ For deployment instructions, please see the [Collector deployment page in the Dy
 Configuration suggestions can be found under [Collector use cases in the Dynatrace documentation] and in the [`config_examples`] folder.
 
 [Collector deployment page in the Dynatrace documentation]: https://docs.dynatrace.com/docs/shortlink/otel-collector-deploy
-[Collector use cases in the Dynatrace documentation]: https://docs.dynatrace.com/docs/ingest-from/opentelemetry/collector/use-cases
+[Collector use cases in the Dynatrace documentation]: https://docs.dynatrace.com/docs/shortlink/otel-collector-cases
 [`config_examples`]: ./config_examples/README.md
 
 ### Container images

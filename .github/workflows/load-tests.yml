@@ -5,7 +5,11 @@ on:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+*"
     paths-ignore:
-      - "**/README.md"
+      - "CHANGELOG.md"
+      - "docs/**"
+      - "**/*.md"
+      - "LICENSE"
+      - ".github/CODEOWNERS"
   workflow_dispatch:
 
 env:

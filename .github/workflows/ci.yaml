@@ -3,8 +3,20 @@ name: Continuous Integration
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "CHANGELOG.md"
+      - "docs/**"
+      - "**/*.md"
+      - "LICENSE"
+      - ".github/CODEOWNERS"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "CHANGELOG.md"
+      - "docs/**"
+      - "**/*.md"
+      - "LICENSE"
+      - ".github/CODEOWNERS"
   workflow_dispatch:
 
 env:

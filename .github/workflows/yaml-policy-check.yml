@@ -12,10 +12,6 @@ on:
       - "**/*.md"
   push:
     branches: [main]
-    paths-ignore:
-      - "CHANGELOG.md"
-      - "docs/**"
-      - "**/*.md"
 
 defaults:
   run:

@@ -7,8 +7,6 @@ on:
       - "CHANGELOG.md"
       - "docs/**"
       - "**/*.md"
-      - "LICENSE"
-      - ".github/CODEOWNERS"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}

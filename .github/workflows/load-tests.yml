@@ -8,8 +8,6 @@ on:
       - "CHANGELOG.md"
       - "docs/**"
       - "**/*.md"
-      - "LICENSE"
-      - ".github/CODEOWNERS"
   workflow_dispatch:
 
 env:

@@ -49,7 +49,6 @@ v0.151.0:
   The following resource attributes are deprecated and will now be disabled by default:
   `aws.volume.id`, `fs.type`, `gce.pd.name`, `glusterfs.endpoints.name`, `glusterfs.path`, and `partition`.
   All of these attributes will be removed in a future release.
-- `all`: Removed DNS lookup processor skeleton. ([#47874](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47874))
 - `processor/k8s_attributes`: Disable otelcol.k8s.pod.association metric until pod_identifier attribute is properly calculated ([#47669](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47669))
 - `receiver/prometheus`: Removes the feature gate `receiver.prometheusreceiver.RemoveLegacyResourceAttributes` which has been stable for some time. ([#47598](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47598))
 - `receiver/prometheus`: Remove `receiver.prometheusreceiver.EnableNativeHistograms`, `receiver.prometheusreceiver.RemoveStartTimeAdjustment` and `receiver.prometheusreceiver.UseCreatedMetric` feature gates. ([#40606](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40606))

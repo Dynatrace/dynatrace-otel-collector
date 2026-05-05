@@ -6,6 +6,10 @@ permissions:
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "CHANGELOG.md"
+      - "docs/**"
+      - "**/*.md"
   push:
     branches: [main]
 

@@ -231,17 +231,10 @@ alternateConfig:
   exporters:
     debug:
       verbosity: basic
-    otlphttp/sink:
-      endpoint: "http://tiered-sink:4318"
-      sending_queue:
-        enabled: true
-        num_consumers: 4
-        queue_size: 10000
-      retry_on_failure:
-        enabled: true
-        initial_interval: 5s
-        max_interval: 30s
-        max_elapsed_time: 300s
+  otlp_http:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
 
   service:
     extensions:
@@ -259,7 +252,7 @@ alternateConfig:
           - batch/metrics
         exporters:
           # - debug
-          - otlphttp/sink
+          - otlp_http/dynatrace
     telemetry:
       resource:
         k8s.cluster.name: "${env:K8S_CLUSTER_NAME}"

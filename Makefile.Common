@@ -23,6 +23,9 @@ GOJUNIT    := $(TOOLS_BIN_DIR)/v2
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
 GORELEASER_PRO_VERSION ?= v2.15.4
 
+# renovate: datasource=github-releases depName=sigstore/cosign
+COSIGN_VERSION ?= v3.0.6
+
 .PHONY: moddownload
 moddownload:
 	$(GOCMD) mod download
@@ -60,7 +63,7 @@ chlog-update: $(CHLOGGEN)
 	$(CHLOGGEN) update --config $(CHLOGGEN_CONFIG) --version $(VERSION)
 
 .PHONY: install-tools
-install-tools: $(TOOLS_BIN_DIR) $(TOOLS_BIN_NAMES) install-goreleaser-pro
+install-tools: $(TOOLS_BIN_DIR) $(TOOLS_BIN_NAMES) install-cosign install-goreleaser-pro
 
 $(TOOLS_BIN_DIR):
 	mkdir -p $@
@@ -82,8 +85,38 @@ CHECKSUM_NAME := ./checksums.txt
 URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/$(ARCHIVE_NAME)
 CHECKSUM_URL := https://github.com/goreleaser/goreleaser-pro/releases/download/$(GORELEASER_PRO_VERSION)/checksums.txt
 
+COSIGN_EXT :=
+ifeq ($(GOOS),windows)
+	COSIGN_EXT := .exe
+endif
+COSIGN_BIN_NAME := cosign-$(GOOS)-$(GOARCH)$(COSIGN_EXT)
+COSIGN_URL := https://github.com/sigstore/cosign/releases/download/$(COSIGN_VERSION)/$(COSIGN_BIN_NAME)
+COSIGN_CHECKSUM_URL := https://github.com/sigstore/cosign/releases/download/$(COSIGN_VERSION)/cosign_checksums.txt
+
+.PHONY: install-cosign
+install-cosign: | $(TOOLS_BIN_DIR)
+	@echo 'Installing Cosign...'; \
+	COSIGN_ACTUAL_VERSION=$$($(COSIGN) version 2>/dev/null | grep '^GitVersion:' | awk '{print $$2}'); \
+	if [ "$$COSIGN_ACTUAL_VERSION" = "$(COSIGN_VERSION)" ]; then \
+		echo "Cosign is already installed with the correct version, moving on..."; \
+	else \
+		echo "Downloading $(COSIGN_BIN_NAME) from $(COSIGN_URL)..."; \
+		curl -sfL $(COSIGN_URL) -o $(COSIGN); \
+		\
+		echo "Downloading cosign checksums..."; \
+		curl -sfL $(COSIGN_CHECKSUM_URL) -o $(TOOLS_BIN_DIR)/cosign_checksums.txt; \
+		\
+		echo "Verifying checksum..."; \
+		(cd $(TOOLS_BIN_DIR) && grep " $(COSIGN_BIN_NAME)$$" cosign_checksums.txt | sed "s| $(COSIGN_BIN_NAME)$$| cosign|" | sha256sum --quiet -c -); \
+		echo "Checksum verified successfully."; \
+		rm $(TOOLS_BIN_DIR)/cosign_checksums.txt; \
+		\
+		chmod +x $(COSIGN); \
+		echo "Cosign installed successfully!"; \
+	fi
+
  .PHONY: install-goreleaser-pro
-install-goreleaser-pro: $(COSIGN)
+install-goreleaser-pro: install-cosign
 	echo 'Installing GoReleaser Pro...'; \
 	GORELEASER_ACTUAL_VERSION=$$($(GORELEASER) --version 2>&1 | grep '^GitVersion:' | awk '{print $$2}'); \
 	if [ "v$$GORELEASER_ACTUAL_VERSION" = "$(GORELEASER_PRO_VERSION)" ]; then \

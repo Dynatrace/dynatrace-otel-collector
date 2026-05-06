@@ -1,0 +1,306 @@
+# Tier 2: Gateway — receives OTLP from tier 1, enriches data, forwards to tier 3.
+# Deploy with:
+#   helm install otel-gateway open-telemetry/opentelemetry-collector \
+#     --namespace otel-ta -f tier2-gateway.values.yaml
+
+fullnameOverride: "tiered-gateway"
+
+podAnnotations:
+  metrics.dynatrace.com/scrape: "true"
+  metrics.dynatrace.com/port: "8888"
+
+rollout:
+  rollingUpdate:
+    maxSurge: 25%
+    maxUnavailable: 0
+  strategy: RollingUpdate
+
+resources:
+  requests:
+    cpu: 2
+    memory: 8Gi
+  limits:
+    memory: 8Gi
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 16
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+image:
+  repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
+  # renovate: datasource=docker depName=ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
+  tag: 0.47.0
+command:
+  name: dynatrace-otel-collector
+
+mode: deployment
+
+service:
+  enabled: true
+
+clusterRole:
+  create: false
+
+serviceAccount:
+  create: false
+  name: tiered-otel-gateway
+
+extraEnvsFrom:
+  - secretRef:
+      name: dynatrace-otelcol-credentials
+extraEnvs:
+  - name: K8S_SERVICE_NAME
+    value: "{{ include \"opentelemetry-collector.fullname\" . }}"
+  - name: K8S_CLUSTER_NAME
+    value: "tiered-otelcol-ta-test"
+  - name: K8S_NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: spec.nodeName
+  - name: K8S_POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: K8S_NAMESPACE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.namespace
+  - name: POD_NAMESPACE
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.namespace
+  - name: K8S_POD_UID
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.uid
+
+alternateConfig:
+  extensions:
+    health_check:
+      endpoint: "${env:MY_POD_IP}:13133"
+
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "${env:MY_POD_IP}:4317"
+        http:
+          endpoint: "${env:MY_POD_IP}:4318"
+
+  processors:
+    memory_limiter:
+      check_interval: 1s
+      limit_percentage: 95
+      spike_limit_percentage: 20
+    metric_start_time:
+    cumulativetodelta:
+      max_staleness: 25h
+    batch/metrics: # OTLP max is 15k datapoints or 4 MiB
+      send_batch_max_size: 5000
+      send_batch_size: 500
+      timeout: 10s
+    k8s_attributes:
+      extract:
+        annotations:
+          - from: pod
+            key_regex: metadata.dynatrace.com/(.*)
+            tag_name: $$1
+          - from: pod
+            key: metadata.dynatrace.com
+            tag_name: metadata.dynatrace.com
+        metadata:
+          - k8s.pod.name
+          - k8s.pod.uid
+          - k8s.pod.ip
+          - k8s.deployment.name
+          - k8s.replicaset.name
+          - k8s.statefulset.name
+          - k8s.daemonset.name
+          - k8s.job.name
+          - k8s.cronjob.name
+          - k8s.namespace.name
+          - k8s.node.name
+          - k8s.cluster.uid
+          - k8s.container.name
+          - k8s.deployment.uid
+          - k8s.replicaset.uid
+          - k8s.statefulset.uid
+          - k8s.daemonset.uid
+          - k8s.job.uid
+          - k8s.cronjob.uid
+      pod_association:
+        - sources:
+            - from: resource_attribute
+              name: server.address
+        - sources:
+            - from: resource_attribute
+              name: k8s.pod.name
+            - from: resource_attribute
+              name: k8s.namespace.name
+        - sources:
+            - from: resource_attribute
+              name: k8s.pod.ip
+        - sources:
+            - from: resource_attribute
+              name: k8s.pod.uid
+        - sources:
+            - from: connection
+    transform:
+      metric_statements:
+        - context: datapoint
+          statements:
+              - set(attributes["http.request.method"], attributes["http_request_method"]) where attributes["http_request_method"] != nil
+              - delete_key(attributes, "http_request_method")
+              - set(attributes["http.response.status_code"], attributes["http_response_status_code"]) where attributes["http_response_status_code"] != nil
+              - delete_key(attributes, "http_response_status_code")
+              - set(attributes["network.protocol.name"], attributes["network_protocol_name"]) where attributes["network_protocol_name"] != nil
+              - delete_key(attributes, "network_protocol_name")
+              - set(attributes["network.protocol.version"], attributes["network_protocol_version"]) where attributes["network_protocol_version"] != nil
+              - delete_key(attributes, "network_protocol_version")
+              - set(attributes["rpc.method"], attributes["rpc_method"]) where attributes["rpc_method"] != nil
+              - delete_key(attributes, "rpc_method")
+              - set(attributes["rpc.response.status_code"], attributes["rpc_response_status_code"]) where attributes["rpc_response_status_code"] != nil
+              - delete_key(attributes, "rpc_response_status_code")
+              - set(attributes["rpc.system.name"], attributes["rpc_system_name"]) where attributes["rpc_system_name"] != nil
+              - delete_key(attributes, "rpc_system_name")
+              - set(attributes["server.address"], attributes["server_address"]) where attributes["server_address"] != nil
+              - delete_key(attributes, "server_address")
+              - set(attributes["server.port"], attributes["server_port"]) where attributes["server_port"] != nil
+              - delete_key(attributes, "server_port")
+              - set(attributes["url.scheme"], attributes["url_scheme"]) where attributes["url_scheme"] != nil
+              - delete_key(attributes, "url_scheme")
+
+        - context: resource
+          statements:
+            - set(attributes["k8s.workload.name"], attributes["k8s.statefulset.name"]) where IsString(attributes["k8s.statefulset.name"])
+            - set(attributes["k8s.workload.name"], attributes["k8s.replicaset.name"]) where IsString(attributes["k8s.replicaset.name"])
+            - set(attributes["k8s.workload.name"], attributes["k8s.job.name"]) where IsString(attributes["k8s.job.name"])
+            - set(attributes["k8s.workload.name"], attributes["k8s.deployment.name"]) where IsString(attributes["k8s.deployment.name"])
+            - set(attributes["k8s.workload.name"], attributes["k8s.daemonset.name"]) where IsString(attributes["k8s.daemonset.name"])
+            - set(attributes["k8s.workload.name"], attributes["k8s.cronjob.name"]) where IsString(attributes["k8s.cronjob.name"])
+
+            - set(attributes["k8s.workload.kind"], "statefulset") where IsString(attributes["k8s.statefulset.name"])
+            - set(attributes["k8s.workload.kind"], "replicaset") where IsString(attributes["k8s.replicaset.name"])
+            - set(attributes["k8s.workload.kind"], "job") where IsString(attributes["k8s.job.name"])
+            - set(attributes["k8s.workload.kind"], "deployment") where IsString(attributes["k8s.deployment.name"])
+            - set(attributes["k8s.workload.kind"], "daemonset") where IsString(attributes["k8s.daemonset.name"])
+            - set(attributes["k8s.workload.kind"], "cronjob") where IsString(attributes["k8s.cronjob.name"])
+
+            - set(attributes["k8s.workload.uid"], attributes["k8s.statefulset.uid"]) where IsString(attributes["k8s.statefulset.uid"])
+            - set(attributes["k8s.workload.uid"], attributes["k8s.replicaset.uid"]) where IsString(attributes["k8s.replicaset.uid"])
+            - set(attributes["k8s.workload.uid"], attributes["k8s.job.uid"]) where IsString(attributes["k8s.job.uid"])
+            - set(attributes["k8s.workload.uid"], attributes["k8s.deployment.uid"]) where IsString(attributes["k8s.deployment.uid"])
+            - set(attributes["k8s.workload.uid"], attributes["k8s.daemonset.uid"]) where IsString(attributes["k8s.daemonset.uid"])
+            - set(attributes["k8s.workload.uid"], attributes["k8s.cronjob.uid"]) where IsString(attributes["k8s.cronjob.uid"])
+
+            # experimental attributes
+            # https://docs.dynatrace.com/docs/discover-dynatrace/references/semantic-dictionary/fields#kubernetes
+            - delete_key(attributes, "k8s.statefulset.name")
+            - delete_key(attributes, "k8s.replicaset.name")
+            - delete_key(attributes, "k8s.job.name")
+            - delete_key(attributes, "k8s.deployment.name")
+            - delete_key(attributes, "k8s.daemonset.name")
+            - delete_key(attributes, "k8s.cronjob.name")
+            #
+            - delete_key(attributes, "k8s.statefulset.uid")
+            - delete_key(attributes, "k8s.replicaset.uid")
+            - delete_key(attributes, "k8s.deployment.uid")
+            - delete_key(attributes, "k8s.daemonset.uid")
+            - delete_key(attributes, "k8s.job.uid")
+            - delete_key(attributes, "k8s.cronjob.uid")
+
+        - context: resource
+          statements:
+            - delete_key(attributes, "processor")
+            - delete_key(attributes, "otel.signal")
+            - delete_key(attributes, "otel.scope.name")
+            - delete_key(attributes, "otel.scope.version")
+
+        - context: resource
+          statements:
+            - set(attributes["k8s.cluster.name"], "${env:K8S_CLUSTER_NAME}") where attributes["k8s.cluster.name"] == nil and Len("${env:K8S_CLUSTER_NAME}") > 0
+            - set(attributes["dt.entity.kubernetes_cluster"], "${env:DT_ENTITY_KUBERNETES_CLUSTER}") where attributes["dt.entity.kubernetes_cluster"] == nil and Len("${env:DT_ENTITY_KUBERNETES_CLUSTER}") > 0
+
+        - context: resource
+          statements:
+            - merge_maps(attributes, ParseJSON(attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(attributes["metadata.dynatrace.com"], "^\\{")
+            - delete_key(attributes, "metadata.dynatrace.com")
+
+  exporters:
+    debug:
+      verbosity: basic
+    otlphttp/sink:
+      endpoint: "http://tiered-sink:4318"
+      sending_queue:
+        enabled: true
+        num_consumers: 4
+        queue_size: 10000
+      retry_on_failure:
+        enabled: true
+        initial_interval: 5s
+        max_interval: 30s
+        max_elapsed_time: 300s
+
+  service:
+    extensions:
+      - health_check
+    pipelines:
+      metrics:
+        receivers:
+          - otlp
+        processors:
+          - memory_limiter
+          - metric_start_time
+          - cumulativetodelta
+          - k8s_attributes
+          - transform
+          - batch/metrics
+        exporters:
+          # - debug
+          - otlphttp/sink
+    telemetry:
+      resource:
+        k8s.cluster.name: "${env:K8S_CLUSTER_NAME}"
+        k8s.namespace.name: "${env:K8S_NAMESPACE_NAME}"
+        k8s.pod.name: "${env:K8S_POD_NAME}"
+        k8s.pod.uid: "${env:K8S_POD_UID}"
+        k8s.node.name: "${env:K8S_NODE_NAME}"
+      metrics:
+        level: detailed
+        readers:
+          - pull:
+              exporter:
+                prometheus:
+                  host: "0.0.0.0"
+                  port: 8888
+                  without_type_suffix: true
+                  without_units: true
+      logs:
+        level: INFO
+        processors:
+          - batch:
+              exporter:
+                otlp:
+                  protocol: http/protobuf
+                  endpoint: "${env:DT_ENDPOINT}/v1/logs"
+                  headers:
+                    - name: Authorization
+                      value: "Api-Token ${env:DT_API_TOKEN}"
+
+ports:
+  otlp:
+    enabled: true
+  otlp-http:
+    enabled: true
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+  metrics:
+    enabled: false

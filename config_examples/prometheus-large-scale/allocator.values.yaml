@@ -1,0 +1,44 @@
+nameOverride: ""
+fullnameOverride: "tiered-allocator"
+
+replicaCount: 1
+
+targetAllocator:
+  podAnnotations:
+    metrics.dynatrace.com/scrape: "true"
+    metrics.dynatrace.com/port: "8080"
+  image:
+    repository: ghcr.io/open-telemetry/opentelemetry-operator/target-allocator
+    tag: "0.150.0"
+  serviceAccount:
+    create: false
+    name: "tiered-otel-allocator"
+  service:
+    port: 8080
+  config:
+    allocation_strategy: consistent-hashing
+    collector_namespace: ${NAMESPACE}
+    collector_selector:
+      matchlabels:
+        app.kubernetes.io/name: opentelemetry-collector
+        app.kubernetes.io/instance: otel-scraper
+    prometheus_cr:
+      enabled: true
+      scrapeInterval: 60s
+      service_monitor_selector:
+        prometheus.dynatrace.com: "true"
+      pod_monitor_selector:
+        prometheus.dynatrace.com: "true"
+      scrape_config_selector:
+        prometheus.dynatrace.com: "true"
+
+#    filter_strategy: relabel-config
+#    config:
+#      scrape_configs: []
+
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 10m
+      memory: 150Mi

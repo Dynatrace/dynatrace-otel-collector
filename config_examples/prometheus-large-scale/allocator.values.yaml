@@ -32,10 +32,6 @@ targetAllocator:
       scrape_config_selector:
         prometheus.dynatrace.com: "true"
 
-#    filter_strategy: relabel-config
-#    config:
-#      scrape_configs: []
-
   resources:
     limits:
       memory: 200Mi

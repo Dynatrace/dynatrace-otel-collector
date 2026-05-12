@@ -187,12 +187,12 @@ exporters:
         ports:
           - 4317
   azureloganalytics:
-    endpoint: "localhost"
+    endpoint: "https://localhost"
     client_id: "your-client-id"
     client_secret: "your-client-secret"
     tenant_id: "your-tenant-id"
     rule_id: "your-dcr-id"
-    stream_name: "your-stream-name"    
+    stream_name: "Custom-your-stream-name"    
 
 connectors:
   forward:

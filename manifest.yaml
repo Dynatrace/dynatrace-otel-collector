@@ -30,6 +30,7 @@ exporters:
   - gomod: go.opentelemetry.io/collector/exporter/otlphttpexporter v0.151.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/loadbalancingexporter v0.151.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/kafkaexporter v0.151.0
+  - gomod: github.com/observiq/bindplane-otel-contrib/exporter/azureloganalyticsexporter v1.5.0
 
 extensions:
   - gomod: go.opentelemetry.io/collector/extension/zpagesextension v0.151.0

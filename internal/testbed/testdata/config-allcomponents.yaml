@@ -188,11 +188,11 @@ exporters:
           - 4317
   azureloganalytics:
     endpoint: "localhost"
-    client_id: "<your-client-id>"
-    client_secret: "<your-client-secret>"
-    tenant_id: "<your-tenant-id>"
-    rule_id: "<your-dcr-id>"
-    stream_name: "<your-stream-name>"    
+    client_id: "your-client-id"
+    client_secret: "your-client-secret"
+    tenant_id: "your-tenant-id"
+    rule_id: "your-dcr-id"
+    stream_name: "your-stream-name"    
 
 connectors:
   forward:

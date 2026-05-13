@@ -1,0 +1,45 @@
+# Stub workflow that satisfies branch-protection required checks for
+# docs-only PRs. The real "Continuous Integration" and "Build PR Snapshots"
+# workflows are skipped by their paths-ignore filter when only docs change,
+# which would otherwise leave the required checks in a perpetual "pending"
+# state and block the PR from merging.
+#
+# This workflow runs ONLY on the paths the real workflows ignore, and the
+# job names must stay in sync with the required contexts configured on the
+# protected branch:
+#   - Build and Test       (from ci.yaml)
+#   - Build (<goos>, <goarch>)  (matrix in snapshot.yaml)
+name: Required Checks (docs-only stub)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "CHANGELOG.md"
+      - "docs/**"
+      - "**/*.md"
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "Docs-only change — skipping real CI build."
+
+  snapshot:
+    name: Build
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        goos: ["linux", "darwin"]
+        goarch: ["amd64", "arm64", "ppc64le", "s390x"]
+        exclude:
+          - goos: darwin
+            goarch: s390x
+          - goos: darwin
+            goarch: ppc64le
+        include:
+          - goos: windows
+            goarch: amd64
+    steps:
+      - run: echo "Docs-only change — skipping real snapshot build for ${{ matrix.goos }}/${{ matrix.goarch }}."

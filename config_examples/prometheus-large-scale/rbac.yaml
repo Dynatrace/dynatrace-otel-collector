@@ -27,6 +27,7 @@ metadata:
   namespace: ${NAMESPACE}
 ---
 # Scraper (tier 1): k8s resolver for loadbalancing exporter
+# Also used by selfmon-scraper for k8s_attributes processor
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -37,10 +38,24 @@ rules:
       - pods
       - endpoints
       - services
+      - namespaces
+      - nodes
     verbs: [get, list, watch]
   - apiGroups: [discovery.k8s.io]
     resources:
       - endpointslices
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources:
+      - replicasets
+      - deployments
+      - statefulsets
+      - daemonsets
+    verbs: [get, list, watch]
+  - apiGroups: [batch]
+    resources:
+      - jobs
+      - cronjobs
     verbs: [get, list, watch]
 ---
 # Gateway (tier 2): k8s_attributes processor
@@ -109,6 +124,15 @@ rules:
     resources:
       - configmaps
     verbs: [get]
+  # TA v0.150+ watches secrets to resolve credentials referenced from
+  # Prometheus CRDs (ServiceMonitor / PodMonitor / ScrapeConfig / Probe —
+  # e.g. bearer tokens, basic-auth, TLS material). Without this it logs
+  # "secrets is forbidden" errors on a loop and silently disables any
+  # scrape config that references a secret.
+  - apiGroups: [""]
+    resources:
+      - secrets
+    verbs: [get, list, watch]
   - apiGroups: [networking.k8s.io]
     resources:
       - ingresses
@@ -177,32 +201,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: tiered-otel-allocator
-    namespace: ${NAMESPACE}
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: tiered-otel-sink
-rules:
-  - apiGroups: [""]
-    resources: ["pods", "namespaces", "nodes"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["apps"]
-    resources: ["replicasets", "deployments", "statefulsets", "daemonsets"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["batch"]
-    resources: ["jobs", "cronjobs"]
-    verbs: ["get", "list", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: tiered-otel-sink
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: tiered-otel-sink
-subjects:
-  - kind: ServiceAccount
-    name: tiered-otel-sink
     namespace: ${NAMESPACE}

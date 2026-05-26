@@ -24,7 +24,7 @@ targetAllocator:
         app.kubernetes.io/instance: otel-scraper
     prometheus_cr:
       enabled: true
-      scrapeInterval: 60s
+      scrapeInterval: 15s
       service_monitor_selector:
         prometheus.dynatrace.com: "true"
       pod_monitor_selector:

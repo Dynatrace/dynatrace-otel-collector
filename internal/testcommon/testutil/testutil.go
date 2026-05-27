@@ -7,6 +7,7 @@ import (
 	"net"
 	"os/exec"
 	"runtime"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -491,5 +492,63 @@ func printDataPoints(prefix string, met pmetric.Metric, t *testing.T, r int, s i
 	default:
 		t.Logf("[DEBUG] %s resource[%d] scope[%d:%s] metric[%d]: unknown metric type=%v",
 			prefix, r, s, scopeInfo, mi, met.Type())
+	}
+}
+
+func ReplaceAttrValsWithStar(metrics pmetric.Metrics, resourceKeys []string, datapointKeys []string) {
+	for _, r := range metrics.ResourceMetrics().All() {
+		for key, val := range r.Resource().Attributes().All() {
+			if slices.Contains(resourceKeys, key) {
+				val.SetStr("*")
+			}
+		}
+
+		for _, s := range r.ScopeMetrics().All() {
+
+			for _, m := range s.Metrics().All() {
+				switch m.Type() {
+				case pmetric.MetricTypeGauge:
+					for _, dp := range m.Gauge().DataPoints().All() {
+						for key, val := range dp.Attributes().All() {
+							if slices.Contains(datapointKeys, key) {
+								val.SetStr("*")
+							}
+						}
+					}
+				case pmetric.MetricTypeSum:
+					for _, dp := range m.Sum().DataPoints().All() {
+						for key, val := range dp.Attributes().All() {
+							if slices.Contains(datapointKeys, key) {
+								val.SetStr("*")
+							}
+						}
+					}
+				case pmetric.MetricTypeSummary:
+					for _, dp := range m.Summary().DataPoints().All() {
+						for key, val := range dp.Attributes().All() {
+							if slices.Contains(datapointKeys, key) {
+								val.SetStr("*")
+							}
+						}
+					}
+				case pmetric.MetricTypeHistogram:
+					for _, dp := range m.Histogram().DataPoints().All() {
+						for key, val := range dp.Attributes().All() {
+							if slices.Contains(datapointKeys, key) {
+								val.SetStr("*")
+							}
+						}
+					}
+				case pmetric.MetricTypeExponentialHistogram:
+					for _, dp := range m.ExponentialHistogram().DataPoints().All() {
+						for key, val := range dp.Attributes().All() {
+							if slices.Contains(datapointKeys, key) {
+								val.SetStr("*")
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

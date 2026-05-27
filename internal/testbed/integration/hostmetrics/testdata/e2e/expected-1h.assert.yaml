@@ -1,0 +1,44 @@
+version: 1
+signal: metrics
+resources:
+    - attributes:
+        host.arch: '*'
+        host.cpu.model.name: '*'
+        host.id: '*'
+        host.interface: '*'
+        host.ip: '*'
+        host.mac: '*'
+        host.name: '*'
+        os.build.id: '*'
+        os.description: '*'
+        os.name: '*'
+        os.type: '*'
+        os.version: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/cpuscraper
+          version: 0.48.0
+          metrics:
+            - name: system.cpu.logical.count
+              type: sum
+              unit: '{cpu}'
+              temporality: cumulative
+              monotonic: false
+            - name: system.cpu.physical.count
+              type: sum
+              unit: '{cpu}'
+              temporality: cumulative
+              monotonic: false
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper
+          version: 0.48.0
+          metrics:
+            - name: system.memory.limit
+              type: sum
+              unit: By
+              temporality: cumulative
+              monotonic: false
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/systemscraper
+          version: 0.48.0
+          metrics:
+            - name: system.uptime
+              type: gauge
+              unit: s

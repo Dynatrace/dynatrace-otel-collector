@@ -1,0 +1,519 @@
+version: 1
+signal: metrics
+resources:
+    - attributes:
+        k8s.namespace.name: e2eselfmonitoringcheckmetrics
+        k8s.node.name: '*'
+        k8s.pod.name: '*'
+        service.instance.id: '*'
+        service.name: dynatrace-otel-collector
+        service.version: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor
+          metrics:
+            - name: otelcol_processor_filter_datapoints.filtered
+              type: sum
+              unit: "1"
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    filter: filter
+            - name: otelcol_processor_filter_logs.filtered
+              type: sum
+              unit: "1"
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    filter: filter
+            - name: otelcol_processor_filter_spans.filtered
+              type: sum
+              unit: "1"
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    filter: filter
+        - name: go.opentelemetry.io/collector/exporter/exporterhelper
+          metrics:
+            - name: otelcol_exporter_queue_batch_send_size
+              type: histogram
+              unit: '{unit}'
+              temporality: delta
+              datapoints:
+                - attributes:
+                    exporter: otlp_grpc/self
+                - attributes:
+                    exporter: otlp_http/logs
+                - attributes:
+                    exporter: otlp_http/metrics
+                - attributes:
+                    exporter: otlp_http/traces
+            - name: otelcol_exporter_queue_batch_send_size_bytes
+              type: histogram
+              unit: By
+              temporality: delta
+              datapoints:
+                - attributes:
+                    exporter: otlp_grpc/self
+                - attributes:
+                    exporter: otlp_http/logs
+                - attributes:
+                    exporter: otlp_http/metrics
+                - attributes:
+                    exporter: otlp_http/traces
+            - name: otelcol_exporter_queue_capacity
+              type: gauge
+              unit: '{batch}'
+              datapoints:
+                - attributes:
+                    data_type: logs
+                    exporter: otlp_grpc/self
+                - attributes:
+                    data_type: logs
+                    exporter: otlp_http/logs
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_grpc/self
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http/metrics
+                - attributes:
+                    data_type: traces
+                    exporter: otlp_grpc/self
+                - attributes:
+                    data_type: traces
+                    exporter: otlp_http/traces
+            - name: otelcol_exporter_queue_size
+              type: gauge
+              unit: '{batch}'
+              datapoints:
+                - attributes:
+                    data_type: logs
+                    exporter: otlp_grpc/self
+                - attributes:
+                    data_type: logs
+                    exporter: otlp_http/logs
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_grpc/self
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http/metrics
+                - attributes:
+                    data_type: traces
+                    exporter: otlp_grpc/self
+                - attributes:
+                    data_type: traces
+                    exporter: otlp_http/traces
+            - name: otelcol_exporter_sent_log_records
+              type: sum
+              unit: '{record}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    exporter: debug
+                - attributes:
+                    exporter: otlp_grpc/self
+                    server.address: '*'
+                    server.port: '*'
+                - attributes:
+                    exporter: otlp_http/logs
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/logs
+            - name: otelcol_exporter_sent_metric_points
+              type: sum
+              unit: '{datapoint}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    exporter: debug
+                - attributes:
+                    exporter: otlp_grpc/self
+                    server.address: '*'
+                    server.port: '*'
+                - attributes:
+                    exporter: otlp_http/metrics
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/metrics
+            - name: otelcol_exporter_sent_spans
+              type: sum
+              unit: '{span}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    exporter: debug
+                - attributes:
+                    exporter: otlp_grpc/self
+                    server.address: '*'
+                    server.port: '*'
+                - attributes:
+                    exporter: otlp_http/traces
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/traces
+        - name: go.opentelemetry.io/collector/processor/processorhelper
+          metrics:
+            - name: otelcol_processor_incoming_items
+              type: sum
+              unit: '{item}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    otel.signal: logs
+                    processor: filter
+                - attributes:
+                    otel.signal: metrics
+                    processor: cumulativetodelta
+                - attributes:
+                    otel.signal: metrics
+                    processor: filter
+                - attributes:
+                    otel.signal: traces
+                    processor: filter
+            - name: otelcol_processor_internal_duration
+              type: histogram
+              unit: s
+              temporality: delta
+              datapoints:
+                - attributes:
+                    otel.signal: logs
+                    processor: filter
+                - attributes:
+                    otel.signal: metrics
+                    processor: cumulativetodelta
+                - attributes:
+                    otel.signal: metrics
+                    processor: filter
+                - attributes:
+                    otel.signal: traces
+                    processor: filter
+            - name: otelcol_processor_outgoing_items
+              type: sum
+              unit: '{item}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    otel.signal: logs
+                    processor: filter
+                - attributes:
+                    otel.signal: metrics
+                    processor: cumulativetodelta
+                - attributes:
+                    otel.signal: metrics
+                    processor: filter
+                - attributes:
+                    otel.signal: traces
+                    processor: filter
+        - name: go.opentelemetry.io/collector/receiver/receiverhelper
+          metrics:
+            - name: otelcol_receiver_accepted_log_records
+              type: sum
+              unit: '{record}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: otlp/2
+                    transport: http
+            - name: otelcol_receiver_accepted_metric_points
+              type: sum
+              unit: '{datapoint}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: otlp/2
+                    transport: http
+            - name: otelcol_receiver_accepted_spans
+              type: sum
+              unit: '{span}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: otlp/2
+                    transport: http
+            - name: otelcol_receiver_failed_log_records
+              type: sum
+              unit: '{record}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: otlp/2
+                    transport: http
+            - name: otelcol_receiver_failed_metric_points
+              type: sum
+              unit: '{datapoint}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: otlp/2
+                    transport: http
+            - name: otelcol_receiver_failed_spans
+              type: sum
+              unit: '{span}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: otlp/2
+                    transport: http
+            - name: otelcol_receiver_refused_log_records
+              type: sum
+              unit: '{record}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: otlp/2
+                    transport: http
+            - name: otelcol_receiver_refused_metric_points
+              type: sum
+              unit: '{datapoint}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: otlp/2
+                    transport: http
+            - name: otelcol_receiver_refused_spans
+              type: sum
+              unit: '{span}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: otlp/2
+                    transport: http
+        - name: go.opentelemetry.io/collector/service
+          metrics:
+            - name: otelcol_process_cpu_seconds
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: otelcol_process_memory_rss
+              type: gauge
+              unit: By
+            - name: otelcol_process_runtime_heap_alloc_bytes
+              type: gauge
+              unit: By
+            - name: otelcol_process_runtime_total_alloc_bytes
+              type: sum
+              unit: By
+              temporality: delta
+              monotonic: true
+            - name: otelcol_process_runtime_total_sys_memory_bytes
+              type: gauge
+              unit: By
+            - name: otelcol_process_uptime
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+        - name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
+          version: 0.68.0
+          metrics:
+            - name: rpc.client.call.duration
+              type: histogram
+              unit: s
+              temporality: delta
+              datapoints:
+                - attributes:
+                    rpc.method: opentelemetry.proto.collector.logs.v1.LogsService/Export
+                    rpc.response.status_code: OK
+                    rpc.system.name: grpc
+                    server.address: '*'
+                    server.port: '*'
+                - attributes:
+                    rpc.method: opentelemetry.proto.collector.metrics.v1.MetricsService/Export
+                    rpc.response.status_code: OK
+                    rpc.system.name: grpc
+                    server.address: '*'
+                    server.port: '*'
+                - attributes:
+                    rpc.method: opentelemetry.proto.collector.trace.v1.TraceService/Export
+                    rpc.response.status_code: OK
+                    rpc.system.name: grpc
+                    server.address: '*'
+                    server.port: '*'
+            - name: rpc.server.call.duration
+              type: histogram
+              unit: s
+              temporality: delta
+              datapoints:
+                - attributes:
+                    rpc.method: opentelemetry.proto.collector.logs.v1.LogsService/Export
+                    rpc.response.status_code: OK
+                    rpc.system.name: grpc
+                - attributes:
+                    rpc.method: opentelemetry.proto.collector.metrics.v1.MetricsService/Export
+                    rpc.response.status_code: OK
+                    rpc.system.name: grpc
+                - attributes:
+                    rpc.method: opentelemetry.proto.collector.trace.v1.TraceService/Export
+                    rpc.response.status_code: OK
+                    rpc.system.name: grpc
+        - name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+          version: 0.68.0
+          metrics:
+            - name: http.client.request.body.size
+              type: histogram
+              unit: By
+              temporality: delta
+              datapoints:
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+            - name: http.client.request.duration
+              type: histogram
+              unit: s
+              temporality: delta
+              datapoints:
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+            - name: http.server.request.body.size
+              type: histogram
+              unit: By
+              temporality: delta
+              datapoints:
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    http.route: /v1/logs
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    http.route: /v1/metrics
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    http.route: /v1/traces
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+            - name: http.server.request.duration
+              type: histogram
+              unit: s
+              temporality: delta
+              datapoints:
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    http.route: /v1/logs
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    http.route: /v1/metrics
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    http.route: /v1/traces
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+            - name: http.server.response.body.size
+              type: histogram
+              unit: By
+              temporality: delta
+              datapoints:
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    http.route: /v1/logs
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    http.route: /v1/metrics
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: 200
+                    http.route: /v1/traces
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http

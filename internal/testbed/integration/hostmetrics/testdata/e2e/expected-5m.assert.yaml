@@ -1,0 +1,311 @@
+version: 1
+signal: metrics
+resources:
+    - attributes:
+        host.arch: '*'
+        host.cpu.model.name: '*'
+        host.id: '*'
+        host.interface: '*'
+        host.ip: '*'
+        host.mac: '*'
+        host.name: '*'
+        os.build.id: '*'
+        os.description: '*'
+        os.name: '*'
+        os.type: '*'
+        os.version: '*'
+        process.executable.name: dynatrace-otel-collector
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper
+          version: 0.48.0
+          metrics:
+            - name: process.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    state: '*'
+            - name: process.cpu.utilization
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    state: '*'
+            - name: process.disk.io
+              type: sum
+              unit: By
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    direction: '*'
+            - name: process.memory.usage
+              type: sum
+              unit: By
+              temporality: cumulative
+              monotonic: false
+            - name: process.memory.virtual
+              type: sum
+              unit: By
+              temporality: cumulative
+              monotonic: false
+    - attributes:
+        host.arch: '*'
+        host.cpu.model.name: '*'
+        host.id: '*'
+        host.interface: '*'
+        host.ip: '*'
+        host.mac: '*'
+        host.name: '*'
+        os.build.id: '*'
+        os.description: '*'
+        os.name: '*'
+        os.type: '*'
+        os.version: '*'
+        process.executable.name: journalctl
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper
+          version: 0.48.0
+          metrics:
+            - name: process.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    state: '*'
+            - name: process.cpu.utilization
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    state: '*'
+            - name: process.disk.io
+              type: sum
+              unit: By
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    direction: '*'
+            - name: process.memory.usage
+              type: sum
+              unit: By
+              temporality: cumulative
+              monotonic: false
+            - name: process.memory.virtual
+              type: sum
+              unit: By
+              temporality: cumulative
+              monotonic: false
+    - attributes:
+        host.arch: '*'
+        host.cpu.model.name: '*'
+        host.id: '*'
+        host.interface: '*'
+        host.ip: '*'
+        host.mac: '*'
+        host.name: '*'
+        os.build.id: '*'
+        os.description: '*'
+        os.name: '*'
+        os.type: '*'
+        os.version: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/cpuscraper
+          version: 0.48.0
+          metrics:
+            - name: system.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    cpu: '*'
+                    state: '*'
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/diskscraper
+          version: 0.48.0
+          metrics:
+            - name: system.disk.io
+              type: sum
+              unit: By
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    device: '*'
+                    direction: '*'
+            - name: system.disk.io_time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    device: '*'
+            - name: system.disk.operation_time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    device: '*'
+                    direction: '*'
+            - name: system.disk.operations
+              type: sum
+              unit: '{operations}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    device: '*'
+                    direction: '*'
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/filesystemscraper
+          version: 0.48.0
+          metrics:
+            - name: system.filesystem.inodes.usage
+              type: sum
+              unit: '{inodes}'
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    mountpoint: '*'
+                    state: '*'
+            - name: system.filesystem.usage
+              type: sum
+              unit: By
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    mountpoint: '*'
+                    state: '*'
+            - name: system.filesystem.utilization
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    mountpoint: '*'
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/loadscraper
+          version: 0.48.0
+          metrics:
+            - name: system.cpu.load_average.15m
+              type: gauge
+              unit: '{thread}'
+            - name: system.cpu.load_average.5m
+              type: gauge
+              unit: '{thread}'
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper
+          version: 0.48.0
+          metrics:
+            - name: system.memory.usage
+              type: sum
+              unit: By
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    state: '*'
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper
+          version: 0.48.0
+          metrics:
+            - name: system.network.connections
+              type: sum
+              unit: '{connections}'
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    state: '*'
+            - name: system.network.dropped
+              type: sum
+              unit: '{packets}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    device: '*'
+                    direction: '*'
+            - name: system.network.errors
+              type: sum
+              unit: '{errors}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    device: '*'
+                    direction: '*'
+            - name: system.network.io
+              type: sum
+              unit: By
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    device: '*'
+                    direction: '*'
+            - name: system.network.packets
+              type: sum
+              unit: '{packets}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    device: '*'
+                    direction: '*'
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/pagingscraper
+          version: 0.48.0
+          metrics:
+            - name: system.paging.faults
+              type: sum
+              unit: '{faults}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    type: major
+                - attributes:
+                    type: minor
+            - name: system.paging.operations
+              type: sum
+              unit: '{operations}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    direction: '*'
+                    type: major
+                - attributes:
+                    direction: '*'
+                    type: minor
+            - name: system.paging.usage
+              type: sum
+              unit: By
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    device: '*'
+                    state: '*'
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processesscraper
+          version: 0.48.0
+          metrics:
+            - name: system.processes.count
+              type: sum
+              unit: '{processes}'
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    status: '*'
+            - name: system.processes.created
+              type: sum
+              unit: '{processes}'
+              temporality: delta
+              monotonic: true

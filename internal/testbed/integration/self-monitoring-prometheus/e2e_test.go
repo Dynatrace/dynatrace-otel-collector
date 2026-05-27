@@ -12,8 +12,10 @@ import (
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/google/uuid"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
@@ -29,6 +31,7 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 
 	// Use a dedicated golden for Prometheus path (it will differ from OTLP push path)
 	expectedFile := "./testdata/e2e/expected-prom-check.yaml"
+	expectedAssertionFile := "./testdata/e2e/expected-prom-check.assert.yaml"
 
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
@@ -130,6 +133,30 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 
 	// self monitoring metrics
 	oteltest.WaitForMetrics(t, 5, metricsConsumer)
+
+	actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+
+	dpIgnoreList := []string{
+		"server.address",
+		"server.port",
+	}
+	resourceIgnoreList := []string{
+		"k8s.node.name",
+		"k8s.pod.name",
+		"service.instance.id",
+		"service.version",
+	}
+
+	testutil.ReplaceAttrValsWithStar(actual, resourceIgnoreList, dpIgnoreList)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertionFile, actual))
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+		err := pmetricassert.AssertMetrics(expectedAssertionFile, actual)
+		assert.NoError(tt, err)
+	}, 3*time.Minute, 1*time.Second)
 
 	// Uncomment to regenerate golden:
 	// require.NoError(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))

@@ -20,6 +20,7 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
@@ -27,6 +28,7 @@ import (
 func TestE2E_K8sClusterReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	expectedFile := testDir + "/e2e/expected.yaml"
+	expectedAssertFile := testDir + "/e2e/expected.assert.yaml"
 	configExamplesDir := "../../../../config_examples"
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -88,6 +90,36 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 	}()
 
 	oteltest.WaitForMetrics(t, 10, metricsConsumer)
+
+	resourceIgnoreList := []string{
+		"k8s.daemonset.uid",
+		"k8s.deployment.uid",
+		"k8s.namespace.uid",
+		"k8s.node.uid",
+		"k8s.pod.uid",
+		"k8s.replicaset.uid",
+		"container.id",
+		"container.image.tag",
+		"container.image.name",
+		"k8s.container.name",
+		"k8s.daemonset.name",
+		"k8s.deployment.name",
+		"k8s.namespace.name",
+		"k8s.node.name",
+		"k8s.pod.name",
+		"k8s.replicaset.name",
+	}
+
+	actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actual, resourceIgnoreList, nil)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertFile, actual))
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		err := pmetricassert.AssertMetrics(expectedAssertFile, actual)
+		assert.NoError(tt, err)
+	}, 3*time.Minute, 1*time.Second)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))

@@ -1,0 +1,38 @@
+version: 1
+signal: metrics
+resources:
+    - attributes:
+        host.arch: '*'
+        host.cpu.model.name: '*'
+        host.id: '*'
+        host.interface: '*'
+        host.ip: '*'
+        host.mac: '*'
+        host.name: '*'
+        os.build.id: '*'
+        os.description: '*'
+        os.name: '*'
+        os.type: '*'
+        os.version: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/cpuscraper
+          version: 0.48.0
+          metrics:
+            - name: system.cpu.utilization
+              type: gauge
+              unit: "1"
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/loadscraper
+          version: 0.48.0
+          metrics:
+            - name: system.cpu.load_average.1m
+              type: gauge
+              unit: '{thread}'
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper
+          version: 0.48.0
+          metrics:
+            - name: system.memory.utilization
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    state: '*'

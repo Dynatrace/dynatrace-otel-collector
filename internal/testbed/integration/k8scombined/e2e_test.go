@@ -16,6 +16,7 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
@@ -148,6 +149,8 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	expectedClusterFile := testDir + "/e2e/expected-cluster.yaml"
 	expectedTracesFile := testDir + "/e2e/expected-traces.yaml"
 	expectedNodeFile := testDir + "/e2e/expected-node.yaml"
+	expectedNodeAssertFile := testDir + "/e2e/expected-node.assert.yaml"
+	expectedClusterAssertFile := testDir + "/e2e/expected-cluster.assert.yaml"
 	configExamplesDir := "../../../../config_examples"
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -255,10 +258,47 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 
 	oteltest.WaitForMetrics(t, 1, metricsConsumerNode)
 
+	t.Logf("Checking node metrics...")
+
+	nodeResourceIgnoreList := []string{
+		"k8s.pod.uid",
+		"k8s.pod.ip",
+		"k8s.pod.name",
+		"k8s.volume.name",
+		"k8s.daemonset.uid",
+		"k8s.deployment.uid",
+		"k8s.namespace.uid",
+		"k8s.node.uid",
+		"k8s.replicaset.uid",
+		"k8s.cluster.uid",
+		"container.id",
+		"container.image.tag",
+		"container.image.name",
+		"k8s.container.name",
+		"k8s.daemonset.name",
+		"k8s.deployment.name",
+		"k8s.namespace.name",
+		"k8s.replicaset.name",
+		"k8s.workload.name",
+		"k8s.node.name",
+	}
+	nodeDpIgnoreList := []string{
+		"interface",
+	}
+
+	actual := metricsConsumerNode.AllMetrics()[len(metricsConsumerNode.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actual, nodeResourceIgnoreList, nodeDpIgnoreList)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedNodeAssertFile, actual))
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		err := pmetricassert.AssertMetrics(expectedNodeAssertFile, actual)
+		assert.NoError(tt, err)
+	}, 3*time.Minute, 1*time.Second)
+
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedNodeFile, metricsConsumerNode.AllMetrics()[len(metricsConsumerNode.AllMetrics())-1]))
-
-	t.Logf("Checking node metrics...")
 
 	expected, err := golden.ReadMetrics(expectedNodeFile)
 	require.NoError(t, err)
@@ -280,6 +320,42 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 	t.Logf("Node metrics checked successfully")
 
 	t.Logf("Checking cluster metrics...")
+
+	clusterResourceIgnoreList := []string{
+		"k8s.pod.uid",
+		"k8s.pod.ip",
+		"k8s.pod.name",
+		"k8s.volume.name",
+		"k8s.daemonset.uid",
+		"k8s.deployment.uid",
+		"k8s.namespace.uid",
+		"k8s.node.uid",
+		"k8s.replicaset.uid",
+		"k8s.cluster.uid",
+		"container.id",
+		"container.image.tag",
+		"container.image.name",
+		"k8s.container.name",
+		"k8s.daemonset.name",
+		"k8s.deployment.name",
+		"k8s.namespace.name",
+		"k8s.replicaset.name",
+		"k8s.workload.name",
+	}
+	clusterDpIgnoreList := []string{
+		"interface",
+	}
+
+	actualCluster := metricsConsumerCluster.AllMetrics()[len(metricsConsumerCluster.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actualCluster, clusterResourceIgnoreList, clusterDpIgnoreList)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedClusterAssertFile, actualCluster))
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		err := pmetricassert.AssertMetrics(expectedClusterAssertFile, actualCluster)
+		assert.NoError(tt, err)
+	}, 3*time.Minute, 1*time.Second)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedClusterFile, metricsConsumerCluster.AllMetrics()[len(metricsConsumerCluster.AllMetrics())-1]))

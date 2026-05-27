@@ -14,12 +14,14 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 )
 
 // TestE2E_HostMetricsReceiver validates the Host Metrics Receiver functionality
@@ -30,6 +32,9 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	expectedFile1m := testDir + "/e2e/expected-1m.yaml"
 	expectedFile5m := testDir + "/e2e/expected-5m.yaml"
 	expectedFile1h := testDir + "/e2e/expected-1h.yaml"
+	expectedFile1mAssert := testDir + "/e2e/expected-1m.assert.yaml"
+	expectedFile5mAssert := testDir + "/e2e/expected-5m.assert.yaml"
+	expectedFile1hAssert := testDir + "/e2e/expected-1h.assert.yaml"
 	configExamplesDir := "../../../../config_examples"
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -278,8 +283,40 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 
 	t.Log("Logs checked successfully")
 
+	resourceIgnoreList := []string{
+		"host.arch",
+		"host.ip",
+		"host.id",
+		"host.mac",
+		"host.name",
+		"host.cpu.model.name",
+		"host.interface",
+		"os.type",
+		"os.description",
+		"os.build.id",
+		"os.name",
+		"os.version",
+	}
+	dpIgnoreList := []string{
+		"mountpoint",
+		"direction",
+		"cpu",
+		"state",
+		"interface",
+		"device",
+		"status",
+	}
+
 	// 1m Metrics
 	t.Logf("Checking 1m metrics...")
+
+	actual1m := metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actual1m, resourceIgnoreList, dpIgnoreList)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile1mAssert, actual1m))
+
+	checkMetricsPmetricassert(t, expectedFile1mAssert, actual1m, compareTimeout, compareTick)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
@@ -288,12 +325,28 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	// 5m Metrics
 	t.Logf("Checking 5m metrics...")
 
+	actual5m := metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actual5m, resourceIgnoreList, dpIgnoreList)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile5mAssert, actual5m))
+
+	checkMetricsPmetricassert(t, expectedFile5mAssert, actual5m, compareTimeout, compareTick)
+
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
 	checkMetrics(t, expectedFile5m, metricsConsumer5m, defaultOptions, compareTimeout, compareTick)
 
 	// 1h Metrics
 	t.Logf("Checking 1h metrics...")
+
+	actual1h := metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actual1h, resourceIgnoreList, dpIgnoreList)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile1hAssert, actual1h))
+
+	checkMetricsPmetricassert(t, expectedFile1hAssert, actual1h, compareTimeout, compareTick)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
@@ -312,6 +365,13 @@ func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.Metr
 		err := pmetrictest.CompareMetrics(expectedMerged, actualMerged, options...)
 		// the commented line below prints the diff between expected and actual metrics in case of a test failure
 		// testutil.Debug(err, t, expectedMerged, actualMerged)
+		assert.NoError(tt, err)
+	}, timeout, tick)
+}
+
+func checkMetricsPmetricassert(t *testing.T, expectedFile string, actual pmetric.Metrics, timeout, tick time.Duration) {
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		err := pmetricassert.AssertMetrics(expectedFile, actual)
 		assert.NoError(tt, err)
 	}, timeout, tick)
 }

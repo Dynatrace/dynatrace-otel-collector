@@ -217,8 +217,6 @@ docker_manifests:
       - dynatrace/dynatrace-otel-collector:latest-s390x
 docker_signs:
   - cmd: cosign
-    env:
-      - COSIGN_EXPERIMENTAL=1
     artifacts: all
     output: true
     args:

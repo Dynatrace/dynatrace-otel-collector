@@ -1,0 +1,223 @@
+version: 1
+signal: metrics
+resources:
+    - attributes:
+        k8s.namespace.name: e2eselfmonitoringpromcheck
+        k8s.node.name: '*'
+        k8s.pod.name: '*'
+        server.port: "8888"
+        service.instance.id: '*'
+        service.name: dynatrace-otel-collector
+        service.version: '*'
+        url.scheme: http
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+          version: 0.48.0
+          metrics:
+            - name: promhttp_metric_handler_errors_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    cause: encoding
+                - attributes:
+                    cause: gathering
+            - name: scrape_duration_seconds
+              type: gauge
+              unit: s
+            - name: scrape_samples_post_metric_relabeling
+              type: gauge
+            - name: scrape_samples_scraped
+              type: gauge
+            - name: scrape_series_added
+              type: gauge
+            - name: up
+              type: gauge
+        - name: go.opentelemetry.io/collector/exporter/exporterhelper
+          metrics:
+            - name: otelcol_exporter_queue_batch_send_size
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    exporter: otlp_http
+                - attributes:
+                    exporter: otlp_http/selfmon
+            - name: otelcol_exporter_queue_batch_send_size_bytes
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    exporter: otlp_http
+                - attributes:
+                    exporter: otlp_http/selfmon
+            - name: otelcol_exporter_queue_capacity
+              type: gauge
+              datapoints:
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http/selfmon
+            - name: otelcol_exporter_queue_size
+              type: gauge
+              datapoints:
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http/selfmon
+            - name: otelcol_exporter_sent_metric_points
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    exporter: otlp_http
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/metrics
+                - attributes:
+                    exporter: otlp_http/selfmon
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/metrics
+        - name: go.opentelemetry.io/collector/processor/processorhelper
+          metrics:
+            - name: otelcol_processor_incoming_items
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    otel.signal: metrics
+                    processor: cumulativetodelta
+                - attributes:
+                    otel.signal: metrics
+                    processor: metric_start_time
+                - attributes:
+                    otel.signal: metrics
+                    processor: transform/selfmon_rename
+            - name: otelcol_processor_internal_duration
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    otel.signal: metrics
+                    processor: cumulativetodelta
+                - attributes:
+                    otel.signal: metrics
+                    processor: metric_start_time
+                - attributes:
+                    otel.signal: metrics
+                    processor: transform/selfmon_rename
+            - name: otelcol_processor_outgoing_items
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    otel.signal: metrics
+                    processor: cumulativetodelta
+                - attributes:
+                    otel.signal: metrics
+                    processor: metric_start_time
+                - attributes:
+                    otel.signal: metrics
+                    processor: transform/selfmon_rename
+        - name: go.opentelemetry.io/collector/receiver/receiverhelper
+          metrics:
+            - name: otelcol_receiver_accepted_metric_points
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: prometheus/collector-self
+                    transport: http
+            - name: otelcol_receiver_failed_metric_points
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: prometheus/collector-self
+                    transport: http
+            - name: otelcol_receiver_refused_metric_points
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: otlp
+                    transport: grpc
+                - attributes:
+                    receiver: prometheus/collector-self
+                    transport: http
+        - name: go.opentelemetry.io/collector/service
+          metrics:
+            - name: otelcol_process_cpu_seconds
+              type: sum
+              temporality: delta
+              monotonic: true
+            - name: otelcol_process_memory_rss
+              type: gauge
+            - name: otelcol_process_runtime_heap_alloc_bytes
+              type: gauge
+            - name: otelcol_process_runtime_total_alloc_bytes
+              type: sum
+              temporality: delta
+              monotonic: true
+            - name: otelcol_process_runtime_total_sys_memory_bytes
+              type: gauge
+            - name: otelcol_process_uptime
+              type: sum
+              temporality: delta
+              monotonic: true
+        - name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
+          version: 0.68.0
+          metrics:
+            - name: rpc.server.call.duration
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    rpc.method: opentelemetry.proto.collector.metrics.v1.MetricsService/Export
+                    rpc.response.status_code: OK
+                    rpc.system.name: grpc
+        - name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+          version: 0.68.0
+          metrics:
+            - name: http.client.request.body.size
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: "200"
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http
+            - name: http.client.request.duration
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    http.request.method: POST
+                    http.response.status_code: "200"
+                    network.protocol.name: http
+                    network.protocol.version: "1.1"
+                    server.address: '*'
+                    server.port: '*'
+                    url.scheme: http

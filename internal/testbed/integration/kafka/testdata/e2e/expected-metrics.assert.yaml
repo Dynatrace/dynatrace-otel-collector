@@ -1,0 +1,9 @@
+version: 1
+signal: metrics
+resources:
+  - attributes:
+      service.name: test-metrics-deployment
+    scopes:
+      - metrics:
+          - name: gen
+            type: gauge

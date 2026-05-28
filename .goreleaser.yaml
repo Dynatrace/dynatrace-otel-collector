@@ -215,6 +215,16 @@ docker_manifests:
       - dynatrace/dynatrace-otel-collector:latest-arm64
       - dynatrace/dynatrace-otel-collector:latest-ppc64le
       - dynatrace/dynatrace-otel-collector:latest-s390x
+docker_signs:
+  - cmd: cosign
+    env:
+      - COSIGN_EXPERIMENTAL=1
+    artifacts: all
+    output: true
+    args:
+      - "sign"
+      - "${artifact}@${digest}"
+      - "--yes"
 checksum:
   name_template: "checksums.txt"
 docker_digest:

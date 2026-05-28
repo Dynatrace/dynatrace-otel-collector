@@ -17,21 +17,21 @@ rollout:
 
 resources:
   requests:
-    cpu: 300m
-    memory: 3Gi
+    cpu: 1
+    memory: 6Gi
   limits:
-    memory: 3Gi
+    memory: 6Gi
 autoscaling:
   enabled: true
   minReplicas: 2
   maxReplicas: 24
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 50
+  targetCPUUtilizationPercentage: 70
 
 image:
   repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
   # renovate: datasource=docker depName=ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
-  tag: 0.47.0
+  tag: 0.48.0
 command:
   name: dynatrace-otel-collector
 
@@ -79,24 +79,25 @@ alternateConfig:
       endpoint: "${env:MY_POD_IP}:13133"
 
   receivers:
-    otlp:
-      protocols:
-        grpc:
-          endpoint: "${env:MY_POD_IP}:4317"
-        http:
-          endpoint: "${env:MY_POD_IP}:4318"
     prometheus:
       config: {}
       target_allocator:
         collector_id: ${K8S_POD_NAME}
         endpoint: http://tiered-allocator-ta
-        interval: 60s
+        interval: 15s
 
   processors:
+    # Memory limiter math (with 3GiB memory limit):
+    #   hard limit = 95% of 3GiB = 2.85 GiB
+    #   spike buffer = 5% of 3GiB = 0.15 GiB
+    #   soft limit = (95% - 5%) = 90% of 3GiB = 2.7 GiB
+    # Data is refused when memory exceeds the soft limit (2.7 GiB).
+    # A lower spike_limit_percentage raises the soft limit, giving more
+    # headroom before refusals start during load spikes.
     memory_limiter:
       check_interval: 1s
       limit_percentage: 95
-      spike_limit_percentage: 20
+      spike_limit_percentage: 5
     batch/metrics: # OTLP max is 15k datapoints or 4 MiB
       send_batch_max_size: 5000
       send_batch_size: 500
@@ -134,13 +135,11 @@ alternateConfig:
     pipelines:
       metrics:
         receivers:
-          - otlp
           - prometheus
         processors:
           - memory_limiter
           - batch/metrics
         exporters:
-          # - debug
           - loadbalancing
     telemetry:
       resource:
@@ -159,17 +158,6 @@ alternateConfig:
                   port: 8888
                   without_type_suffix: true
                   without_units: true
-      logs:
-        level: INFO
-        processors:
-          - batch:
-              exporter:
-                otlp:
-                  protocol: http/protobuf
-                  endpoint: "${env:DT_ENDPOINT}/v1/logs"
-                  headers:
-                    - name: Authorization
-                      value: "Api-Token ${env:DT_API_TOKEN}"
 
 ports:
   otlp:

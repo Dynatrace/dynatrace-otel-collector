@@ -11,8 +11,7 @@ podAnnotations:
 
 rollout:
   rollingUpdate:
-    maxSurge: 25%
-    maxUnavailable: 0
+    maxUnavailable: 1
   strategy: RollingUpdate
 
 resources:
@@ -23,19 +22,19 @@ resources:
     memory: 8Gi
 autoscaling:
   enabled: true
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 16
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 50
+  targetCPUUtilizationPercentage: 70
 
 image:
   repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
   # renovate: datasource=docker depName=ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
-  tag: 0.47.0
+  tag: 0.48.0
 command:
   name: dynatrace-otel-collector
 
-mode: deployment
+mode: statefulset
 
 service:
   enabled: true
@@ -90,13 +89,23 @@ alternateConfig:
           endpoint: "${env:MY_POD_IP}:4318"
 
   processors:
+    # Memory limiter math (with 8GiB memory limit):
+    #   hard limit = 95% of 8GiB = 7.6 GiB
+    #   spike buffer = 5% of 8GiB = 0.4 GiB
+    #   soft limit = (95% - 5%) = 90% of 8GiB = 7.2 GiB
+    # Data is refused when memory exceeds the soft limit (7.2 GiB).
+    # A lower spike_limit_percentage raises the soft limit, giving more
+    # headroom before refusals start during load spikes.
     memory_limiter:
       check_interval: 1s
       limit_percentage: 95
-      spike_limit_percentage: 20
+      spike_limit_percentage: 5
     metric_start_time:
     cumulativetodelta:
-      max_staleness: 25h
+      # max_staleness should be greater than scrape interval in allocator to avoid metric drops due to staleness, but not too high to avoid large spikes from state resets
+      # it's computed as 10x the scrape interval in allocator plus some buffer for delays
+      max_staleness: 10m
+      initial_value: drop
     batch/metrics: # OTLP max is 15k datapoints or 4 MiB
       send_batch_max_size: 5000
       send_batch_size: 500
@@ -251,8 +260,7 @@ alternateConfig:
           - transform
           - batch/metrics
         exporters:
-          # - debug
-          - otlp_http/dynatrace
+          - otlp_http
     telemetry:
       resource:
         k8s.cluster.name: "${env:K8S_CLUSTER_NAME}"
@@ -270,17 +278,6 @@ alternateConfig:
                   port: 8888
                   without_type_suffix: true
                   without_units: true
-      logs:
-        level: INFO
-        processors:
-          - batch:
-              exporter:
-                otlp:
-                  protocol: http/protobuf
-                  endpoint: "${env:DT_ENDPOINT}/v1/logs"
-                  headers:
-                    - name: Authorization
-                      value: "Api-Token ${env:DT_API_TOKEN}"
 
 ports:
   otlp:

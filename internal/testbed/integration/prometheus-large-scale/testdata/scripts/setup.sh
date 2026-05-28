@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-NAMESPACE="${NAMESPACE:?NAMESPACE is required}"
-HOST="${HOST:?HOST is required}"
-CONTAINER_REGISTRY="${CONTAINER_REGISTRY:?CONTAINER_REGISTRY is required}"
-CONFIG_DIR="${CONFIG_DIR:?CONFIG_DIR is required}"
+NAMESPACE="${NAMESPACE:-otel-ta}"
+HOST="${HOST:-localhost}"
+CONTAINER_REGISTRY="${CONTAINER_REGISTRY:-}"
+CONFIG_DIR="${CONFIG_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/config_examples/prometheus-large-scale}"
 SELFMON_HTTP_PORT="${SELFMON_HTTP_PORT:-4328}"
 
 COLLECTOR_IMAGE="${CONTAINER_REGISTRY}dynatrace-otel-collector"

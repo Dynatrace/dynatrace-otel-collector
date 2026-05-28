@@ -315,7 +315,6 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertionFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
 		err := pmetricassert.AssertMetrics(expectedAssertionFile, actual)
 		assert.NoError(tt, err)
 	}, 3*time.Minute, 1*time.Second)

@@ -6,8 +6,7 @@
 fullnameOverride: "tiered-scraper"
 
 podAnnotations:
-  metrics.dynatrace.com/scrape: "true"
-  metrics.dynatrace.com/port: "8888"
+  metrics.dynatrace.com/scrape: "false"
 
 rollout:
   rollingUpdate:
@@ -151,13 +150,14 @@ alternateConfig:
       metrics:
         level: detailed
         readers:
-          - pull:
+          - periodic:
+              interval: 10000
+              timeout: 5000
               exporter:
-                prometheus:
-                  host: "0.0.0.0"
-                  port: 8888
-                  without_type_suffix: true
-                  without_units: true
+                otlp:
+                  protocol: http/protobuf
+                  temporality_preference: delta
+                  endpoint: http://selfmon-scraper:4318
 
 ports:
   otlp:

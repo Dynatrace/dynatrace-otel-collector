@@ -1,15 +1,16 @@
 nameOverride: ""
 fullnameOverride: "tiered-allocator"
 
-replicaCount: 1
+replicaCount: 2
 
 targetAllocator:
   podAnnotations:
     metrics.dynatrace.com/scrape: "true"
     metrics.dynatrace.com/port: "8080"
   image:
-    repository: ghcr.io/open-telemetry/opentelemetry-operator/target-allocator
-    tag: "0.150.0"
+    repository: ghcr.io/dynatrace/otel-target-allocator/target-allocator
+    # renovate: datasource=docker depName=ghcr.io/dynatrace/otel-target-allocator/target-allocator
+    tag: 0.1.0
   serviceAccount:
     create: false
     name: "tiered-otel-allocator"

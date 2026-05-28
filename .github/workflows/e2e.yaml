@@ -105,6 +105,7 @@ jobs:
       matrix:
         usecase:
           - k8scombined
+          - prometheus-large-scale
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

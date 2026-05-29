@@ -8,7 +8,7 @@ resources:
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: container.cpu.time
               type: sum
@@ -75,7 +75,7 @@ resources:
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: container.cpu.time
               type: sum
@@ -127,7 +127,7 @@ resources:
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: container.cpu.time
               type: sum
@@ -194,7 +194,7 @@ resources:
         k8s.volume.name: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: k8s.volume.available
               type: gauge
@@ -217,7 +217,7 @@ resources:
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: k8s.pod.cpu.node.utilization
               type: gauge
@@ -308,7 +308,7 @@ resources:
         k8s.volume.name: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: k8s.volume.available
               type: gauge
@@ -331,7 +331,7 @@ resources:
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: k8s.pod.cpu.node.utilization
               type: gauge
@@ -419,7 +419,7 @@ resources:
         k8s.node.name: kind-worker
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: k8s.node.cpu.time
               type: sum

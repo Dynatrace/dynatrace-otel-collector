@@ -504,6 +504,11 @@ func ReplaceAttrValsWithStar(metrics pmetric.Metrics, resourceKeys []string, dat
 		}
 
 		for _, s := range r.ScopeMetrics().All() {
+			for key := range s.Scope().Attributes().All() {
+				if key == "scope.version" {
+					s.Scope().Attributes().PutStr(key, "*")
+				}
+			}
 
 			for _, m := range s.Metrics().All() {
 				switch m.Type() {

@@ -3,7 +3,7 @@ signal: metrics
 resources:
     - scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: kafka.brokers
               type: sum

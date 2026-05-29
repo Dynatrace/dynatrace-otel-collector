@@ -17,7 +17,7 @@ resources:
         process.executable.name: dynatrace-otel-collector
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: process.cpu.time
               type: sum
@@ -67,7 +67,7 @@ resources:
         process.executable.name: journalctl
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: process.cpu.time
               type: sum
@@ -116,7 +116,7 @@ resources:
         os.version: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/cpuscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: system.cpu.time
               type: sum
@@ -128,7 +128,7 @@ resources:
                     cpu: '*'
                     state: '*'
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/diskscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: system.disk.io
               type: sum
@@ -166,7 +166,7 @@ resources:
                     device: '*'
                     direction: '*'
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/filesystemscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: system.filesystem.inodes.usage
               type: sum
@@ -193,7 +193,7 @@ resources:
                 - attributes:
                     mountpoint: '*'
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/loadscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: system.cpu.load_average.15m
               type: gauge
@@ -202,7 +202,7 @@ resources:
               type: gauge
               unit: '{thread}'
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: system.memory.usage
               type: sum
@@ -213,7 +213,7 @@ resources:
                 - attributes:
                     state: '*'
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: system.network.connections
               type: sum
@@ -260,7 +260,7 @@ resources:
                     device: '*'
                     direction: '*'
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/pagingscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: system.paging.faults
               type: sum
@@ -294,7 +294,7 @@ resources:
                     device: '*'
                     state: '*'
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processesscraper
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: system.processes.count
               type: sum

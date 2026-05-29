@@ -16,7 +16,7 @@ resources:
         k8s.workload.name: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: k8s.volume.available
               type: gauge
@@ -46,7 +46,7 @@ resources:
         k8s.workload.name: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: container.cpu.time
               type: sum
@@ -147,7 +147,7 @@ resources:
         k8s.node.name: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: "*"
           metrics:
             - name: k8s.node.cpu.time
               type: sum

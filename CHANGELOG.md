@@ -4,6 +4,109 @@
 
 <!-- next version -->
 
+## 0.49.0
+
+This release includes version v0.152.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.152.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.152.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.152.0>
+
+### 🛑 Breaking changes 🛑
+
+- `receiver/kafka_metrics`: Promote the `receiver.kafkametricsreceiver.UseFranzGo` feature gate to stable ([#41480](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41480))
+  The franz-go client is now the only implementation; the gate is now permanently enabled and will be removed in v0.154.0.
+  The Sarama-based implementation has been removed.
+- `connector/span_metrics`: Promote `connector.spanmetrics.includeCollectorInstanceID` feature gate to beta. ([#40400](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40400))
+  Adds a `collector.instance.id` attribute to all metrics emitted by the spanmetrics connector.
+- `processor/tail_sampling`: Stabilize `disableinvertdecisions` feature gate. ([#47650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47650))
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### ⚠️ Deprecations ⚠️
+
+- `receiver/kubelet_stats`: Rename receiver type from `kubeletstats` to `kubelet_stats` ([#45339](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45339))
+- `receiver/kafka_metrics`: Rename `kafkametrics` receiver to `kafka_metrics` with deprecated alias `kafkametrics` ([#45339](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45339))
+
+### 💡 Enhancements 💡
+
+- `pkg/exporterhelper`: Add `otelcol_exporter_in_flight_requests` metric to track the number of export requests currently in-flight per exporter. ([#15009](https://github.com/open-telemetry/opentelemetry-collector/issues/15009))
+  This UpDownCounter increments in startOp and decrements in endOp, allowing operators to monitor
+  concurrent export activity and detect when an exporter is saturating its worker pool.
+- `all`: Support building with AIX ([#47010](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47010))
+- `processor/attributes`: Added support for default values in the attributes processor. ([#45352](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45352))
+  This enhancement allows users to specify default values for attributes in the attributes processor.
+  If the primary value source (e.g., environment variable, attribute, or context value) is not available,
+  the default value will be used. This ensures that the pipeline doesn't fail due to missing configuration.
+- `processor/k8s_attributes`: Improve deployment name extraction heuristic when deployment_name_from_replicaset is enabled ([#44831](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44831))
+  When `deployment_name_from_replicaset` is true and the ReplicaSet informer is not used for deployment names only,
+  the processor derives `k8s.deployment.name` using the pod-template-hash label and ReplicaSet naming rules.
+  When a ReplicaSet informer is running (for example for `k8s.deployment.uid`), API-backed metadata takes precedence,
+  independent of the `deployment_name_from_replicaset` setting.
+- `processor/k8s_attributes`: Add `watch_sync_period` config option to configure informer cache resync period. ([#48111](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48111))
+  The `watch_sync_period` config option defaults to `5m` to match the previously hardcoded behavior.
+- `receiver/kubelet_stats`: Add optional system container metrics (cpu.time, cpu.usage, memory.working_set) to kubeletstats receiver. ([#3531](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/3531))
+- `processor/resource`: Added support for default values in the resource processor. ([#45352](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45352))
+  This enhancement allows users to specify default values for attributes in the resource processor.
+  If the primary value source (e.g., environment variable, attribute, or context value) is not available,
+  the default value will be used. This ensures that the pipeline doesn't fail due to missing configuration.
+- `exporter/kafka`: Allow record_headers to accept multiple headers with the same key. ([#48092](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48092))
+- `receiver/k8s_cluster`: Enable the re-aggregation feature for the k8s_cluster receiver ([#46361](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46361))
+- `receiver/kafka`: Add support for custom consumer-group partition-assignment strategies via extensions that implement `kgo.GroupBalancer`. Set `group_rebalance_strategy` to the component ID of a registered extension to use a custom balancer. ([#48096](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48096))
+  The four built-in strategies (`range`, `roundrobin`, `sticky`, `cooperative-sticky`) continue to work unchanged.
+  Any other value for `group_rebalance_strategy` is now resolved as an extension component ID at runtime.
+- `processor/k8s_attributes`: Use PartialObjectMetadata for non-Pod informers ([#47389](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47389))
+  Switch Namespace, Node, Deployment, StatefulSet, DaemonSet, and Job informers
+  from full typed objects to PartialObjectMetadata via the metadata client.
+  These resources only need labels, annotations, UID, name, and owner references—all available
+  in object metadata—so fetching full spec/status is unnecessary overhead.
+
+  Pods continue using full objects since they require spec/status
+  fields (pod IP, node name, containers, host network).
+- `receiver/k8s_events`: Simplified RBAC example in README to only include required `events` resource permission. ([#48192](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48192))
+  A namespace-scoped Role can also be used when the receiver is configured with specific namespaces.
+- `receiver/kafka`: Cache OTel metric attribute sets in broker hook callbacks to reduce per-read allocations ([#47395](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47395))
+  `OnBrokerRead` previously rebuilt attribute sets on every call. The computed
+  `MeasurementOption` is now cached per (nodeID, outcome) key and evicted on
+  broker disconnect. Growth is bounded by 2 × number-of-brokers.
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/service`: Fix Prometheus config defaults mismatch when host is explicitly set in telemetry configuration. ([#13867](https://github.com/open-telemetry/opentelemetry-collector/issues/13867))
+  When users explicitly configured the telemetry metrics section (e.g. to change the host),
+  the Prometheus exporter boolean fields (WithoutScopeInfo, WithoutUnits, WithoutTypeSuffix)
+  defaulted to nil/false instead of true, causing metric name format changes compared to the
+  implicit default configuration. This fix applies the correct defaults during config unmarshaling.
+- `pkg/service`: Return noop tracer provider when no trace processors are defined ([#15135](https://github.com/open-telemetry/opentelemetry-collector/issues/15135))
+- `processor/k8s_attributes`: Fix container.image.tags config check ([#47113](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47113))
+- `processor/k8s_attributes`: Fix a data race when reading the `kube-system` namespace from the client cache to populate the `k8s.cluster.uid` attribute. ([#47910](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47910))
+  The `ClusterUID` rule in `extractPodAttributes` accessed the shared `Namespaces`
+  map without acquiring the client's read lock, which could race with writes from
+  the namespace informer. The access now goes through the locked `GetNamespace`
+  helper.
+- `exporter/kafka`: Fix collector hanging indefinitely on shutdown when the Kafka broker is unreachable ([#48140](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48140))
+  Re-enables the exporterhelper timeout sender (previously disabled with a zero timeout) so that each send attempt is bounded by the configured timeout (default 5s). The per-attempt context is now passed through to ProduceSync, allowing in-flight sends to unblock when the broker is unreachable. FranzSyncProducer.Close also cancels the kgo client context before calling client.Close, ensuring shutdown completes promptly.
+- `receiver/host_metrics`: Fix duplicate rootPath prefix in filesystem mountpoint translation ([#47083](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47083))
+  When gopsutil falls back to reading /proc/self/mountinfo, the reported
+  mountpoints already contain the rootPath prefix. This caused
+  translateMountpoint to add it a second time, resulting in incorrect paths
+  like /hostfs/hostfs/data.
+- `extension/health_check`: Fix deadlock when the collector run context is cancelled while the healthcheck extension is present. ([#47591](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47591))
+- `processor/tail_sampling`: Fix sampling inconsistencies when using `span-ingest` sampling strategy ([#47476](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47476))
+  1. Drop policies were not working if the initial batch did not contain a span matching the drop policy.
+  2. If max_spans or upper_threshold_ms were respectively set on span_count or latency policies they may not have been respected.
+
+---
+
+</details>
+
+
+<!-- previous-version -->
+
 ## 0.48.0
 
 This release includes version v0.150.0 and v0.151.0 of the upstream Collector components.

@@ -114,9 +114,6 @@ alternateConfig:
     cumulativetodelta:
       max_staleness: 10m
       initial_value: drop
-    batch:
-      send_batch_size: 1000
-      timeout: 10s
     k8s_attributes:
       # Enable passthrough mode - doesn't require matching existing attributes
       passthrough: false
@@ -164,6 +161,13 @@ alternateConfig:
               name: k8s.pod.uid
         - sources:
             - from: connection
+
+    transform/selfmon_rename:
+      metric_statements:
+        - statements:
+            # Dynatrace dashboards expect attributes to be dotted, but Prometheus uses underscores.
+            - replace_all_patterns(resource.attributes, "key", "_", ".")
+
     transform:
       metric_statements:
 
@@ -226,12 +230,14 @@ alternateConfig:
             - delete_key(resource.attributes, "metadata.dynatrace.com")
 
   exporters:
-    debug:
-      verbosity: basic
     otlphttp/dynatrace:
       endpoint: "${env:DT_ENDPOINT}"
       headers:
         Authorization: "Api-Token ${env:DT_API_TOKEN}"
+      sending_queue:
+        batch:
+          min_size: 1000
+          flush_timeout: 10s
 
   service:
     extensions:
@@ -243,13 +249,12 @@ alternateConfig:
           - prometheus
         processors:
           - memory_limiter
+          - transform/selfmon_rename
           - metric_start_time
           - cumulativetodelta
           - k8s_attributes
           - transform
-          - batch
         exporters:
-          - debug
           - otlphttp/dynatrace
 ports:
   otlp:

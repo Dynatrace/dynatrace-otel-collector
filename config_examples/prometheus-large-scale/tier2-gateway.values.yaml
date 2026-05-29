@@ -105,10 +105,6 @@ alternateConfig:
       # it's computed as 10x the scrape interval in allocator plus some buffer for delays
       max_staleness: 10m
       initial_value: drop
-    batch/metrics: # OTLP max is 15k datapoints or 4 MiB
-      send_batch_max_size: 5000
-      send_batch_size: 500
-      timeout: 10s
     k8s_attributes:
       extract:
         annotations:
@@ -243,6 +239,11 @@ alternateConfig:
       endpoint: ${env:DT_ENDPOINT}
       headers:
         Authorization: "Api-Token ${env:DT_API_TOKEN}"
+      sending_queue:
+        batch:
+          min_size: 500
+          max_size: 5000
+          flush_timeout: 10s
 
   service:
     extensions:
@@ -257,7 +258,6 @@ alternateConfig:
           - cumulativetodelta
           - k8s_attributes
           - transform
-          - batch/metrics
         exporters:
           - otlp_http
     telemetry:
@@ -268,7 +268,7 @@ alternateConfig:
         k8s.pod.uid: "${env:K8S_POD_UID}"
         k8s.node.name: "${env:K8S_NODE_NAME}"
       metrics:
-        level: detailed
+        level: normal
         readers:
           - periodic:
               interval: 10000

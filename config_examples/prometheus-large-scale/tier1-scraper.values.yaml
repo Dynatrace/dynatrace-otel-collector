@@ -97,10 +97,6 @@ alternateConfig:
       check_interval: 1s
       limit_percentage: 95
       spike_limit_percentage: 5
-    batch/metrics: # OTLP max is 15k datapoints or 4 MiB
-      send_batch_max_size: 5000
-      send_batch_size: 500
-      timeout: 10s
 
   exporters:
     debug:
@@ -117,6 +113,10 @@ alternateConfig:
         enabled: true
         num_consumers: 10
         queue_size: 10000
+        batch:
+          min_size: 500
+          max_size: 5000
+          flush_timeout: 10s
       protocol:
         otlp:
           tls:
@@ -137,7 +137,6 @@ alternateConfig:
           - prometheus
         processors:
           - memory_limiter
-          - batch/metrics
         exporters:
           - loadbalancing
     telemetry:
@@ -148,7 +147,7 @@ alternateConfig:
         k8s.pod.uid: "${env:K8S_POD_UID}"
         k8s.node.name: "${env:K8S_NODE_NAME}"
       metrics:
-        level: detailed
+        level: normal
         readers:
           - periodic:
               interval: 10000

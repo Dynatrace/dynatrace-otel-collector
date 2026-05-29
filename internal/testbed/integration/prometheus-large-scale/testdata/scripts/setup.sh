@@ -5,7 +5,10 @@ NAMESPACE="${NAMESPACE:-otel-ta}"
 HOST="${HOST:-localhost}"
 CONTAINER_REGISTRY="${CONTAINER_REGISTRY:-}"
 CONFIG_DIR="${CONFIG_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/config_examples/prometheus-large-scale}"
-SELFMON_HTTP_PORT="${SELFMON_HTTP_PORT:-4328}"
+HELM_OVERRIDE_DIR="${HELM_OVERRIDE_DIR:-}"
+SELFMON_SCRAPER_HTTP_PORT="${SELFMON_SCRAPER_HTTP_PORT:-4328}"
+SELFMON_GATEWAY_HTTP_PORT="${SELFMON_GATEWAY_HTTP_PORT:-4330}"
+SELFMON_ALLOCATOR_HTTP_PORT="${SELFMON_ALLOCATOR_HTTP_PORT:-4332}"
 
 COLLECTOR_IMAGE="${CONTAINER_REGISTRY}dynatrace-otel-collector"
 COLLECTOR_TAG="e2e-test"
@@ -35,10 +38,14 @@ kubectl create secret generic dynatrace-otelcol-credentials \
     --from-literal=DT_API_TOKEN="" \
     --dry-run=client -o yaml | kubectl apply -f -
 
-# Secret for selfmon-scraper → sink 2 (separate port)
+# Secret for selfmon-scraper with 3 separate endpoints (one per source)
+# DT_ENDPOINT is kept for the base otlphttp/dynatrace exporter (unused but validated)
 kubectl create secret generic selfmon-credentials \
     --namespace "${NAMESPACE}" \
-    --from-literal=DT_ENDPOINT="http://${HOST}:${SELFMON_HTTP_PORT}" \
+    --from-literal=DT_ENDPOINT="http://${HOST}:${SELFMON_SCRAPER_HTTP_PORT}" \
+    --from-literal=DT_ENDPOINT_SCRAPER="http://${HOST}:${SELFMON_SCRAPER_HTTP_PORT}" \
+    --from-literal=DT_ENDPOINT_GATEWAY="http://${HOST}:${SELFMON_GATEWAY_HTTP_PORT}" \
+    --from-literal=DT_ENDPOINT_ALLOCATOR="http://${HOST}:${SELFMON_ALLOCATOR_HTTP_PORT}" \
     --from-literal=DT_API_TOKEN="" \
     --dry-run=client -o yaml | kubectl apply -f -
 
@@ -63,9 +70,14 @@ helm upgrade --install otel-allocator open-telemetry/opentelemetry-target-alloca
 
 # --- Tier 2 Gateway (install before scraper so LB target exists) -----------
 echo "Installing Tier 2 Gateway..."
+GATEWAY_HELM_ARGS=()
+if [[ -n "${HELM_OVERRIDE_DIR}" && -f "${HELM_OVERRIDE_DIR}/tier2-gateway-override.yaml" ]]; then
+    GATEWAY_HELM_ARGS+=(-f "${HELM_OVERRIDE_DIR}/tier2-gateway-override.yaml")
+fi
 helm upgrade --install otel-gateway open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
     -f "${CONFIG_DIR}/tier2-gateway.values.yaml" \
+    "${GATEWAY_HELM_ARGS[@]+"${GATEWAY_HELM_ARGS[@]}"}" \
     --set "image.repository=${COLLECTOR_IMAGE}" \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "autoscaling.enabled=false" \
@@ -74,9 +86,14 @@ helm upgrade --install otel-gateway open-telemetry/opentelemetry-collector \
 
 # --- Tier 1 Scraper --------------------------------------------------------
 echo "Installing Tier 1 Scraper..."
+SCRAPER_HELM_ARGS=()
+if [[ -n "${HELM_OVERRIDE_DIR}" && -f "${HELM_OVERRIDE_DIR}/tier1-scraper-override.yaml" ]]; then
+    SCRAPER_HELM_ARGS+=(-f "${HELM_OVERRIDE_DIR}/tier1-scraper-override.yaml")
+fi
 helm upgrade --install otel-scraper open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
     -f "${CONFIG_DIR}/tier1-scraper.values.yaml" \
+    "${SCRAPER_HELM_ARGS[@]+"${SCRAPER_HELM_ARGS[@]}"}" \
     --set "image.repository=${COLLECTOR_IMAGE}" \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "autoscaling.enabled=false" \
@@ -85,9 +102,14 @@ helm upgrade --install otel-scraper open-telemetry/opentelemetry-collector \
 
 # --- Selfmon Scraper (override secret → selfmon sink) ----------------------
 echo "Installing Selfmon Scraper..."
+SELFMON_VALUES="${CONFIG_DIR}/selfmon-scraper.yaml"
+if [[ -n "${HELM_OVERRIDE_DIR}" && -f "${HELM_OVERRIDE_DIR}/selfmon-scraper-override.yaml" ]]; then
+    SELFMON_VALUES="${HELM_OVERRIDE_DIR}/selfmon-scraper-override.yaml"
+fi
 helm upgrade --install otel-selfmon open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
     -f "${CONFIG_DIR}/selfmon-scraper.yaml" \
+    -f "${SELFMON_VALUES}" \
     --set "image.repository=${COLLECTOR_IMAGE}" \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "extraEnvsFrom[0].secretRef.name=selfmon-credentials" \

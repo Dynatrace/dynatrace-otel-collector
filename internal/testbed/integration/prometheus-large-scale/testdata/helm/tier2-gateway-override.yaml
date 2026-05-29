@@ -1,0 +1,15 @@
+# Test-only override: redirect tier2-gateway telemetry to selfmon port 4322
+# so it lands in the separate metrics/gateway pipeline.
+alternateConfig:
+  service:
+    telemetry:
+      metrics:
+        readers:
+          - periodic:
+              interval: 10000
+              timeout: 5000
+              exporter:
+                otlp:
+                  protocol: http/protobuf
+                  temporality_preference: delta
+                  endpoint: http://selfmon-scraper:4322

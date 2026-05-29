@@ -1,0 +1,825 @@
+version: 1
+signal: metrics
+resources:
+    - attributes:
+        k8s.cluster.name: tiered-otelcol-ta-test
+        k8s.cluster.uid: '*'
+        k8s.container.name: targetallocator
+        k8s.namespace.name: otel-ta
+        k8s.node.name: '*'
+        k8s.pod.ip: '*'
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+        k8s.workload.kind: deployment
+        k8s.workload.name: tiered-allocator-ta
+        k8s.workload.uid: '*'
+        server.address: '*'
+        server.port: '*'
+        service.instance.id: '*'
+        service.name: unknown_service:target-allocator
+        telemetry.sdk.language: go
+        telemetry.sdk.name: opentelemetry
+        telemetry.sdk.version: '*'
+        url.scheme: http
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+          version: 0.48.0
+          metrics:
+            - name: go_gc_duration_seconds
+              type: summary
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_gc_gogc_percent
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_gc_gomemlimit_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_goroutines
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_info
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    version: '*'
+            - name: go_memstats_alloc_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_alloc_bytes_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_buck_hash_sys_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_frees_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_gc_sys_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_heap_alloc_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_heap_idle_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_heap_inuse_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_heap_objects
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_heap_released_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_heap_sys_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_last_gc_time_seconds
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_mallocs_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_mcache_inuse_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_mcache_sys_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_mspan_inuse_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_mspan_sys_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_next_gc_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_other_sys_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_stack_inuse_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_stack_sys_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_memstats_sys_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_sched_gomaxprocs_threads
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: go_threads
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: process_cpu_seconds_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: process_max_fds
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: process_network_receive_bytes_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: process_network_transmit_bytes_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: process_open_fds
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: process_resident_memory_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: process_start_time_seconds
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: process_virtual_memory_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: process_virtual_memory_max_bytes
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_azure_cache_hit_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_azure_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_consul_rpc_duration_seconds
+              type: summary
+              datapoints:
+                - attributes:
+                    call: service
+                    endpoint: '*'
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                - attributes:
+                    call: services
+                    endpoint: '*'
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_consul_rpc_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_discovered_targets
+              type: gauge
+              datapoints:
+                - attributes:
+                    config: scrapeConfig/otel-ta/dynatrace-com
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_dns_lookup_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_dns_lookups_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_failed_configs
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_file_read_errors_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_file_scan_duration_seconds
+              type: summary
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_file_watcher_errors_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_http_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_kubernetes_events_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    event: add
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: endpoints
+                - attributes:
+                    event: add
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: endpointslice
+                - attributes:
+                    event: add
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: ingress
+                - attributes:
+                    event: add
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: node
+                - attributes:
+                    event: add
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: pod
+                - attributes:
+                    event: add
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: service
+                - attributes:
+                    event: delete
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: endpoints
+                - attributes:
+                    event: delete
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: endpointslice
+                - attributes:
+                    event: delete
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: ingress
+                - attributes:
+                    event: delete
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: node
+                - attributes:
+                    event: delete
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: pod
+                - attributes:
+                    event: delete
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: service
+                - attributes:
+                    event: update
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: endpoints
+                - attributes:
+                    event: update
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: endpointslice
+                - attributes:
+                    event: update
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: ingress
+                - attributes:
+                    event: update
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: node
+                - attributes:
+                    event: update
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: pod
+                - attributes:
+                    event: update
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    role: service
+            - name: prometheus_sd_kubernetes_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_kuma_fetch_duration_seconds
+              type: summary
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_kuma_fetch_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_kuma_fetch_skipped_updates_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_last_update_timestamp_seconds
+              type: gauge
+              datapoints:
+                - attributes:
+                    config: scrapeConfig/otel-ta/dynatrace-com
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_linode_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_nomad_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_received_updates_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_updates_delayed_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_sd_updates_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_template_text_expansion_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_template_text_expansions_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_treecache_watcher_goroutines
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: prometheus_treecache_zookeeper_failures_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: promhttp_metric_handler_requests_in_flight
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: promhttp_metric_handler_requests_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    code: "200"
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                - attributes:
+                    code: "500"
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                - attributes:
+                    code: "503"
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: scrape_duration_seconds
+              type: gauge
+              unit: s
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: scrape_samples_post_metric_relabeling
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: scrape_samples_scraped
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: scrape_series_added
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: up
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+        - name: targetallocator
+          metrics:
+            - name: opentelemetry_allocator_collectors_allocatable
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    strategy: consistent-hashing
+            - name: opentelemetry_allocator_collectors_discovered
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: opentelemetry_allocator_events_total
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    source: EventSourcePrometheusCR
+            - name: opentelemetry_allocator_http_duration_seconds
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    path: /jobs/:job_id/targets
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    path: /livez
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    path: /metrics
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    path: /readyz
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    path: /scrape_configs
+            - name: opentelemetry_allocator_process_target_groups_duration_seconds
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    job_name: scrapeConfig/otel-ta/dynatrace-com
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: opentelemetry_allocator_process_targets_duration_seconds
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: opentelemetry_allocator_targets
+              type: gauge
+              datapoints:
+                - attributes:
+                    job_name: scrapeConfig/otel-ta/dynatrace-com
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: opentelemetry_allocator_targets_per_collector
+              type: gauge
+              datapoints:
+                - attributes:
+                    collector_name: '*'
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    strategy: consistent-hashing
+            - name: opentelemetry_allocator_targets_remaining
+              type: gauge
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+            - name: opentelemetry_allocator_time_to_allocate
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    method: SetCollectors
+                    strategy: consistent-hashing
+                - attributes:
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                    method: SetTargets
+                    strategy: consistent-hashing

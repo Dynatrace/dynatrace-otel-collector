@@ -96,7 +96,7 @@ func TestE2E_PrometheusLargeScale(t *testing.T) {
 	require.NoError(t, err, "failed to set up prometheus-large-scale components")
 
 	// Wait for metrics on all sinks
-	wantEntries := 5
+	wantEntries := 1
 
 	t.Log("Waiting for normal metrics from tier2-gateway...")
 	oteltest.WaitForMetrics(t, wantEntries, normalConsumer)
@@ -109,6 +109,18 @@ func TestE2E_PrometheusLargeScale(t *testing.T) {
 
 	t.Log("Waiting for allocator selfmon metrics...")
 	oteltest.WaitForMetrics(t, wantEntries, allocatorSelfmonConsumer)
+
+	// Verify expected scrape metadata metrics arrive on the normal data sink.
+	expectedDataMetrics := []string{
+		"up",
+		"scrape_duration_seconds",
+		"scrape_samples_scraped",
+		"scrape_series_added",
+		"scrape_samples_post_metric_relabeling",
+	}
+
+	t.Log("Checking normal metrics from tier2-gateway...")
+	requireMetricsEventually(t, normalConsumer, expectedDataMetrics, 5*time.Minute)
 
 	// Validate each selfmon source independently
 	t.Log("Validating scraper selfmon metrics...")

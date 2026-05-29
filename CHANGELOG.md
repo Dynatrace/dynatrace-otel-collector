@@ -6,9 +6,14 @@
 
 ## 0.49.0
 
-This release includes version v0.152.0 of the upstream Collector components.
+This release includes version v0.153.0 of the upstream Collector components and also includes changes introduced in v0.152.0.
 
 The individual upstream Collector changelogs can be found here:
+
+v0.153.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.153.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.153.0>
 
 v0.152.0:
 
@@ -17,27 +22,115 @@ v0.152.0:
 
 ### 🛑 Breaking changes 🛑
 
-- `receiver/kafka_metrics`: Promote the `receiver.kafkametricsreceiver.UseFranzGo` feature gate to stable ([#41480](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41480))
-  The franz-go client is now the only implementation; the gate is now permanently enabled and will be removed in v0.154.0.
-  The Sarama-based implementation has been removed.
-- `connector/span_metrics`: Promote `connector.spanmetrics.includeCollectorInstanceID` feature gate to beta. ([#40400](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40400))
-  Adds a `collector.instance.id` attribute to all metrics emitted by the spanmetrics connector.
-- `processor/tail_sampling`: Stabilize `disableinvertdecisions` feature gate. ([#47650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47650))
+- `pkg/service`: Stabilize telemetry.UseLocalHostAsDefaultMetricsAddress gate ([#15342](https://github.com/open-telemetry/opentelemetry-collector/issues/15342))
+- `pkg/confmap`: Stabilize confmap.newExpandedValueSanitizer feature gate ([#15339](https://github.com/open-telemetry/opentelemetry-collector/issues/15339))
+- `pkg/exporterhelper`: mark exporter.PersistRequestContext as stable ([#15330](https://github.com/open-telemetry/opentelemetry-collector/issues/15330))
+- `processor/filter`: Promote `processor.filter.defaultErrorModeIgnore` feature gate to beta. ([#47232](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47232))
+  The default `error_mode` of the filter processor is now `ignore` instead of `propagate`. To restore the previous behavior, disable the feature gate with `--feature-gates=-processor.filter.defaultErrorModeIgnore`.
+- `receiver/jaeger`: Remove stable gate receiver.jaeger.DisableRemoteSampling ([#48616](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48616))
+- `processor/transform`: Move the `processor.transform.defaultErrorModeIgnore` feature gate to beta. The default top-level `error_mode` is now `ignore` instead of `propagate`. ([#48415](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48415))
+  To revert to the previous default, disable the gate with `--feature-gates=-processor.transform.defaultErrorModeIgnore`.
+- `pkg/ottl`: Return errors when OTTL datapoint context setters are used on an incompatible data point type ([#48384](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48384))
+  For example, `set(explicit_bounds, [1.0])` against a `NumberDataPoint` now returns an error
+  rather than silently no-opping. Statements that were previously failing silently due to data
+  point type mismatches will now surface as errors.
+
+  Affected paths and the data point types they support:
+    - `value_double`, `value_int`: NumberDataPoint
+    - `explicit_bounds`, `bucket_counts`: HistogramDataPoint
+    - `scale`, `zero_count`, `positive`, `positive.offset`, `positive.bucket_counts`,
+      `negative`, `negative.offset`, `negative.bucket_counts`: ExponentialHistogramDataPoint
+    - `quantile_values`: SummaryDataPoint
+    - `exemplars`: NumberDataPoint, HistogramDataPoint, ExponentialHistogramDataPoint
+    - `count`, `sum`: HistogramDataPoint, ExponentialHistogramDataPoint, SummaryDataPoint
+  - `receiver/kafka_metrics`: Promote the `receiver.kafkametricsreceiver.UseFranzGo` feature gate to stable ([#41480](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41480))
+    The franz-go client is now the only implementation; the gate is now permanently enabled and will be removed in v0.154.0.
+    The Sarama-based implementation has been removed.
+  - `connector/span_metrics`: Promote `connector.spanmetrics.includeCollectorInstanceID` feature gate to beta. ([#40400](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40400))
+    Adds a `collector.instance.id` attribute to all metrics emitted by the spanmetrics connector.
+  - `processor/tail_sampling`: Stabilize `disableinvertdecisions` feature gate. ([#47650](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47650))
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
 
 ### ⚠️ Deprecations ⚠️
 
+- `exporter/load_balancing`: Rename the `loadbalancing` exporter to `load_balancing`. The old `loadbalancing` type remains available as a deprecated alias. ([#45339](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45339))
+- `processor/resource_detection`: Rename to `resource_detection` with deprecated alias `resourcedetection` ([#48525](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48525))
+- `pkg/kafka/configkafka`: Deprecate Kafka client config fields that became no-ops after the migration to franz-go. ([#48260](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48260))
+  - `resolve_canonical_bootstrap_servers_only`: franz-go has no direct equivalent
+    to the associated Sarama config.
+  - `auth.sasl.version`: franz-go negotiates the SASL handshake version
+    automatically.
+
+  Both fields are still accepted in configuration for backwards compatibility,
+  but have no effect at runtime. They will be removed in a future release.
+- `processor/k8s_attributes`: Deprecate `deployment_name_from_replicaset` and default deployment name extraction to the ReplicaSet name heuristic. ([#48447](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48447))
 - `receiver/kubelet_stats`: Rename receiver type from `kubeletstats` to `kubelet_stats` ([#45339](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45339))
 - `receiver/kafka_metrics`: Rename `kafkametrics` receiver to `kafka_metrics` with deprecated alias `kafkametrics` ([#45339](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45339))
 
 ### 💡 Enhancements 💡
 
+- `receiver/host_metrics`: Warn and disable process.handles at startup on platforms where it is not supported, instead of logging an error every scrape cycle. ([#47095](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47095))
+  process.handles is only supported on Windows. Previously, enabling it on other
+  platforms would spam "only supported on Windows" errors on every scrape cycle
+  for every process. The factory now checks for this at construction, logs a
+  single warning, and disables the metric so the hot path is never exercised.
+- `processor/k8s_attributes`: Improve k8s.cronjob.name extraction ([#44831](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44831))
+  Improve CronJob name extraction to use the Job informer when already running.
+  Otherwise use heuristic to match the Job name's and check if the last 8-digits are a valid timestamp
+  closely matching the pod creation time (24h window).
+- `receiver/kubelet_stats`: Add optional k8s.container.ephemeral_storage.usage metric to kubeletstats receiver. ([#47601](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47601))
+- `connector/span_metrics`: Add an opt-in `series_expiration` setting to expire stale spanmetrics series without changing existing `metrics_expiration` behavior. ([#44187](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44187))
+- `exporter/kafka`: Add per-signal `message_key_from_metadata_key` to derive the Kafka record key from client metadata. ([#29433](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/29433))
+  Each signal (`logs`, `metrics`, `traces`, `profiles`) now accepts a `message_key_from_metadata_key`
+  field that names a client metadata key whose value is used as the Kafka record key. This is mutually
+  exclusive with the existing `partition_*` flags for the same signal. If the metadata key is absent
+  or empty the record key is left nil.
+- `processor/tail_sampling`: Support OTTL path-context names (e.g. `span.attributes["foo"]`, `resource.attributes["bar"]`, `spanevent.name`) in the `ottl_condition` policy. ([#48330](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48330))
+  Un-prefixed paths continue to work for now. If you are using un-prefixed paths, the updated statements will be printed on startup. It is highly recommended to switch to the new syntax to avoid breaking changes in the future.
+- `pkg/stanza`: Respect the "SynchronousLogEmitter" feature gate in container parser operator. ([#47828](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47828))
+  The container parser operator now respects the `stanza.synchronousLogEmitter` feature gate,
+  using the synchronous log emitter when enabled to prevent possible data loss. Enabling the
+  feature gate disables batching within the container parser.
+- `receiver/kubelet_stats`: Enables dynamic metric reaggregation capability ([#46363](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46363))
+- `exporter/load_balancing`: Add `owner_account` option to AWS Cloud Map resolver for cross-account namespace discovery ([#47895](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47895))
+  The `owner_account` field allows the AWS Cloud Map resolver to discover instances
+  in namespaces shared from other AWS accounts using AWS RAM. This maps directly to
+  the `OwnerAccount` parameter in the AWS Cloud Map `DiscoverInstances` API call.
+- `receiver/k8s_objects`: Add top-level `interval` field as a fallback default pull interval for all pull-mode objects. ([#48452](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48452))
+  When `interval` is set at the top-level `k8s_objects` config, it applies to all pull-mode
+  objects that do not set their own per-resource `interval`. The resolution order is:
+  per-resource `interval` → top-level `interval` → built-in default (1h).
+  Watch-mode objects are unaffected. Existing configurations continue to work without change.
+- `receiver/host_metrics`: Warn and disable process.paging.faults at startup on platforms where it is not supported, instead of logging an error every scrape cycle. ([#47095](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47095))
+  process.paging.faults is only supported on Linux. Previously, enabling it on other
+  platforms would spam "not implemented" errors on every scrape cycle for every process.
+  The factory now checks for this at construction, logs a single warning, and disables
+  the metric so the hot path is never exercised.
+- `receiver/host_metrics`: Warn and disable process.signals_pending at startup on platforms where it is not supported, instead of logging an error every scrape cycle. ([#47095](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47095))
+  process.signals_pending is only supported on Linux (via /proc/<pid>/limits). Previously,
+  enabling it on other platforms would spam "not implemented" errors on every scrape cycle
+  for every process. The factory now checks for this at construction, logs a single
+  warning, and disables the metric so the hot path is never exercised.
+- `exporter/kafka`: Add health reporting to kafka exporter. ([#47293](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47293))
+- `processor/tail_sampling`: Switch the `rate_limiting` policy to a token bucket and add `burst_capacity` to allow short bursts of traffic above the sustained spans-per-second rate. ([#48226](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48226))
+  If `burst_capacity` is not set, it defaults to 2x `spans_per_second`, mirroring the `bytes_limiting` policy.
+
+  Existing configurations will see slightly different behavior: the bucket starts with a default burst of 2x
+  `spans_per_second` tokens. A trace whose span count equals `spans_per_second` can now be sampled (the previous
+  strict `<` comparison meant `spans_per_second: 1` would never sample).
+  Set `burst_capacity` explicitly to match the previous per-second cap if needed.
+- `receiver/file_log`: Improves file-reading efficiency by evicting previously read data from the OS page cache. ([#48273](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48273))
+  Clears the cache on Linux; acts as a no-op on unsupported platforms.
+- `receiver/host_metrics`: Warn and disable process.context_switches at startup on platforms where it is not supported, instead of logging an error every scrape cycle. ([#47095](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47095))
+  process.context_switches is only supported on Linux. Previously, enabling it on other
+  platforms would spam "not implemented" errors on every scrape cycle for every process.
+  The factory now checks for this at construction, logs a single warning, and disables
+  the metric so the hot path is never exercised.
 - `pkg/exporterhelper`: Add `otelcol_exporter_in_flight_requests` metric to track the number of export requests currently in-flight per exporter. ([#15009](https://github.com/open-telemetry/opentelemetry-collector/issues/15009))
   This UpDownCounter increments in startOp and decrements in endOp, allowing operators to monitor
   concurrent export activity and detect when an exporter is saturating its worker pool.
-- `all`: Support building with AIX ([#47010](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47010))
 - `processor/attributes`: Added support for default values in the attributes processor. ([#45352](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45352))
   This enhancement allows users to specify default values for attributes in the attributes processor.
   If the primary value source (e.g., environment variable, attribute, or context value) is not available,
@@ -76,6 +169,10 @@ v0.152.0:
 
 ### 🧰 Bug fixes 🧰
 
+- `pkg/config/configgrpc`: Fix memory corruption and fatal error in Snappy ([#15237](https://github.com/open-telemetry/opentelemetry-collector/issues/15237), [#15320](https://github.com/open-telemetry/opentelemetry-collector/issues/15320))
+- `processor/k8s_attributes`: Preserve an upstream-set container.image.tags resource attribute when processor.k8sattributes.EmitV1K8sConventions is enabled, matching the behavior of container.image.tag and container.image.repo_digests. ([#45869](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45869))
+- `processor/k8s_attributes`: Re-enable otelcol.k8s.pod.association metric with low-cardinality pod_identifier attribute. The attribute now encodes the association source type/name (e.g. "connection", "resource_attribute/k8s.pod.ip") rather than actual pod identifier values, preventing unbounded metric time series growth. ([#47669](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47669))
+- `receiver/syslog`: Support days with leading zeros in RFC 3164 syslogs ([#47665](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47665))
 - `pkg/service`: Fix Prometheus config defaults mismatch when host is explicitly set in telemetry configuration. ([#13867](https://github.com/open-telemetry/opentelemetry-collector/issues/13867))
   When users explicitly configured the telemetry metrics section (e.g. to change the host),
   the Prometheus exporter boolean fields (WithoutScopeInfo, WithoutUnits, WithoutTypeSuffix)

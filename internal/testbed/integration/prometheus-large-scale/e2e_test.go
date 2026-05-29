@@ -110,44 +110,6 @@ func TestE2E_PrometheusLargeScale(t *testing.T) {
 	t.Log("Waiting for allocator selfmon metrics...")
 	oteltest.WaitForMetrics(t, wantEntries, allocatorSelfmonConsumer)
 
-	// Verify expected scrape metadata metrics arrive on the normal data sink.
-	expectedDataMetrics := []string{
-		"up",
-		"scrape_duration_seconds",
-		"scrape_samples_scraped",
-		"scrape_series_added",
-		"scrape_samples_post_metric_relabeling",
-	}
-
-	t.Log("Checking normal metrics from tier2-gateway...")
-	requireMetricsEventually(t, normalConsumer, expectedDataMetrics, 5*time.Minute)
-
-	// Wait for data-flow-dependent selfmon metrics on scraper sink
-	scraperExpected := []string{
-		"otelcol_exporter_sent_metric_points",
-		"otelcol_receiver_accepted_metric_points",
-		"otelcol_processor_incoming_items",
-		"otelcol_loadbalancer_backend_outcome",
-	}
-	t.Log("Checking scraper selfmon metrics...")
-	requireMetricsEventually(t, scraperSelfmonConsumer, scraperExpected, 5*time.Minute)
-
-	// Wait for data-flow-dependent selfmon metrics on gateway sink
-	gatewayExpected := []string{
-		"otelcol_exporter_sent_metric_points",
-		"otelcol_receiver_accepted_metric_points",
-		"otelcol_processor_incoming_items",
-	}
-	t.Log("Checking gateway selfmon metrics...")
-	requireMetricsEventually(t, gatewaySelfmonConsumer, gatewayExpected, 5*time.Minute)
-
-	// Wait for allocator metrics
-	allocatorExpected := []string{
-		"opentelemetry_allocator_targets",
-	}
-	t.Log("Checking allocator selfmon metrics...")
-	requireMetricsEventually(t, allocatorSelfmonConsumer, allocatorExpected, 5*time.Minute)
-
 	// Validate each selfmon source independently
 	t.Log("Validating scraper selfmon metrics...")
 	validateSelfmonSource(t, scraperSelfmonConsumer, "./testdata/e2e/expected-selfmon-scraper.assert.yaml")

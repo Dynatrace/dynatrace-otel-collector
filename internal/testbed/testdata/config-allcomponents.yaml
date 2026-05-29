@@ -8,7 +8,7 @@ receivers:
     metrics:
     logs:
     brokers: ["my-cluster-kafka-brokers.kafka.svc.cluster.local:9092"]
-  kafkametrics:
+  kafka_metrics:
     scrapers:
       - brokers
       - topics

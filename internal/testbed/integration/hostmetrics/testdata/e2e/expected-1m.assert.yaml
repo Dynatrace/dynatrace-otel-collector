@@ -16,19 +16,19 @@ resources:
         os.version: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/cpuscraper
-          version: "*"
+          version: '*'
           metrics:
             - name: system.cpu.utilization
               type: gauge
               unit: "1"
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/loadscraper
-          version: "*"
+          version: '*'
           metrics:
             - name: system.cpu.load_average.1m
               type: gauge
               unit: '{thread}'
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper
-          version: "*"
+          version: '*'
           metrics:
             - name: system.memory.utilization
               type: gauge

@@ -12,7 +12,7 @@ resources:
         url.scheme: http
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
-          version: "*"
+          version: '*'
           metrics:
             - name: promhttp_metric_handler_errors_total
               type: sum

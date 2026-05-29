@@ -2707,6 +2707,102 @@ resourceMetrics:
         scope:
           name: go.opentelemetry.io/collector/exporter/exporterhelper
       - metrics:
+          - description: "Number of export requests currently in-flight (including retry backoff). [Development]"
+            name: otelcol_exporter_in_flight_requests
+            unit: '{request}'
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: traces
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  startTimeUnixNano: "1779997119645456416"
+                  timeUnixNano: "1779997299646731983"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  startTimeUnixNano: "1779997119645456416"
+                  timeUnixNano: "1779997299646731983"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: logs
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/logs
+                  startTimeUnixNano: "1779997119645456416"
+                  timeUnixNano: "1779997299646731983"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: traces
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  startTimeUnixNano: "1779997119645456416"
+                  timeUnixNano: "1779997299646731983"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: traces
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/traces
+                  startTimeUnixNano: "1779997119645456416"
+                  timeUnixNano: "1779997299646731983"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  startTimeUnixNano: "1779997119645456416"
+                  timeUnixNano: "1779997299646731983"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: logs
+                    - key: exporter
+                      value:
+                        stringValue: debug
+                  startTimeUnixNano: "1779997119645456416"
+                  timeUnixNano: "1779997299646731983"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/metrics
+                  startTimeUnixNano: "1779997119645456416"
+                  timeUnixNano: "1779997299646731983"
+                - asInt: "0"
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: logs
+                    - key: exporter
+                      value:
+                        stringValue: otlp_grpc/self
+                  startTimeUnixNano: "1779997119645456416"
+                  timeUnixNano: "1779997299646731983"
           - description: Number of log records successfully pushed into the pipeline. [Alpha]
             name: otelcol_receiver_accepted_log_records
             sum:

@@ -37,6 +37,39 @@ resources:
                     filter: filter
         - name: go.opentelemetry.io/collector/exporter/exporterhelper
           metrics:
+            - name: otelcol_exporter_in_flight_requests
+              type: sum
+              unit: '{request}'
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    data_type: logs
+                    exporter: debug
+                - attributes:
+                    data_type: logs
+                    exporter: otlp_grpc/self
+                - attributes:
+                    data_type: logs
+                    exporter: otlp_http/logs
+                - attributes:
+                    data_type: metrics
+                    exporter: debug
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_grpc/self
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http/metrics
+                - attributes:
+                    data_type: traces
+                    exporter: debug
+                - attributes:
+                    data_type: traces
+                    exporter: otlp_grpc/self
+                - attributes:
+                    data_type: traces
+                    exporter: otlp_http/traces
             - name: otelcol_exporter_queue_batch_send_size
               type: histogram
               unit: '{unit}'

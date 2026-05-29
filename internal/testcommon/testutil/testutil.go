@@ -504,11 +504,10 @@ func ReplaceAttrValsWithStar(metrics pmetric.Metrics, resourceKeys []string, dat
 		}
 
 		for _, s := range r.ScopeMetrics().All() {
-			for key := range s.Scope().Attributes().All() {
-				if key == "scope.version" {
-					s.Scope().Attributes().PutStr(key, "*")
-				}
-			}
+			// Scope versions are tied to module versions, which are not used in
+			// any of our dashboards. Setting them to "*" avoids unnecessary
+			// test failures.
+			s.Scope().SetVersion("*")
 
 			for _, m := range s.Metrics().All() {
 				switch m.Type() {

@@ -98,9 +98,6 @@ func TestE2E_PrometheusLargeScale(t *testing.T) {
 	// Wait for metrics on all sinks
 	wantEntries := 1
 
-	t.Log("Waiting for normal metrics from tier2-gateway...")
-	oteltest.WaitForMetrics(t, wantEntries, normalConsumer)
-
 	t.Log("Waiting for scraper selfmon metrics...")
 	oteltest.WaitForMetrics(t, wantEntries, scraperSelfmonConsumer)
 
@@ -109,18 +106,6 @@ func TestE2E_PrometheusLargeScale(t *testing.T) {
 
 	t.Log("Waiting for allocator selfmon metrics...")
 	oteltest.WaitForMetrics(t, wantEntries, allocatorSelfmonConsumer)
-
-	// Verify expected scrape metadata metrics arrive on the normal data sink.
-	expectedDataMetrics := []string{
-		"up",
-		"scrape_duration_seconds",
-		"scrape_samples_scraped",
-		"scrape_series_added",
-		"scrape_samples_post_metric_relabeling",
-	}
-
-	t.Log("Checking normal metrics from tier2-gateway...")
-	requireMetricsEventually(t, normalConsumer, expectedDataMetrics, 5*time.Minute)
 
 	// Validate each selfmon source independently
 	t.Log("Validating scraper selfmon metrics...")
@@ -131,6 +116,21 @@ func TestE2E_PrometheusLargeScale(t *testing.T) {
 
 	t.Log("Validating allocator selfmon metrics...")
 	validateSelfmonSource(t, allocatorSelfmonConsumer, "./testdata/e2e/expected-selfmon-allocator.assert.yaml")
+
+	t.Log("Waiting for avalanche metrics from gateway...")
+	oteltest.WaitForMetrics(t, wantEntries, normalConsumer)
+
+	// Verify expected scrape metadata metrics arrive on the normal data sink.
+	expectedDataMetrics := []string{
+		"up",
+		"scrape_duration_seconds",
+		"scrape_samples_scraped",
+		"scrape_series_added",
+		"scrape_samples_post_metric_relabeling",
+	}
+
+	t.Log("Checking avalanche metrics from gateway...")
+	requireMetricsEventually(t, normalConsumer, expectedDataMetrics, 5*time.Minute)
 }
 
 func validateSelfmonSource(t *testing.T, consumer *consumertest.MetricsSink, assertFile string) {

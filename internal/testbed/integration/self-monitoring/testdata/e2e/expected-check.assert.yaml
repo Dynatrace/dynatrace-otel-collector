@@ -383,7 +383,7 @@ resources:
               temporality: delta
               monotonic: true
         - name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
-          version: 0.68.0
+          version: "*"
           metrics:
             - name: rpc.client.call.duration
               type: histogram
@@ -426,7 +426,7 @@ resources:
                     rpc.response.status_code: OK
                     rpc.system.name: grpc
         - name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
-          version: 0.68.0
+          version: "*"
           metrics:
             - name: http.client.request.body.size
               type: histogram

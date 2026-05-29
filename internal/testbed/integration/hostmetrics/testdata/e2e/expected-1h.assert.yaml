@@ -16,7 +16,7 @@ resources:
         os.version: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/cpuscraper
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: system.cpu.logical.count
               type: sum
@@ -29,7 +29,7 @@ resources:
               temporality: cumulative
               monotonic: false
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: system.memory.limit
               type: sum
@@ -37,7 +37,7 @@ resources:
               temporality: cumulative
               monotonic: false
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/systemscraper
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: system.uptime
               type: gauge

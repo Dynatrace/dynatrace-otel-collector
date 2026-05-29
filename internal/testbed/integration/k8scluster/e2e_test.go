@@ -114,7 +114,7 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 	testutil.ReplaceAttrValsWithStar(actual, resourceIgnoreList, nil)
 
 	// To regenerate: uncomment, run the test once, re-comment.
-	require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertFile, actual))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertFile, actual))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		err := pmetricassert.AssertMetrics(expectedAssertFile, actual)

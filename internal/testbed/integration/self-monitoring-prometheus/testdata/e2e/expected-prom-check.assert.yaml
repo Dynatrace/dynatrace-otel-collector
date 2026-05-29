@@ -34,8 +34,15 @@ resources:
               type: gauge
             - name: up
               type: gauge
-        - name: go.opentelemetry.io/collector/exporter/exporterhelper
-          metrics:
+            - name: otelcol_exporter_in_flight_requests
+              type: gauge
+              datapoints:
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http/selfmon
             - name: otelcol_exporter_queue_batch_send_size
               type: histogram
               temporality: delta
@@ -85,8 +92,6 @@ resources:
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/metrics
-        - name: go.opentelemetry.io/collector/processor/processorhelper
-          metrics:
             - name: otelcol_processor_incoming_items
               type: sum
               temporality: delta
@@ -128,8 +133,6 @@ resources:
                 - attributes:
                     otel.signal: metrics
                     processor: transform/selfmon_rename
-        - name: go.opentelemetry.io/collector/receiver/receiverhelper
-          metrics:
             - name: otelcol_receiver_accepted_metric_points
               type: sum
               temporality: delta
@@ -163,8 +166,6 @@ resources:
                 - attributes:
                     receiver: prometheus/collector-self
                     transport: http
-        - name: go.opentelemetry.io/collector/service
-          metrics:
             - name: otelcol_process_cpu_seconds
               type: sum
               temporality: delta
@@ -183,9 +184,6 @@ resources:
               type: sum
               temporality: delta
               monotonic: true
-        - name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
-          version: 0.68.0
-          metrics:
             - name: rpc.server.call.duration
               type: histogram
               temporality: delta
@@ -194,9 +192,6 @@ resources:
                     rpc.method: opentelemetry.proto.collector.metrics.v1.MetricsService/Export
                     rpc.response.status_code: OK
                     rpc.system.name: grpc
-        - name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
-          version: 0.68.0
-          metrics:
             - name: http.client.request.body.size
               type: histogram
               temporality: delta

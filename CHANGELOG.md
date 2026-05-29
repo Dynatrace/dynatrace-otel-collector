@@ -6,10 +6,6 @@
 
 ## 0.49.0
 
-<!-- previous-version -->
-
-## 0.49.0
-
 This release includes version v0.153.0 of the upstream Collector components and also includes changes introduced in v0.152.0.
 
 The individual upstream Collector changelogs can be found here:

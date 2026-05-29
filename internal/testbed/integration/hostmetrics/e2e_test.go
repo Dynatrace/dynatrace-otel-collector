@@ -320,6 +320,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
+
 	checkMetrics(t, expectedFile1m, metricsConsumer1m, defaultOptions, compareTimeout, compareTick)
 
 	// 5m Metrics

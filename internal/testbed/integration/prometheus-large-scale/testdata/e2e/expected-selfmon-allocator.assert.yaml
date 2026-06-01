@@ -23,7 +23,7 @@ resources:
         url.scheme: http
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: go_gc_duration_seconds
               type: summary

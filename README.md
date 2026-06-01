@@ -26,8 +26,8 @@ Container images for the Dynatrace distribution of the OpenTelemetry Collector a
 
 ### Verifying image signatures
 
-All container images are signed using [cosign] keyless signing ([Sigstore]). No long-lived signing keys are used;
-signatures are bound to the GitHub Actions release workflow via OIDC.
+All container images are signed using [cosign] keyless signing ([Sigstore]), starting with version `v0.49.0`.
+No long-lived signing keys are used; signatures are bound to the GitHub Actions release workflow via OIDC.
 
 To verify an image, install [cosign] and run:
 
@@ -38,7 +38,7 @@ cosign verify \
   ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:<tag>
 ```
 
-Replace `<tag>` with the image tag you want to verify (e.g. `0.48.0`).
+Replace `<tag>` with the image tag you want to verify (e.g. `0.49.0`).
 The same command works for ECR (`public.ecr.aws/dynatrace/dynatrace-otel-collector:<tag>`) and Docker Hub (`dynatrace/dynatrace-otel-collector:<tag>`).
 
 [cosign]: https://docs.sigstore.dev/cosign/system_config/installation/

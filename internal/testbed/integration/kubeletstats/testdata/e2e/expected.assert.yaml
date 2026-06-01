@@ -2,13 +2,135 @@ version: 1
 signal: metrics
 resources:
     - attributes:
+        k8s.container.name: coredns
+        k8s.namespace.name: kube-system
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: '*'
+          metrics:
+            - name: container.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: container.cpu.usage
+              type: gauge
+              unit: '{cpu}'
+            - name: container.filesystem.available
+              type: gauge
+              unit: By
+            - name: container.filesystem.capacity
+              type: gauge
+              unit: By
+            - name: container.filesystem.usage
+              type: gauge
+              unit: By
+            - name: container.memory.available
+              type: gauge
+              unit: By
+            - name: container.memory.major_page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.rss
+              type: gauge
+              unit: By
+            - name: container.memory.usage
+              type: gauge
+              unit: By
+            - name: container.memory.working_set
+              type: gauge
+              unit: By
+            - name: container.uptime
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: k8s.container.cpu.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.cpu_request_utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.memory.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.memory_limit_utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.memory_request_utilization
+              type: gauge
+              unit: "1"
+    - attributes:
+        k8s.container.name: etcd
+        k8s.namespace.name: kube-system
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: '*'
+          metrics:
+            - name: container.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: container.cpu.usage
+              type: gauge
+              unit: '{cpu}'
+            - name: container.filesystem.available
+              type: gauge
+              unit: By
+            - name: container.filesystem.capacity
+              type: gauge
+              unit: By
+            - name: container.filesystem.usage
+              type: gauge
+              unit: By
+            - name: container.memory.major_page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.rss
+              type: gauge
+              unit: By
+            - name: container.memory.usage
+              type: gauge
+              unit: By
+            - name: container.memory.working_set
+              type: gauge
+              unit: By
+            - name: container.uptime
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: k8s.container.cpu.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.cpu_request_utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.memory.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.memory_request_utilization
+              type: gauge
+              unit: "1"
+    - attributes:
         k8s.container.name: kindnet-cni
         k8s.namespace.name: kube-system
         k8s.pod.name: '*'
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: container.cpu.time
               type: sum
@@ -69,13 +191,230 @@ resources:
               type: gauge
               unit: "1"
     - attributes:
+        k8s.container.name: kube-apiserver
+        k8s.namespace.name: kube-system
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: '*'
+          metrics:
+            - name: container.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: container.cpu.usage
+              type: gauge
+              unit: '{cpu}'
+            - name: container.filesystem.available
+              type: gauge
+              unit: By
+            - name: container.filesystem.capacity
+              type: gauge
+              unit: By
+            - name: container.filesystem.usage
+              type: gauge
+              unit: By
+            - name: container.memory.major_page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.rss
+              type: gauge
+              unit: By
+            - name: container.memory.usage
+              type: gauge
+              unit: By
+            - name: container.memory.working_set
+              type: gauge
+              unit: By
+            - name: container.uptime
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: k8s.container.cpu.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.cpu_request_utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.memory.node.utilization
+              type: gauge
+              unit: "1"
+    - attributes:
+        k8s.container.name: kube-controller-manager
+        k8s.namespace.name: kube-system
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: '*'
+          metrics:
+            - name: container.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: container.cpu.usage
+              type: gauge
+              unit: '{cpu}'
+            - name: container.filesystem.available
+              type: gauge
+              unit: By
+            - name: container.filesystem.capacity
+              type: gauge
+              unit: By
+            - name: container.filesystem.usage
+              type: gauge
+              unit: By
+            - name: container.memory.major_page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.rss
+              type: gauge
+              unit: By
+            - name: container.memory.usage
+              type: gauge
+              unit: By
+            - name: container.memory.working_set
+              type: gauge
+              unit: By
+            - name: container.uptime
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: k8s.container.cpu.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.cpu_request_utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.memory.node.utilization
+              type: gauge
+              unit: "1"
+    - attributes:
         k8s.container.name: kube-proxy
         k8s.namespace.name: kube-system
         k8s.pod.name: '*'
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: '*'
+          metrics:
+            - name: container.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: container.cpu.usage
+              type: gauge
+              unit: '{cpu}'
+            - name: container.filesystem.available
+              type: gauge
+              unit: By
+            - name: container.filesystem.capacity
+              type: gauge
+              unit: By
+            - name: container.filesystem.usage
+              type: gauge
+              unit: By
+            - name: container.memory.major_page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.rss
+              type: gauge
+              unit: By
+            - name: container.memory.usage
+              type: gauge
+              unit: By
+            - name: container.memory.working_set
+              type: gauge
+              unit: By
+            - name: container.uptime
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: k8s.container.cpu.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.memory.node.utilization
+              type: gauge
+              unit: "1"
+    - attributes:
+        k8s.container.name: kube-scheduler
+        k8s.namespace.name: kube-system
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: '*'
+          metrics:
+            - name: container.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: container.cpu.usage
+              type: gauge
+              unit: '{cpu}'
+            - name: container.filesystem.available
+              type: gauge
+              unit: By
+            - name: container.filesystem.capacity
+              type: gauge
+              unit: By
+            - name: container.filesystem.usage
+              type: gauge
+              unit: By
+            - name: container.memory.major_page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.page_faults
+              type: gauge
+              unit: "1"
+            - name: container.memory.rss
+              type: gauge
+              unit: By
+            - name: container.memory.usage
+              type: gauge
+              unit: By
+            - name: container.memory.working_set
+              type: gauge
+              unit: By
+            - name: container.uptime
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: k8s.container.cpu.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.cpu_request_utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.container.memory.node.utilization
+              type: gauge
+              unit: "1"
+    - attributes:
+        k8s.container.name: local-path-provisioner
+        k8s.namespace.name: local-path-storage
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: '*'
           metrics:
             - name: container.cpu.time
               type: sum
@@ -127,7 +466,7 @@ resources:
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: container.cpu.time
               type: sum
@@ -194,7 +533,7 @@ resources:
         k8s.volume.name: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: k8s.volume.available
               type: gauge
@@ -217,7 +556,7 @@ resources:
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: k8s.pod.cpu.node.utilization
               type: gauge
@@ -308,7 +647,7 @@ resources:
         k8s.volume.name: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: k8s.volume.available
               type: gauge
@@ -331,7 +670,7 @@ resources:
         k8s.pod.uid: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: '*'
           metrics:
             - name: k8s.pod.cpu.node.utilization
               type: gauge
@@ -416,10 +755,109 @@ resources:
               temporality: delta
               monotonic: true
     - attributes:
-        k8s.node.name: kind-worker
+        k8s.namespace.name: local-path-storage
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+        k8s.volume.name: '*'
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
-          version: 0.48.0
+          version: '*'
+          metrics:
+            - name: k8s.volume.available
+              type: gauge
+              unit: By
+            - name: k8s.volume.capacity
+              type: gauge
+              unit: By
+            - name: k8s.volume.inodes
+              type: gauge
+              unit: "1"
+            - name: k8s.volume.inodes.free
+              type: gauge
+              unit: "1"
+            - name: k8s.volume.inodes.used
+              type: gauge
+              unit: "1"
+    - attributes:
+        k8s.namespace.name: local-path-storage
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: '*'
+          metrics:
+            - name: k8s.pod.cpu.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.pod.cpu.time
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: k8s.pod.cpu.usage
+              type: gauge
+              unit: '{cpu}'
+            - name: k8s.pod.filesystem.available
+              type: gauge
+              unit: By
+            - name: k8s.pod.filesystem.capacity
+              type: gauge
+              unit: By
+            - name: k8s.pod.filesystem.usage
+              type: gauge
+              unit: By
+            - name: k8s.pod.memory.major_page_faults
+              type: gauge
+              unit: "1"
+            - name: k8s.pod.memory.node.utilization
+              type: gauge
+              unit: "1"
+            - name: k8s.pod.memory.page_faults
+              type: gauge
+              unit: "1"
+            - name: k8s.pod.memory.rss
+              type: gauge
+              unit: By
+            - name: k8s.pod.memory.usage
+              type: gauge
+              unit: By
+            - name: k8s.pod.memory.working_set
+              type: gauge
+              unit: By
+            - name: k8s.pod.network.errors
+              type: sum
+              unit: "1"
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    direction: receive
+                    interface: '*'
+                - attributes:
+                    direction: transmit
+                    interface: '*'
+            - name: k8s.pod.network.io
+              type: sum
+              unit: By
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    direction: receive
+                    interface: '*'
+                - attributes:
+                    direction: transmit
+                    interface: '*'
+            - name: k8s.pod.uptime
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+    - attributes:
+        k8s.node.name: kind-control-plane
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver
+          version: '*'
           metrics:
             - name: k8s.node.cpu.time
               type: sum

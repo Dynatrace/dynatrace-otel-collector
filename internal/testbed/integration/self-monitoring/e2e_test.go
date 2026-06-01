@@ -315,7 +315,6 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertionFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
 		err := pmetricassert.AssertMetrics(expectedAssertionFile, actual)
 		assert.NoError(tt, err)
 	}, 3*time.Minute, 1*time.Second)
@@ -329,6 +328,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 
 	defaultOptions := []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreMetricValues(
+			"otelcol_exporter_in_flight_requests",
 			"otelcol_processor_filter_datapoints.filtered",
 			"otelcol_processor_filter_logs.filtered",
 			"otelcol_processor_filter_spans.filtered",

@@ -192,6 +192,7 @@ func TestE2E_Kafka(t *testing.T) {
 	oteltest.WaitForMetrics(t, 1, metricsConsumer)
 
 	actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actual, nil, nil)
 
 	// To regenerate: uncomment, run the test once, re-comment.
 	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedMetricsAssertFile, actual))
@@ -290,6 +291,7 @@ func TestE2E_Kafka(t *testing.T) {
 	oteltest.WaitForMetrics(t, 10, kmetricsConsumer)
 
 	actualKMetrics := kmetricsConsumer.AllMetrics()[len(kmetricsConsumer.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actualKMetrics, nil, nil)
 
 	// To regenerate: uncomment, run the test once, re-comment.
 	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedKMetricsAssertFile, actualKMetrics))

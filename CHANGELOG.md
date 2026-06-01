@@ -201,6 +201,12 @@ v0.152.0:
 
 </details>
 
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- Add cosign container image signing ([#1001](https://github.com/Dynatrace/dynatrace-otel-collector/pull/1001))
+  - See [_Verifying image signatures_ in the README](https://github.com/Dynatrace/dynatrace-otel-collector/tree/v0.49.0#verifying-image-signatures) on how image signatures can be verified.
 
 <!-- previous-version -->
 

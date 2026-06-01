@@ -28,7 +28,7 @@ resources:
                 - attributes:
                     otelcol.signal: metrics
                     pod_identifier: '*'
-                    status: success
+                    status: '*'
             - name: otelcol_otelsvc_k8s_ip_lookup_miss
               type: sum
               unit: "1"

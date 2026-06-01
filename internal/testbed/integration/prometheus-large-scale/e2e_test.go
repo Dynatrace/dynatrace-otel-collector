@@ -160,6 +160,7 @@ func validateSelfmonSource(t *testing.T, consumer *consumertest.MetricsSink, ass
 		"collector_name",
 		"endpoint",
 		"pod_identifier",
+		"status",
 	}
 
 	// To regenerate: uncomment, run the test once, re-comment.

@@ -61,8 +61,10 @@ resources:
         - name: go.opentelemetry.io/collector/exporter/exporterhelper
           metrics:
             - name: otelcol_exporter_in_flight_requests
-              type: gauge
+              type: sum
               unit: '{request}'
+              temporality: cumulative
+              monotonic: false
               datapoints:
                 - attributes:
                     data_type: metrics

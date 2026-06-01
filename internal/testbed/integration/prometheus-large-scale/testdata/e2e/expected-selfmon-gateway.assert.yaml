@@ -19,6 +19,16 @@ resources:
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor
           metrics:
+            - name: otelcol.k8s.pod.association
+              type: sum
+              unit: '{resources}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    otelcol.signal: metrics
+                    pod_identifier: '*'
+                    status: success
             - name: otelcol_otelsvc_k8s_ip_lookup_miss
               type: sum
               unit: "1"

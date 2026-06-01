@@ -54,6 +54,13 @@ resources:
               monotonic: true
         - name: go.opentelemetry.io/collector/exporter/exporterhelper
           metrics:
+            - name: otelcol_exporter_in_flight_requests
+              type: gauge
+              unit: '{request}'
+              datapoints:
+                - attributes:
+                    data_type: metrics
+                    exporter: otlp_http
             - name: otelcol_exporter_queue_capacity
               type: gauge
               unit: '{batch}'

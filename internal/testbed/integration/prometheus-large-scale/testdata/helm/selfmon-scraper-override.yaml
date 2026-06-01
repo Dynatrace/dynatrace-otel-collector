@@ -1,0 +1,130 @@
+# Test-only override for selfmon-scraper: splits into 3 pipelines
+# so each source (scraper, gateway, allocator) goes to a separate sink.
+#
+# Port mapping:
+#   tier1-scraper telemetry → OTLP 4319/4320 (custom)  → pipeline metrics/scraper   → export to HOST:4327
+#   tier2-gateway telemetry → OTLP 4321/4322 (custom)  → pipeline metrics/gateway   → export to HOST:4329
+#   allocator metrics       → Prometheus scrape :8080   → pipeline metrics/allocator → export to HOST:4331
+
+alternateConfig:
+  extensions:
+    health_check:
+      endpoint: "${env:MY_POD_IP}:13133"
+
+  receivers:
+    # Receives tier1-scraper telemetry (custom ports)
+    otlp/tier1:
+      protocols:
+        grpc:
+          endpoint: "${env:MY_POD_IP}:4319"
+        http:
+          endpoint: "${env:MY_POD_IP}:4320"
+    # Receives tier2-gateway telemetry (custom ports)
+    otlp/tier2:
+      protocols:
+        grpc:
+          endpoint: "${env:MY_POD_IP}:4321"
+        http:
+          endpoint: "${env:MY_POD_IP}:4322"
+
+  exporters:
+    debug:
+      verbosity: basic
+    otlphttp/scraper:
+      endpoint: "${env:DT_ENDPOINT_SCRAPER}"
+      headers:
+        Authorization: "Api-Token ${env:DT_API_TOKEN}"
+    otlphttp/gateway:
+      endpoint: "${env:DT_ENDPOINT_GATEWAY}"
+      headers:
+        Authorization: "Api-Token ${env:DT_API_TOKEN}"
+    otlphttp/allocator:
+      endpoint: "${env:DT_ENDPOINT_ALLOCATOR}"
+      headers:
+        Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+  service:
+    extensions:
+      - health_check
+    pipelines:
+      # Override base's "metrics" pipeline to prevent it from surviving the
+      # Helm deep-merge. Without this, the base's pipeline (otlp + prometheus →
+      # otlphttp/dynatrace) stays and leaks TA data into the scraper sink.
+      # Points at the base's otlp receiver (ports disabled, no traffic).
+      metrics:
+        receivers:
+          - otlp
+        exporters:
+          - debug
+      metrics/scraper:
+        receivers:
+          - otlp/tier1
+        processors:
+          - memory_limiter
+          - metric_start_time
+          - cumulativetodelta
+          - k8s_attributes
+          - transform
+        exporters:
+          - otlphttp/scraper
+      metrics/gateway:
+        receivers:
+          - otlp/tier2
+        processors:
+          - memory_limiter
+          - metric_start_time
+          - cumulativetodelta
+          - k8s_attributes
+          - transform
+        exporters:
+          - otlphttp/gateway
+      metrics/allocator:
+        receivers:
+          - prometheus
+        processors:
+          - memory_limiter
+          - transform/selfmon_rename
+          - metric_start_time
+          - cumulativetodelta
+          - k8s_attributes
+          - transform
+        exporters:
+          - otlphttp/allocator
+
+ports:
+  otlp:
+    enabled: false
+  otlp-http:
+    enabled: false
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+  metrics:
+    enabled: false
+  # Extra ports for tier1-scraper OTLP receiver
+  tier1-grpc:
+    enabled: true
+    containerPort: 4319
+    servicePort: 4319
+    protocol: TCP
+  tier1-http:
+    enabled: true
+    containerPort: 4320
+    servicePort: 4320
+    protocol: TCP
+  # Extra ports for tier2-gateway OTLP receiver
+  tier2-grpc:
+    enabled: true
+    containerPort: 4321
+    servicePort: 4321
+    protocol: TCP
+  tier2-http:
+    enabled: true
+    containerPort: 4322
+    servicePort: 4322
+    protocol: TCP

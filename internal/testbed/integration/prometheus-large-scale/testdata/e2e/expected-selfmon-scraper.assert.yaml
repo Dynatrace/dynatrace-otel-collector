@@ -1,0 +1,178 @@
+version: 1
+signal: metrics
+resources:
+    - attributes:
+        k8s.cluster.name: tiered-otelcol-ta-test
+        k8s.cluster.uid: '*'
+        k8s.container.name: opentelemetry-collector
+        k8s.namespace.name: otel-ta
+        k8s.node.name: '*'
+        k8s.pod.ip: '*'
+        k8s.pod.name: '*'
+        k8s.pod.uid: '*'
+        k8s.workload.kind: deployment
+        k8s.workload.name: tiered-scraper
+        k8s.workload.uid: '*'
+        service.instance.id: '*'
+        service.name: dynatrace-otel-collector
+        service.version: '*'
+      scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/loadbalancingexporter
+          metrics:
+            - name: otelcol_loadbalancer_backend_latency
+              type: histogram
+              unit: ms
+              temporality: delta
+              datapoints:
+                - attributes:
+                    endpoint: '*'
+            - name: otelcol_loadbalancer_backend_outcome
+              type: sum
+              unit: '{outcomes}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    endpoint: '*'
+                    success: true
+            - name: otelcol_loadbalancer_num_backend_updates
+              type: sum
+              unit: '{updates}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    resolver: k8s
+            - name: otelcol_loadbalancer_num_backends
+              type: gauge
+              unit: '{backends}'
+              datapoints:
+                - attributes:
+                    resolver: k8s
+            - name: otelcol_loadbalancer_num_resolutions
+              type: sum
+              unit: '{resolutions}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    resolver: k8s
+                    success: true
+        - name: go.opentelemetry.io/collector/exporter/exporterhelper
+          metrics:
+            - name: otelcol_exporter_in_flight_requests
+              type: sum
+              unit: '{request}'
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    data_type: metrics
+                    exporter: loadbalancing
+            - name: otelcol_exporter_queue_capacity
+              type: gauge
+              unit: '{batch}'
+              datapoints:
+                - attributes:
+                    data_type: metrics
+                    exporter: loadbalancing
+            - name: otelcol_exporter_queue_size
+              type: gauge
+              unit: '{batch}'
+              datapoints:
+                - attributes:
+                    data_type: metrics
+                    exporter: loadbalancing
+            - name: otelcol_exporter_sent_metric_points
+              type: sum
+              unit: '{datapoint}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    exporter: loadbalancing
+        - name: go.opentelemetry.io/collector/processor/memorylimiterprocessor
+          metrics:
+            - name: otelcol_processor_accepted_metric_points
+              type: sum
+              unit: '{datapoint}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    processor: memory_limiter
+        - name: go.opentelemetry.io/collector/processor/processorhelper
+          metrics:
+            - name: otelcol_processor_incoming_items
+              type: sum
+              unit: '{item}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    otel.signal: metrics
+                    processor: memory_limiter
+            - name: otelcol_processor_outgoing_items
+              type: sum
+              unit: '{item}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    otel.signal: metrics
+                    processor: memory_limiter
+        - name: go.opentelemetry.io/collector/receiver/receiverhelper
+          metrics:
+            - name: otelcol_receiver_accepted_metric_points
+              type: sum
+              unit: '{datapoint}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: prometheus
+                    transport: http
+            - name: otelcol_receiver_failed_metric_points
+              type: sum
+              unit: '{datapoint}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: prometheus
+                    transport: http
+            - name: otelcol_receiver_refused_metric_points
+              type: sum
+              unit: '{datapoint}'
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    receiver: prometheus
+                    transport: http
+        - name: go.opentelemetry.io/collector/service
+          metrics:
+            - name: otelcol_process_cpu_seconds
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true
+            - name: otelcol_process_memory_rss
+              type: gauge
+              unit: By
+            - name: otelcol_process_runtime_heap_alloc_bytes
+              type: gauge
+              unit: By
+            - name: otelcol_process_runtime_total_alloc_bytes
+              type: sum
+              unit: By
+              temporality: delta
+              monotonic: true
+            - name: otelcol_process_runtime_total_sys_memory_bytes
+              type: gauge
+              unit: By
+            - name: otelcol_process_uptime
+              type: sum
+              unit: s
+              temporality: delta
+              monotonic: true

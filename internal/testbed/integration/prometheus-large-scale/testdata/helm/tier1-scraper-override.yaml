@@ -1,0 +1,15 @@
+# Test-only override: redirect tier1-scraper telemetry to selfmon port 4320
+# so it lands in the separate metrics/scraper pipeline.
+alternateConfig:
+  service:
+    telemetry:
+      metrics:
+        readers:
+          - periodic:
+              interval: 10000
+              timeout: 5000
+              exporter:
+                otlp:
+                  protocol: http/protobuf
+                  temporality_preference: delta
+                  endpoint: http://selfmon-scraper:4320

@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: avalanche
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: avalanche
+  name: avalanche
+  namespace: avalanche
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: avalanche
+  template:
+    metadata:
+      annotations:
+        metrics.dynatrace.com/scrape: "true"
+        metrics.dynatrace.com/port: "9001"
+      labels:
+        app: avalanche
+    spec:
+      containers:
+        - image: quay.io/prometheuscommunity/avalanche:v0.7.0
+          name: avalanche
+          args:
+            # Target: ~5M datapoints/min across 30 replicas (60s scrape interval)
+            # Per pod (~166.7k series):
+            # Gauges:     25 metrics × 1,634 series            =  40,850 series
+            # Counters:   25 metrics × 1,634 series            =  40,850 series
+            # Histograms:  4 metrics × 1,634 series × 13       =  84,968 series
+            #   (10 buckets + 1 +Inf bucket + _sum + _count)
+            - "--gauge-metric-count=25"
+            - "--counter-metric-count=25"
+            - "--histogram-metric-count=4"
+            - "--histogram-metric-bucket-count=10"
+            - "--native-histogram-metric-count=0"
+            - "--summary-metric-count=0"
+            - "--series-count=817"
+            - "--value-interval=60"
+            - "--series-interval=3600"
+            - "--metric-interval=0"
+            - "--port=9001"    # Pod total: ~83,334 series → 1 pod × 83,334 = ~83,334 DPM
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "100m"
+            limits:
+              cpu: "500m"
+              memory: "384Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: avalanche
+  namespace: avalanche
+spec:
+  selector:
+    app: avalanche
+  ports:
+    - name: metrics
+      port: 9001
+      targetPort: 9001

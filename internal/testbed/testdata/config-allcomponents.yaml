@@ -8,7 +8,12 @@ receivers:
     metrics:
     logs:
     brokers: ["my-cluster-kafka-brokers.kafka.svc.cluster.local:9092"]
-  kafkametrics:
+  kafkametrics/1:
+    scrapers:
+      - brokers
+      - topics
+      - consumers
+  kafka_metrics/2:
     scrapers:
       - brokers
       - topics
@@ -30,7 +35,15 @@ receivers:
       group: events.k8s.io
       namespaces: [default]
       exclude_watch_type: [DELETED]
-  kubeletstats:
+  kubeletstats/1:
+    auth_type: "serviceAccount"
+    collection_interval: 10s
+    node: '${env:K8S_NODE_NAME}'
+    k8s_api_config:
+      auth_type: "serviceAccount"
+    endpoint: "https://${env:K8S_NODE_NAME}:10250"
+    insecure_skip_verify: true
+  kubelet_stats/2:
     auth_type: "serviceAccount"
     collection_interval: 10s
     node: '${env:K8S_NODE_NAME}'
@@ -139,7 +152,11 @@ processors:
     spike_limit_mib: 800
   metric_start_time:
   probabilistic_sampler:
-  resourcedetection:
+  resourcedetection/1:
+    detectors: [env]
+    timeout: 2s
+    override: false
+  resource_detection/2:
     detectors: [env]
     timeout: 2s
     override: false
@@ -180,7 +197,13 @@ exporters:
     endpoint: https://localhost:4312
   otlp_http:
     endpoint: https://localhost:7821
-  loadbalancing:
+  loadbalancing/1:
+    resolver:
+      k8s:
+        service: metrics-receiver.default
+        ports:
+          - 4317
+  load_balancing/2:
     resolver:
       k8s:
         service: metrics-receiver.default

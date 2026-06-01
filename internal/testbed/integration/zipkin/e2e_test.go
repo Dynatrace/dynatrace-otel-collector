@@ -106,9 +106,9 @@ func TestE2E_ZipkinReceiver(t *testing.T) {
 					"http.path":   oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "/"),
 				},
 				{
-					"http.method":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "GET"),
-					"http.path":    oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "/api"),
-					"peer.service": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "backend"),
+					"http.method":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "GET"),
+					"http.path":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "/api"),
+					"service.peer.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "backend"),
 				},
 			},
 		},

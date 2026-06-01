@@ -1,0 +1,146 @@
+version: 1
+signal: metrics
+resources:
+    - scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver
+          version: '*'
+          metrics:
+            - name: kafka.brokers
+              type: sum
+              unit: '{brokers}'
+              temporality: cumulative
+              monotonic: false
+            - name: kafka.consumer_group.lag
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    group: otel-collector
+                    partition: 0
+                    topic: otlp_logs
+                - attributes:
+                    group: otel-collector
+                    partition: 0
+                    topic: otlp_metrics
+                - attributes:
+                    group: otel-collector
+                    partition: 0
+                    topic: otlp_spans
+            - name: kafka.consumer_group.lag_sum
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    group: otel-collector
+                    topic: otlp_logs
+                - attributes:
+                    group: otel-collector
+                    topic: otlp_metrics
+                - attributes:
+                    group: otel-collector
+                    topic: otlp_spans
+            - name: kafka.consumer_group.members
+              type: sum
+              unit: '{members}'
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    group: otel-collector
+            - name: kafka.consumer_group.offset
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    group: otel-collector
+                    partition: 0
+                    topic: otlp_logs
+                - attributes:
+                    group: otel-collector
+                    partition: 0
+                    topic: otlp_metrics
+                - attributes:
+                    group: otel-collector
+                    partition: 0
+                    topic: otlp_spans
+            - name: kafka.consumer_group.offset_sum
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    group: otel-collector
+                    topic: otlp_logs
+                - attributes:
+                    group: otel-collector
+                    topic: otlp_metrics
+                - attributes:
+                    group: otel-collector
+                    topic: otlp_spans
+            - name: kafka.partition.current_offset
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    partition: 0
+                    topic: otlp_logs
+                - attributes:
+                    partition: 0
+                    topic: otlp_metrics
+                - attributes:
+                    partition: 0
+                    topic: otlp_spans
+            - name: kafka.partition.oldest_offset
+              type: gauge
+              unit: "1"
+              datapoints:
+                - attributes:
+                    partition: 0
+                    topic: otlp_logs
+                - attributes:
+                    partition: 0
+                    topic: otlp_metrics
+                - attributes:
+                    partition: 0
+                    topic: otlp_spans
+            - name: kafka.partition.replicas
+              type: sum
+              unit: '{replicas}'
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    partition: 0
+                    topic: otlp_logs
+                - attributes:
+                    partition: 0
+                    topic: otlp_metrics
+                - attributes:
+                    partition: 0
+                    topic: otlp_spans
+            - name: kafka.partition.replicas_in_sync
+              type: sum
+              unit: '{replicas}'
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    partition: 0
+                    topic: otlp_logs
+                - attributes:
+                    partition: 0
+                    topic: otlp_metrics
+                - attributes:
+                    partition: 0
+                    topic: otlp_spans
+            - name: kafka.topic.partitions
+              type: sum
+              unit: '{partitions}'
+              temporality: cumulative
+              monotonic: false
+              datapoints:
+                - attributes:
+                    topic: otlp_logs
+                - attributes:
+                    topic: otlp_metrics
+                - attributes:
+                    topic: otlp_spans

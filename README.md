@@ -24,6 +24,26 @@ Container images for the Dynatrace distribution of the OpenTelemetry Collector a
 - [Amazon Elastic Container Registry (Amazon ECR)](https://gallery.ecr.aws/dynatrace/dynatrace-otel-collector)
 - [Docker Hub Container Registry](https://hub.docker.com/r/dynatrace/dynatrace-otel-collector)
 
+### Verifying image signatures
+
+All container images are signed using [cosign] keyless signing ([Sigstore]). No long-lived signing keys are used;
+signatures are bound to the GitHub Actions release workflow via OIDC.
+
+To verify an image, install [cosign] and run:
+
+```sh
+cosign verify \
+  --certificate-identity-regexp "https://github.com/Dynatrace/dynatrace-otel-collector/.github/workflows/release.yaml@refs/tags/.*" \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+  ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:<tag>
+```
+
+Replace `<tag>` with the image tag you want to verify (e.g. `0.48.0`).
+The same command works for ECR (`public.ecr.aws/dynatrace/dynatrace-otel-collector:<tag>`) and Docker Hub (`dynatrace/dynatrace-otel-collector:<tag>`).
+
+[cosign]: https://docs.sigstore.dev/cosign/system_config/installation/
+[Sigstore]: https://www.sigstore.dev/
+
 ## Troubleshooting
 
 For help troubleshooting issues, please see the OpenTelemetry documentation on [troubleshooting the Collector].

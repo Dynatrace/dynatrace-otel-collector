@@ -14,6 +14,7 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/plogtest"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
@@ -29,6 +30,8 @@ func TestE2E_Kafka(t *testing.T) {
 	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
 	expectedMetricsFile := filepath.Join(testDir, "e2e", "expected-metrics.yaml")
 	expectedKMetricsFile := filepath.Join(testDir, "e2e", "expected-kafka-metrics.yaml")
+	expectedMetricsAssertFile := filepath.Join(testDir, "e2e", "expected-metrics.assert.yaml")
+	expectedKMetricsAssertFile := filepath.Join(testDir, "e2e", "expected-kafka-metrics.assert.yaml")
 	configExamplesDir := filepath.Join("..", "..", "..", "..", "config_examples")
 
 	// K8s client
@@ -188,6 +191,17 @@ func TestE2E_Kafka(t *testing.T) {
 	t.Logf("Checking metrics...")
 	oteltest.WaitForMetrics(t, 1, metricsConsumer)
 
+	actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actual, nil, nil)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedMetricsAssertFile, actual))
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		err := pmetricassert.AssertMetrics(expectedMetricsAssertFile, actual)
+		assert.NoError(tt, err)
+	}, compareTimeout, compareTick)
+
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedMetricsFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
@@ -275,6 +289,16 @@ func TestE2E_Kafka(t *testing.T) {
 	// KMetrics
 	t.Logf("Checking kafka metrics...")
 	oteltest.WaitForMetrics(t, 10, kmetricsConsumer)
+
+	actualKMetrics := kmetricsConsumer.AllMetrics()[len(kmetricsConsumer.AllMetrics())-1]
+	testutil.ReplaceAttrValsWithStar(actualKMetrics, nil, nil)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedKMetricsAssertFile, actualKMetrics))
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, pmetricassert.AssertMetrics(expectedKMetricsAssertFile, actualKMetrics))
+	}, compareTimeout, compareTick)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedKMetricsFile, kmetricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))

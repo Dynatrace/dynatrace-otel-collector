@@ -12,8 +12,10 @@ import (
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/google/uuid"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
@@ -170,6 +172,7 @@ func isMetricPresent(m pmetric.Metric, expected pmetric.MetricSlice) bool {
 func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	testNs := "e2eselfmonitoringcheckmetrics"
 	expectedFile := "./testdata/e2e/expected-check.yaml"
+	expectedAssertionFile := "./testdata/e2e/expected-check.assert.yaml"
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
 
@@ -292,6 +295,30 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	// self monitoring metrics
 	oteltest.WaitForMetrics(t, 5, metricsConsumer)
 
+	actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+
+	dpIgnoreList := []string{
+		"server.address",
+		"net.peer.name",
+		"server.port",
+	}
+	resourceIgnoreList := []string{
+		"k8s.node.name",
+		"k8s.pod.name",
+		"service.instance.id",
+		"service.version",
+	}
+
+	testutil.ReplaceAttrValsWithStar(actual, resourceIgnoreList, dpIgnoreList)
+
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertionFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		err := pmetricassert.AssertMetrics(expectedAssertionFile, actual)
+		assert.NoError(tt, err)
+	}, 3*time.Minute, 1*time.Second)
+
 	// the commented line below writes the received list of metrics to the expected.yaml
 	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
@@ -301,6 +328,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 
 	defaultOptions := []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreMetricValues(
+			"otelcol_exporter_in_flight_requests",
 			"otelcol_processor_filter_datapoints.filtered",
 			"otelcol_processor_filter_logs.filtered",
 			"otelcol_processor_filter_spans.filtered",

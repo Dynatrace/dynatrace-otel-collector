@@ -277,10 +277,6 @@ resourceMetrics:
                 value:
                   stringValue: histogram
             name: http.client.request.duration
-        scope:
-          name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
-          version: 0.68.0
-      - metrics:
           - description: Number of units in the batch [Development]
             histogram:
               aggregationTemporality: 1
@@ -539,6 +535,32 @@ resourceMetrics:
                 value:
                   stringValue: gauge
             name: otelcol_exporter_queue_size
+          - description: Number of export requests currently in-flight (including retry backoff). [Development]
+            gauge:
+              dataPoints:
+                - asDouble: 0
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http
+                  timeUnixNano: "1000000"
+                - asDouble: 0
+                  attributes:
+                    - key: data_type
+                      value:
+                        stringValue: metrics
+                    - key: exporter
+                      value:
+                        stringValue: otlp_http/selfmon
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: otelcol_exporter_in_flight_requests
           - description: Number of metric points successfully sent to destination. [Alpha]
             metadata:
               - key: prometheus.type
@@ -581,9 +603,6 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-        scope:
-          name: go.opentelemetry.io/collector/exporter/exporterhelper
-      - metrics:
           - description: Uptime of the process [Alpha]
             metadata:
               - key: prometheus.type
@@ -653,9 +672,6 @@ resourceMetrics:
                 value:
                   stringValue: gauge
             name: otelcol_process_runtime_total_sys_memory_bytes
-        scope:
-          name: go.opentelemetry.io/collector/service
-      - metrics:
           - description: Number of items passed to the processor. [Alpha]
             metadata:
               - key: prometheus.type
@@ -877,9 +893,6 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-        scope:
-          name: go.opentelemetry.io/collector/processor/processorhelper
-      - metrics:
           - description: Number of metric points successfully pushed into the pipeline. [Alpha]
             metadata:
               - key: prometheus.type
@@ -970,9 +983,6 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-        scope:
-          name: go.opentelemetry.io/collector/receiver/receiverhelper
-      - metrics:
           - description: The number of samples remaining after metric relabeling was applied
             gauge:
               dataPoints:
@@ -1048,10 +1058,6 @@ resourceMetrics:
                 value:
                   stringValue: gauge
             name: scrape_samples_scraped
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
-          version: 0.47.0
-      - metrics:
           - description: Measures the duration of an incoming Remote Procedure Call (RPC).
             histogram:
               aggregationTemporality: 1
@@ -1106,7 +1112,6 @@ resourceMetrics:
                 value:
                   stringValue: histogram
             name: rpc.server.call.duration
-        schemaUrl: https://opentelemetry.io/schemas/1.40.0
         scope:
-          name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
-          version: 0.68.0
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+          version: 0.48.0

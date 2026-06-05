@@ -6,20 +6,20 @@ import (
 
 func TestParseManifest(t *testing.T) {
 	index := map[string]string{
-		"receiver/otlp":               "receiver/otlp",
-		"receiver/filelog":            "receiver/file_log",
-		"receiver/hostmetrics":        "receiver/hostmetrics",
-		"receiver/prometheus":         "receiver/prometheus",
-		"exporter/otlp":               "exporter/otlp",
-		"exporter/otlphttp":           "exporter/otlp_http",
-		"exporter/loadbalancing":      "exporter/loadbalancing",
-		"extension/filestorage":       "extension/file_storage",
-		"extension/healthcheck":       "extension/health_check",
-		"processor/batch":             "processor/batch",
-		"processor/resourcedetection": "processor/resourcedetection",
-		"processor/k8sattributes":     "processor/k8s_attributes",
-		"processor/tailsampling":      "processor/tail_sampling",
-		"connector/spanmetrics":       "connector/spanmetrics",
+		"receiver/otlp":                "receiver/otlp",
+		"receiver/filelog":             "receiver/file_log",
+		"receiver/hostmetrics":         "receiver/hostmetrics",
+		"receiver/prometheus":          "receiver/prometheus",
+		"exporter/otlp":                "exporter/otlp",
+		"exporter/otlphttp":            "exporter/otlp_http",
+		"exporter/load_balancing":      "exporter/load_balancing",
+		"extension/filestorage":        "extension/file_storage",
+		"extension/healthcheck":        "extension/health_check",
+		"processor/batch":              "processor/batch",
+		"processor/resource_detection": "processor/resource_detection",
+		"processor/k8sattributes":      "processor/k8s_attributes",
+		"processor/tailsampling":       "processor/tail_sampling",
+		"connector/spanmetrics":        "connector/spanmetrics",
 	}
 
 	components, distVersion, err := ParseManifest("testdata/manifest.yaml", index)
@@ -37,11 +37,11 @@ func TestParseManifest(t *testing.T) {
 		"receiver/prometheus",
 		"exporter/otlp",
 		"exporter/otlp_http",
-		"exporter/loadbalancing",
+		"exporter/load_balancing",
 		"extension/file_storage",
 		"extension/health_check",
 		"processor/batch",
-		"processor/resourcedetection",
+		"processor/resource_detection",
 		"processor/k8s_attributes",
 		"processor/tail_sampling",
 		"connector/spanmetrics",
@@ -73,11 +73,11 @@ func TestGomodToComponentID(t *testing.T) {
 		},
 		{
 			"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.145.0",
-			"processor", "processor/resourcedetection",
+			"processor", "processor/resource_detection",
 		},
 		{
 			"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/loadbalancingexporter v0.145.0",
-			"exporter", "exporter/loadbalancing",
+			"exporter", "exporter/load_balancing",
 		},
 		{
 			// filestorage has no "extension" suffix — should keep name as-is.

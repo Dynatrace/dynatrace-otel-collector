@@ -9,7 +9,7 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 exporters:
-  loadbalancing/traces:
+  load_balancing/traces:
     protocol:
       otlp:
     resolver:
@@ -17,7 +17,7 @@ exporters:
         service: otlp-receiver
         ports:
           - 4317
-  loadbalancing/logs:
+  load_balancing/logs:
     protocol:
       otlp:
     resolver:
@@ -25,7 +25,7 @@ exporters:
         service: otlp-receiver
         ports:
           - 4317
-  loadbalancing/metrics:
+  load_balancing/metrics:
     retry_on_failure:
       enabled: true
       initial_interval: 5s
@@ -51,14 +51,14 @@ service:
       receivers: [otlp]
       processors: []
       exporters:
-        - loadbalancing/metrics
+        - load_balancing/metrics
     traces:
       receivers: [otlp]
       processors: []
       exporters:
-        - loadbalancing/traces
+        - load_balancing/traces
     logs:
       receivers: [otlp]
       processors: []
       exporters:
-        - loadbalancing/logs
+        - load_balancing/logs

@@ -2,7 +2,7 @@
 
 This directory contains pre-configured dashboards for the Dynatrace OpenTelemetry Collector:
 
-- [Host Dashboard](Host%20Dashboard.md): This dashboard visualizes Host-based metrics ingested via the OpenTelemetry collector using the `hostmetrics` receiver and `resourcedetection` processor.
+- [Host Dashboard](Host%20Dashboard.md): This dashboard visualizes Host-based metrics ingested via the OpenTelemetry collector using the `hostmetrics` receiver and `resource_detection` processor.
 
 These dashboards can be imported in the [Dashboards App](https://docs.dynatrace.com/docs/shortlink/dashboards) in your Dynatrace tenant and you can further tailor them to your needs.
 

@@ -86,7 +86,7 @@ Component IDs are derived from `manifest.yaml` gomod paths:
 |---|---|
 | `go.opentelemetry.io/collector/receiver/otlpreceiver` | `receiver/otlp` |
 | `.../receiver/filelogreceiver` | `receiver/filelog` |
-| `.../processor/resourcedetectionprocessor` | `processor/resourcedetection` |
+| `.../processor/resource_detectionprocessor` | `processor/resource_detection` |
 | `.../extension/storage/filestorage` | `extension/filestorage` |
 
 The type suffix is stripped from the last path segment (e.g. `filelogreceiver` → `filelog`).

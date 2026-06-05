@@ -3,7 +3,7 @@ extensions:
     endpoint: 0.0.0.0:13133
 
 receivers:
-  kafkametrics:
+  kafka_metrics:
     brokers: ["${env:BROKER_ADDRESS}"]
     scrapers:
       - brokers
@@ -25,6 +25,6 @@ service:
   extensions: [health_check]
   pipelines:
     metrics:
-      receivers: [kafkametrics]
+      receivers: [kafka_metrics]
       processors: [cumulativetodelta]
       exporters: [otlp_http]

@@ -89,7 +89,7 @@ func sampleUpstreamContent() UpstreamContent {
 	return UpstreamContent{
 		VersionIntro:      "v0.145.0",
 		CollectorVersions: "v0.145.0:\n\n- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.145.0>\n- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.145.0>",
-		BreakingChanges:   "### 🛑 Breaking changes 🛑\n\n- `processor/resourcedetection`: Some breaking change ([#1](url))",
+		BreakingChanges:   "### 🛑 Breaking changes 🛑\n\n- `processor/resource_detection`: Some breaking change ([#1](url))",
 		OtherChanges:      "### 💡 Enhancements 💡\n\n- `receiver/filelog`: Some enhancement ([#2](url))",
 	}
 }
@@ -125,7 +125,7 @@ func TestFillUpstreamPlaceholders_FillsBreakingChanges(t *testing.T) {
 		t.Fatalf("FillUpstreamPlaceholders: %v", err)
 	}
 	s := readTmp(t, tmp)
-	if !strings.Contains(s, "processor/resourcedetection") {
+	if !strings.Contains(s, "processor/resource_detection") {
 		t.Errorf("expected breaking changes in output:\n%s", s)
 	}
 	if strings.Contains(s, "<!-- upstream-breaking-changes -->") {

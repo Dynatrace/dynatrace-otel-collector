@@ -255,7 +255,7 @@ processors:
 
   cumulativetodelta:
     max_staleness: 25h
-  resourcedetection:
+  resource_detection:
     detectors: ["system"]
     system:
       resource_attributes:
@@ -310,9 +310,9 @@ service:
   pipelines:
     metrics:
       receivers: [hostmetrics/10s, hostmetrics/5m, hostmetrics/1h]
-      processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta]
+      processors: [filter, resource_detection, transform, filter/delete-metrics, cumulativetodelta]
       exporters: [otlp_http]
     logs:
       receivers: [otlp, journald]
-      processors: [resourcedetection]
+      processors: [resource_detection]
       exporters: [otlp_http]

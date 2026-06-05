@@ -3,7 +3,7 @@ extensions:
     endpoint: 0.0.0.0:13133
 
 receivers:
-  kubeletstats:
+  kubelet_stats:
     auth_type: "serviceAccount"
     collection_interval: 10s
     node: '${env:K8S_NODE_NAME}'
@@ -65,6 +65,6 @@ service:
     - health_check
   pipelines:
     metrics:
-      receivers: [kubeletstats]
+      receivers: [kubelet_stats]
       processors: [cumulativetodelta]
       exporters: [otlp_http]

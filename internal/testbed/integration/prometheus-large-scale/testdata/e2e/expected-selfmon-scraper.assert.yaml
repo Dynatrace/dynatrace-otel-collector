@@ -68,21 +68,21 @@ resources:
               datapoints:
                 - attributes:
                     data_type: metrics
-                    exporter: loadbalancing
+                    exporter: load_balancing
             - name: otelcol_exporter_queue_capacity
               type: gauge
               unit: '{batch}'
               datapoints:
                 - attributes:
                     data_type: metrics
-                    exporter: loadbalancing
+                    exporter: load_balancing
             - name: otelcol_exporter_queue_size
               type: gauge
               unit: '{batch}'
               datapoints:
                 - attributes:
                     data_type: metrics
-                    exporter: loadbalancing
+                    exporter: load_balancing
             - name: otelcol_exporter_sent_metric_points
               type: sum
               unit: '{datapoint}'
@@ -90,7 +90,7 @@ resources:
               monotonic: true
               datapoints:
                 - attributes:
-                    exporter: loadbalancing
+                    exporter: load_balancing
         - name: go.opentelemetry.io/collector/processor/memorylimiterprocessor
           metrics:
             - name: otelcol_processor_accepted_metric_points

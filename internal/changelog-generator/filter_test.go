@@ -31,8 +31,8 @@ func TestMatchPattern(t *testing.T) {
 
 func TestFilterEntries(t *testing.T) {
 	components := map[string]bool{
-		"receiver/filelog":            true,
-		"processor/resourcedetection": true,
+		"receiver/filelog":             true,
+		"processor/resource_detection": true,
 	}
 	cfg := Config{
 		Allowlist: []string{"pkg/ottl", "all"},
@@ -41,7 +41,7 @@ func TestFilterEntries(t *testing.T) {
 
 	entries := []ChangelogEntry{
 		{Component: "receiver/filelog", ChangeType: Enhancement, Source: "contrib", UpstreamVersion: "v0.145.0", RepoURL: contribRepoURL},
-		{Component: "processor/resourcedetection", ChangeType: Breaking, Source: "contrib", UpstreamVersion: "v0.145.0", RepoURL: contribRepoURL},
+		{Component: "processor/resource_detection", ChangeType: Breaking, Source: "contrib", UpstreamVersion: "v0.145.0", RepoURL: contribRepoURL},
 		{Component: "pkg/ottl", ChangeType: Enhancement, Source: "contrib", UpstreamVersion: "v0.145.0", RepoURL: contribRepoURL},
 		{Component: "unrelated/component", ChangeType: Enhancement, Source: "contrib", UpstreamVersion: "v0.145.0", RepoURL: contribRepoURL},
 		{Component: "internal/metadataproviders", ChangeType: BugFix, Source: "contrib", UpstreamVersion: "v0.145.0", RepoURL: contribRepoURL},
@@ -50,7 +50,7 @@ func TestFilterEntries(t *testing.T) {
 
 	fc := FilterEntries(entries, components, cfg)
 
-	if len(fc.Breaking) != 1 || fc.Breaking[0].Component != "processor/resourcedetection" {
+	if len(fc.Breaking) != 1 || fc.Breaking[0].Component != "processor/resource_detection" {
 		t.Errorf("breaking: got %v", fc.Breaking)
 	}
 	if len(fc.Enhancements) != 3 {

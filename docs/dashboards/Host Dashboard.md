@@ -7,7 +7,7 @@
 > metrics.
 
 This folder contains a dashboard that can be used to monitor hosts based on metrics ingested via OpenTelemetry
-collectors using the `hostmetrics` receiver and `resourcedetection` processor. The dashboard is in JSON format and can
+collectors using the `hostmetrics` receiver and `resource_detection` processor. The dashboard is in JSON format and can
 be uploaded to your Dynatrace tenant
 by [following the steps in the Dynatrace documentation](https://docs.dynatrace.com/docs/shortlink/dashboards-use#dashboards-upload).
 

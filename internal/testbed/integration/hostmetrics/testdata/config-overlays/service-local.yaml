@@ -23,17 +23,17 @@ service:
   pipelines:
     metrics/10s:
       receivers: [hostmetrics/10s]
-      processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta]
+      processors: [filter, resource_detection, transform, filter/delete-metrics, cumulativetodelta]
       exporters: [otlp_http/1]
     metrics/5m:
       receivers: [hostmetrics/5m]
-      processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta]
+      processors: [filter, resource_detection, transform, filter/delete-metrics, cumulativetodelta]
       exporters: [otlp_http/2]
     metrics/1h:
       receivers: [hostmetrics/1h]
-      processors: [filter, resourcedetection, transform, filter/delete-metrics, cumulativetodelta]
+      processors: [filter, resource_detection, transform, filter/delete-metrics, cumulativetodelta]
       exporters: [otlp_http/3]
     logs:
       receivers: [otlp, journald]
-      processors: [resourcedetection]
+      processors: [resource_detection]
       exporters: [otlp_http/logs]

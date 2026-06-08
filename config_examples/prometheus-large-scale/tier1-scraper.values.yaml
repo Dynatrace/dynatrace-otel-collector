@@ -101,7 +101,7 @@ alternateConfig:
   exporters:
     debug:
       verbosity: basic
-    loadbalancing:
+    load_balancing:
       routing_key: "resource"
       timeout: 10s
       retry_on_failure:
@@ -138,7 +138,7 @@ alternateConfig:
         processors:
           - memory_limiter
         exporters:
-          - loadbalancing
+          - load_balancing
     telemetry:
       resource:
         k8s.cluster.name: "${env:K8S_CLUSTER_NAME}"

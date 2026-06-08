@@ -1,15 +1,15 @@
 exporters:
-  loadbalancing/traces:
+  load_balancing/traces:
     protocol:
       otlp:
         tls:
           insecure: true
-  loadbalancing/logs:
+  load_balancing/logs:
     protocol:
       otlp:
         tls:
           insecure: true
-  loadbalancing/metrics:
+  load_balancing/metrics:
     protocol:
       otlp:
         tls:

@@ -13,7 +13,7 @@ func sampleFilteredChangelog() FilteredChangelog {
 		ContribRepoURL:   contribRepoURL,
 		Breaking: []ChangelogEntry{
 			{
-				Component:       "processor/resourcedetection",
+				Component:       "processor/resource_detection",
 				Note:            "Promote feature gate to Stable",
 				Issues:          []int{45797},
 				Subtext:         "The faas.id attribute is replaced by the faas.instance attribute.",
@@ -78,7 +78,7 @@ func TestGenerateUpstreamContent_BreakingChangesHasHeader(t *testing.T) {
 	if !strings.Contains(uc.BreakingChanges, "Breaking changes") {
 		t.Errorf("BreakingChanges missing header:\n%s", uc.BreakingChanges)
 	}
-	if !strings.Contains(uc.BreakingChanges, "processor/resourcedetection") {
+	if !strings.Contains(uc.BreakingChanges, "processor/resource_detection") {
 		t.Errorf("BreakingChanges missing entry:\n%s", uc.BreakingChanges)
 	}
 }
@@ -174,7 +174,7 @@ func TestGenerateUpstreamContent_SubtextIndented(t *testing.T) {
 		CoreRepoURL:      coreRepoURL,
 		ContribRepoURL:   contribRepoURL,
 		Breaking: []ChangelogEntry{
-			{Component: "processor/resourcedetection", Note: "Some breaking change",
+			{Component: "processor/resource_detection", Note: "Some breaking change",
 				Issues: []int{1}, Subtext: "This is the subtext.", ChangeType: Breaking,
 				Source: "contrib", RepoURL: contribRepoURL},
 		},

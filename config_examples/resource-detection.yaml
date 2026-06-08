@@ -7,7 +7,7 @@ receivers:
       grpc:
         endpoint: ${env:MY_POD_IP}:4317
 processors:
-  resourcedetection/dynatrace:
+  resource_detection/dynatrace:
     override: false
     detectors: [dynatrace]
 exporters:
@@ -23,6 +23,6 @@ service:
       receivers:
         - otlp
       processors:
-        - resourcedetection/dynatrace
+        - resource_detection/dynatrace
       exporters:
         - otlp_http

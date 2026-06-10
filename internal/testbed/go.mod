@@ -5,16 +5,16 @@ go 1.26.4
 require (
 	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0
 	github.com/google/uuid v1.6.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.153.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.153.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.153.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.153.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.153.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.154.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.154.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.154.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.154.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.154.0
 	github.com/stretchr/testify v1.11.1
-	go.opentelemetry.io/collector/component v1.59.0
-	go.opentelemetry.io/collector/consumer v1.59.0
-	go.opentelemetry.io/collector/consumer/consumertest v0.153.0
-	go.opentelemetry.io/collector/pdata v1.59.0
+	go.opentelemetry.io/collector/component v1.60.0
+	go.opentelemetry.io/collector/consumer v1.60.0
+	go.opentelemetry.io/collector/consumer/consumertest v0.154.0
+	go.opentelemetry.io/collector/pdata v1.60.0
 	go.opentelemetry.io/otel v1.44.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.36.1

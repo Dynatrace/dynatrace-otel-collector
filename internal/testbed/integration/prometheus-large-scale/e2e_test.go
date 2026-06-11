@@ -171,6 +171,7 @@ func validateSelfmonSource(t *testing.T, consumer *consumertest.MetricsSink, ass
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		actual := mergeAllMetrics(consumer.AllMetrics())
 		testutil.ReplaceAttrValsWithStar(actual, resourceIgnoreList, dpIgnoreList)
+		testutil.DeduplicateResources(actual)
 		err := pmetricassert.AssertMetrics(assertFile, actual)
 		assert.NoError(tt, err)
 	}, 3*time.Minute, 1*time.Second)

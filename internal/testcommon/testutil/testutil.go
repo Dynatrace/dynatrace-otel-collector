@@ -562,13 +562,101 @@ func ReplaceAttrValsWithStar(metrics pmetric.Metrics, resourceKeys []string, dat
 
 // DeduplicateResources removes ResourceMetrics entries that have identical
 // resource attributes, keeping only the first occurrence of each unique
-// attribute set. This is useful after ReplaceAttrValsWithStar which can make
-// originally-distinct resources (e.g. different pods) identical, causing
-// pmetricassert.AssertMetrics to fail on duplicate datapoints after merging.
+// attribute set. It also deduplicates datapoints within each metric that have
+// identical attributes. This is useful after ReplaceAttrValsWithStar which can
+// make originally-distinct resources (e.g. different pods) or datapoints (e.g.
+// different server addresses) identical, causing pmetricassert.AssertMetrics to
+// fail on duplicate datapoints after merging.
 func DeduplicateResources(metrics pmetric.Metrics) {
 	seen := make(map[string]bool)
 	metrics.ResourceMetrics().RemoveIf(func(rm pmetric.ResourceMetrics) bool {
 		key := canonicalResourceKey(rm.Resource().Attributes())
+		if seen[key] {
+			return true
+		}
+		seen[key] = true
+		return false
+	})
+	deduplicateDatapoints(metrics)
+}
+
+// deduplicateDatapoints removes datapoints with identical attributes within
+// each metric, keeping only the first occurrence.
+func deduplicateDatapoints(metrics pmetric.Metrics) {
+	for _, rm := range metrics.ResourceMetrics().All() {
+		for _, sm := range rm.ScopeMetrics().All() {
+			for _, m := range sm.Metrics().All() {
+				switch m.Type() {
+				case pmetric.MetricTypeGauge:
+					deduplicateNumberDataPoints(m.Gauge().DataPoints())
+				case pmetric.MetricTypeSum:
+					deduplicateNumberDataPoints(m.Sum().DataPoints())
+				case pmetric.MetricTypeSummary:
+					deduplicateSummaryDataPoints(m.Summary().DataPoints())
+				case pmetric.MetricTypeHistogram:
+					deduplicateHistogramDataPoints(m.Histogram().DataPoints())
+				case pmetric.MetricTypeExponentialHistogram:
+					deduplicateExponentialHistogramDataPoints(m.ExponentialHistogram().DataPoints())
+				}
+			}
+		}
+	}
+}
+
+func canonicalAttrsKey(attrs pcommon.Map) string {
+	keys := make([]string, 0, attrs.Len())
+	for k := range attrs.All() {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var b strings.Builder
+	for _, k := range keys {
+		v, _ := attrs.Get(k)
+		fmt.Fprintf(&b, "%s=%s,", k, v.AsString())
+	}
+	return b.String()
+}
+
+func deduplicateNumberDataPoints(dps pmetric.NumberDataPointSlice) {
+	seen := make(map[string]bool)
+	dps.RemoveIf(func(dp pmetric.NumberDataPoint) bool {
+		key := canonicalAttrsKey(dp.Attributes())
+		if seen[key] {
+			return true
+		}
+		seen[key] = true
+		return false
+	})
+}
+
+func deduplicateSummaryDataPoints(dps pmetric.SummaryDataPointSlice) {
+	seen := make(map[string]bool)
+	dps.RemoveIf(func(dp pmetric.SummaryDataPoint) bool {
+		key := canonicalAttrsKey(dp.Attributes())
+		if seen[key] {
+			return true
+		}
+		seen[key] = true
+		return false
+	})
+}
+
+func deduplicateHistogramDataPoints(dps pmetric.HistogramDataPointSlice) {
+	seen := make(map[string]bool)
+	dps.RemoveIf(func(dp pmetric.HistogramDataPoint) bool {
+		key := canonicalAttrsKey(dp.Attributes())
+		if seen[key] {
+			return true
+		}
+		seen[key] = true
+		return false
+	})
+}
+
+func deduplicateExponentialHistogramDataPoints(dps pmetric.ExponentialHistogramDataPointSlice) {
+	seen := make(map[string]bool)
+	dps.RemoveIf(func(dp pmetric.ExponentialHistogramDataPoint) bool {
+		key := canonicalAttrsKey(dp.Attributes())
 		if seen[key] {
 			return true
 		}

@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"runtime"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -557,4 +558,35 @@ func ReplaceAttrValsWithStar(metrics pmetric.Metrics, resourceKeys []string, dat
 			}
 		}
 	}
+}
+
+// DeduplicateResources removes ResourceMetrics entries that have identical
+// resource attributes, keeping only the first occurrence of each unique
+// attribute set. This is useful after ReplaceAttrValsWithStar which can make
+// originally-distinct resources (e.g. different pods) identical, causing
+// pmetricassert.AssertMetrics to fail on duplicate datapoints after merging.
+func DeduplicateResources(metrics pmetric.Metrics) {
+	seen := make(map[string]bool)
+	metrics.ResourceMetrics().RemoveIf(func(rm pmetric.ResourceMetrics) bool {
+		key := canonicalResourceKey(rm.Resource().Attributes())
+		if seen[key] {
+			return true
+		}
+		seen[key] = true
+		return false
+	})
+}
+
+func canonicalResourceKey(attrs pcommon.Map) string {
+	keys := make([]string, 0, attrs.Len())
+	for k := range attrs.All() {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var b strings.Builder
+	for _, k := range keys {
+		v, _ := attrs.Get(k)
+		fmt.Fprintf(&b, "%s=%s,", k, v.AsString())
+	}
+	return b.String()
 }

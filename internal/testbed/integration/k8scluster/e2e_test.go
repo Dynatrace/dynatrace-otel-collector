@@ -110,15 +110,16 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 		"k8s.replicaset.name",
 	}
 
-	actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
-	testutil.ReplaceAttrValsWithStar(actual, resourceIgnoreList, nil)
-
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertFile, actual))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		err := pmetricassert.AssertMetrics(expectedAssertFile, actual)
-		assert.NoError(tt, err)
+		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+		actualForAssert := pmetric.NewMetrics()
+		actual.CopyTo(actualForAssert)
+		testutil.ReplaceAttrValsWithStar(actualForAssert, resourceIgnoreList, nil)
+		testutil.DeduplicateResources(actualForAssert)
+		assert.NoError(tt, pmetricassert.AssertMetrics(expectedAssertFile, actualForAssert))
 	}, 3*time.Minute, 1*time.Second)
 
 	// the commented line below writes the received list of metrics to the expected.yaml

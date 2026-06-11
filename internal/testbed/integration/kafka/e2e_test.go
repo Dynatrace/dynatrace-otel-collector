@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 )
 
 func TestE2E_Kafka(t *testing.T) {
@@ -191,15 +192,16 @@ func TestE2E_Kafka(t *testing.T) {
 	t.Logf("Checking metrics...")
 	oteltest.WaitForMetrics(t, 1, metricsConsumer)
 
-	actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
-	testutil.ReplaceAttrValsWithStar(actual, nil, nil)
-
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedMetricsAssertFile, actual))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedMetricsAssertFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		err := pmetricassert.AssertMetrics(expectedMetricsAssertFile, actual)
-		assert.NoError(tt, err)
+		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+		actualForAssert := pmetric.NewMetrics()
+		actual.CopyTo(actualForAssert)
+		testutil.ReplaceAttrValsWithStar(actualForAssert, nil, nil)
+		testutil.DeduplicateResources(actualForAssert)
+		assert.NoError(tt, pmetricassert.AssertMetrics(expectedMetricsAssertFile, actualForAssert))
 	}, compareTimeout, compareTick)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
@@ -290,14 +292,16 @@ func TestE2E_Kafka(t *testing.T) {
 	t.Logf("Checking kafka metrics...")
 	oteltest.WaitForMetrics(t, 10, kmetricsConsumer)
 
-	actualKMetrics := kmetricsConsumer.AllMetrics()[len(kmetricsConsumer.AllMetrics())-1]
-	testutil.ReplaceAttrValsWithStar(actualKMetrics, nil, nil)
-
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedKMetricsAssertFile, actualKMetrics))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedKMetricsAssertFile, kmetricsConsumer.AllMetrics()[len(kmetricsConsumer.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetricassert.AssertMetrics(expectedKMetricsAssertFile, actualKMetrics))
+		actualKMetrics := kmetricsConsumer.AllMetrics()[len(kmetricsConsumer.AllMetrics())-1]
+		actualForAssert := pmetric.NewMetrics()
+		actualKMetrics.CopyTo(actualForAssert)
+		testutil.ReplaceAttrValsWithStar(actualForAssert, nil, nil)
+		testutil.DeduplicateResources(actualForAssert)
+		assert.NoError(tt, pmetricassert.AssertMetrics(expectedKMetricsAssertFile, actualForAssert))
 	}, compareTimeout, compareTick)
 
 	// the commented line below writes the received list of metrics to the expected.yaml

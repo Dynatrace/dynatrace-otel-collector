@@ -310,13 +310,10 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	// 1m Metrics
 	t.Logf("Checking 1m metrics...")
 
-	actual1m := metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]
-	testutil.ReplaceAttrValsWithStar(actual1m, resourceIgnoreList, dpIgnoreList)
-
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile1mAssert, actual1m))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile1mAssert, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
 
-	checkMetricsPmetricassert(t, expectedFile1mAssert, actual1m, compareTimeout, compareTick)
+	checkMetricsPmetricassert(t, expectedFile1mAssert, metricsConsumer1m, resourceIgnoreList, dpIgnoreList, compareTimeout, compareTick)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
@@ -326,13 +323,10 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	// 5m Metrics
 	t.Logf("Checking 5m metrics...")
 
-	actual5m := metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]
-	testutil.ReplaceAttrValsWithStar(actual5m, resourceIgnoreList, dpIgnoreList)
-
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile5mAssert, actual5m))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile5mAssert, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
 
-	checkMetricsPmetricassert(t, expectedFile5mAssert, actual5m, compareTimeout, compareTick)
+	checkMetricsPmetricassert(t, expectedFile5mAssert, metricsConsumer5m, resourceIgnoreList, dpIgnoreList, compareTimeout, compareTick)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
@@ -341,13 +335,10 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	// 1h Metrics
 	t.Logf("Checking 1h metrics...")
 
-	actual1h := metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]
-	testutil.ReplaceAttrValsWithStar(actual1h, resourceIgnoreList, dpIgnoreList)
-
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile1hAssert, actual1h))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile1hAssert, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
 
-	checkMetricsPmetricassert(t, expectedFile1hAssert, actual1h, compareTimeout, compareTick)
+	checkMetricsPmetricassert(t, expectedFile1hAssert, metricsConsumer1h, resourceIgnoreList, dpIgnoreList, compareTimeout, compareTick)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
 	//require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
@@ -370,10 +361,14 @@ func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.Metr
 	}, timeout, tick)
 }
 
-func checkMetricsPmetricassert(t *testing.T, expectedFile string, actual pmetric.Metrics, timeout, tick time.Duration) {
+func checkMetricsPmetricassert(t *testing.T, expectedFile string, consumer *consumertest.MetricsSink, resourceIgnoreList, dpIgnoreList []string, timeout, tick time.Duration) {
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		err := pmetricassert.AssertMetrics(expectedFile, actual)
-		assert.NoError(tt, err)
+		actual := consumer.AllMetrics()[len(consumer.AllMetrics())-1]
+		actualForAssert := pmetric.NewMetrics()
+		actual.CopyTo(actualForAssert)
+		testutil.ReplaceAttrValsWithStar(actualForAssert, resourceIgnoreList, dpIgnoreList)
+		testutil.DeduplicateResources(actualForAssert)
+		assert.NoError(tt, pmetricassert.AssertMetrics(expectedFile, actualForAssert))
 	}, timeout, tick)
 }
 

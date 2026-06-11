@@ -479,6 +479,10 @@ resourceMetrics:
               aggregationTemporality: 1
               dataPoints:
                 - asInt: "0"
+                  attributes:
+                    - key: metric_type
+                      value:
+                        stringValue: sum
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -489,6 +493,13 @@ resourceMetrics:
               aggregationTemporality: 1
               dataPoints:
                 - asInt: "0"
+                  attributes:
+                    - key: metric_type
+                      value:
+                        stringValue: sum
+                    - key: reason
+                      value:
+                        stringValue: initial
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true

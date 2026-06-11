@@ -577,9 +577,7 @@ func DeduplicateResources(metrics pmetric.Metrics) {
 		if firstIdx, exists := seen[key]; exists {
 			// Merge all ScopeMetrics from this duplicate into the first occurrence.
 			first := rms.At(firstIdx)
-			for j := 0; j < rm.ScopeMetrics().Len(); j++ {
-				rm.ScopeMetrics().At(j).MoveTo(first.ScopeMetrics().AppendEmpty())
-			}
+			rm.ScopeMetrics().MoveAndAppendTo(first.ScopeMetrics())
 		} else {
 			seen[key] = i
 		}
@@ -605,9 +603,7 @@ func deduplicateScopes(metrics pmetric.Metrics) {
 			key := sm.Scope().Name()
 			if firstIdx, exists := seen[key]; exists {
 				first := sms.At(firstIdx)
-				for j := 0; j < sm.Metrics().Len(); j++ {
-					sm.Metrics().At(j).MoveTo(first.Metrics().AppendEmpty())
-				}
+				sm.Metrics().MoveAndAppendTo(first.Metrics())
 			} else {
 				seen[key] = i
 			}
@@ -755,27 +751,19 @@ func canonicalResourceKey(attrs pcommon.Map) string {
 }
 
 // mergeMetricDataPoints moves datapoints from src into dst for metrics of the same type.
+// Uses MoveAndAppendTo so that the source slice becomes empty (Len()==0),
+// allowing the caller to remove the now-empty source metric.
 func mergeMetricDataPoints(dst, src pmetric.Metric) {
 	switch dst.Type() {
 	case pmetric.MetricTypeGauge:
-		for _, dp := range src.Gauge().DataPoints().All() {
-			dp.MoveTo(dst.Gauge().DataPoints().AppendEmpty())
-		}
+		src.Gauge().DataPoints().MoveAndAppendTo(dst.Gauge().DataPoints())
 	case pmetric.MetricTypeSum:
-		for _, dp := range src.Sum().DataPoints().All() {
-			dp.MoveTo(dst.Sum().DataPoints().AppendEmpty())
-		}
+		src.Sum().DataPoints().MoveAndAppendTo(dst.Sum().DataPoints())
 	case pmetric.MetricTypeSummary:
-		for _, dp := range src.Summary().DataPoints().All() {
-			dp.MoveTo(dst.Summary().DataPoints().AppendEmpty())
-		}
+		src.Summary().DataPoints().MoveAndAppendTo(dst.Summary().DataPoints())
 	case pmetric.MetricTypeHistogram:
-		for _, dp := range src.Histogram().DataPoints().All() {
-			dp.MoveTo(dst.Histogram().DataPoints().AppendEmpty())
-		}
+		src.Histogram().DataPoints().MoveAndAppendTo(dst.Histogram().DataPoints())
 	case pmetric.MetricTypeExponentialHistogram:
-		for _, dp := range src.ExponentialHistogram().DataPoints().All() {
-			dp.MoveTo(dst.ExponentialHistogram().DataPoints().AppendEmpty())
-		}
+		src.ExponentialHistogram().DataPoints().MoveAndAppendTo(dst.ExponentialHistogram().DataPoints())
 	}
 }

@@ -277,6 +277,42 @@ resourceMetrics:
                 value:
                   stringValue: histogram
             name: http.client.request.duration
+          - description: "Number of datapoints converted from cumulative to delta temporality. [Development]"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_cumulativetodelta_datapoints
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+          - description: "Number of datapoints dropped instead of being converted. [Development]"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: counter
+            name: otelcol_cumulativetodelta_datapoints_dropped
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asDouble: 0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+          - description: "Number of metric streams currently tracked in memory for cumulative-to-delta conversion. [Development]"
+            gauge:
+              dataPoints:
+                - asDouble: 0
+                  timeUnixNano: "1000000"
+            metadata:
+              - key: prometheus.type
+                value:
+                  stringValue: gauge
+            name: otelcol_cumulativetodelta_streams_tracked
           - description: Number of units in the batch [Development]
             histogram:
               aggregationTemporality: 1

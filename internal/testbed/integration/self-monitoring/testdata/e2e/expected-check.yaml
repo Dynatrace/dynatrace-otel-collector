@@ -473,6 +473,38 @@ resourceMetrics:
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor
       - metrics:
+          - description: "Number of datapoints converted from cumulative to delta temporality. [Development]"
+            name: otelcol_cumulativetodelta_datapoints
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{datapoint}'
+          - description: "Number of datapoints dropped instead of being converted. [Development]"
+            name: otelcol_cumulativetodelta_datapoints_dropped
+            sum:
+              aggregationTemporality: 1
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{datapoint}'
+          - description: "Number of metric streams currently tracked in memory for cumulative-to-delta conversion. [Development]"
+            name: otelcol_cumulativetodelta_streams_tracked
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{stream}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/cumulativetodeltaprocessor
+      - metrics:
           - description: Size of HTTP server request bodies.
             histogram:
               aggregationTemporality: 1

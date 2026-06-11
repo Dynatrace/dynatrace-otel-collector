@@ -560,24 +560,99 @@ func ReplaceAttrValsWithStar(metrics pmetric.Metrics, resourceKeys []string, dat
 	}
 }
 
-// DeduplicateResources removes ResourceMetrics entries that have identical
-// resource attributes, keeping only the first occurrence of each unique
-// attribute set. It also deduplicates datapoints within each metric that have
-// identical attributes. This is useful after ReplaceAttrValsWithStar which can
+// DeduplicateResources merges ResourceMetrics entries that have identical
+// resource attributes into a single entry, combining their scope metrics.
+// Within each scope, metrics with the same name are merged and their datapoints
+// are deduplicated. This is useful after ReplaceAttrValsWithStar which can
 // make originally-distinct resources (e.g. different pods) or datapoints (e.g.
 // different server addresses) identical, causing pmetricassert.AssertMetrics to
 // fail on duplicate datapoints after merging.
 func DeduplicateResources(metrics pmetric.Metrics) {
-	seen := make(map[string]bool)
-	metrics.ResourceMetrics().RemoveIf(func(rm pmetric.ResourceMetrics) bool {
+	// Map from resource key to the index of the first ResourceMetrics with that key.
+	seen := make(map[string]int)
+	rms := metrics.ResourceMetrics()
+	for i := 0; i < rms.Len(); i++ {
+		rm := rms.At(i)
 		key := canonicalResourceKey(rm.Resource().Attributes())
-		if seen[key] {
-			return true
+		if firstIdx, exists := seen[key]; exists {
+			// Merge all ScopeMetrics from this duplicate into the first occurrence.
+			first := rms.At(firstIdx)
+			for j := 0; j < rm.ScopeMetrics().Len(); j++ {
+				rm.ScopeMetrics().At(j).MoveTo(first.ScopeMetrics().AppendEmpty())
+			}
+		} else {
+			seen[key] = i
 		}
-		seen[key] = true
-		return false
+	}
+	// Remove entries that were merged (their ScopeMetrics were moved out).
+	rms.RemoveIf(func(rm pmetric.ResourceMetrics) bool {
+		return rm.ScopeMetrics().Len() == 0
 	})
+	// Now deduplicate scopes within each resource, and datapoints within each metric.
+	deduplicateScopes(metrics)
+	deduplicateMetricsByName(metrics)
 	deduplicateDatapoints(metrics)
+}
+
+// deduplicateScopes merges ScopeMetrics with identical scope names within each
+// ResourceMetrics, combining their metrics into a single ScopeMetrics entry.
+func deduplicateScopes(metrics pmetric.Metrics) {
+	for _, rm := range metrics.ResourceMetrics().All() {
+		seen := make(map[string]int)
+		sms := rm.ScopeMetrics()
+		for i := 0; i < sms.Len(); i++ {
+			sm := sms.At(i)
+			key := sm.Scope().Name()
+			if firstIdx, exists := seen[key]; exists {
+				first := sms.At(firstIdx)
+				for j := 0; j < sm.Metrics().Len(); j++ {
+					sm.Metrics().At(j).MoveTo(first.Metrics().AppendEmpty())
+				}
+			} else {
+				seen[key] = i
+			}
+		}
+		sms.RemoveIf(func(sm pmetric.ScopeMetrics) bool {
+			return sm.Metrics().Len() == 0
+		})
+	}
+}
+
+// deduplicateMetricsByName merges metrics with the same name within a scope.
+// This handles the case where the same metric name appears multiple times after
+// merging scope metrics from different resources.
+func deduplicateMetricsByName(metrics pmetric.Metrics) {
+	for _, rm := range metrics.ResourceMetrics().All() {
+		for _, sm := range rm.ScopeMetrics().All() {
+			seen := make(map[string]int)
+			ms := sm.Metrics()
+			for i := 0; i < ms.Len(); i++ {
+				m := ms.At(i)
+				if firstIdx, exists := seen[m.Name()]; exists {
+					first := ms.At(firstIdx)
+					mergeMetricDataPoints(first, m)
+				} else {
+					seen[m.Name()] = i
+				}
+			}
+			// Remove metrics whose datapoints were moved out.
+			ms.RemoveIf(func(m pmetric.Metric) bool {
+				switch m.Type() {
+				case pmetric.MetricTypeGauge:
+					return m.Gauge().DataPoints().Len() == 0
+				case pmetric.MetricTypeSum:
+					return m.Sum().DataPoints().Len() == 0
+				case pmetric.MetricTypeSummary:
+					return m.Summary().DataPoints().Len() == 0
+				case pmetric.MetricTypeHistogram:
+					return m.Histogram().DataPoints().Len() == 0
+				case pmetric.MetricTypeExponentialHistogram:
+					return m.ExponentialHistogram().DataPoints().Len() == 0
+				}
+				return false
+			})
+		}
+	}
 }
 
 // deduplicateDatapoints removes datapoints with identical attributes within
@@ -677,4 +752,30 @@ func canonicalResourceKey(attrs pcommon.Map) string {
 		fmt.Fprintf(&b, "%s=%s,", k, v.AsString())
 	}
 	return b.String()
+}
+
+// mergeMetricDataPoints moves datapoints from src into dst for metrics of the same type.
+func mergeMetricDataPoints(dst, src pmetric.Metric) {
+	switch dst.Type() {
+	case pmetric.MetricTypeGauge:
+		for _, dp := range src.Gauge().DataPoints().All() {
+			dp.MoveTo(dst.Gauge().DataPoints().AppendEmpty())
+		}
+	case pmetric.MetricTypeSum:
+		for _, dp := range src.Sum().DataPoints().All() {
+			dp.MoveTo(dst.Sum().DataPoints().AppendEmpty())
+		}
+	case pmetric.MetricTypeSummary:
+		for _, dp := range src.Summary().DataPoints().All() {
+			dp.MoveTo(dst.Summary().DataPoints().AppendEmpty())
+		}
+	case pmetric.MetricTypeHistogram:
+		for _, dp := range src.Histogram().DataPoints().All() {
+			dp.MoveTo(dst.Histogram().DataPoints().AppendEmpty())
+		}
+	case pmetric.MetricTypeExponentialHistogram:
+		for _, dp := range src.ExponentialHistogram().DataPoints().All() {
+			dp.MoveTo(dst.ExponentialHistogram().DataPoints().AppendEmpty())
+		}
+	}
 }

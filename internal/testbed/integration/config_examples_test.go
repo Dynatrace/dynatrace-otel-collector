@@ -8,7 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders/jaegerdatasender"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders/syslogdatasender"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders/zipkindatasender"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -192,7 +194,7 @@ func TestConfigJaegerGrpc(t *testing.T) {
 	actualSpans.CopyTo(expectedSpans)
 
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
-	sender := datasenders.NewJaegerGRPCDataSender(testbed.DefaultHost, grpcReceiverPort)
+	sender := jaegerdatasender.NewJaegerGRPCDataSender(testbed.DefaultHost, grpcReceiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
 	validator := NewTraceValidator(t, []ptrace.Traces{expectedSpansData})
 
@@ -287,7 +289,7 @@ func TestConfigZipkin(t *testing.T) {
 	expResourceSpanAttrs.PutStr("service.name", "otlpresourcenoservicename")
 
 	dataProvider := NewSampleConfigsTraceDataProvider(actualSpansData)
-	sender := datasenders.NewZipkinDataSender(testbed.DefaultHost, zipkinReceiverPort)
+	sender := zipkindatasender.NewZipkinDataSender(testbed.DefaultHost, zipkinReceiverPort)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
 	validator := NewTraceValidator(t, []ptrace.Traces{expectedSpansData})
 
@@ -623,7 +625,7 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(time.Unix(0, 0)))
 
 	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
-	sender := datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
+	sender := syslogdatasender.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
 	validator := NewLogsValidator(t, []plog.Logs{expectedLogsData})
 
@@ -707,7 +709,7 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(time.Unix(0, 0)))
 
 	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
-	sender := datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
+	sender := syslogdatasender.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
 	receiver := testbed.NewOTLPHTTPDataReceiver(exporterPort)
 	validator := NewLogsValidator(t, []plog.Logs{expectedLogsData})
 

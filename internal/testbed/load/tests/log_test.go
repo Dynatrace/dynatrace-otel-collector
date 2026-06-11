@@ -3,7 +3,7 @@ package loadtest
 import (
 	"testing"
 
-	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders/syslogdatasender"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
@@ -66,7 +66,7 @@ func TestLogSyslog(t *testing.T) {
 	}{
 		{
 			name:     "syslog-10kDPS-batch-1",
-			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 1),
+			sender:   syslogdatasender.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 1),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
 			resourceSpec: testbed.ResourceSpec{
 				ExpectedMaxCPU: 90,
@@ -89,7 +89,7 @@ func TestLogSyslog(t *testing.T) {
 		},
 		{
 			name:     "syslog-10kDPS-batch-100",
-			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 100),
+			sender:   syslogdatasender.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 100),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{
@@ -108,7 +108,7 @@ func TestLogSyslog(t *testing.T) {
 		},
 		{
 			name:     "syslog-70kDPS-batch-1",
-			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 1),
+			sender:   syslogdatasender.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 1),
 			receiver: testbed.NewOTLPHTTPDataReceiver(testutil.GetAvailablePort(t)),
 			resourceSpec: testbed.ResourceSpec{
 				ExpectedMaxCPU: 90,
@@ -131,7 +131,7 @@ func TestLogSyslog(t *testing.T) {
 		},
 		{
 			name:     "syslog-70kDPS-batch-100",
-			sender:   datasenders.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 100),
+			sender:   syslogdatasender.NewSyslogWriter("tcp", testbed.DefaultHost, testutil.GetAvailablePort(t), 100),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				loadOptions: &testbed.LoadOptions{

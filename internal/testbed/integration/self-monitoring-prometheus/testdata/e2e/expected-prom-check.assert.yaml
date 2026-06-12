@@ -34,6 +34,28 @@ resources:
               type: gauge
             - name: up
               type: gauge
+            - name: otelcol_cumulativetodelta_datapoints
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    metric_type: histogram
+                - attributes:
+                    metric_type: sum
+            - name: otelcol_cumulativetodelta_datapoints_dropped
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    metric_type: histogram
+                    reason: initial
+                - attributes:
+                    metric_type: sum
+                    reason: initial
+            - name: otelcol_cumulativetodelta_streams_tracked
+              type: gauge
             - name: otelcol_exporter_in_flight_requests
               type: gauge
               datapoints:

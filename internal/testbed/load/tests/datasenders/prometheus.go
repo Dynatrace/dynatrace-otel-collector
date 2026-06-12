@@ -3,12 +3,13 @@ package datasenders
 import (
 	"context"
 	"fmt"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders"
+	"net"
+	"strings"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders/prometheusdatasender"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/pdata/pmetric"
-	"net"
-	"strings"
 )
 
 type multiHostPrometheusDataSender struct {
@@ -22,7 +23,7 @@ func NewMultiHostPrometheusDataSender(host string, ports []int) testbed.MetricDa
 	}
 
 	for i, port := range ports {
-		ds.dataSenders[i] = datasenders.NewPrometheusDataSender(host, port)
+		ds.dataSenders[i] = prometheusdatasender.NewPrometheusDataSender(host, port)
 	}
 
 	return ds

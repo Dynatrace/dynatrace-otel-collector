@@ -295,8 +295,6 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	// self monitoring metrics
 	oteltest.WaitForMetrics(t, 5, metricsConsumer)
 
-	actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
-
 	dpIgnoreList := []string{
 		"server.address",
 		"net.peer.name",
@@ -309,14 +307,16 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		"service.version",
 	}
 
-	testutil.ReplaceAttrValsWithStar(actual, resourceIgnoreList, dpIgnoreList)
-
 	// To regenerate: uncomment, run the test once, re-comment.
 	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertionFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		err := pmetricassert.AssertMetrics(expectedAssertionFile, actual)
-		assert.NoError(tt, err)
+		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+		actualForAssert := pmetric.NewMetrics()
+		actual.CopyTo(actualForAssert)
+		testutil.ReplaceAttrValsWithStar(actualForAssert, resourceIgnoreList, dpIgnoreList)
+		testutil.DeduplicateResources(actualForAssert)
+		assert.NoError(tt, pmetricassert.AssertMetrics(expectedAssertionFile, actualForAssert))
 	}, 3*time.Minute, 1*time.Second)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
@@ -328,6 +328,7 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 
 	defaultOptions := []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreMetricValues(
+			"otelcol_cumulativetodelta_streams_tracked",
 			"otelcol_exporter_in_flight_requests",
 			"otelcol_processor_filter_datapoints.filtered",
 			"otelcol_processor_filter_logs.filtered",

@@ -9,6 +9,13 @@ resources:
         service.name: dynatrace-otel-collector
         service.version: '*'
       scopes:
+        - name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/cumulativetodeltaprocessor
+          metrics:
+            - name: otelcol_cumulativetodelta_streams_tracked
+              type: sum
+              unit: '{stream}'
+              temporality: cumulative
+              monotonic: false
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor
           metrics:
             - name: otelcol_processor_filter_datapoints.filtered

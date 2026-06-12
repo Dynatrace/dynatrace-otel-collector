@@ -473,6 +473,18 @@ resourceMetrics:
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor
       - metrics:
+          - description: "Number of metric streams currently tracked in memory for cumulative-to-delta conversion. [Development]"
+            name: otelcol_cumulativetodelta_streams_tracked
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{stream}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/cumulativetodeltaprocessor
+      - metrics:
           - description: Size of HTTP server request bodies.
             histogram:
               aggregationTemporality: 1
@@ -1854,7 +1866,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: rpc.client.call.duration
             unit: s
-        schemaUrl: https://opentelemetry.io/schemas/1.40.0
+        schemaUrl: https://opentelemetry.io/schemas/1.41.0
         scope:
           name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
           version: 0.68.0

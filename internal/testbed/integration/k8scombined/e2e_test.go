@@ -24,6 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 )
 
 var (
@@ -286,15 +287,16 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		"interface",
 	}
 
-	actual := metricsConsumerNode.AllMetrics()[len(metricsConsumerNode.AllMetrics())-1]
-	testutil.ReplaceAttrValsWithStar(actual, nodeResourceIgnoreList, nodeDpIgnoreList)
-
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedNodeAssertFile, actual))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedNodeAssertFile, metricsConsumerNode.AllMetrics()[len(metricsConsumerNode.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		err := pmetricassert.AssertMetrics(expectedNodeAssertFile, actual)
-		assert.NoError(tt, err)
+		actual := metricsConsumerNode.AllMetrics()[len(metricsConsumerNode.AllMetrics())-1]
+		actualForAssert := pmetric.NewMetrics()
+		actual.CopyTo(actualForAssert)
+		testutil.ReplaceAttrValsWithStar(actualForAssert, nodeResourceIgnoreList, nodeDpIgnoreList)
+		testutil.DeduplicateResources(actualForAssert)
+		assert.NoError(tt, pmetricassert.AssertMetrics(expectedNodeAssertFile, actualForAssert))
 	}, 3*time.Minute, 1*time.Second)
 
 	// the commented line below writes the received list of metrics to the expected.yaml
@@ -346,15 +348,16 @@ func TestE2E_K8sCombinedReceiver(t *testing.T) {
 		"interface",
 	}
 
-	actualCluster := metricsConsumerCluster.AllMetrics()[len(metricsConsumerCluster.AllMetrics())-1]
-	testutil.ReplaceAttrValsWithStar(actualCluster, clusterResourceIgnoreList, clusterDpIgnoreList)
-
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedClusterAssertFile, actualCluster))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedClusterAssertFile, metricsConsumerCluster.AllMetrics()[len(metricsConsumerCluster.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		err := pmetricassert.AssertMetrics(expectedClusterAssertFile, actualCluster)
-		assert.NoError(tt, err)
+		actualCluster := metricsConsumerCluster.AllMetrics()[len(metricsConsumerCluster.AllMetrics())-1]
+		actualForAssert := pmetric.NewMetrics()
+		actualCluster.CopyTo(actualForAssert)
+		testutil.ReplaceAttrValsWithStar(actualForAssert, clusterResourceIgnoreList, clusterDpIgnoreList)
+		testutil.DeduplicateResources(actualForAssert)
+		assert.NoError(tt, pmetricassert.AssertMetrics(expectedClusterAssertFile, actualForAssert))
 	}, 3*time.Minute, 1*time.Second)
 
 	// the commented line below writes the received list of metrics to the expected.yaml

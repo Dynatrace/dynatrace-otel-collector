@@ -17,9 +17,6 @@ v0.154.0:
 
 ### 🛑 Breaking changes 🛑
 
-- `all`: Removes the Google SecOps exporter, as it is no longer being donated. ([#46148](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46148))
-  Removes the incomplete and non-functional Google SecOps exporter.
-  It should not have been configured by users, so no real world breakage is expected.
 - `connector/span_metrics`: Validate `calls_dimensions` and `histogram.dimensions` at startup ([#48097](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48097))
   Duplicate dimension names in `calls_dimensions` or `histogram.dimensions` previously passed silently; they now fail validation at startup, matching the behaviour of the top-level `dimensions` setting.
 

@@ -14,7 +14,7 @@ env:
   # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
   GORELEASER_PRO_VERSION: v2.16.0
   # renovate: datasource=github-releases depName=sigstore/cosign
-  COSIGN_VERSION: v3.0.6
+  COSIGN_VERSION: v3.1.1
 
 jobs:
   release:

@@ -11,23 +11,6 @@ resources:
       scopes:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/processor/cumulativetodeltaprocessor
           metrics:
-            - name: otelcol_cumulativetodelta_datapoints
-              type: sum
-              unit: '{datapoint}'
-              temporality: delta
-              monotonic: true
-              datapoints:
-                - attributes:
-                    metric_type: sum
-            - name: otelcol_cumulativetodelta_datapoints_dropped
-              type: sum
-              unit: '{datapoint}'
-              temporality: delta
-              monotonic: true
-              datapoints:
-                - attributes:
-                    metric_type: sum
-                    reason: initial
             - name: otelcol_cumulativetodelta_streams_tracked
               type: sum
               unit: '{stream}'

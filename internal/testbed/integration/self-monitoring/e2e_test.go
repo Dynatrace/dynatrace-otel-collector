@@ -328,8 +328,6 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 
 	defaultOptions := []pmetrictest.CompareMetricsOption{
 		pmetrictest.IgnoreMetricValues(
-			"otelcol_cumulativetodelta_datapoints",
-			"otelcol_cumulativetodelta_datapoints_dropped",
 			"otelcol_cumulativetodelta_streams_tracked",
 			"otelcol_exporter_in_flight_requests",
 			"otelcol_processor_filter_datapoints.filtered",

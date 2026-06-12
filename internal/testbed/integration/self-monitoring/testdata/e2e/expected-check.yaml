@@ -1866,7 +1866,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: rpc.client.call.duration
             unit: s
-        schemaUrl: https://opentelemetry.io/schemas/1.40.0
+        schemaUrl: https://opentelemetry.io/schemas/1.41.0
         scope:
           name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
           version: 0.68.0

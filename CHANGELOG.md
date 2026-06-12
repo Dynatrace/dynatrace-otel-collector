@@ -4,6 +4,110 @@
 
 <!-- next version -->
 
+## 0.50.0
+
+This release includes version v0.154.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.154.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.154.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.154.0>
+
+### 🛑 Breaking changes 🛑
+
+- `connector/span_metrics`: Validate `calls_dimensions` and `histogram.dimensions` at startup ([#48097](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48097))
+  Duplicate dimension names in `calls_dimensions` or `histogram.dimensions` previously passed silently; they now fail validation at startup, matching the behaviour of the top-level `dimensions` setting.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### ⚠️ Deprecations ⚠️
+
+- `processor/resource_detection`: The `k8snode` detector is deprecated; use `k8s_api` instead. ([#48597](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48597))
+  Both names work and produce identical output. When switching to `k8s_api`, also rename your config section from `k8snode:` to `k8s_api:`; keeping the old key under the new detector name will silently apply defaults instead.
+- `receiver/kafka`: Deprecate `group_rebalance_strategy` in favor of `group_rebalance_strategies` ([#48658](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48658))
+  Use `group_rebalance_strategies` to configure one or more ordered protocols. The singular field remains supported for backward compatibility but logs a deprecation warning on startup.
+  `group_rebalance_strategy` and `group_rebalance_strategies` are mutually exclusive; setting both fails validation.
+
+### 💡 Enhancements 💡
+
+- `processor/k8s_attributes`: Add `pod_delete_grace_period` config option to configure pod metadata cache deletion grace period. ([#48127](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48127))
+  The `pod_delete_grace_period` config option defaults to `120s` to match the previously hardcoded behavior.
+- `receiver/statsd`: `receiver/statsd` Add support for configuring socket buffer size ([#47379](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47379))
+- `pkg/zipkin`: Migrate semantic conventions from v1.25.0 to v1.40.0 ([#45089](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45089))
+- `pkg/stanza`: Add a `none` protocol option to the syslog parser that passes the message through without parsing its contents, for non-conforming syslog data. A leading PRI header is decoded when present, and RFC 6587 octet counting is supported. ([#44795](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44795))
+- `receiver/k8s_events`: Add `dedup_interval` config to throttle MODIFIED watch notifications per Event UID. ([#48018](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48018))
+  `dedup_interval` is opt-in (default `0` preserves existing behavior). When set to a positive
+  duration, MODIFIED watch notifications for a given Event UID are emitted at most once per
+  interval; ADDED notifications are always emitted. Set to a negative value to drop all
+  MODIFIED notifications. Per-UID throttle state is retained for `dedup_interval + 5m`.
+  Adds an internal telemetry counter `otelcol.k8s.events.modified.filtered` that
+  tracks how many MODIFIED notifications were dropped by `dedup_interval`.
+- `processor/cumulativetodelta`: Add internal telemetry for converted and dropped datapoints, and for tracked streams. ([#48246](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48246))
+  Three new metrics are emitted by the processor, all disabled by default (opt-in via the collector's `service.telemetry.metrics` configuration):
+    - `otelcol_cumulativetodelta_datapoints`: number of datapoints converted from cumulative to delta temporality (with a `metric_type` attribute: `sum`, `histogram`, or `exponential_histogram`).
+    - `otelcol_cumulativetodelta_datapoints_dropped`: number of datapoints dropped instead of converted, with the same `metric_type` attribute and a `reason` attribute (`reset`, `initial`, `bucket_mismatch`).
+    - `otelcol_cumulativetodelta_streams_tracked`: number of metric streams currently tracked in memory.
+
+  Reset detections also emit a Debug-level log line including the metric name, type, and datapoint attributes — logs absorb the per-stream cardinality that would be prohibitive on a metric while still letting operators identify which stream is wrapping/restarting.
+- `processor/tail_sampling`: Allow nesting the not policy inside and_sub_policy for tail sampling policies. ([#47313](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47313))
+  This enables configurations such as "status_code: ERROR" AND NOT "http.status_code in [400, 499]" without relying on deprecated invert_match.
+- `exporter/load_balancing`: Add service, resource, and attributes routing key support for logs ([#40223](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40223))
+  Logs can now be routed using `service` (default, routes by service.name), `resource` (routes by
+  full resource identity), or `attributes` (routes by configurable attribute values including
+  log.severity and log.body pseudo attributes). This enables stateful downstream processing like
+  log reduction, throttling, and tail-based sampling.
+- `receiver/host_metrics`: Add AIX to the system scraper's supported-OS allowlist. ([#47095](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47095))
+- `processor/resource_detection`: Add `k8s.cluster.uid` detection to the `k8s_api` detector (formerly `k8snode`), derived from the `kube-system` namespace UID. ([#48597](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48597))
+  The `k8s.cluster.uid` attribute is enabled by default. To disable it, set `resource_attributes.k8s.cluster.uid.enabled: false`.
+  The detector requires `get` permission on the `kube-system` namespace. If the permission is missing, a warning is logged and the attribute is omitted; other attributes are unaffected.
+- `processor/transform`: Add the `limit_buckets` method to the `merge_histogram_buckets` OTTL function to reduce explicit histogram bucket counts. ([#48527](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48527))
+- `pkg/ottl`: `Substring` function now supports UTF-8 safe slicing ([#48436](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48436))
+  New optional parameter `utf8_safe` (default: `false`). Set to `true` to adjust slice
+  boundaries so multi-byte UTF-8 characters are never cut in the middle; the result
+  may then be shorter than `length` bytes. Default preserves the existing byte-level
+  slicing behavior.
+- `receiver/k8s_objects`: Add `initial_delay` to delay the first pull for pull-mode objects by an exact, per-object duration. ([#48605](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48605))
+  `initial_delay` lets operators stagger heavy pull-mode object collections across startup time
+  without changing the configured recurring `interval`.
+  If unset or `0`, the receiver keeps the current immediate first-pull behavior.
+  Watch-mode objects are unaffected.
+- `receiver/kafka`: Add `group_rebalance_strategies` so consumers can advertise multiple partition assignment protocols in order during rolling deployments ([#48658](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48658))
+  Kafka picks the first protocol every group member supports. This avoids `INCONSISTENT_GROUP_PROTOCOL` when old and new collector pods temporarily advertise different assignment strategies.
+  Order is preserved when configuring the franz-go client.
+- `connector/span_metrics`: Support for glob expressions in the `dimensions` field of the spanmetrics connector config ([#48097](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48097))
+  It is now possible to specify attributes to add as dimensions to metrics using glob expressions, in addition to exact string matching
+- `processor/tail_sampling`: Add a new `processor_tail_sampling_count_bytes_sampled` metric that counts bytes sampled per policy, mirroring `processor_tail_sampling_count_spans_sampled`. ([#48348](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48348))
+  Gated behind the `processor.tailsamplingprocessor.metricstatcountbytessampled` feature gate (alpha, disabled by default).
+  Bytes are measured using the protobuf-marshaled `ResourceSpans` size, the same calculation used for `maximum_trace_size_bytes`.
+- `pkg/ottl`: Add `ottlexemplar` context exposing per-exemplar fields (`time`, `filtered_attributes`, `double_value`, `int_value`, `trace_id`, `span_id`) for use in OTTL statements. ([#47490](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47490))
+- `processor/resource_detection`: Updates github.com/GoogleCloudPlatform/opentelemetry-operations-go dependencies to their latest versions (v0.57.0 / v1.33.0). ([#48894](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48894))
+  This update brings in the following features:
+  - Support OTLP event_name field in logs exporter
+  - Add support for cloud run worker pools
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/exporterhelper`: Fix nil-pointer panic in `sending_queue::batch` Unmarshal when `sending_queue::sizer` is set and `sending_queue::batch::enabled` is false. ([#14687](https://github.com/open-telemetry/opentelemetry-collector/issues/14687))
+  When `sending_queue::sizer` was set and `sending_queue::batch::enabled: false`
+  cleared the batch Optional to None, the sizer-inheritance branch in
+  `queuebatch.Config.Unmarshal` dereferenced a nil Optional and crashed the
+  collector at startup. The branch now also requires `Batch.HasValue()`.
+- `receiver/host_metrics`: Fix double-counting of CPU guest/guest_nice time, Linux already includes guest time within the user/nice fields ([#48024](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48024))
+- `pkg/stanza`: Fix EVT_HANDLE leak in Windows Event Log receiver when no checkpoint has been persisted ([#47194](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47194))
+  On a fresh start (no persisted checkpoint), Subscription stored a copy of the Bookmark struct whose EVT_HANDLE was allocated separately and never closed. The fix removes the bookmark field from Subscription entirely; RPC_S_INVALID_BOUND recovery is now handled by Input.readWithRetry, which has direct access to the Input's bookmark.
+- `processor/resource_detection`: Remove outdated warning about GKE host.name not being available with Workload Identity ([#48876](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48876))
+- `processor/tail_sampling`: span-ingest: Clean up storage and memory for implicit unsampled traces after decision wait ([#48874](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48874))
+
+---
+
+</details>
+
+
+<!-- previous-version -->
+
 ## 0.49.0
 
 This release includes version v0.153.0 of the upstream Collector components and also includes changes introduced in v0.152.0.

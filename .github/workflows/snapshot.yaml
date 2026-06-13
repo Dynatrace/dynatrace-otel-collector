@@ -68,6 +68,9 @@ jobs:
           sudo rm -r $ANDROID_HOME
           df -h
 
+      - name: Install osslsigncode
+        run: apt update && apt install osslsigncode
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
         with:

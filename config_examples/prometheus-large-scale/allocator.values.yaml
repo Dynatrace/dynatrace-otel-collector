@@ -10,7 +10,7 @@ targetAllocator:
   image:
     repository: ghcr.io/dynatrace/otel-target-allocator/target-allocator
     # renovate: datasource=docker depName=ghcr.io/dynatrace/otel-target-allocator/target-allocator
-    tag: 0.1.0
+    tag: 0.2.0
   serviceAccount:
     create: false
     name: "tiered-otel-allocator"
@@ -27,11 +27,14 @@ targetAllocator:
       enabled: true
       scrapeInterval: 15s
       service_monitor_selector:
-        prometheus.dynatrace.com: "true"
+        matchlabels:
+          prometheus.dynatrace.com: "true"
       pod_monitor_selector:
-        prometheus.dynatrace.com: "true"
+        matchlabels:
+          prometheus.dynatrace.com: "true"
       scrape_config_selector:
-        prometheus.dynatrace.com: "true"
+        matchlabels:
+          prometheus.dynatrace.com: "true"
 
   resources:
     limits:

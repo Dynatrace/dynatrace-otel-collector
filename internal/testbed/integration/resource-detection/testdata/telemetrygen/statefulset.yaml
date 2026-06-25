@@ -28,6 +28,6 @@ spec:
         - --otlp-attributes=host.name="my-host-not-overridden"
         - --otlp-attributes=dt.entity.host="my-host-not-overridden"
         - --otlp-attributes=dt.smartscape.host="my-smartscape-host-not-overridden"
-        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.154.0@sha256:09ddc951f6b54ae4f112a746629981896d6e9d1c78495be02b866b7b261a68a4
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.155.0@sha256:32d1762abb401e36dd8cfdf60a71075b41bd996a0cfb7c8d2e6eac4d609625b9
         name: telemetrygen
       restartPolicy: Always

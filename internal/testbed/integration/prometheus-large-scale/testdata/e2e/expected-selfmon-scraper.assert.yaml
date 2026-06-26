@@ -98,6 +98,9 @@ resources:
               unit: '{datapoint}'
               temporality: delta
               monotonic: true
+              datapoints:
+                - attributes:
+                    processor: memory_limiter
         - name: go.opentelemetry.io/collector/processor/processorhelper
           metrics:
             - name: otelcol_processor_incoming_items

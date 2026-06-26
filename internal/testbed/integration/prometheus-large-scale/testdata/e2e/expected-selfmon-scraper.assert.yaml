@@ -93,7 +93,7 @@ resources:
                     exporter: load_balancing
         - name: go.opentelemetry.io/collector/processor/memorylimiterprocessor
           metrics:
-            - name: otelcol_processor_accepted_metric_points
+            - name: otelcol_processor_memory_limiter_accepted_metric_points
               type: sum
               unit: '{datapoint}'
               temporality: delta

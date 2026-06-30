@@ -4,6 +4,97 @@
 
 <!-- next version -->
 
+## 0.51.0
+
+This release includes version v0.155.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.155.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.155.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.155.0>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/exporterhelper`: Remove stable gate `exporter.PersistRequestContext`. ([#15424](https://github.com/open-telemetry/opentelemetry-collector/issues/15424))
+- `pkg/service`: Remove stable featuregate `telemetry.UseLocalHostAsDefaultMetricsAddress` ([#15419](https://github.com/open-telemetry/opentelemetry-collector/issues/15419))
+- `processor/memory_limiter`: Rename deprecated memory limiter metrics to include the `memory_limiter` prefix (e.g. `otelcol_processor_memory_limiter_*`) to clarify they are specific to this processor. ([#11203](https://github.com/open-telemetry/opentelemetry-collector/issues/11203))
+- `pkg/confmap`: Remove stabilized featuregate `confmap.newExpandedValueSanitizer` ([#15418](https://github.com/open-telemetry/opentelemetry-collector/issues/15418))
+- `pkg/fileconsumer`: Remove stable gate filelog.decompressFingerprint ([#48980](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48980))
+- `processor/k8s_attributes`: Remove deprecated gate k8sattr.labelsAnnotationsSingular.allow ([#48977](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48977))
+- `processor/tail_sampling`: Remove stable gate processor.tailsamplingprocessor.disableinvertdecisions ([#48976](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48976))
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 💡 Enhancements 💡
+
+- `processor/resource_detection`: Add GCP Cloud Run Worker Pool detector to the resource detection processor ([#48931](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48931))
+- `pkg/ottl`: Add support for dynamic keys in converters results. ([#48834](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48834))
+  Converter results can now be indexed with dynamic keys expressions that evaluate to a string or integer.
+  For example: `Split(...)[Len(attributes["items"])]` or `Split(...)[attributes["index"]]`.
+  Previously, only literal keys (e.g. `[0]` or `["index"]`) were supported.
+- `receiver/host_metrics`: Enable the Android platform in the `process` scraper. ([#47296](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47296))
+- `pkg/zipkin`: Migrated semantic convention from v1.18.0 to v1.40.0 ([#45080](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45080))
+- `exporter/load_balancing`: Reduce CPU usage and memory allocations when routing traces by `traceID` (the default routing key) ([#48983](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48983))
+  Routing decisions are unchanged. Spans are now regrouped per backend, so the exact
+  ResourceSpans/ScopeSpans grouping of exported traces may differ from the input. If a downstream
+  consumer is sensitive to this, a groupbyattrsprocessor on the receiving end can recompact the
+  ResourceSpans.
+- `processor/transform`: Improve `merge_histogram_buckets` with `method="limit_buckets"` to compact buckets closer to the configured limit. ([#49020](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49020))
+- `receiver/host_metrics`: Add AIX-specific process scraper implementation. ([#47095](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47095))
+  Implements AIX versions of the platform-specific process scraper hooks
+  (CPU time/utilization recording, process name, executable, and command
+  extraction), replacing the previous empty stubs that the "others"
+  fallback provided.
+- `receiver/prometheus`: Add `scrape_on_shutdown`, `discovery_reload_on_startup`, and `initial_scrape_offset` configuration options to allow tuning startup and shutdown scrape behavior in serverless environments. ([#48979](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48979))
+  - `scrape_on_shutdown` (default: false): Enables a final scrape before the receiver closes.
+  - `discovery_reload_on_startup` (default: false): Enables discovering targets immediately on startup.
+  - `initial_scrape_offset` (default: 0s): Adds a fixed delay before the initial scrape of targets.
+- `exporter/kafka`: Add `producer.max_broker_write_bytes` config ([#47492](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47492))
+  The maximum size of a single write to a broker was previously fixed at the underlying
+  franz-go default of 100 MiB and could not be configured. As a result, setting
+  `producer.max_message_bytes` above 100 MiB passed configuration validation but caused the
+  collector to fail on startup with an unrecoverable error ("max broker write bytes ... is
+  erroneously less than max record batch bytes ...").
+
+  The new `producer.max_broker_write_bytes` setting (default 104857600, i.e. 100 MiB) exposes
+  this limit. To send messages larger than 100 MiB, raise it so it is greater than or equal to
+  `max_message_bytes`. Configuration is now validated up front: the collector reports a clear
+  error if `max_broker_write_bytes` is below the 100 MiB minimum or smaller than
+  `max_message_bytes`, rather than failing at runtime.
+- `receiver/file_log`: Improve polling performance when watching many files by indexing fingerprint matching. ([#27404](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/27404))
+- `pkg/ottl`: Add `stringify_all` editor that converts all non-string values in a map to their string representation ([#48044](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48044))
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/ottl`: Fix `replace_pattern` and `replace_all_patterns` using a `Function` argument so each match is replaced only at its position, instead of everywhere the matched text appears. ([#48437](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48437))
+- `pkg/stanza`: Fix stanza container operator logging errors at ERROR level when `on_error` is set to a quiet mode ([#42646](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42646))
+  Previously, the `container` operator logged entry-level processing errors at
+  ERROR level even when `on_error` was set to `drop_quiet` or `send_quiet`.
+  These errors are now logged at DEBUG level in quiet modes, matching the
+  documented behavior. Downstream delivery failures continue to propagate so
+  the pipeline can react to them.
+- `processor/transform`: Fix transform processor config unmarshaling to return an error for empty statement list items instead of panicking. ([#49245](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49245))
+- `processor/redaction`: Fix a panic in database attribute sanitization when traces are processed concurrently. ([#49048](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49048))
+- `exporter/load_balancing`: Fix a wait-group leak on the trace routing path that could cause Shutdown to hang when backend resolution fails partway through a batch ([#48983](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48983))
+- `receiver/kafka_metrics`: use kadm.Client.Lag and do not record negative values ([#48701](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48701))
+- `receiver/statsd`: Skip empty tag entries instead of aborting the tag parse loop, so valid tags after an empty entry are no longer dropped. ([#48483](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48483))
+  Previously, tags containing an empty entry (e.g. from consecutive commas like `|#,,key:value`) caused the
+  parser to exit the loop on the first empty entry, silently dropping all subsequent valid tags. Empty entries
+  are now skipped, matching the permissive behavior of the Datadog agent.
+- `exporter/load_balancing`: Fix Kubernetes resolver initialization to allow exporter creation outside k8s cluster by deferring client creation to start time ([#42293](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42293))
+- `processor/k8s_attributes`: Prevent unbounded memory growth by cleaning up stale pod identifiers, including container.id entries left behind after container restarts ([#48398](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48398))
+- `receiver/statsd`: Clean up stale unix socket file on startup to prevent "address already in use" errors after unclean shutdown. ([#44866](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44866))
+
+---
+
+</details>
+
+
+<!-- previous-version -->
+
 ## 0.50.0
 
 This release includes version v0.154.0 of the upstream Collector components.

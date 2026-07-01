@@ -1,0 +1,44 @@
+name: PS Connectivity Check (ASDY-26760)
+# Research workflow: verifies whether GitHub-hosted runners can reach
+# Dynatrace-internal endpoints (Promotion Service, initial ECR) that
+# would be required for a GitHub Actions-based BuildUnit release flow.
+# See: https://dt-rnd.atlassian.net/browse/ASDY-26760
+
+on:
+  workflow_dispatch:
+
+jobs:
+  connectivity-check:
+    name: Check PS + ECR reachability from GH-hosted runner
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Runner identity
+        run: |
+          echo "Runner OS    : $RUNNER_OS"
+          echo "Runner arch  : $RUNNER_ARCH"
+          echo "Runner name  : $RUNNER_NAME"
+          echo "Public IP    : $(curl -sf https://checkip.amazonaws.com || echo 'unavailable')"
+
+      - name: Promotion Service – Sandbox
+        run: |
+          echo "--- PS Sandbox (promotions.mcp-sandbox.internal.dynatracelabs.com) ---"
+          curl --connect-timeout 10 --max-time 15 -sv -o /dev/null \
+            https://promotions.mcp-sandbox.internal.dynatracelabs.com/api/buildunit-promotions/v1/buildunits \
+            2>&1 | grep -E "< HTTP|Connected to|Could not resolve|Connection refused|timed out|curl:" \
+            || echo "exit code: $? (6=DNS, 7=refused, 28=timeout)"
+
+      - name: Promotion Service – Production
+        run: |
+          echo "--- PS Prod (promotions.mcp.internal.dynatrace.com) ---"
+          curl --connect-timeout 10 --max-time 15 -sv -o /dev/null \
+            https://promotions.mcp.internal.dynatrace.com/api/buildunit-promotions/v1/buildunits \
+            2>&1 | grep -E "< HTTP|Connected to|Could not resolve|Connection refused|timed out|curl:" \
+            || echo "exit code: $? (6=DNS, 7=refused, 28=timeout)"
+
+      - name: Initial ECR (478983378254)
+        run: |
+          echo "--- Initial ECR ---"
+          curl --connect-timeout 10 --max-time 15 -sv -o /dev/null \
+            https://478983378254.dkr.ecr.us-east-1.amazonaws.com/v2/ \
+            2>&1 | grep -E "< HTTP|Connected to|Could not resolve|Connection refused|timed out|curl:" \
+            || echo "exit code: $? (6=DNS, 7=refused, 28=timeout)"

@@ -18,6 +18,7 @@ v0.156.0:
 ### 🛑 Breaking changes 🛑
 
 - `pkg/fileconsumer`: Move feature gate filelog.protobufCheckpointEncoding to beta and keep it enabled by default ([#49387](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49387))
+  This affects users of `receiver/file_log` and `receiver/journald`, which both rely on `pkg/fileconsumer` for file reading and checkpointing.
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
@@ -50,6 +51,8 @@ v0.156.0:
 - `pkg/service`: Ensure receivers always start after all other components ([#15495](https://github.com/open-telemetry/opentelemetry-collector/issues/15495))
   There was previously a race condition where multiple receivers using a shared internal implementation,
   such as the OTLP receiver, could start sending telemetry into a pipeline before all its components had fully started.
+- `provider/env`: Fix empty env var default resolving to nil instead of empty string ([#14587](https://github.com/open-telemetry/opentelemetry-collector/issues/14587))
+  When using `${env:VAR:-}` with an unset variable, the empty default now correctly resolves to an empty string instead of nil.
 - `processor/resource_detection`: Fix Docker resource detection failing to start when optional resource attributes are disabled, including container attributes when the hostname does not match a Docker container name. ([#46275](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46275))
 - `processor/k8s_attributes`: Fix cache key memory leak in k8sattributesprocessor when a Pod's IP is missing or cleared from the delete event ([#48986](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48986))
   When a Pod is deleted, if its IP address is missing or already cleared from the delete event status,

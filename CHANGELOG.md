@@ -4,6 +4,70 @@
 
 <!-- next version -->
 
+## 0.52.0
+
+This release includes version v0.156.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.156.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.156.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.156.0>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/fileconsumer`: Move feature gate filelog.protobufCheckpointEncoding to beta and keep it enabled by default ([#49387](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49387))
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 💡 Enhancements 💡
+
+- `processor/memory_limiter`: Adding health events for the memorylimiter ([#14700](https://github.com/open-telemetry/opentelemetry-collector/issues/14700))
+  Publish health event from memorylimiter using componentstatus.ReportStatus
+- `extension/file_storage`: Added `max_size` support to the filestorage extension to cap per-component database growth. ([#38620](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38620))
+- `receiver/syslog`: Add support for RFC6587 Octet Counting framing with RFC3164 message format. ([#45216](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45216))
+- `receiver/prometheus`: Promote `receiver.prometheusreceiver.IgnoreScopeInfoMetric` feature gate to beta. ([#47312](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47312))
+  The `otel_scope_info` metric is now ignored for scope attribute extraction by default.
+  To temporarily restore the previous behavior, disable the feature gate with `--feature-gates=-receiver.prometheusreceiver.IgnoreScopeInfoMetric`.
+- `processor/transform`: Add `exemplar` context support to the transform processor, allowing `metric_statements` to read and modify exemplar fields on metric datapoints. ([#49022](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49022))
+
+### 🧰 Bug fixes 🧰
+
+- `exporter/otlp_http`: Treat errors parsing successful (2xx) HTTP response bodies as permanent errors to prevent retrying already-accepted data. ([#15386](https://github.com/open-telemetry/opentelemetry-collector/issues/15386))
+  When a server returns a 2xx status but the response body exceeds the 64kB read limit,
+  the body is truncated and proto unmarshaling fails. Previously this was treated as a
+  retryable error, causing duplicate data to be exported. Now it is marked as a permanent
+  error so the retry logic will not re-send data that was already accepted by the server.
+- `processor/memory_limiter`: Fix degenerate collector performance when exporter has problems causing permanent CPU-burning GC loop ([#4981](https://github.com/open-telemetry/opentelemetry-collector/issues/4981))
+  Forced GC runs now use exponential backoff when deemed ineffective
+  (still above soft limit and less than 5% reclaimed) to avoid preventing
+  recovery by overloading CPU with excessive GC runs. The cap on the
+  backoff interval is exposed via `max_gc_interval_when_soft_limited` and
+  `max_gc_interval_when_hard_limited` (both default `30s`); set either to
+  `0` to disable backoff on that path.
+- `pkg/service`: Ensure receivers always start after all other components ([#15495](https://github.com/open-telemetry/opentelemetry-collector/issues/15495))
+  There was previously a race condition where multiple receivers using a shared internal implementation,
+  such as the OTLP receiver, could start sending telemetry into a pipeline before all its components had fully started.
+- `processor/resource_detection`: Fix Docker resource detection failing to start when optional resource attributes are disabled, including container attributes when the hostname does not match a Docker container name. ([#46275](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46275))
+- `processor/k8s_attributes`: Fix cache key memory leak in k8sattributesprocessor when a Pod's IP is missing or cleared from the delete event ([#48986](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48986))
+  When a Pod is deleted, if its IP address is missing or already cleared from the delete event status,
+  the processor now looks up the cached pod by its UID to retrieve the stored IP and correctly queue
+  all associated keys for deletion.
+- `processor/cumulativetodelta`: Align reset detection and dropping on histograms and exponential histograms ([#48278](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48278))
+  Histograms and exponential histograms where there is a drop in total count or on any bucket counts are now treated as a reset and dropped.
+- `receiver/prometheus`: Prometheus API server config/targets stay in sync with Target Allocator changing it if both are enabled. ([#48040](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48040))
+  Previously, the API server config and targets did not get the updates from the Target Allocator.
+- `processor/cumulativetodelta`: Fix non-deterministic order of valid metric types in error messages for invalid `metric_types` config values. ([#49120](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49120))
+
+---
+
+</details>
+
+
+<!-- previous-version -->
+
 ## 0.51.0
 
 This release includes version v0.155.0 of the upstream Collector components.

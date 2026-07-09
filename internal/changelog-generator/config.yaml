@@ -19,6 +19,12 @@ allowlist:
   - "pkg/exporterhelper"
   - "pkg/kafka/configkafka"
   - "pkg/config/configoptional"
+  # Config providers included in the distribution manifest
+  - "provider/env"
+  - "provider/file"
+  - "provider/http"
+  - "provider/https"
+  - "provider/yaml"
   # Global entries affecting all components
   - "all"
 

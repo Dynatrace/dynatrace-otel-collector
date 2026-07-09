@@ -1,0 +1,99 @@
+nameOverride: ""
+fullnameOverride: "tiered-allocator"
+
+replicaCount: 2
+
+targetAllocator:
+  # The Target Allocator now PUSHES its self-telemetry via OTLP (see config.telemetry
+  # below), so it is no longer scraped by the customer path. Keep scrape disabled.
+  podAnnotations:
+    metrics.dynatrace.com/scrape: "false"
+  image:
+    # Target Allocator built from the OTLP self-telemetry branch (opentelemetry-operator
+    # PR #5068 / issue #5047), linux/amd64. Supports config.telemetry.metrics.otlp below.
+    # Built locally from cmd/otel-allocator; must be pushed to a registry the cluster can pull.
+    repository: ghcr.io/odubajdt/target-allocator
+    tag: icp5695-otlp
+    pullPolicy: IfNotPresent
+  serviceAccount:
+    create: false
+    name: "tiered-otel-allocator"
+  service:
+    port: 8080
+  # All self-monitoring resource attributes are supplied here: the downward API provides
+  # pod name/namespace/uid/node; cluster + workload name are static (known at deploy time).
+  # k8s $(VAR) substitution expands the downward-API vars inside OTEL_RESOURCE_ATTRIBUTES.
+  # DT_ENDPOINT / DT_API_TOKEN come from the dynatrace-otelcol-credentials secret and are
+  # referenced by config.telemetry.metrics.otlp below (endpoint/headers use ${env:...}).
+  extraEnvs:
+    - name: K8S_POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: K8S_NAMESPACE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: K8S_POD_UID
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.uid
+    - name: K8S_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: K8S_CLUSTER_NAME
+      value: "tiered-otelcol-ta-test"
+    - name: DT_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          name: dynatrace-otelcol-credentials
+          key: DT_ENDPOINT
+    - name: DT_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: dynatrace-otelcol-credentials
+          key: DT_API_TOKEN
+    - name: OTEL_SERVICE_NAME
+      value: "target-allocator"
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "k8s.pod.name=$(K8S_POD_NAME),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.pod.uid=$(K8S_POD_UID),k8s.node.name=$(K8S_NODE_NAME),k8s.cluster.name=$(K8S_CLUSTER_NAME),k8s.workload.name=tiered-allocator-ta"
+  config:
+    allocation_strategy: consistent-hashing
+    collector_namespace: ${NAMESPACE}
+    collector_selector:
+      matchlabels:
+        app.kubernetes.io/name: opentelemetry-collector
+        app.kubernetes.io/instance: otel-scraper
+    prometheus_cr:
+      enabled: true
+      scrapeInterval: 15s
+      service_monitor_selector:
+        matchlabels:
+          prometheus.dynatrace.com: "true"
+      pod_monitor_selector:
+        matchlabels:
+          prometheus.dynatrace.com: "true"
+      scrape_config_selector:
+        matchlabels:
+          prometheus.dynatrace.com: "true"
+    # Self-telemetry export over OTLP straight to Dynatrace (no selfmon collector).
+    # endpoint/token are ${env:...} references, expanded by the TA at runtime from the
+    # secret-backed env above, so the token is never written into the ConfigMap.
+    telemetry:
+      metrics:
+        otlp:
+          endpoint: "${env:DT_ENDPOINT}"
+          protocol: http
+          temporality: delta
+          export_interval: 15s
+          insecure: false
+          headers:
+            Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 10m
+      memory: 150Mi

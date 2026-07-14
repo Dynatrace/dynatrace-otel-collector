@@ -23,12 +23,11 @@ import (
 
 // TestE2E_GenAINormalizerProcessor_OpenInference verifies that the genainormalizer
 // processor correctly maps OpenInference span attributes to gen_ai.* semantic conventions.
-// It covers both openai-openinference and aws-bedrock-openinference attribute shapes,
-// which use the same llm.* attribute names but different model values.
+// A transform processor injects OpenInference-style attributes onto every span before
+// the gen_ai_normalizer runs, so no external testapp is required.
 func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
-	configExamplesDir := "../../../../config_examples"
 
 	kubeconfigPath := k8stest.TestKubeConfig
 	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
@@ -62,7 +61,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testID := uuid.NewString()[:8]
 	host := otelk8stest.HostEndpoint(t)
 
-	collectorConfigPath := path.Join(configExamplesDir, "genainormalizer-openinference.yaml")
+	collectorConfigPath := path.Join(testDir, "collector", "config.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 	})
@@ -80,28 +79,28 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		host,
 	)
 
-	testAppObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "testapp"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorEndpoint": fmt.Sprintf("http://otelcol-%s.%s:4318", testID, testNs),
-		},
-		host,
-	)
-
+	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
+		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
+		TestID:       testID,
+		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
+		DataTypes:    []string{"traces"},
+	}
+	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
 	defer func() {
-		for _, obj := range append(collectorObjs, testAppObjs...) {
+		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
 
-	const wantEntries = 10
+	for _, info := range telemetryGenObjInfos {
+		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
+	}
+
+	wantEntries := 30 // Minimal number of traces to wait for.
 	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
 
-	// To regenerate golden file: uncomment the line below, run once, then re-comment.
+	// To regenerate the golden file: comment out the ReadTraces + CompareTraces block
+	// and uncomment the line below, run once, then revert.
 	require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]))
 
 	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
@@ -116,22 +115,6 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		ptracetest.IgnoreScopeSpansOrder(),
 		ptracetest.IgnoreSpansOrder(),
 		ptracetest.IgnoreResourceAttributeValue("service.instance.id"),
-		// Ignore raw OpenInference and I/O attributes — we only assert on gen_ai.* mappings.
-		// Values of these attrs vary by platform (JSON encoding, ordering) and are not
-		// what this test is verifying.
-		ptracetest.IgnoreSpanAttributeValue("input.mime_type"),
-		ptracetest.IgnoreSpanAttributeValue("input.value"),
-		ptracetest.IgnoreSpanAttributeValue("output.mime_type"),
-		ptracetest.IgnoreSpanAttributeValue("output.value"),
-		ptracetest.IgnoreSpanAttributeValue("gen_ai.input.messages"),
-		ptracetest.IgnoreSpanAttributeValue("gen_ai.output.messages"),
-		ptracetest.IgnoreSpanAttributeValue("llm.invocation_parameters"),
-		ptracetest.IgnoreSpanAttributeValue("llm.input_messages.0.message.content"),
-		ptracetest.IgnoreSpanAttributeValue("llm.input_messages.0.message.role"),
-		ptracetest.IgnoreSpanAttributeValue("llm.output_messages.0.message.content"),
-		ptracetest.IgnoreSpanAttributeValue("llm.output_messages.0.message.role"),
-		ptracetest.IgnoreSpanAttributeValue("llm.finish_reason"),
-		ptracetest.IgnoreSpanAttributeValue("llm.model_name"),
 	}
 
 	const (

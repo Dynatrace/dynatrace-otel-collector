@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Name }}-{{ .DataType}}-job
+  namespace: e2egenainormalizer
+spec:
+  template:
+    metadata:
+      annotations:
+        workload: job
+      labels:
+        app: {{ .Name }}-{{ .DataType }}-job
+    spec:
+      containers:
+        - command:
+            - /telemetrygen
+            - {{ .DataType }}
+            - --otlp-insecure
+            - --otlp-endpoint={{ .OTLPEndpoint }}
+            - --rate=1
+            - --duration=36000s
+            - --otlp-attributes=service.name="test-{{ .DataType }}-job"
+          image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.156.0@sha256:0d2936509ffd2a68b3fe6f4f299a3ec87653dc37676df4313e628a8413e1d2f2
+          name: telemetrygen
+      restartPolicy: OnFailure

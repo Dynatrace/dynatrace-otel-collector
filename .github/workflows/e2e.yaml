@@ -254,13 +254,6 @@ jobs:
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
 
-      - name: Configure ghcr.io credentials in Kind nodes
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker exec kind-control-plane bash -c "mkdir -p /var/lib/kubelet && cat > /var/lib/kubelet/config.json <<'EOF'
-          $(cat ~/.docker/config.json)
-          EOF"
-
       - name: Run e2e tests
         run: |
           cd internal/testbed/integration/genainormalizer

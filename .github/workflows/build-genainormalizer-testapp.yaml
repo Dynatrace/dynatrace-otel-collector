@@ -1,6 +1,10 @@
 name: Build genainormalizer test app image
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "internal/testbed/integration/genainormalizer/testapp/**"
   workflow_dispatch:
     inputs:
       tag:

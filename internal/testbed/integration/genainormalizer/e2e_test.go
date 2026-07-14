@@ -116,6 +116,22 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		ptracetest.IgnoreScopeSpansOrder(),
 		ptracetest.IgnoreSpansOrder(),
 		ptracetest.IgnoreResourceAttributeValue("service.instance.id"),
+		// Ignore raw OpenInference and I/O attributes — we only assert on gen_ai.* mappings.
+		// Values of these attrs vary by platform (JSON encoding, ordering) and are not
+		// what this test is verifying.
+		ptracetest.IgnoreSpanAttributeValue("input.mime_type"),
+		ptracetest.IgnoreSpanAttributeValue("input.value"),
+		ptracetest.IgnoreSpanAttributeValue("output.mime_type"),
+		ptracetest.IgnoreSpanAttributeValue("output.value"),
+		ptracetest.IgnoreSpanAttributeValue("gen_ai.input.messages"),
+		ptracetest.IgnoreSpanAttributeValue("gen_ai.output.messages"),
+		ptracetest.IgnoreSpanAttributeValue("llm.invocation_parameters"),
+		ptracetest.IgnoreSpanAttributeValue("llm.input_messages.0.message.content"),
+		ptracetest.IgnoreSpanAttributeValue("llm.input_messages.0.message.role"),
+		ptracetest.IgnoreSpanAttributeValue("llm.output_messages.0.message.content"),
+		ptracetest.IgnoreSpanAttributeValue("llm.output_messages.0.message.role"),
+		ptracetest.IgnoreSpanAttributeValue("llm.finish_reason"),
+		ptracetest.IgnoreSpanAttributeValue("llm.model_name"),
 	}
 
 	const (

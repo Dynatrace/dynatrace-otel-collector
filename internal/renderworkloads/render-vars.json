@@ -6,6 +6,6 @@
   "ContainerRegistry": "ghcr.io/dynatrace/",
   "K8sCluster": "kind",
   "CollectorConfig": "relay",
-  "OTLPEndpoint": "4317",
-  "DataType" : "testtype"
+  "OTLPEndpoint": "4317","DataType" : "testtype",
+  "CollectorEndpoint": "http://otelcol-e2e.e2e:4318"
 }

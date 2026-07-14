@@ -13,8 +13,6 @@ spec:
       labels:
         app: {{ .Name }}-testapp
     spec:
-      imagePullSecrets:
-        - name: ghcr-pull-secret
       containers:
         - name: testapp
           image: "ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest"

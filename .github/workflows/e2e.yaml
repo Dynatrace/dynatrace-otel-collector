@@ -254,15 +254,12 @@ jobs:
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
 
-      - name: Create ghcr pull secret in test namespace
+      - name: Configure ghcr.io credentials in Kind nodes
         run: |
-          kubectl create namespace e2egenainormalizer --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create secret docker-registry ghcr-pull-secret \
-            --namespace e2egenainormalizer \
-            --docker-server=ghcr.io \
-            --docker-username=${{ github.actor }} \
-            --docker-password=${{ secrets.GITHUB_TOKEN }} \
-            --dry-run=client -o yaml | kubectl apply -f -
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker exec kind-control-plane bash -c "mkdir -p /var/lib/kubelet && cat > /var/lib/kubelet/config.json <<'EOF'
+          $(cat ~/.docker/config.json)
+          EOF"
 
       - name: Run e2e tests
         run: |

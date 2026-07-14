@@ -13,10 +13,12 @@ spec:
       labels:
         app: {{ .Name }}-testapp
     spec:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
       containers:
         - name: testapp
           image: "ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: OTEL_SERVICE_NAME
               value: "test-genainormalizer-openinference"

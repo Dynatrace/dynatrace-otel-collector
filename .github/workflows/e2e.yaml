@@ -254,17 +254,15 @@ jobs:
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Pull and load genainormalizer test app image into Kind
+      - name: Create ghcr pull secret in test namespace
         run: |
-          docker pull ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest
-          kind load docker-image ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest
+          kubectl create namespace e2egenainormalizer --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create secret docker-registry ghcr-pull-secret \
+            --namespace e2egenainormalizer \
+            --docker-server=ghcr.io \
+            --docker-username=${{ github.actor }} \
+            --docker-password=${{ secrets.GITHUB_TOKEN }} \
+            --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Run e2e tests
         run: |

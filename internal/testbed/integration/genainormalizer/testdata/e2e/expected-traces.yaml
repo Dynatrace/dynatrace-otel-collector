@@ -12,7 +12,7 @@ resourceSpans:
             stringValue: 1.43.0
         - key: service.instance.id
           value:
-            stringValue: 56df0e60-1e8e-4ae0-af0b-03fa9232c27f
+            stringValue: 989cf97e-d2b7-4dbf-90df-6ed7e1921106
         - key: service.name
           value:
             stringValue: test-genainormalizer-openinference
@@ -34,7 +34,7 @@ resourceSpans:
                   stringValue: application/json
               - key: output.value
                 value:
-                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784026525,"model":"gpt-4o","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
+                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784031694,"model":"gpt-4o","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
               - key: output.mime_type
                 value:
                   stringValue: application/json
@@ -92,15 +92,15 @@ resourceSpans:
               - key: gen_ai.response.model
                 value:
                   stringValue: gpt-4o
-            endTimeUnixNano: "1784026525760761747"
+            endTimeUnixNano: "1784031694870263420"
             flags: 256
             kind: 1
             name: ChatCompletion
-            spanId: 4a96ba8a15250435
-            startTimeUnixNano: "1784026525759255080"
+            spanId: 11f05551bfc25504
+            startTimeUnixNano: "1784031694868994004"
             status:
               code: 1
-            traceId: e5aedf89826b2eb8a5433a4cda53a59d
+            traceId: 9817473d40016f6a00a32893f189d6ea
           - attributes:
               - key: llm.system
                 value:
@@ -113,7 +113,7 @@ resourceSpans:
                   stringValue: application/json
               - key: output.value
                 value:
-                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784026525,"model":"anthropic.claude-3-sonnet-20240229-v1:0","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
+                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784031694,"model":"anthropic.claude-3-sonnet-20240229-v1:0","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
               - key: output.mime_type
                 value:
                   stringValue: application/json
@@ -171,15 +171,15 @@ resourceSpans:
               - key: gen_ai.response.model
                 value:
                   stringValue: anthropic.claude-3-sonnet-20240229-v1:0
-            endTimeUnixNano: "1784026525761970580"
+            endTimeUnixNano: "1784031694871578129"
             flags: 256
             kind: 1
             name: ChatCompletion
-            spanId: f6021e1e1a3c623e
-            startTimeUnixNano: "1784026525761028580"
+            spanId: aabfeb4732efaa94
+            startTimeUnixNano: "1784031694870515420"
             status:
               code: 1
-            traceId: 351c723d2b2c34625c703284b8659680
+            traceId: 9fa180922f9ce04da5267501cff52fab
           - attributes:
               - key: llm.system
                 value:
@@ -192,7 +192,7 @@ resourceSpans:
                   stringValue: application/json
               - key: output.value
                 value:
-                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784026527,"model":"gpt-4o","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
+                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784031696,"model":"gpt-4o","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
               - key: output.mime_type
                 value:
                   stringValue: application/json
@@ -250,15 +250,15 @@ resourceSpans:
               - key: gen_ai.response.model
                 value:
                   stringValue: gpt-4o
-            endTimeUnixNano: "1784026527764496956"
+            endTimeUnixNano: "1784031696873506255"
             flags: 256
             kind: 1
             name: ChatCompletion
-            spanId: 3c3d7aa23c9792cc
-            startTimeUnixNano: "1784026527762547748"
+            spanId: 0a5a24ba19866049
+            startTimeUnixNano: "1784031696872210588"
             status:
               code: 1
-            traceId: aa842b866e06ca6aecfb7d89d0f0aac6
+            traceId: 4b1ee02166a0131563819531d6f79a81
           - attributes:
               - key: llm.system
                 value:
@@ -271,7 +271,7 @@ resourceSpans:
                   stringValue: application/json
               - key: output.value
                 value:
-                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784026527,"model":"anthropic.claude-3-sonnet-20240229-v1:0","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
+                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784031696,"model":"anthropic.claude-3-sonnet-20240229-v1:0","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
               - key: output.mime_type
                 value:
                   stringValue: application/json
@@ -329,12 +329,12 @@ resourceSpans:
               - key: gen_ai.response.model
                 value:
                   stringValue: anthropic.claude-3-sonnet-20240229-v1:0
-            endTimeUnixNano: "1784026527766232998"
+            endTimeUnixNano: "1784031696874782255"
             flags: 256
             kind: 1
             name: ChatCompletion
-            spanId: 7f55f55eea6d61ce
-            startTimeUnixNano: "1784026527764812373"
+            spanId: 91730f647348dc27
+            startTimeUnixNano: "1784031696873784046"
             status:
               code: 1
-            traceId: 48c5182d024a015cba3c96205f87bdfa
+            traceId: 7e422f5ca0f9383957802044c3a53028

@@ -16,6 +16,7 @@ spec:
       containers:
         - name: testapp
           image: "ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest"
+          imagePullPolicy: IfNotPresent
           env:
             - name: OTEL_SERVICE_NAME
               value: "test-genainormalizer-openinference"

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}-testapp
+  namespace: e2egenainormalizer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Name }}-testapp
+  template:
+    metadata:
+      labels:
+        app: {{ .Name }}-testapp
+    spec:
+      containers:
+        - name: testapp
+          image: "{{ .ContainerRegistry }}genainormalizer-testapp:e2e-test"
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: "test-genainormalizer-openinference"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://otelcol-{{ .Name }}.e2egenainormalizer:4318"
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL

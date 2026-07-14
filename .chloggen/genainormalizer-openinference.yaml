@@ -1,0 +1,5 @@
+change_type: new_component
+component: genainormalizerprocessor
+note: Add genainormalizerprocessor to the Dynatrace collector distribution with e2e integration tests for the OpenInference instrumentation path.
+issues: []
+subtext:

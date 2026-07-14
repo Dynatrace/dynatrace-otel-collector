@@ -161,6 +161,9 @@ processors:
       - name: keep-slow-traces
         type: latency
         latency: {threshold_ms: 500}
+  gen_ai_normalizer:
+    sources:
+      - name: openinference
   transform:
     error_mode: ignore
     trace_statements:

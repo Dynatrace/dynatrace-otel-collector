@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: testapp
-          image: "{{ .ContainerRegistry }}genainormalizer-testapp:e2e-test"
+          image: "genainormalizer-testapp:e2e-test"
           env:
             - name: OTEL_SERVICE_NAME
               value: "test-genainormalizer-openinference"

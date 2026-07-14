@@ -1,0 +1,63 @@
+resourceSpans:
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-genainormalizer-openinference
+    scopeSpans:
+      - scope:
+          name: openinference.instrumentation.openai
+        spans:
+          - name: ChatCompletion
+            kind: 3
+            attributes:
+              - key: gen_ai.operation.name
+                value:
+                  stringValue: chat
+              - key: gen_ai.request.model
+                value:
+                  stringValue: gpt-4o
+              - key: gen_ai.response.model
+                value:
+                  stringValue: gpt-4o
+              - key: gen_ai.system
+                value:
+                  stringValue: openai
+              - key: gen_ai.usage.input_tokens
+                value:
+                  intValue: "10"
+              - key: gen_ai.usage.output_tokens
+                value:
+                  intValue: "5"
+            status: {}
+  - resource:
+      attributes:
+        - key: service.name
+          value:
+            stringValue: test-genainormalizer-openinference
+    scopeSpans:
+      - scope:
+          name: openinference.instrumentation.openai
+        spans:
+          - name: ChatCompletion
+            kind: 3
+            attributes:
+              - key: gen_ai.operation.name
+                value:
+                  stringValue: chat
+              - key: gen_ai.request.model
+                value:
+                  stringValue: anthropic.claude-3-sonnet-20240229-v1:0
+              - key: gen_ai.response.model
+                value:
+                  stringValue: anthropic.claude-3-sonnet-20240229-v1:0
+              - key: gen_ai.system
+                value:
+                  stringValue: openai
+              - key: gen_ai.usage.input_tokens
+                value:
+                  intValue: "10"
+              - key: gen_ai.usage.output_tokens
+                value:
+                  intValue: "5"
+            status: {}

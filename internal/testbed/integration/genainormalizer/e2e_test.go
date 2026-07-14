@@ -8,11 +8,15 @@ import (
 	"path"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 )
@@ -23,6 +27,7 @@ import (
 // which use the same llm.* attribute names but different model values.
 func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testDir := filepath.Join("testdata")
+	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
 	configExamplesDir := "../../../../config_examples"
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -93,29 +98,32 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		}
 	}()
 
-	// Wait for normalised traces from the test app. The app emits spans for both
-	// gpt-4o (OpenAI shape) and anthropic.claude-3-sonnet-20240229-v1:0 (Bedrock shape).
 	const wantEntries = 10
 	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
 
-	oteltest.ScanTracesForAttributes(
-		t,
-		tracesConsumer,
-		"test-genainormalizer-openinference",
-		map[string]oteltest.ExpectedValue{
-			"service.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-genainormalizer-openinference"),
-		},
-		[]map[string]oteltest.ExpectedValue{
-			// OpenAI OpenInference shape: llm.model_name=gpt-4o → gen_ai.request.model=gpt-4o
-			{
-				"gen_ai.request.model":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "gpt-4o"),
-				"gen_ai.response.model": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "gpt-4o"),
-			},
-			// Bedrock OpenInference shape: llm.model_name=anthropic.claude-... → gen_ai.request.model=anthropic.claude-...
-			{
-				"gen_ai.request.model":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "anthropic.claude-3-sonnet-20240229-v1:0"),
-				"gen_ai.response.model": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "anthropic.claude-3-sonnet-20240229-v1:0"),
-			},
-		},
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]))
+
+	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
+	require.NoError(t, err)
+
+	traceCompareOptions := []ptracetest.CompareTracesOption{
+		ptracetest.IgnoreStartTimestamp(),
+		ptracetest.IgnoreEndTimestamp(),
+		ptracetest.IgnoreTraceID(),
+		ptracetest.IgnoreSpanID(),
+		ptracetest.IgnoreResourceSpansOrder(),
+		ptracetest.IgnoreScopeSpansOrder(),
+		ptracetest.IgnoreSpansOrder(),
+	}
+
+	const (
+		compareTimeout = 3 * time.Minute
+		compareTick    = 5 * time.Second
 	)
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		got := tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]
+		assert.NoError(tt, ptracetest.CompareTraces(expectedTraces, got, traceCompareOptions...))
+	}, compareTimeout, compareTick)
 }

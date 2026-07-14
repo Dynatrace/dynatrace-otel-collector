@@ -115,6 +115,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		ptracetest.IgnoreResourceSpansOrder(),
 		ptracetest.IgnoreScopeSpansOrder(),
 		ptracetest.IgnoreSpansOrder(),
+		ptracetest.IgnoreResourceAttributeValue("service.instance.id"),
 	}
 
 	const (

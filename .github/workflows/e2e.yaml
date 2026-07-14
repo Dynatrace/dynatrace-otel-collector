@@ -254,6 +254,13 @@ jobs:
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Pull genainormalizer test app image
         run: |
           docker pull ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest

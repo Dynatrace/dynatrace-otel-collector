@@ -22,13 +22,11 @@ processors:
     trace_statements:
       - context: span
         statements:
-          - set(attributes["gen_ai.response.model"], attributes["gen_ai.request.model"]) where attributes["gen_ai.request.model"] != nil and attributes["gen_ai.response.model"] == nil
+          - set(span.attributes["gen_ai.response.model"], span.attributes["gen_ai.request.model"]) where span.attributes["gen_ai.request.model"] != nil and span.attributes["gen_ai.response.model"] == nil
 
 exporters:
-  debug:
-    verbosity: detailed
-  otlp_http/dynatrace:
-    endpoint: ${env:DT_ENDPOINT}/api/v2/otlp
+  otlp_http:
+    endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
 
@@ -38,4 +36,4 @@ service:
     traces:
       receivers: [otlp]
       processors: [gen_ai_normalizer, transform/response_model]
-      exporters: [debug, otlp_http/dynatrace]
+      exporters: [otlp_http]

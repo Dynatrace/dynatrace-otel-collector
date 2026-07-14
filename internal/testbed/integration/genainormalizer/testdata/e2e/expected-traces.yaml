@@ -1,63 +1,340 @@
 resourceSpans:
   - resource:
       attributes:
+        - key: telemetry.sdk.language
+          value:
+            stringValue: python
+        - key: telemetry.sdk.name
+          value:
+            stringValue: opentelemetry
+        - key: telemetry.sdk.version
+          value:
+            stringValue: 1.43.0
+        - key: service.instance.id
+          value:
+            stringValue: 56df0e60-1e8e-4ae0-af0b-03fa9232c27f
         - key: service.name
           value:
             stringValue: test-genainormalizer-openinference
     scopeSpans:
-      - scope:
+      - schemaUrl: https://opentelemetry.io/schemas/1.40.0
+        scope:
           name: openinference.instrumentation.openai
+          version: 0.1.52
         spans:
-          - name: ChatCompletion
-            kind: 3
-            attributes:
-              - key: gen_ai.operation.name
+          - attributes:
+              - key: llm.system
                 value:
-                  stringValue: chat
+                  stringValue: openai
+              - key: input.value
+                value:
+                  stringValue: '{"messages": [{"role": "user", "content": "Write a haiku."}], "model": "gpt-4o"}'
+              - key: input.mime_type
+                value:
+                  stringValue: application/json
+              - key: output.value
+                value:
+                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784026525,"model":"gpt-4o","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
+              - key: output.mime_type
+                value:
+                  stringValue: application/json
+              - key: llm.invocation_parameters
+                value:
+                  stringValue: '{"model": "gpt-4o"}'
+              - key: llm.input_messages.0.message.role
+                value:
+                  stringValue: user
+              - key: llm.input_messages.0.message.content
+                value:
+                  stringValue: Write a haiku.
+              - key: llm.model_name
+                value:
+                  stringValue: gpt-4o
+              - key: llm.token_count.total
+                value:
+                  intValue: "15"
+              - key: llm.token_count.prompt
+                value:
+                  intValue: "10"
+              - key: llm.token_count.completion
+                value:
+                  intValue: "5"
+              - key: llm.output_messages.0.message.role
+                value:
+                  stringValue: assistant
+              - key: llm.output_messages.0.message.content
+                value:
+                  stringValue: Hello!
+              - key: llm.finish_reason
+                value:
+                  stringValue: stop
+              - key: openinference.span.kind
+                value:
+                  stringValue: LLM
+              - key: gen_ai.input.messages
+                value:
+                  stringValue: '[{"role":"user","parts":[{"type":"text","content":"Write a haiku."}]}]'
+              - key: gen_ai.output.messages
+                value:
+                  stringValue: '[{"role":"assistant","parts":[{"type":"text","content":"Hello!"}],"finish_reason":""}]'
               - key: gen_ai.request.model
                 value:
                   stringValue: gpt-4o
-              - key: gen_ai.response.model
-                value:
-                  stringValue: gpt-4o
-              - key: gen_ai.system
-                value:
-                  stringValue: openai
               - key: gen_ai.usage.input_tokens
                 value:
                   intValue: "10"
               - key: gen_ai.usage.output_tokens
                 value:
                   intValue: "5"
-            status: {}
-  - resource:
-      attributes:
-        - key: service.name
-          value:
-            stringValue: test-genainormalizer-openinference
-    scopeSpans:
-      - scope:
-          name: openinference.instrumentation.openai
-        spans:
-          - name: ChatCompletion
-            kind: 3
-            attributes:
               - key: gen_ai.operation.name
                 value:
                   stringValue: chat
+              - key: gen_ai.response.model
+                value:
+                  stringValue: gpt-4o
+            endTimeUnixNano: "1784026525760761747"
+            flags: 256
+            kind: 1
+            name: ChatCompletion
+            spanId: 4a96ba8a15250435
+            startTimeUnixNano: "1784026525759255080"
+            status:
+              code: 1
+            traceId: e5aedf89826b2eb8a5433a4cda53a59d
+          - attributes:
+              - key: llm.system
+                value:
+                  stringValue: openai
+              - key: input.value
+                value:
+                  stringValue: '{"messages": [{"role": "user", "content": "Write a haiku."}], "model": "anthropic.claude-3-sonnet-20240229-v1:0"}'
+              - key: input.mime_type
+                value:
+                  stringValue: application/json
+              - key: output.value
+                value:
+                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784026525,"model":"anthropic.claude-3-sonnet-20240229-v1:0","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
+              - key: output.mime_type
+                value:
+                  stringValue: application/json
+              - key: llm.invocation_parameters
+                value:
+                  stringValue: '{"model": "anthropic.claude-3-sonnet-20240229-v1:0"}'
+              - key: llm.input_messages.0.message.role
+                value:
+                  stringValue: user
+              - key: llm.input_messages.0.message.content
+                value:
+                  stringValue: Write a haiku.
+              - key: llm.model_name
+                value:
+                  stringValue: anthropic.claude-3-sonnet-20240229-v1:0
+              - key: llm.token_count.total
+                value:
+                  intValue: "15"
+              - key: llm.token_count.prompt
+                value:
+                  intValue: "10"
+              - key: llm.token_count.completion
+                value:
+                  intValue: "5"
+              - key: llm.output_messages.0.message.role
+                value:
+                  stringValue: assistant
+              - key: llm.output_messages.0.message.content
+                value:
+                  stringValue: Hello!
+              - key: llm.finish_reason
+                value:
+                  stringValue: stop
+              - key: openinference.span.kind
+                value:
+                  stringValue: LLM
+              - key: gen_ai.input.messages
+                value:
+                  stringValue: '[{"role":"user","parts":[{"type":"text","content":"Write a haiku."}]}]'
+              - key: gen_ai.output.messages
+                value:
+                  stringValue: '[{"role":"assistant","parts":[{"type":"text","content":"Hello!"}],"finish_reason":""}]'
               - key: gen_ai.request.model
                 value:
                   stringValue: anthropic.claude-3-sonnet-20240229-v1:0
-              - key: gen_ai.response.model
-                value:
-                  stringValue: anthropic.claude-3-sonnet-20240229-v1:0
-              - key: gen_ai.system
-                value:
-                  stringValue: openai
               - key: gen_ai.usage.input_tokens
                 value:
                   intValue: "10"
               - key: gen_ai.usage.output_tokens
                 value:
                   intValue: "5"
-            status: {}
+              - key: gen_ai.operation.name
+                value:
+                  stringValue: chat
+              - key: gen_ai.response.model
+                value:
+                  stringValue: anthropic.claude-3-sonnet-20240229-v1:0
+            endTimeUnixNano: "1784026525761970580"
+            flags: 256
+            kind: 1
+            name: ChatCompletion
+            spanId: f6021e1e1a3c623e
+            startTimeUnixNano: "1784026525761028580"
+            status:
+              code: 1
+            traceId: 351c723d2b2c34625c703284b8659680
+          - attributes:
+              - key: llm.system
+                value:
+                  stringValue: openai
+              - key: input.value
+                value:
+                  stringValue: '{"messages": [{"role": "user", "content": "Write a haiku."}], "model": "gpt-4o"}'
+              - key: input.mime_type
+                value:
+                  stringValue: application/json
+              - key: output.value
+                value:
+                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784026527,"model":"gpt-4o","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
+              - key: output.mime_type
+                value:
+                  stringValue: application/json
+              - key: llm.invocation_parameters
+                value:
+                  stringValue: '{"model": "gpt-4o"}'
+              - key: llm.input_messages.0.message.role
+                value:
+                  stringValue: user
+              - key: llm.input_messages.0.message.content
+                value:
+                  stringValue: Write a haiku.
+              - key: llm.model_name
+                value:
+                  stringValue: gpt-4o
+              - key: llm.token_count.total
+                value:
+                  intValue: "15"
+              - key: llm.token_count.prompt
+                value:
+                  intValue: "10"
+              - key: llm.token_count.completion
+                value:
+                  intValue: "5"
+              - key: llm.output_messages.0.message.role
+                value:
+                  stringValue: assistant
+              - key: llm.output_messages.0.message.content
+                value:
+                  stringValue: Hello!
+              - key: llm.finish_reason
+                value:
+                  stringValue: stop
+              - key: openinference.span.kind
+                value:
+                  stringValue: LLM
+              - key: gen_ai.input.messages
+                value:
+                  stringValue: '[{"role":"user","parts":[{"type":"text","content":"Write a haiku."}]}]'
+              - key: gen_ai.output.messages
+                value:
+                  stringValue: '[{"role":"assistant","parts":[{"type":"text","content":"Hello!"}],"finish_reason":""}]'
+              - key: gen_ai.request.model
+                value:
+                  stringValue: gpt-4o
+              - key: gen_ai.usage.input_tokens
+                value:
+                  intValue: "10"
+              - key: gen_ai.usage.output_tokens
+                value:
+                  intValue: "5"
+              - key: gen_ai.operation.name
+                value:
+                  stringValue: chat
+              - key: gen_ai.response.model
+                value:
+                  stringValue: gpt-4o
+            endTimeUnixNano: "1784026527764496956"
+            flags: 256
+            kind: 1
+            name: ChatCompletion
+            spanId: 3c3d7aa23c9792cc
+            startTimeUnixNano: "1784026527762547748"
+            status:
+              code: 1
+            traceId: aa842b866e06ca6aecfb7d89d0f0aac6
+          - attributes:
+              - key: llm.system
+                value:
+                  stringValue: openai
+              - key: input.value
+                value:
+                  stringValue: '{"messages": [{"role": "user", "content": "Write a haiku."}], "model": "anthropic.claude-3-sonnet-20240229-v1:0"}'
+              - key: input.mime_type
+                value:
+                  stringValue: application/json
+              - key: output.value
+                value:
+                  stringValue: '{"id":"chatcmpl-test","choices":[{"finish_reason":"stop","index":0,"message":{"content":"Hello!","role":"assistant"}}],"created":1784026527,"model":"anthropic.claude-3-sonnet-20240229-v1:0","object":"chat.completion","usage":{"completion_tokens":5,"prompt_tokens":10,"total_tokens":15}}'
+              - key: output.mime_type
+                value:
+                  stringValue: application/json
+              - key: llm.invocation_parameters
+                value:
+                  stringValue: '{"model": "anthropic.claude-3-sonnet-20240229-v1:0"}'
+              - key: llm.input_messages.0.message.role
+                value:
+                  stringValue: user
+              - key: llm.input_messages.0.message.content
+                value:
+                  stringValue: Write a haiku.
+              - key: llm.model_name
+                value:
+                  stringValue: anthropic.claude-3-sonnet-20240229-v1:0
+              - key: llm.token_count.total
+                value:
+                  intValue: "15"
+              - key: llm.token_count.prompt
+                value:
+                  intValue: "10"
+              - key: llm.token_count.completion
+                value:
+                  intValue: "5"
+              - key: llm.output_messages.0.message.role
+                value:
+                  stringValue: assistant
+              - key: llm.output_messages.0.message.content
+                value:
+                  stringValue: Hello!
+              - key: llm.finish_reason
+                value:
+                  stringValue: stop
+              - key: openinference.span.kind
+                value:
+                  stringValue: LLM
+              - key: gen_ai.input.messages
+                value:
+                  stringValue: '[{"role":"user","parts":[{"type":"text","content":"Write a haiku."}]}]'
+              - key: gen_ai.output.messages
+                value:
+                  stringValue: '[{"role":"assistant","parts":[{"type":"text","content":"Hello!"}],"finish_reason":""}]'
+              - key: gen_ai.request.model
+                value:
+                  stringValue: anthropic.claude-3-sonnet-20240229-v1:0
+              - key: gen_ai.usage.input_tokens
+                value:
+                  intValue: "10"
+              - key: gen_ai.usage.output_tokens
+                value:
+                  intValue: "5"
+              - key: gen_ai.operation.name
+                value:
+                  stringValue: chat
+              - key: gen_ai.response.model
+                value:
+                  stringValue: anthropic.claude-3-sonnet-20240229-v1:0
+            endTimeUnixNano: "1784026527766232998"
+            flags: 256
+            kind: 1
+            name: ChatCompletion
+            spanId: 7f55f55eea6d61ce
+            startTimeUnixNano: "1784026527764812373"
+            status:
+              code: 1
+            traceId: 48c5182d024a015cba3c96205f87bdfa

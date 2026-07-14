@@ -54,9 +54,6 @@
       "groupName": "GoReleaser Pro"
     }
   ],
-  "pip_requirements": {
-    "managerFilePatterns": ["(^|/)requirements\\.txt$"]
-  },
   "ocb": {
     "managerFilePatterns": ["manifest.yaml"]
   },

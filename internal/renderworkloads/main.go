@@ -124,7 +124,7 @@ func renderCollectorWorkloads(repoRoot, inRoot, outBase string, vars map[string]
 
 		if d.IsDir() {
 			switch filepath.Base(path) {
-			case ".git", "vendor", "testapp":
+			case ".git", "vendor":
 				return filepath.SkipDir
 			default:
 				return nil

@@ -17,12 +17,12 @@ rollout:
 resources:
   requests:
     cpu: 1
-    memory: 6Gi
+    memory: 2Gi
   limits:
-    memory: 6Gi
+    memory: 2Gi
 autoscaling:
   enabled: true
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 24
   targetMemoryUtilizationPercentage: 50
   targetCPUUtilizationPercentage: 70
@@ -30,7 +30,7 @@ autoscaling:
 image:
   repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
   # renovate: datasource=docker depName=ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
-  tag: 0.51.0
+  tag: 0.52.0
 command:
   name: dynatrace-otel-collector
 
@@ -98,6 +98,27 @@ alternateConfig:
       limit_percentage: 95
       spike_limit_percentage: 5
 
+    # CR attribution: extract Kubernetes CR kind / namespace / name from the
+    # TA-generated job name encoded in service.name
+    # (format: serviceMonitor/<namespace>/<name>/<endpoint-index>).
+    # Sets dt.cr.kind, dt.cr.namespace, dt.cr.name as resource attributes so
+    # the self-monitoring dashboard can filter and group by CR.
+    # Only applies to metrics whose service.name matches the TA naming pattern;
+    # collector self-monitoring metrics are left unchanged.
+    transform/cr_attribution:
+      metric_statements:
+        - context: resource
+          statements:
+            - set(attributes["dt.cr.kind"], ExtractPatterns(attributes["service.name"], "^(?P<kind>serviceMonitor|podMonitor|scrapeConfig)/[^/]+/[^/]+")["kind"]) where IsMatch(attributes["service.name"], "^(serviceMonitor|podMonitor|scrapeConfig)/")
+            - set(attributes["dt.cr.namespace"], ExtractPatterns(attributes["service.name"], "^[^/]+/(?P<namespace>[^/]+)/[^/]+")["namespace"]) where IsMatch(attributes["service.name"], "^(serviceMonitor|podMonitor|scrapeConfig)/")
+            - set(attributes["dt.cr.name"], ExtractPatterns(attributes["service.name"], "^[^/]+/[^/]+/(?P<name>[^/]+)")["name"]) where IsMatch(attributes["service.name"], "^(serviceMonitor|podMonitor|scrapeConfig)/")
+            # Extract pod IP from service.instance.id (Prometheus instance label, format: ip:port).
+            # Setting k8s.pod.ip allows the gateway's k8s_attributes processor to resolve
+            # k8s.pod.name for the scraped target — making per-target dashboard tiles show
+            # pod names instead of raw IP:port addresses.
+            # Only applies when instance looks like a pod IP:port (not a hostname or service IP).
+            - set(attributes["k8s.pod.ip"], ExtractPatterns(attributes["service.instance.id"], "^(?P<ip>[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+):[0-9]+$")["ip"]) where IsMatch(attributes["service.instance.id"], "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+:[0-9]+$")
+
   exporters:
     debug:
       verbosity: basic
@@ -137,6 +158,7 @@ alternateConfig:
           - prometheus
         processors:
           - memory_limiter
+          - transform/cr_attribution
         exporters:
           - load_balancing
     telemetry:

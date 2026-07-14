@@ -16,12 +16,12 @@ rollout:
 resources:
   requests:
     cpu: 2
-    memory: 8Gi
+    memory: 2Gi
   limits:
-    memory: 8Gi
+    memory: 2Gi
 autoscaling:
   enabled: true
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 16
   targetMemoryUtilizationPercentage: 50
   targetCPUUtilizationPercentage: 70
@@ -29,7 +29,7 @@ autoscaling:
 image:
   repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
   # renovate: datasource=docker depName=ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
-  tag: 0.51.0
+  tag: 0.52.0
 command:
   name: dynatrace-otel-collector
 

@@ -261,14 +261,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull genainormalizer test app image
+      - name: Pull and load genainormalizer test app image into Kind
         run: |
           docker pull ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest
-          docker tag ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest genainormalizer-testapp:e2e-test
-
-      - name: Load genainormalizer test app image into Kind
-        run: |
-          kind load docker-image genainormalizer-testapp:e2e-test
+          kind load docker-image ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest
 
       - name: Run e2e tests
         run: |

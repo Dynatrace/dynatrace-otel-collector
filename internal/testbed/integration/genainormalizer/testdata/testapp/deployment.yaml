@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: testapp
-          image: "genainormalizer-testapp:e2e-test"
+          image: "ghcr.io/dynatrace/dynatrace-otel-collector/genainormalizer-testapp:latest"
           env:
             - name: OTEL_SERVICE_NAME
               value: "test-genainormalizer-openinference"

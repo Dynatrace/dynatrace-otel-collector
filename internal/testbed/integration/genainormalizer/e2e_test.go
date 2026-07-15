@@ -150,6 +150,124 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	require.NoError(t, ptracetest.CompareTraces(expectedTraces, tracesConsumer.AllTraces()[0], traceCompareOptions...))
 }
 
+// TestE2E_GenAINormalizerProcessor_OpenLLMetry verifies that the genainormalizer
+// processor correctly maps OpenLLMetry span attributes to gen_ai.* semantic conventions.
+// The test sends crafted spans with OpenLLMetry-style attributes directly to the
+// collector via kubectl port-forward, then compares the normalized output against a
+// golden file.
+func TestE2E_GenAINormalizerProcessor_OpenLLMetry(t *testing.T) {
+	testDir := filepath.Join("testdata")
+	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces-openllmetry.yaml")
+
+	kubeconfigPath := k8stest.TestKubeConfig
+	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
+		kubeconfigPath = kubeConfigFromEnv
+	}
+
+	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
+	require.NoError(t, err)
+
+	nsFile := filepath.Join(testDir, "namespace.yaml")
+	buf, err := os.ReadFile(nsFile)
+	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
+	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
+	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
+
+	testNs := nsObj.GetName()
+	defer func() {
+		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
+	}()
+
+	tracesConsumer := new(consumertest.TracesSink)
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Traces: []*oteltest.TraceSinkConfig{
+			{
+				Consumer: tracesConsumer,
+			},
+		},
+	})
+	defer shutdownSinks()
+
+	testID := uuid.NewString()[:8]
+	host := otelk8stest.HostEndpoint(t)
+
+	collectorConfigPath := filepath.Join("../../../../config_examples", "genainormalizer-openllmetry.yaml")
+	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
+		Host: host,
+	})
+	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
+
+	collectorObjs := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		testID,
+		filepath.Join(testDir, "collector"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   collectorConfig,
+		},
+		host,
+	)
+	defer func() {
+		for _, obj := range collectorObjs {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
+	collectorSvc := fmt.Sprintf("svc/otelcol-%s", testID)
+	pfCmd := exec.Command("kubectl", "--kubeconfig", kubeconfigPath,
+		"port-forward", "-n", testNs,
+		collectorSvc,
+		collectorGRPCPort+":4317",
+	)
+	require.NoError(t, pfCmd.Start())
+	t.Cleanup(func() {
+		if pfCmd.Process != nil {
+			_ = pfCmd.Process.Kill()
+			_ = pfCmd.Wait()
+		}
+	})
+
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", "localhost:"+collectorGRPCPort, time.Second)
+		if err == nil {
+			conn.Close()
+			return true
+		}
+		return false
+	}, 30*time.Second, 500*time.Millisecond, "port-forward to collector did not become ready")
+
+	grpcConn, err := grpc.NewClient("localhost:"+collectorGRPCPort,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	require.NoError(t, err)
+	defer grpcConn.Close()
+
+	traceClient := ptraceotlp.NewGRPCClient(grpcConn)
+	traces := buildOpenLLMetryTraces()
+	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(traces))
+	require.NoError(t, err)
+
+	oteltest.WaitForTraces(t, 0, tracesConsumer) // waits for len > 0, i.e. at least 1 batch
+
+	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
+	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
+
+	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
+	require.NoError(t, err)
+
+	traceCompareOptions := []ptracetest.CompareTracesOption{
+		ptracetest.IgnoreStartTimestamp(),
+		ptracetest.IgnoreEndTimestamp(),
+		ptracetest.IgnoreTraceID(),
+		ptracetest.IgnoreSpanID(),
+		ptracetest.IgnoreResourceSpansOrder(),
+		ptracetest.IgnoreScopeSpansOrder(),
+		ptracetest.IgnoreSpansOrder(),
+	}
+
+	require.NoError(t, ptracetest.CompareTraces(expectedTraces, tracesConsumer.AllTraces()[0], traceCompareOptions...))
+}
+
 // buildOpenInferenceTraces returns a ptrace.Traces with one span carrying
 // the full set of OpenInference llm.* attributes that the genainormalizer
 // processor maps to gen_ai.* OTel semantic conventions.
@@ -182,6 +300,43 @@ func buildOpenInferenceTraces() ptrace.Traces {
 	// Agent name and session — drive agent/LLM classification and conversation thread grouping
 	attrs.PutStr("agent.name", "weather-agent")
 	attrs.PutStr("session.id", "session-abc123")
+
+	return td
+}
+
+// buildOpenLLMetryTraces returns a ptrace.Traces with one span carrying
+// the full set of OpenLLMetry llm.* attributes that the genainormalizer
+// processor maps to gen_ai.* OTel semantic conventions.
+func buildOpenLLMetryTraces() ptrace.Traces {
+	td := ptrace.NewTraces()
+	rs := td.ResourceSpans().AppendEmpty()
+	rs.Resource().Attributes().PutStr("service.name", "test-llm-service")
+
+	ss := rs.ScopeSpans().AppendEmpty()
+	span := ss.Spans().AppendEmpty()
+	span.SetName("llm-call")
+	span.SetKind(ptrace.SpanKindInternal)
+	span.SetTraceID(pcommon.TraceID([16]byte{2}))
+	span.SetSpanID(pcommon.SpanID([8]byte{2}))
+
+	attrs := span.Attributes()
+	// Model (request + response mapped separately — no transform/response_model needed)
+	attrs.PutStr("llm.request.model", "gpt-4o")
+	attrs.PutStr("llm.response.model", "gpt-4o")
+	// Provider identity — OpenLLMetry sets gen_ai.system directly; no normalizer mapping exists
+	attrs.PutStr("gen_ai.system", "openai")
+	// Operation name
+	attrs.PutStr("llm.request.type", "chat")
+	// Token usage
+	attrs.PutInt("llm.usage.prompt_tokens", 10)
+	attrs.PutInt("llm.usage.completion_tokens", 5)
+	// Request parameters
+	attrs.PutDouble("llm.request.temperature", 0.7)
+	// Input/output content (mapped directly as JSON strings by the processor)
+	attrs.PutStr("traceloop.entity.input", `{"messages":[{"role":"user","content":"What is the weather in Paris?"}]}`)
+	attrs.PutStr("traceloop.entity.output", `{"choices":[{"message":{"role":"assistant","content":"The weather in Paris is sunny."}}]}`)
+	// Agent name — drives agent/LLM classification
+	attrs.PutStr("traceloop.entity.name", "weather-agent")
 
 	return td
 }

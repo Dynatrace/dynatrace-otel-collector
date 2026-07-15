@@ -133,7 +133,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	oteltest.WaitForTraces(t, 0, tracesConsumer)
 
 	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
-	require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
+	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
 
 	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
 	require.NoError(t, err)

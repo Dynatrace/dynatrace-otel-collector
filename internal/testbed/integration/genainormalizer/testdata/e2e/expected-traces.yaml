@@ -24,6 +24,24 @@ resourceSpans:
               - key: llm.token_count.completion
                 value:
                   intValue: "5"
+              - key: llm.input_messages.0.message.role
+                value:
+                  stringValue: user
+              - key: llm.input_messages.0.message.content
+                value:
+                  stringValue: What is the weather in Paris?
+              - key: llm.output_messages.0.message.role
+                value:
+                  stringValue: assistant
+              - key: llm.output_messages.0.message.content
+                value:
+                  stringValue: The weather in Paris is sunny.
+              - key: gen_ai.input.messages
+                value:
+                  stringValue: '[{"role":"user","parts":[{"type":"text","content":"What is the weather in Paris?"}]}]'
+              - key: gen_ai.output.messages
+                value:
+                  stringValue: '[{"role":"assistant","parts":[{"type":"text","content":"The weather in Paris is sunny."}],"finish_reason":""}]'
               - key: gen_ai.request.model
                 value:
                   stringValue: gpt-4o

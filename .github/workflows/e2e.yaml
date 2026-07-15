@@ -142,6 +142,7 @@ jobs:
           - loadbalancing
           - kafka
           - filestorage
+          - genainormalizer
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

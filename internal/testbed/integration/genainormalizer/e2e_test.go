@@ -130,7 +130,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(traces))
 	require.NoError(t, err)
 
-	oteltest.WaitForTraces(t, 0, tracesConsumer)
+	oteltest.WaitForTraces(t, 0, tracesConsumer) // waits for len > 0, i.e. at least 1 batch
 
 	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
 	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))

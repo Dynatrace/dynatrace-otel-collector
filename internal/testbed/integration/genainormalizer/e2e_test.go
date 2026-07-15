@@ -3,31 +3,37 @@
 package genainormalizer
 
 import (
+	"context"
 	"fmt"
-	"os"
-	"path"
+	"net"
+	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
+	"os"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/ptrace"
+	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
+
+const collectorGRPCPort = "5317"
 
 // TestE2E_GenAINormalizerProcessor_OpenInference verifies that the genainormalizer
 // processor correctly maps OpenInference span attributes to gen_ai.* semantic conventions.
-// A transform processor injects OpenInference-style attributes onto every span before
-// the gen_ai_normalizer runs, so no external testapp is required.
+// The test sends crafted spans with OpenInference-style attributes directly to the
+// collector via kubectl port-forward, then asserts that the normalized gen_ai.* attributes
+// arrive at the local OTLP sink.
 func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testDir := filepath.Join("testdata")
-	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
 
 	kubeconfigPath := k8stest.TestKubeConfig
 	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
@@ -61,7 +67,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testID := uuid.NewString()[:8]
 	host := otelk8stest.HostEndpoint(t)
 
-	collectorConfigPath := path.Join(testDir, "collector", "config.yaml")
+	collectorConfigPath := filepath.Join(testDir, "collector", "config.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 	})
@@ -78,52 +84,88 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		},
 		host,
 	)
-
-	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
-		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
-		TestID:       testID,
-		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
-		DataTypes:    []string{"traces"},
-	}
-	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
 	defer func() {
-		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
+		for _, obj := range collectorObjs {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
 	}()
 
-	for _, info := range telemetryGenObjInfos {
-		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
-	}
+	// Port-forward the collector's gRPC receiver to localhost so the test can send spans directly.
+	collectorSvc := fmt.Sprintf("svc/otelcol-%s", testID)
+	pfCmd := exec.Command("kubectl", "--kubeconfig", kubeconfigPath,
+		"port-forward", "-n", testNs,
+		collectorSvc,
+		collectorGRPCPort+":4317",
+	)
+	require.NoError(t, pfCmd.Start())
+	t.Cleanup(func() {
+		if pfCmd.Process != nil {
+			_ = pfCmd.Process.Kill()
+			_ = pfCmd.Wait()
+		}
+	})
 
-	wantEntries := 30 // Minimal number of traces to wait for.
-	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
+	// Wait for port-forward to be ready.
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", "localhost:"+collectorGRPCPort, time.Second)
+		if err == nil {
+			conn.Close()
+			return true
+		}
+		return false
+	}, 30*time.Second, 500*time.Millisecond, "port-forward to collector did not become ready")
 
-	// To regenerate the golden file: comment out the ReadTraces + CompareTraces block
-	// and uncomment the line below, run once, then revert.
-	require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]))
+	// Send crafted spans with OpenInference attributes to the collector.
+	grpcConn, err := grpc.NewClient("localhost:"+collectorGRPCPort,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	require.NoError(t, err)
+	defer grpcConn.Close()
 
-	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
+	traceClient := ptraceotlp.NewGRPCClient(grpcConn)
+	traces := buildOpenInferenceTraces()
+	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(traces))
 	require.NoError(t, err)
 
-	traceCompareOptions := []ptracetest.CompareTracesOption{
-		ptracetest.IgnoreStartTimestamp(),
-		ptracetest.IgnoreEndTimestamp(),
-		ptracetest.IgnoreTraceID(),
-		ptracetest.IgnoreSpanID(),
-		ptracetest.IgnoreResourceSpansOrder(),
-		ptracetest.IgnoreScopeSpansOrder(),
-		ptracetest.IgnoreSpansOrder(),
-		ptracetest.IgnoreResourceAttributeValue("service.instance.id"),
-	}
+	oteltest.WaitForTraces(t, 0, tracesConsumer)
 
-	const (
-		compareTimeout = 3 * time.Minute
-		compareTick    = 5 * time.Second
+	oteltest.ScanTracesForAttributes(t, tracesConsumer, "test-llm-service",
+		map[string]oteltest.ExpectedValue{
+			"service.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-llm-service"),
+		},
+		[]map[string]oteltest.ExpectedValue{
+			{
+				"gen_ai.request.model":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "gpt-4o"),
+				"gen_ai.response.model":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "gpt-4o"),
+				"gen_ai.usage.input_tokens":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+				"gen_ai.usage.output_tokens": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+				"gen_ai.operation.name":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "chat"),
+				"gen_ai.provider.name":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "openai"),
+			},
+		},
 	)
+}
 
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		got := tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]
-		assert.NoError(tt, ptracetest.CompareTraces(expectedTraces, got, traceCompareOptions...))
-	}, compareTimeout, compareTick)
+// buildOpenInferenceTraces returns a ptrace.Traces with one span carrying
+// OpenInference-style llm.* attributes. The genainormalizer processor should
+// map these to gen_ai.* OTel semantic conventions.
+func buildOpenInferenceTraces() ptrace.Traces {
+	td := ptrace.NewTraces()
+	rs := td.ResourceSpans().AppendEmpty()
+	rs.Resource().Attributes().PutStr("service.name", "test-llm-service")
+
+	ss := rs.ScopeSpans().AppendEmpty()
+	span := ss.Spans().AppendEmpty()
+	span.SetName("llm-call")
+	span.SetKind(ptrace.SpanKindInternal)
+	span.SetTraceID(pcommon.TraceID([16]byte{1}))
+	span.SetSpanID(pcommon.SpanID([8]byte{1}))
+
+	attrs := span.Attributes()
+	attrs.PutStr("llm.model_name", "gpt-4o")
+	attrs.PutStr("llm.provider", "openai")
+	attrs.PutStr("openinference.span.kind", "LLM")
+	attrs.PutInt("llm.token_count.prompt", 10)
+	attrs.PutInt("llm.token_count.completion", 5)
+
+	return td
 }

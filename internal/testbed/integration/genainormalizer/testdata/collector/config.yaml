@@ -11,24 +11,10 @@ receivers:
         endpoint: 0.0.0.0:4318
 
 processors:
-  transform/inject_openinference:
-    error_mode: ignore
-    trace_statements:
-      - context: span
-        statements:
-          - set(span.attributes["llm.model_name"], "gpt-4o")
-          - set(span.attributes["llm.token_count.prompt"], 10)
-          - set(span.attributes["llm.token_count.completion"], 5)
-          - set(span.attributes["llm.token_count.total"], 15)
-          - set(span.attributes["llm.system"], "openai")
-          - set(span.attributes["openinference.span.kind"], "LLM")
-
   gen_ai_normalizer:
     sources:
       - name: openinference
 
-  # gen_ai_normalizer only maps llm.model_name → gen_ai.request.model.
-  # Copy it to gen_ai.response.model when the response hasn't overridden it.
   transform/response_model:
     error_mode: ignore
     trace_statements:
@@ -37,15 +23,13 @@ processors:
           - set(span.attributes["gen_ai.response.model"], span.attributes["gen_ai.request.model"]) where span.attributes["gen_ai.request.model"] != nil and span.attributes["gen_ai.response.model"] == nil
 
 exporters:
-  otlp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
-    tls:
-      insecure: true
 
 service:
   extensions: [health_check]
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [transform/inject_openinference, gen_ai_normalizer, transform/response_model]
-      exporters: [otlp]
+      processors: [gen_ai_normalizer, transform/response_model]
+      exporters: [otlp_http]

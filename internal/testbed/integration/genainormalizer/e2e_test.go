@@ -191,7 +191,7 @@ func TestE2E_GenAINormalizerProcessor_OpenLLMetry(t *testing.T) {
 	testID := uuid.NewString()[:8]
 	host := otelk8stest.HostEndpoint(t)
 
-	collectorConfigPath := filepath.Join("../../../../config_examples", "genainormalizer-openllmetry.yaml")
+	collectorConfigPath := filepath.Join("../../../../config_examples", "genainormalizer-openinference.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 	})

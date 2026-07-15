@@ -14,6 +14,7 @@ processors:
   gen_ai_normalizer:
     sources:
       - name: openinference
+      - name: openllmetry
 
   # gen_ai_normalizer only maps llm.model_name → gen_ai.request.model.
   # Copy it to gen_ai.response.model when the response hasn't overridden it.

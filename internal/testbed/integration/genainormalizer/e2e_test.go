@@ -29,14 +29,12 @@ import (
 
 const collectorGRPCPort = "5317"
 
-// TestE2E_GenAINormalizerProcessor_OpenInference verifies that the genainormalizer
-// processor correctly maps OpenInference span attributes to gen_ai.* semantic conventions.
-// The test sends crafted spans with OpenInference-style attributes directly to the
-// collector via kubectl port-forward, then compares the normalized output against a
-// golden file.
-func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
+// TestE2E_GenAINormalizerProcessor verifies that the genainormalizer processor
+// correctly maps both OpenInference and OpenLLMetry span attributes to gen_ai.*
+// OTel semantic conventions. Crafted spans are sent directly to the collector
+// via kubectl port-forward and compared against golden files.
+func TestE2E_GenAINormalizerProcessor(t *testing.T) {
 	testDir := filepath.Join("testdata")
-	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
 
 	kubeconfigPath := k8stest.TestKubeConfig
 	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
@@ -118,24 +116,20 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		return false
 	}, 30*time.Second, 500*time.Millisecond, "port-forward to collector did not become ready")
 
-	// Send crafted spans with OpenInference attributes to the collector.
 	grpcConn, err := grpc.NewClient("localhost:"+collectorGRPCPort,
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 	defer grpcConn.Close()
 
 	traceClient := ptraceotlp.NewGRPCClient(grpcConn)
-	traces := buildOpenInferenceTraces()
-	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(traces))
+
+	// Send OpenInference spans then OpenLLMetry spans.
+	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(buildOpenInferenceTraces()))
+	require.NoError(t, err)
+	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(buildOpenLLMetryTraces()))
 	require.NoError(t, err)
 
-	oteltest.WaitForTraces(t, 0, tracesConsumer) // waits for len > 0, i.e. at least 1 batch
-
-	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
-	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
-
-	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
-	require.NoError(t, err)
+	oteltest.WaitForTraces(t, 1, tracesConsumer) // waits for len > 1, i.e. at least 2 batches
 
 	traceCompareOptions := []ptracetest.CompareTracesOption{
 		ptracetest.IgnoreStartTimestamp(),
@@ -147,125 +141,17 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		ptracetest.IgnoreSpansOrder(),
 	}
 
-	require.NoError(t, ptracetest.CompareTraces(expectedTraces, tracesConsumer.AllTraces()[0], traceCompareOptions...))
-}
+	// To regenerate golden files: uncomment the WriteTraces lines, run once, then revert.
+	// require.Nil(t, golden.WriteTraces(t, filepath.Join(testDir, "e2e", "expected-traces.yaml"), tracesConsumer.AllTraces()[0]))
+	// require.Nil(t, golden.WriteTraces(t, filepath.Join(testDir, "e2e", "expected-traces-openllmetry.yaml"), tracesConsumer.AllTraces()[1]))
 
-// TestE2E_GenAINormalizerProcessor_OpenLLMetry verifies that the genainormalizer
-// processor correctly maps OpenLLMetry span attributes to gen_ai.* semantic conventions.
-// The test sends crafted spans with OpenLLMetry-style attributes directly to the
-// collector via kubectl port-forward, then compares the normalized output against a
-// golden file.
-func TestE2E_GenAINormalizerProcessor_OpenLLMetry(t *testing.T) {
-	testDir := filepath.Join("testdata")
-	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces-openllmetry.yaml")
-
-	kubeconfigPath := k8stest.TestKubeConfig
-	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
-	}
-
-	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
+	expectedOI, err := golden.ReadTraces(filepath.Join(testDir, "e2e", "expected-traces.yaml"))
 	require.NoError(t, err)
+	require.NoError(t, ptracetest.CompareTraces(expectedOI, tracesConsumer.AllTraces()[0], traceCompareOptions...))
 
-	nsFile := filepath.Join(testDir, "namespace.yaml")
-	buf, err := os.ReadFile(nsFile)
-	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
-
-	testNs := nsObj.GetName()
-	defer func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	}()
-
-	tracesConsumer := new(consumertest.TracesSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Traces: []*oteltest.TraceSinkConfig{
-			{
-				Consumer: tracesConsumer,
-			},
-		},
-	})
-	defer shutdownSinks()
-
-	testID := uuid.NewString()[:8]
-	host := otelk8stest.HostEndpoint(t)
-
-	collectorConfigPath := filepath.Join("../../../../config_examples", "genainormalizer-openinference.yaml")
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host: host,
-	})
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-
-	collectorObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "collector"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfig,
-		},
-		host,
-	)
-	defer func() {
-		for _, obj := range collectorObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	collectorSvc := fmt.Sprintf("svc/otelcol-%s", testID)
-	pfCmd := exec.Command("kubectl", "--kubeconfig", kubeconfigPath,
-		"port-forward", "-n", testNs,
-		collectorSvc,
-		collectorGRPCPort+":4317",
-	)
-	require.NoError(t, pfCmd.Start())
-	t.Cleanup(func() {
-		if pfCmd.Process != nil {
-			_ = pfCmd.Process.Kill()
-			_ = pfCmd.Wait()
-		}
-	})
-
-	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", "localhost:"+collectorGRPCPort, time.Second)
-		if err == nil {
-			conn.Close()
-			return true
-		}
-		return false
-	}, 30*time.Second, 500*time.Millisecond, "port-forward to collector did not become ready")
-
-	grpcConn, err := grpc.NewClient("localhost:"+collectorGRPCPort,
-		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	expectedOL, err := golden.ReadTraces(filepath.Join(testDir, "e2e", "expected-traces-openllmetry.yaml"))
 	require.NoError(t, err)
-	defer grpcConn.Close()
-
-	traceClient := ptraceotlp.NewGRPCClient(grpcConn)
-	traces := buildOpenLLMetryTraces()
-	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(traces))
-	require.NoError(t, err)
-
-	oteltest.WaitForTraces(t, 0, tracesConsumer) // waits for len > 0, i.e. at least 1 batch
-
-	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
-	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
-
-	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
-	require.NoError(t, err)
-
-	traceCompareOptions := []ptracetest.CompareTracesOption{
-		ptracetest.IgnoreStartTimestamp(),
-		ptracetest.IgnoreEndTimestamp(),
-		ptracetest.IgnoreTraceID(),
-		ptracetest.IgnoreSpanID(),
-		ptracetest.IgnoreResourceSpansOrder(),
-		ptracetest.IgnoreScopeSpansOrder(),
-		ptracetest.IgnoreSpansOrder(),
-	}
-
-	require.NoError(t, ptracetest.CompareTraces(expectedTraces, tracesConsumer.AllTraces()[0], traceCompareOptions...))
+	require.NoError(t, ptracetest.CompareTraces(expectedOL, tracesConsumer.AllTraces()[1], traceCompareOptions...))
 }
 
 // buildOpenInferenceTraces returns a ptrace.Traces with one span carrying

@@ -142,6 +142,7 @@ jobs:
           - loadbalancing
           - kafka
           - filestorage
+          - genainormalizer
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:
@@ -243,22 +244,6 @@ jobs:
           cd internal/testbed/integration/hostmetrics
           go test -v --tags=e2e
 
-  genainormalizer-e2e-test:
-    name: Test GenAI Normalizer processor (OpenInference)
-    runs-on: ubuntu-24.04
-    needs: docker-build
-    steps:
-      - name: Check out code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - name: Setup cluster
-        uses: ./.github/actions/create-cluster
-
-      - name: Run e2e tests
-        run: |
-          cd internal/testbed/integration/genainormalizer
-          go test -v --tags=e2e
-
   notify-slack-combined-load-test:
     runs-on: ubuntu-24.04
     needs: [combined-load-test]
@@ -275,7 +260,7 @@ jobs:
 
   notify-slack-e2e-tests:
     runs-on: ubuntu-24.04
-    needs: [k8s-e2e-test-matrix, eec-confmap-provider, k8s-multinode-matrix, hostmetrics-e2e-test, genainormalizer-e2e-test]
+    needs: [k8s-e2e-test-matrix, eec-confmap-provider, k8s-multinode-matrix, hostmetrics-e2e-test]
     if: failure() && github.event_name == 'push'
     steps:
       - name: Slack Notification

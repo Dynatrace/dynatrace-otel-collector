@@ -6,16 +6,19 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
-	"os"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/google/uuid"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -30,10 +33,11 @@ const collectorGRPCPort = "5317"
 // TestE2E_GenAINormalizerProcessor_OpenInference verifies that the genainormalizer
 // processor correctly maps OpenInference span attributes to gen_ai.* semantic conventions.
 // The test sends crafted spans with OpenInference-style attributes directly to the
-// collector via kubectl port-forward, then asserts that the normalized gen_ai.* attributes
-// arrive at the local OTLP sink.
+// collector via kubectl port-forward, then compares the normalized output against a
+// golden file.
 func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testDir := filepath.Join("testdata")
+	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
 
 	kubeconfigPath := k8stest.TestKubeConfig
 	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
@@ -128,21 +132,30 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 
 	oteltest.WaitForTraces(t, 0, tracesConsumer)
 
-	oteltest.ScanTracesForAttributes(t, tracesConsumer, "test-llm-service",
-		map[string]oteltest.ExpectedValue{
-			"service.name": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "test-llm-service"),
-		},
-		[]map[string]oteltest.ExpectedValue{
-			{
-				"gen_ai.request.model":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "gpt-4o"),
-				"gen_ai.response.model":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "gpt-4o"),
-				"gen_ai.usage.input_tokens":  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-				"gen_ai.usage.output_tokens": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-				"gen_ai.operation.name":      oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "chat"),
-				"gen_ai.provider.name":       oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "openai"),
-			},
-		},
+	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
+	require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
+
+	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
+	require.NoError(t, err)
+
+	traceCompareOptions := []ptracetest.CompareTracesOption{
+		ptracetest.IgnoreStartTimestamp(),
+		ptracetest.IgnoreEndTimestamp(),
+		ptracetest.IgnoreTraceID(),
+		ptracetest.IgnoreSpanID(),
+		ptracetest.IgnoreResourceSpansOrder(),
+		ptracetest.IgnoreScopeSpansOrder(),
+		ptracetest.IgnoreSpansOrder(),
+	}
+
+	const (
+		compareTimeout = 3 * time.Minute
+		compareTick    = 5 * time.Second
 	)
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, ptracetest.CompareTraces(expectedTraces, tracesConsumer.AllTraces()[0], traceCompareOptions...))
+	}, compareTimeout, compareTick)
 }
 
 // buildOpenInferenceTraces returns a ptrace.Traces with one span carrying

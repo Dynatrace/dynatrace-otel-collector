@@ -29,14 +29,12 @@ import (
 
 const collectorGRPCPort = "5317"
 
-// TestE2E_GenAINormalizerProcessor_OpenInference verifies that the genainormalizer
-// processor correctly maps OpenInference span attributes to gen_ai.* semantic conventions.
-// The test sends crafted spans with OpenInference-style attributes directly to the
-// collector via kubectl port-forward, then compares the normalized output against a
-// golden file.
-func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
+// TestE2E_GenAINormalizerProcessor verifies that the genainormalizer processor
+// correctly maps both OpenInference and OpenLLMetry span attributes to gen_ai.*
+// OTel semantic conventions. Crafted spans are sent directly to the collector
+// via kubectl port-forward and compared against golden files.
+func TestE2E_GenAINormalizerProcessor(t *testing.T) {
 	testDir := filepath.Join("testdata")
-	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
 
 	kubeconfigPath := k8stest.TestKubeConfig
 	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
@@ -118,24 +116,18 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		return false
 	}, 30*time.Second, 500*time.Millisecond, "port-forward to collector did not become ready")
 
-	// Send crafted spans with OpenInference attributes to the collector.
 	grpcConn, err := grpc.NewClient("localhost:"+collectorGRPCPort,
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 	defer grpcConn.Close()
 
 	traceClient := ptraceotlp.NewGRPCClient(grpcConn)
-	traces := buildOpenInferenceTraces()
-	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(traces))
+
+	// Send both OpenInference and OpenLLMetry spans in a single export so ordering is deterministic.
+	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(buildTestTraces()))
 	require.NoError(t, err)
 
-	oteltest.WaitForTraces(t, 0, tracesConsumer) // waits for len > 0, i.e. at least 1 batch
-
-	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
-	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
-
-	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
-	require.NoError(t, err)
+	oteltest.WaitForTraces(t, 0, tracesConsumer)
 
 	traceCompareOptions := []ptracetest.CompareTracesOption{
 		ptracetest.IgnoreStartTimestamp(),
@@ -147,41 +139,63 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		ptracetest.IgnoreSpansOrder(),
 	}
 
-	require.NoError(t, ptracetest.CompareTraces(expectedTraces, tracesConsumer.AllTraces()[0], traceCompareOptions...))
+	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
+	// require.Nil(t, golden.WriteTraces(t, filepath.Join(testDir, "e2e", "expected-traces.yaml"), tracesConsumer.AllTraces()[0]))
+
+	expected, err := golden.ReadTraces(filepath.Join(testDir, "e2e", "expected-traces.yaml"))
+	require.NoError(t, err)
+	require.NoError(t, ptracetest.CompareTraces(expected, tracesConsumer.AllTraces()[0], traceCompareOptions...))
 }
 
-// buildOpenInferenceTraces returns a ptrace.Traces with one span carrying
-// the full set of OpenInference llm.* attributes that the genainormalizer
-// processor maps to gen_ai.* OTel semantic conventions.
-func buildOpenInferenceTraces() ptrace.Traces {
+// buildTestTraces returns a ptrace.Traces with two resource spans — one carrying
+// OpenInference llm.* attributes and one carrying OpenLLMetry llm.* attributes —
+// sent in a single export so ordering at the sink is deterministic.
+func buildTestTraces() ptrace.Traces {
 	td := ptrace.NewTraces()
-	rs := td.ResourceSpans().AppendEmpty()
-	rs.Resource().Attributes().PutStr("service.name", "test-llm-service")
 
-	ss := rs.ScopeSpans().AppendEmpty()
-	span := ss.Spans().AppendEmpty()
-	span.SetName("llm-call")
-	span.SetKind(ptrace.SpanKindInternal)
-	span.SetTraceID(pcommon.TraceID([16]byte{1}))
-	span.SetSpanID(pcommon.SpanID([8]byte{1}))
+	// OpenInference span
+	rsOI := td.ResourceSpans().AppendEmpty()
+	rsOI.Resource().Attributes().PutStr("service.name", "test-llm-service")
+	ssOI := rsOI.ScopeSpans().AppendEmpty()
+	spanOI := ssOI.Spans().AppendEmpty()
+	spanOI.SetName("llm-call")
+	spanOI.SetKind(ptrace.SpanKindInternal)
+	spanOI.SetTraceID(pcommon.TraceID([16]byte{1}))
+	spanOI.SetSpanID(pcommon.SpanID([8]byte{1}))
+	attrsOI := spanOI.Attributes()
+	attrsOI.PutStr("llm.model_name", "gpt-4o")
+	attrsOI.PutStr("llm.provider", "openai")
+	attrsOI.PutStr("openinference.span.kind", "LLM")
+	attrsOI.PutInt("llm.token_count.prompt", 10)
+	attrsOI.PutInt("llm.token_count.completion", 5)
+	attrsOI.PutStr("llm.input_messages.0.message.role", "user")
+	attrsOI.PutStr("llm.input_messages.0.message.content", "What is the weather in Paris?")
+	attrsOI.PutStr("llm.output_messages.0.message.role", "assistant")
+	attrsOI.PutStr("llm.output_messages.0.message.content", "The weather in Paris is sunny.")
+	attrsOI.PutStr("agent.name", "weather-agent")
+	attrsOI.PutStr("session.id", "session-abc123")
 
-	attrs := span.Attributes()
-	// Model & provider
-	attrs.PutStr("llm.model_name", "gpt-4o")
-	attrs.PutStr("llm.provider", "openai")
-	// Span kind → operation name ("LLM" → "chat")
-	attrs.PutStr("openinference.span.kind", "LLM")
-	// Token usage
-	attrs.PutInt("llm.token_count.prompt", 10)
-	attrs.PutInt("llm.token_count.completion", 5)
-	// Input/output messages (flattened format — reconstructed into gen_ai.* by MessageAggregator)
-	attrs.PutStr("llm.input_messages.0.message.role", "user")
-	attrs.PutStr("llm.input_messages.0.message.content", "What is the weather in Paris?")
-	attrs.PutStr("llm.output_messages.0.message.role", "assistant")
-	attrs.PutStr("llm.output_messages.0.message.content", "The weather in Paris is sunny.")
-	// Agent name and session — drive agent/LLM classification and conversation thread grouping
-	attrs.PutStr("agent.name", "weather-agent")
-	attrs.PutStr("session.id", "session-abc123")
+	// OpenLLMetry span
+	rsOL := td.ResourceSpans().AppendEmpty()
+	rsOL.Resource().Attributes().PutStr("service.name", "test-llm-service")
+	ssOL := rsOL.ScopeSpans().AppendEmpty()
+	spanOL := ssOL.Spans().AppendEmpty()
+	spanOL.SetName("llm-call")
+	spanOL.SetKind(ptrace.SpanKindInternal)
+	spanOL.SetTraceID(pcommon.TraceID([16]byte{2}))
+	spanOL.SetSpanID(pcommon.SpanID([8]byte{2}))
+	attrsOL := spanOL.Attributes()
+	attrsOL.PutStr("llm.request.model", "gpt-4o")
+	attrsOL.PutStr("llm.response.model", "gpt-4o")
+	// OpenLLMetry sets gen_ai.system directly; no normalizer mapping exists for provider.name
+	attrsOL.PutStr("gen_ai.system", "openai")
+	attrsOL.PutStr("llm.request.type", "chat")
+	attrsOL.PutInt("llm.usage.prompt_tokens", 10)
+	attrsOL.PutInt("llm.usage.completion_tokens", 5)
+	attrsOL.PutDouble("llm.request.temperature", 0.7)
+	attrsOL.PutStr("traceloop.entity.input", `{"messages":[{"role":"user","content":"What is the weather in Paris?"}]}`)
+	attrsOL.PutStr("traceloop.entity.output", `{"choices":[{"message":{"role":"assistant","content":"The weather in Paris is sunny."}}]}`)
+	attrsOL.PutStr("traceloop.entity.name", "weather-agent")
 
 	return td
 }

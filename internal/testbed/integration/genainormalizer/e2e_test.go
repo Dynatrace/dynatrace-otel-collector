@@ -133,7 +133,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	oteltest.WaitForTraces(t, 0, tracesConsumer)
 
 	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
-	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
+	require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
 
 	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
 	require.NoError(t, err)
@@ -159,8 +159,8 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 }
 
 // buildOpenInferenceTraces returns a ptrace.Traces with one span carrying
-// OpenInference-style llm.* attributes. The genainormalizer processor should
-// map these to gen_ai.* OTel semantic conventions.
+// the full set of OpenInference llm.* attributes that the genainormalizer
+// processor maps to gen_ai.* OTel semantic conventions.
 func buildOpenInferenceTraces() ptrace.Traces {
 	td := ptrace.NewTraces()
 	rs := td.ResourceSpans().AppendEmpty()
@@ -174,11 +174,19 @@ func buildOpenInferenceTraces() ptrace.Traces {
 	span.SetSpanID(pcommon.SpanID([8]byte{1}))
 
 	attrs := span.Attributes()
+	// Model & provider
 	attrs.PutStr("llm.model_name", "gpt-4o")
 	attrs.PutStr("llm.provider", "openai")
+	// Span kind → operation name ("LLM" → "chat")
 	attrs.PutStr("openinference.span.kind", "LLM")
+	// Token usage
 	attrs.PutInt("llm.token_count.prompt", 10)
 	attrs.PutInt("llm.token_count.completion", 5)
+	// Input/output messages (flattened format — reconstructed into gen_ai.* by MessageAggregator)
+	attrs.PutStr("llm.input_messages.0.message.role", "user")
+	attrs.PutStr("llm.input_messages.0.message.content", "What is the weather in Paris?")
+	attrs.PutStr("llm.output_messages.0.message.role", "assistant")
+	attrs.PutStr("llm.output_messages.0.message.content", "The weather in Paris is sunny.")
 
 	return td
 }

@@ -37,6 +37,7 @@ const collectorGRPCPort = "5317"
 // golden file.
 func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testDir := filepath.Join("testdata")
+	configExamplesDir := "../../../../config_examples"
 	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -71,7 +72,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testID := uuid.NewString()[:8]
 	host := otelk8stest.HostEndpoint(t)
 
-	collectorConfigPath := filepath.Join(testDir, "config.yaml")
+	collectorConfigPath := filepath.Join(configExamplesDir, "genainormalizer-openinference.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 	})

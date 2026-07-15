@@ -18,7 +18,6 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -148,14 +147,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 		ptracetest.IgnoreSpansOrder(),
 	}
 
-	const (
-		compareTimeout = 3 * time.Minute
-		compareTick    = 5 * time.Second
-	)
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, ptracetest.CompareTraces(expectedTraces, tracesConsumer.AllTraces()[0], traceCompareOptions...))
-	}, compareTimeout, compareTick)
+	require.NoError(t, ptracetest.CompareTraces(expectedTraces, tracesConsumer.AllTraces()[0], traceCompareOptions...))
 }
 
 // buildOpenInferenceTraces returns a ptrace.Traces with one span carrying

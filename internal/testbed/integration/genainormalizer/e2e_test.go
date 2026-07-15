@@ -71,7 +71,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testID := uuid.NewString()[:8]
 	host := otelk8stest.HostEndpoint(t)
 
-	collectorConfigPath := filepath.Join(testDir, "collector", "config.yaml")
+	collectorConfigPath := filepath.Join(testDir, "config.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 	})

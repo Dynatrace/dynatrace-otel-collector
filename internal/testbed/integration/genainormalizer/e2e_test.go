@@ -37,7 +37,6 @@ const collectorGRPCPort = "5317"
 // golden file.
 func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testDir := filepath.Join("testdata")
-	configExamplesDir := "../../../../config_examples"
 	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -72,7 +71,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	testID := uuid.NewString()[:8]
 	host := otelk8stest.HostEndpoint(t)
 
-	collectorConfigPath := filepath.Join(configExamplesDir, "genainormalizer-openinference.yaml")
+	collectorConfigPath := filepath.Join("../../../../config_examples", "genainormalizer-openinference.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
 		Host: host,
 	})
@@ -134,7 +133,7 @@ func TestE2E_GenAINormalizerProcessor_OpenInference(t *testing.T) {
 	oteltest.WaitForTraces(t, 0, tracesConsumer)
 
 	// To regenerate the golden file: uncomment the WriteTraces line, run once, then revert.
-	require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
+	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[0]))
 
 	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
 	require.NoError(t, err)

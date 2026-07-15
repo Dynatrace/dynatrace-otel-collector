@@ -36,6 +36,12 @@ resourceSpans:
               - key: llm.output_messages.0.message.content
                 value:
                   stringValue: The weather in Paris is sunny.
+              - key: agent.name
+                value:
+                  stringValue: weather-agent
+              - key: session.id
+                value:
+                  stringValue: session-abc123
               - key: gen_ai.input.messages
                 value:
                   stringValue: '[{"role":"user","parts":[{"type":"text","content":"What is the weather in Paris?"}]}]'
@@ -57,6 +63,12 @@ resourceSpans:
               - key: gen_ai.usage.output_tokens
                 value:
                   intValue: "5"
+              - key: gen_ai.agent.name
+                value:
+                  stringValue: weather-agent
+              - key: gen_ai.conversation.id
+                value:
+                  stringValue: session-abc123
               - key: gen_ai.response.model
                 value:
                   stringValue: gpt-4o

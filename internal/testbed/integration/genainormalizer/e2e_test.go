@@ -179,6 +179,9 @@ func buildOpenInferenceTraces() ptrace.Traces {
 	attrs.PutStr("llm.input_messages.0.message.content", "What is the weather in Paris?")
 	attrs.PutStr("llm.output_messages.0.message.role", "assistant")
 	attrs.PutStr("llm.output_messages.0.message.content", "The weather in Paris is sunny.")
+	// Agent name and session — drive agent/LLM classification and conversation thread grouping
+	attrs.PutStr("agent.name", "weather-agent")
+	attrs.PutStr("session.id", "session-abc123")
 
 	return td
 }

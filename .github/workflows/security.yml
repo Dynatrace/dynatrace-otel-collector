@@ -33,7 +33,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: build
-          key: ci-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
+          key: ci-build-${{ runner.os }}-${{ hashFiles('manifest.yaml') }}
 
       - name: Generate source files
         if: steps.cache-collector-source.outputs.cache-hit != 'true'

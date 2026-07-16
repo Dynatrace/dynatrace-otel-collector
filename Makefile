@@ -78,6 +78,7 @@ oteltestbedcol: genoteltestbedcol
 # 3. Generate code
 .PHONY: genoteltestbedcol
 genoteltestbedcol: $(BUILDER)
+	cp manifest.yaml cmd/oteltestbedcol/manifest.yaml
 	awk '/healthcheckextension $(OTEL_UPSTREAM_VERSION)/ {print; print "  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension $(OTEL_UPSTREAM_VERSION)"; next}1' cmd/oteltestbedcol/manifest.yaml > cmd/oteltestbedcol/manifest-dev.yaml
 	$(BUILDER) --skip-compilation --config cmd/oteltestbedcol/manifest-dev.yaml --output-path cmd/oteltestbedcol
 

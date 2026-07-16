@@ -12,8 +12,6 @@ ALL_MODS := $(shell find . -type f -name "go.mod" -not -path "./build/*" -not -p
 # INTERNAL_MODS includes only ./internal/* dirs
 INTERNAL_MODS := $(shell find ./internal/* -type f -name "go.mod" -exec dirname {} \; | sort | grep -E '^./' )
 
-SOURCES := $(shell find internal/confmap -type f | sort )
-
 BIN = $(BIN_DIR)/dynatrace-otel-collector
 MAIN = $(BUILD_DIR)/main.go
 
@@ -54,7 +52,7 @@ $(TOOLS_BIN_NAMES): $(TOOLS_MOD_DIR)/go.mod | $(TOOLS_BIN_DIR)
 	cd $(TOOLS_MOD_DIR) && $(GOCMD) build -trimpath -o $(abspath $@) \
 		$(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
-$(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN) $(SOURCES)
+$(BIN): .goreleaser.yaml $(GORELEASER) $(MAIN)
 	$(GORELEASER) build --single-target --snapshot --clean -o $(BIN)
 
 $(MAIN): $(BUILDER) manifest.yaml
@@ -75,12 +73,11 @@ endif
 oteltestbedcol: genoteltestbedcol
 	cd ./cmd/oteltestbedcol && GO111MODULE=on CGO_ENABLED=0 go build -trimpath -o ../../bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) .
 
-# 1. Copy and modify the manifest -> change local path to eecprovider -> move the modified file to the cmd/oteltestbedcol directory
+# 1. Copy and modify the manifest -> move the modified file to the cmd/oteltestbedcol directory
 # 2. Add pprofextension used for load tests to the test manifest in cmd/oteltestbedcol directory
 # 3. Generate code
 .PHONY: genoteltestbedcol
 genoteltestbedcol: $(BUILDER)
-	awk '{gsub(/\.\.\/internal\/confmap\/provider\/eecprovider/, "../../internal/confmap/provider/eecprovider"); print}' manifest.yaml > cmd/oteltestbedcol/manifest.yaml
 	awk '/healthcheckextension $(OTEL_UPSTREAM_VERSION)/ {print; print "  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension $(OTEL_UPSTREAM_VERSION)"; next}1' cmd/oteltestbedcol/manifest.yaml > cmd/oteltestbedcol/manifest-dev.yaml
 	$(BUILDER) --skip-compilation --config cmd/oteltestbedcol/manifest-dev.yaml --output-path cmd/oteltestbedcol
 

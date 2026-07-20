@@ -16,7 +16,7 @@ require (
 	go.opentelemetry.io/collector/consumer/consumertest v0.156.0
 	go.opentelemetry.io/collector/pdata v1.62.0
 	go.opentelemetry.io/otel v1.44.0
-	google.golang.org/grpc v1.82.0
+	google.golang.org/grpc v1.82.1
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.36.2
 )

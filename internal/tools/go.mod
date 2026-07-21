@@ -3,6 +3,7 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/tools
 go 1.26.5
 
 require (
+	github.com/google/addlicense v1.2.0
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	github.com/sigstore/cosign/v3 v3.1.2
 	go.opentelemetry.io/build-tools/chloggen v0.30.0
@@ -72,6 +73,7 @@ require (
 	github.com/aws/smithy-go v1.27.2 // indirect
 	github.com/awslabs/amazon-ecr-credential-helper/ecr-login v0.12.0 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
+	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
 	github.com/buildkite/agent/v3 v3.130.0 // indirect
 	github.com/buildkite/go-pipeline v0.17.1 // indirect
 	github.com/buildkite/interpolate v0.1.5 // indirect

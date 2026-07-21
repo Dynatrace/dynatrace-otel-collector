@@ -14,11 +14,17 @@ TOOLS_PKG_NAMES  := $(shell grep -E $(TOOLS_MOD_REGEX) < $(TOOLS_MOD_DIR)/tools.
 TOOLS_BIN_DIR    := $(SRC_ROOT)/.tools
 TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
 
-GORELEASER := $(TOOLS_BIN_DIR)/goreleaser
-BUILDER    := $(TOOLS_BIN_DIR)/builder
-CHLOGGEN   := $(TOOLS_BIN_DIR)/chloggen
-COSIGN     := $(TOOLS_BIN_DIR)/cosign
-GOJUNIT    := $(TOOLS_BIN_DIR)/v2
+GORELEASER  := $(TOOLS_BIN_DIR)/goreleaser
+BUILDER     := $(TOOLS_BIN_DIR)/builder
+CHLOGGEN    := $(TOOLS_BIN_DIR)/chloggen
+COSIGN      := $(TOOLS_BIN_DIR)/cosign
+GOJUNIT     := $(TOOLS_BIN_DIR)/v2
+ADDLICENSE  := $(TOOLS_BIN_DIR)/addlicense
+
+ADDLICENSE_CMD := $(ADDLICENSE) -s=only -y "" -c "Dynatrace LLC"
+ALL_SRC := $(shell find $(SRC_ROOT) -type f \( -iname '*.go' -o -iname '*.sh' \) \
+    ! -path '*/third_party/*' ! -path '*/build/*' ! -path '*/vendor/*' \
+    ! -path '$(SRC_ROOT)/internal/tools/*')
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
 GORELEASER_PRO_VERSION ?= v2.17.0
@@ -112,3 +118,15 @@ install-goreleaser-pro: $(COSIGN)
 		mv goreleaser $(TOOLS_BIN_DIR); \
 		echo "GoReleaser Pro installed successfully!"; \
   	fi
+
+.PHONY: addlicense
+addlicense: $(ADDLICENSE)
+	$(ADDLICENSE_CMD) $(ALL_SRC)
+
+.PHONY: checklicense
+checklicense:
+	@licRes=$$(for f in $(ALL_SRC); do \
+		awk '/Copyright Dynatrace LLC|generated|GENERATED/ && NR<=4 { found=1; next } END { if (!found) print FILENAME }' $$f; \
+		awk '/SPDX-License-Identifier: Apache-2.0|generated|GENERATED/ && NR<=5 { found=1; next } END { if (!found) print FILENAME }' $$f; \
+	done); \
+	if [ -n "$${licRes}" ]; then echo "license header checking failed:"; echo "$${licRes}"; exit 1; else echo "Check License finished successfully"; fi

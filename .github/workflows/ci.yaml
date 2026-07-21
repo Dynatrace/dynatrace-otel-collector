@@ -36,6 +36,9 @@ jobs:
           mkdir -p .tools
           make install-tools
 
+      - name: Check license headers
+        run: make checklicense
+
       - name: Generate source files
         run: make generate
 

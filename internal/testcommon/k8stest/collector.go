@@ -1,4 +1,5 @@
 // Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
 // SPDX-License-Identifier: Apache-2.0
 
 package k8stest // import "github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8stest"

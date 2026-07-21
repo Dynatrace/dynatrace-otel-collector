@@ -1,3 +1,6 @@
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
 // internal/renderworkloads/main.go
 //
 // Renders YAML templates (using Go's built-in text/template) under a given input root,

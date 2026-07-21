@@ -1,3 +1,6 @@
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
 package main
 
 // FilteredChangelog holds the filtered and grouped entries ready for rendering.

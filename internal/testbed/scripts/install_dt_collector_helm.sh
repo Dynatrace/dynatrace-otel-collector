@@ -1,4 +1,7 @@
 #!/bin/env bash
+# Copyright Dynatrace LLC
+# SPDX-License-Identifier: Apache-2.0
+
 echo "Installing Dynatrace Collector using helm"
 helm version
 

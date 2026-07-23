@@ -22,9 +22,10 @@ GOJUNIT     := $(TOOLS_BIN_DIR)/v2
 ADDLICENSE  := $(TOOLS_BIN_DIR)/addlicense
 
 ADDLICENSE_CMD := $(ADDLICENSE) -s=only -y "" -c "Dynatrace LLC"
-ALL_SRC := $(shell find $(SRC_ROOT) -type f \( -iname '*.go' -o -iname '*.sh' \) \
+ALL_SRC := $(shell find $(SRC_ROOT) -type f \
+    \( -iname '*.go' -o -iname '*.sh' -o -iname 'Dockerfile' \) \
     ! -path '*/third_party/*' ! -path '*/build/*' ! -path '*/vendor/*' \
-    ! -path '$(SRC_ROOT)/internal/tools/*')
+    ! -path '*/.git/*' ! -path '*/.tools/*')
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
 GORELEASER_PRO_VERSION ?= v2.17.0

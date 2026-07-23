@@ -26,7 +26,7 @@ spec:
         - --rate=1
         - --batch=false
         - --otlp-attributes=service.name="custom-service-name"
-        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.156.0@sha256:0d2936509ffd2a68b3fe6f4f299a3ec87653dc37676df4313e628a8413e1d2f2
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.157.0@sha256:e84b17f92d096ecf56e1dacbddf38bade4a05b72de6a316b92a38363a2bdc13f
         imagePullPolicy: Always
         name: telemetrygen
       restartPolicy: Always

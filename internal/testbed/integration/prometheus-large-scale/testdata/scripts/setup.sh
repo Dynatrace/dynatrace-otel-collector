@@ -121,4 +121,28 @@ echo "Deploying avalanche..."
 kubectl apply -f "${SCRIPT_DIR}/../avalanche.yaml"
 kubectl rollout status deployment/avalanche -n avalanche --timeout=120s
 
+# --- Prime event-driven metrics to prevent flaky test assertions -----------
+# Several self-monitoring metrics are delta monotonic counters that the OTEL SDK
+# only emits when their value is non-zero in the collection window.  After the
+# initial startup burst they stay at 0 and disappear from exports, causing the
+# pmetricassert validation to fail intermittently.
+#
+# Fix: trigger the underlying events so the counters increment at least once
+# while the test's 3-minute assertion retry window is open.
+#
+# 1. otelcol_otelsvc_k8s_namespace_added (gateway k8sattributesprocessor):
+#    Create a temporary namespace — the k8s informer fires an Add event, which
+#    increments the counter.
+echo "Priming event-driven metrics: creating trigger namespace..."
+kubectl create namespace otel-ta-event-trigger --dry-run=client -o yaml | kubectl apply -f -
+
+# 2. otelcol_loadbalancer_num_resolutions + otelcol_loadbalancer_num_backend_updates
+#    (scraper load_balancing exporter, k8s resolver):
+#    Rolling-restart the gateway StatefulSet.  As pods cycle, the k8s endpoint
+#    watch fires, the resolver re-resolves the backend list, and both counters
+#    increment. "--wait=false" returns immediately; the pods finish in the
+#    background while the Go test's assertion window is running.
+echo "Priming event-driven metrics: restarting gateway to trigger LB re-resolution..."
+kubectl rollout restart statefulset/tiered-gateway -n "${NAMESPACE}"
+
 echo "=== Setup complete ==="

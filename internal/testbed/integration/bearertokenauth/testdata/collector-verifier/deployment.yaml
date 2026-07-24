@@ -16,9 +16,6 @@ spec:
         app.kubernetes.io/instance: {{ .Name }}
     spec:
       serviceAccountName: {{ .Name }}
-      securityContext:
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: collector-verifier
           image: otel/opentelemetry-collector-contrib:0.156.0
@@ -40,11 +37,14 @@ spec:
             - mountPath: /tmp
               name: tmp
           securityContext:
-            allowPrivilegeEscalation: false
             privileged: false
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
             runAsNonRoot: true
             runAsUser: 10001
-            readOnlyRootFilesystem: true
+            runAsGroup: 10001
+            seccompProfile:
+              type: RuntimeDefault
             capabilities:
               drop:
                 - ALL

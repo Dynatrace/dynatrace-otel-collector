@@ -16,9 +16,6 @@ spec:
         app.kubernetes.io/instance: {{ .Name }}
     spec:
       serviceAccountName: {{ .Name }}
-      securityContext:
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: collector-sender
           command:
@@ -52,12 +49,14 @@ spec:
             - mountPath: /tmp
               name: tmp
           securityContext:
-            allowPrivilegeEscalation: false
             privileged: false
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
             runAsNonRoot: true
             runAsUser: 10001
             runAsGroup: 10001
-            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
             capabilities:
               drop:
                 - ALL

@@ -63,7 +63,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": [
+      "managerFilePatterns": [
         "(^|\\/)Makefile$",
         "(^|\\/)Makefile.Common$",
         "(^|\\/)Dockerfile",

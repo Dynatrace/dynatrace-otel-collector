@@ -33,6 +33,7 @@ exporters:
 
 extensions:
   - gomod: go.opentelemetry.io/collector/extension/zpagesextension v0.156.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/bearertokenauthextension v0.156.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector v0.156.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension v0.156.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/storage/filestorage v0.156.0

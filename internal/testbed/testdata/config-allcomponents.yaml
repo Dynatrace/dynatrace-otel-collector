@@ -195,7 +195,7 @@ connectors:
   span_metrics:
 
 extensions:
-  bearer_token_auth:
+  bearertokenauth:
     filename: /var/run/secrets/dynatrace/token
     scheme: "Bearer"
   file_storage:

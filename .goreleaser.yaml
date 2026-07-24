@@ -99,6 +99,9 @@ nfpms:
     vendor: "Dynatrace LLC"
     description: Dynatrace distribution of the OpenTelemetry Collector
     license: Apache 2.0
+msi:
+  - wxs: internal/release/windows-installer.wxs
+    name: '{{.ProjectName}}_{{.MsiArch}}'
 dockers:
   - goos: linux
     goarch: amd64

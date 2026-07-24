@@ -1,0 +1,82 @@
+nameOverride: ""
+fullnameOverride: "tiered-allocator"
+
+replicaCount: 2
+
+targetAllocator:
+  # The Target Allocator now PUSHES its self-telemetry via OTLP (see config.telemetry
+  # below), so it is no longer scraped by the customer path. Keep scrape disabled.
+  podAnnotations:
+    metrics.dynatrace.com/scrape: "false"
+  image:
+    # Target Allocator built from the OTLP self-telemetry branch (opentelemetry-operator
+    # PR #5068 / issue #5047), linux/amd64. Supports config.telemetry.metrics.otlp below.
+    # Built locally from cmd/otel-allocator; must be pushed to a registry the cluster can pull.
+    repository: ghcr.io/odubajdt/target-allocator
+    tag: icp5695-otlp
+    pullPolicy: IfNotPresent
+  serviceAccount:
+    create: false
+    name: "tiered-otel-allocator"
+  service:
+    port: 8080
+  # Standard k8s $(VAR) substitution injects the pod identity into
+  # OTEL_RESOURCE_ATTRIBUTES so the selfmon sink can enrich TA metrics by resource
+  # (in addition to the connection-IP fallback), and sets a stable service.name.
+  env:
+    - name: K8S_POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: K8S_NAMESPACE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: K8S_POD_UID
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.uid
+    - name: K8S_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: OTEL_SERVICE_NAME
+      value: "target-allocator"
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "k8s.pod.name=$(K8S_POD_NAME),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.pod.uid=$(K8S_POD_UID),k8s.node.name=$(K8S_NODE_NAME)"
+  config:
+    allocation_strategy: consistent-hashing
+    collector_namespace: ${NAMESPACE}
+    collector_selector:
+      matchlabels:
+        app.kubernetes.io/name: opentelemetry-collector
+        app.kubernetes.io/instance: otel-scraper
+    prometheus_cr:
+      enabled: true
+      scrapeInterval: 15s
+      service_monitor_selector:
+        matchlabels:
+          prometheus.dynatrace.com: "true"
+      pod_monitor_selector:
+        matchlabels:
+          prometheus.dynatrace.com: "true"
+      scrape_config_selector:
+        matchlabels:
+          prometheus.dynatrace.com: "true"
+    # Self-telemetry export over OTLP to the selfmon sink. Delta temporality so the
+    # stateless sink can forward without cumulative→delta conversion.
+    telemetry:
+      metrics:
+        otlp:
+          endpoint: "http://selfmon:4318"
+          protocol: http
+          temporality: delta
+          export_interval: 15s
+          insecure: true
+
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 10m
+      memory: 150Mi

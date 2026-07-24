@@ -1,0 +1,244 @@
+# Selfmon — OTLP self-monitoring SINK (no Prometheus scraping).
+#
+# Receives OTLP self-telemetry pushed by the Target Allocator, tier1 scrapers and
+# tier2 gateways, enriches it with k8s attributes, and exports to Dynatrace.
+#
+# Differences vs. the old selfmon-scraper:
+#   - No Prometheus receiver / no scraping of the Target Allocator. The TA now pushes
+#     its own metrics via OTLP (telemetry.metrics.otlp), so nothing scrapes it.
+#   - No cumulativetodelta / metric_start_time. Every source already exports DELTA
+#     (tier1/tier2 service.telemetry readers use temporality_preference=delta; the TA
+#     is configured with temporality=delta). With no cumulative→delta conversion the
+#     sink holds no per-series state, so it is safe to run with multiple replicas + HPA.
+#   - No underscore→dot resource-key rename (that was only needed for scraped Prometheus
+#     data; OTLP carries dotted resource attribute keys already).
+#
+# Deploy with:
+#   helm install otel-selfmon open-telemetry/opentelemetry-collector \
+#     --namespace otel-ta -f selfmon.values.yaml
+
+fullnameOverride: "selfmon"
+
+mode: deployment
+replicaCount: 2
+
+image:
+  repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
+  # renovate: datasource=docker depName=ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
+  tag: 0.51.0
+command:
+  name: dynatrace-otel-collector
+
+# The sink is a stateless OTLP receiver (no cumulative→delta state), so it can scale
+# horizontally. Metric volume scales with the number of collectors, not customer series.
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 70
+
+# Don't scrape this sink's own metrics via the customer path.
+podAnnotations:
+  metrics.dynatrace.com/scrape: "false"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
+
+service:
+  enabled: true
+
+clusterRole:
+  create: false
+
+serviceAccount:
+  create: false
+  name: tiered-otel-sink   # has pod/replicaset/... get,list,watch for k8s_attributes
+
+extraEnvsFrom:
+  - secretRef:
+      name: dynatrace-otelcol-credentials
+extraEnvs:
+  - name: K8S_CLUSTER_NAME
+    value: "tiered-otelcol-ta-test"
+  - name: K8S_NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: spec.nodeName
+  - name: K8S_POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: K8S_NAMESPACE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.namespace
+  - name: K8S_POD_UID
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.uid
+
+alternateConfig:
+  extensions:
+    health_check:
+      endpoint: "${env:MY_POD_IP}:13133"
+
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "${env:MY_POD_IP}:4317"
+        http:
+          endpoint: "${env:MY_POD_IP}:4318"
+
+  processors:
+    memory_limiter:
+      check_interval: 1s
+      limit_percentage: 80
+      spike_limit_percentage: 20
+
+    k8s_attributes:
+      passthrough: false
+      extract:
+        annotations:
+          - from: pod
+            key_regex: metadata.dynatrace.com/(.*)
+            tag_name: $$1
+          - from: pod
+            key: metadata.dynatrace.com
+            tag_name: metadata.dynatrace.com
+        metadata:
+          - k8s.pod.name
+          - k8s.pod.uid
+          - k8s.pod.ip
+          - k8s.deployment.name
+          - k8s.replicaset.name
+          - k8s.statefulset.name
+          - k8s.daemonset.name
+          - k8s.job.name
+          - k8s.cronjob.name
+          - k8s.namespace.name
+          - k8s.node.name
+          - k8s.cluster.uid
+          - k8s.container.name
+          - k8s.deployment.uid
+          - k8s.replicaset.uid
+          - k8s.statefulset.uid
+          - k8s.daemonset.uid
+          - k8s.job.uid
+          - k8s.cronjob.uid
+      pod_association:
+        # tier1/tier2 set these via service.telemetry.resource; matched directly.
+        - sources:
+            - from: resource_attribute
+              name: k8s.pod.name
+            - from: resource_attribute
+              name: k8s.namespace.name
+        - sources:
+            - from: resource_attribute
+              name: k8s.pod.ip
+        - sources:
+            - from: resource_attribute
+              name: k8s.pod.uid
+        # The Target Allocator pushes without k8s.* resource attrs; fall back to the
+        # source connection IP to resolve its pod.
+        - sources:
+            - from: connection
+
+    transform:
+      metric_statements:
+        - context: resource
+          statements:
+            - set(resource.attributes["k8s.workload.name"], resource.attributes["k8s.statefulset.name"]) where IsString(resource.attributes["k8s.statefulset.name"])
+            - set(resource.attributes["k8s.workload.name"], resource.attributes["k8s.replicaset.name"]) where IsString(resource.attributes["k8s.replicaset.name"])
+            - set(resource.attributes["k8s.workload.name"], resource.attributes["k8s.job.name"]) where IsString(resource.attributes["k8s.job.name"])
+            - set(resource.attributes["k8s.workload.name"], resource.attributes["k8s.deployment.name"]) where IsString(resource.attributes["k8s.deployment.name"])
+            - set(resource.attributes["k8s.workload.name"], resource.attributes["k8s.daemonset.name"]) where IsString(resource.attributes["k8s.daemonset.name"])
+            - set(resource.attributes["k8s.workload.name"], resource.attributes["k8s.cronjob.name"]) where IsString(resource.attributes["k8s.cronjob.name"])
+
+            - set(resource.attributes["k8s.workload.kind"], "statefulset") where IsString(resource.attributes["k8s.statefulset.name"])
+            - set(resource.attributes["k8s.workload.kind"], "replicaset") where IsString(resource.attributes["k8s.replicaset.name"])
+            - set(resource.attributes["k8s.workload.kind"], "job") where IsString(resource.attributes["k8s.job.name"])
+            - set(resource.attributes["k8s.workload.kind"], "deployment") where IsString(resource.attributes["k8s.deployment.name"])
+            - set(resource.attributes["k8s.workload.kind"], "daemonset") where IsString(resource.attributes["k8s.daemonset.name"])
+            - set(resource.attributes["k8s.workload.kind"], "cronjob") where IsString(resource.attributes["k8s.cronjob.name"])
+
+            - set(resource.attributes["k8s.workload.uid"], resource.attributes["k8s.statefulset.uid"]) where IsString(resource.attributes["k8s.statefulset.uid"])
+            - set(resource.attributes["k8s.workload.uid"], resource.attributes["k8s.replicaset.uid"]) where IsString(resource.attributes["k8s.replicaset.uid"])
+            - set(resource.attributes["k8s.workload.uid"], resource.attributes["k8s.job.uid"]) where IsString(resource.attributes["k8s.job.uid"])
+            - set(resource.attributes["k8s.workload.uid"], resource.attributes["k8s.deployment.uid"]) where IsString(resource.attributes["k8s.deployment.uid"])
+            - set(resource.attributes["k8s.workload.uid"], resource.attributes["k8s.daemonset.uid"]) where IsString(resource.attributes["k8s.daemonset.uid"])
+            - set(resource.attributes["k8s.workload.uid"], resource.attributes["k8s.cronjob.uid"]) where IsString(resource.attributes["k8s.cronjob.uid"])
+
+            - delete_key(resource.attributes, "k8s.statefulset.name")
+            - delete_key(resource.attributes, "k8s.replicaset.name")
+            - delete_key(resource.attributes, "k8s.job.name")
+            - delete_key(resource.attributes, "k8s.deployment.name")
+            - delete_key(resource.attributes, "k8s.daemonset.name")
+            - delete_key(resource.attributes, "k8s.cronjob.name")
+            - delete_key(resource.attributes, "k8s.statefulset.uid")
+            - delete_key(resource.attributes, "k8s.replicaset.uid")
+            - delete_key(resource.attributes, "k8s.deployment.uid")
+            - delete_key(resource.attributes, "k8s.daemonset.uid")
+            - delete_key(resource.attributes, "k8s.job.uid")
+            - delete_key(resource.attributes, "k8s.cronjob.uid")
+
+        - context: resource
+          statements:
+            - delete_key(resource.attributes, "processor")
+            - delete_key(resource.attributes, "otel.signal")
+            - delete_key(resource.attributes, "otel.scope.name")
+            - delete_key(resource.attributes, "otel.scope.version")
+
+        - context: resource
+          statements:
+            - set(resource.attributes["k8s.cluster.name"], "${env:K8S_CLUSTER_NAME}") where resource.attributes["k8s.cluster.name"] == nil and Len("${env:K8S_CLUSTER_NAME}") > 0
+
+        - context: resource
+          statements:
+            - merge_maps(resource.attributes, ParseJSON(resource.attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(resource.attributes["metadata.dynatrace.com"], "^\\{")
+            - delete_key(resource.attributes, "metadata.dynatrace.com")
+
+  exporters:
+    otlphttp/dynatrace:
+      endpoint: "${env:DT_ENDPOINT}"
+      headers:
+        Authorization: "Api-Token ${env:DT_API_TOKEN}"
+      sending_queue:
+        batch:
+          min_size: 1000
+          flush_timeout: 10s
+
+  service:
+    extensions:
+      - health_check
+    pipelines:
+      metrics:
+        receivers:
+          - otlp
+        processors:
+          - memory_limiter
+          - k8s_attributes
+          - transform
+        exporters:
+          - otlphttp/dynatrace
+
+ports:
+  otlp:
+    enabled: true
+  otlp-http:
+    enabled: true
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+  metrics:
+    enabled: false

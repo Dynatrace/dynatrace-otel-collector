@@ -1,0 +1,61 @@
+# Lightweight avalanche load generator for the local kind test.
+# Small series count so kind stays healthy; enough to prove the customer path flows.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: avalanche
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: avalanche
+  name: avalanche
+  namespace: avalanche
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: avalanche
+  template:
+    metadata:
+      annotations:
+        metrics.dynatrace.com/scrape: "true"
+        metrics.dynatrace.com/port: "9001"
+      labels:
+        app: avalanche
+    spec:
+      containers:
+        - image: quay.io/prometheuscommunity/avalanche:v0.7.0
+          name: avalanche
+          args:
+            - "--gauge-metric-count=5"
+            - "--counter-metric-count=5"
+            - "--histogram-metric-count=2"
+            - "--histogram-metric-bucket-count=5"
+            - "--native-histogram-metric-count=0"
+            - "--summary-metric-count=0"
+            - "--series-count=20"
+            - "--value-interval=15"
+            - "--series-interval=3600"
+            - "--metric-interval=0"
+            - "--port=9001"
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: "50m"
+            limits:
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: avalanche
+  namespace: avalanche
+spec:
+  selector:
+    app: avalanche
+  ports:
+    - name: metrics
+      port: 9001
+      targetPort: 9001

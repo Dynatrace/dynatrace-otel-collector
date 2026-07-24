@@ -1,0 +1,19 @@
+# Grant unauthenticated access to the OIDC discovery endpoints so that the
+# oidcauthextension can fetch /.well-known/openid-configuration and the JWKS
+# without credentials. This is standard practice: the JWKS must be public for
+# any OIDC token validator. The ClusterRole system:service-account-issuer-discovery
+# is built in to Kubernetes 1.21+.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Name }}-oidc-discovery
+  labels:
+    app: {{ .Name }}
+subjects:
+  - kind: Group
+    name: system:unauthenticated
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: system:service-account-issuer-discovery
+  apiGroup: rbac.authorization.k8s.io

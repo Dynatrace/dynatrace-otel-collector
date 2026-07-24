@@ -195,6 +195,9 @@ connectors:
   span_metrics:
 
 extensions:
+  bearertokenauth:
+    filename: /var/run/secrets/dynatrace/token
+    scheme: "Bearer"
   file_storage:
     directory: /var/lib/otelcol/file_storage
     create_directory: true

@@ -8,6 +8,8 @@ extensions:
   bearertokenauth:
     filename: /var/run/secrets/dynatrace/token
     scheme: "Bearer"
+  health_check:
+    endpoint: 0.0.0.0:13133
 
 receivers:
   otlp:
@@ -22,7 +24,7 @@ exporters:
       authenticator: bearertokenauth
 
 service:
-  extensions: [bearertokenauth]
+  extensions: [bearertokenauth, health_check]
   pipelines:
     traces:
       receivers: [otlp]

@@ -64,12 +64,12 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|\\/)Makefile$/",
-        "/(^|\\/)Makefile.Common$/",
-        "/(^|\\/)Dockerfile/",
-        "/(^|\\/).*\\.ya?ml$/",
-        "/(^|\\/).*\\.toml$/",
-        "/(^|\\/).*\\.sh$/"
+        "(^|\\/)Makefile$",
+        "(^|\\/)Makefile.Common$",
+        "(^|\\/)Dockerfile",
+        "(^|\\/).*\\.ya?ml$",
+        "(^|\\/).*\\.toml$",
+        "(^|\\/).*\\.sh$"
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\s.*(:|=|\\?=|:=|\\+=) ?\\\"?(?<currentValue>.+?)?\\\"?\\s"

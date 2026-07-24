@@ -5,6 +5,8 @@
 # NOTE: intentionally kept in testdata/ and NOT published to config_examples/
 # until WIF is generally available to customers.
 extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
   oidc:
     # issuer_url must match the 'iss' claim of the projected service-account token.
     # For standard kind/k3s clusters this is the Kubernetes API server URL.
@@ -32,7 +34,7 @@ exporters:
       insecure: true
 
 service:
-  extensions: [oidc]
+  extensions: [oidc, health_check]
   pipelines:
     traces:
       receivers: [otlp]

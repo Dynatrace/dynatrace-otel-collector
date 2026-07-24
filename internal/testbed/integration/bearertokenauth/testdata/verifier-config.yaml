@@ -1,0 +1,39 @@
+# Verifier collector config: stand-in for Dynatrace.
+# Validates the incoming Bearer token via the oidcauthextension (OIDC/JWKS flow),
+# then forwards accepted telemetry to the test's own OTLP sink.
+#
+# NOTE: intentionally kept in testdata/ and NOT published to config_examples/
+# until WIF is generally available to customers.
+extensions:
+  oidc:
+    # issuer_url must match the 'iss' claim of the projected service-account token.
+    # For standard kind/k3s clusters this is the Kubernetes API server URL.
+    issuer_url: https://kubernetes.default.svc.cluster.local
+    # audience must match the projected token's audience (see deployment.yaml volumes).
+    audience: dynatrace-wif-test
+    # CA bundle used to verify TLS when fetching /.well-known/openid-configuration
+    # and the JWKS from the Kubernetes API server.
+    issuer_ca_path: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:8080
+        auth:
+          authenticator: oidc
+
+exporters:
+  otlphttp:
+    # ${env:DT_ENDPOINT} is replaced by k8stest.GetCollectorConfig with http://<HOST>:4318
+    # which is the test's local OTLP sink.
+    endpoint: ${env:DT_ENDPOINT}
+    tls:
+      insecure: true
+
+service:
+  extensions: [oidc]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp]

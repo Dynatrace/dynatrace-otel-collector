@@ -132,6 +132,7 @@ jobs:
           - zipkin
           - statsd
           - redaction
+          - bearertokenauth
           - resource-detection
           - netflow
           - self-monitoring

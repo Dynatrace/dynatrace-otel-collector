@@ -28,7 +28,7 @@ spec:
         app: avalanche
     spec:
       containers:
-        - image: quay.io/prometheuscommunity/avalanche:v0.7.0
+        - image: quay.io/prometheuscommunity/avalanche:v0.7.0@sha256:ea02e9599fcbb59a6fc7396656434faf200db7f1c259802e3dbb38cec81bd12a
           name: avalanche
           args:
             # Target: ~5M datapoints/min across 30 replicas (60s scrape interval)

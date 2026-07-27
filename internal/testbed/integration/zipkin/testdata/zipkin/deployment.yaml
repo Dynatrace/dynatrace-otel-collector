@@ -33,7 +33,7 @@ spec:
           - name: 'ZIPKIN_BASEURL'
             value: 'http://otelcol-{{ .TestID }}:9411/'
         - name: create-load
-          image: curlimages/curl
+          image: curlimages/curl@sha256:7c12af72ceb38b7432ab85e1a265cff6ae58e06f95539d539b654f2cfa64bb13
           command:
             - "sh"
             - "-c"

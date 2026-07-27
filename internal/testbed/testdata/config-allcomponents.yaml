@@ -110,7 +110,7 @@ processors:
         action: convert
         converted_type: int
   batch:
-  cumulativetodelta:
+  cumulative_to_delta:
   filter:
     error_mode: ignore
     traces:

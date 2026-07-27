@@ -189,7 +189,7 @@ func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
 	// The overlay strips the DT-specific Authorization header and disables retry so
 	// export failures surface immediately during the test.
 	receiverConfigPath := filepath.Join(configExamplesDir, "bearertokenauth-receiver.yaml")
-	exporterOverlay := "exporters:\n  otlphttp:\n    headers: {}\n    retry_on_failure:\n      enabled: false\n    sending_queue:\n      enabled: false\n"
+	exporterOverlay := "exporters:\n  otlp_http:\n    headers: {}\n    retry_on_failure:\n      enabled: false\n    sending_queue:\n      enabled: false\n"
 	receiverConfig, err := k8stest.GetCollectorConfig(receiverConfigPath, k8stest.ConfigTemplate{
 		Host:      host,
 		Templates: []string{exporterOverlay},

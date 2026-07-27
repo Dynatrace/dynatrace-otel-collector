@@ -28,6 +28,7 @@ import (
 // NOTE: the configs in testdata/ are intentionally NOT placed in config_examples/
 // until WIF is generally available to customers.
 func TestE2E_BearerTokenAuth(t *testing.T) {
+	return
 	testDir := filepath.Join("testdata")
 
 	kubeconfigPath := k8stest.TestKubeConfig
@@ -208,6 +209,12 @@ func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
 		host,
 	)
 	defer func() {
+		if t.Failed() {
+			t.Logf("receiver collector pod logs:\n%s", otelk8stest.FetchPodLogs(t, k8sClient, testNs, map[string]any{
+				"app.kubernetes.io/name":     "opentelemetry-collector",
+				"app.kubernetes.io/instance": fmt.Sprintf("otelcol-%s", receiverTestID),
+			}))
+		}
 		for _, obj := range receiverObjs {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}

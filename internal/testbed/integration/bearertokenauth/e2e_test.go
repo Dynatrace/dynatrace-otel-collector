@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
@@ -209,12 +208,6 @@ func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
 		host,
 	)
 	defer func() {
-		if t.Failed() {
-			t.Logf("receiver collector pod logs:\n%s", otelk8stest.FetchPodLogs(t, k8sClient, testNs, map[string]any{
-				"app.kubernetes.io/name":     "opentelemetry-collector",
-				"app.kubernetes.io/instance": fmt.Sprintf("otelcol-%s", receiverTestID),
-			}))
-		}
 		for _, obj := range receiverObjs {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
@@ -230,11 +223,6 @@ func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
 	}
 	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
 	defer func() {
-		if t.Failed() {
-			t.Logf("telemetrygen pod logs:\n%s", otelk8stest.FetchPodLogs(t, k8sClient, testNs, map[string]any{
-				"app": fmt.Sprintf("telemetrygen-%s-traces-deployment", receiverTestID),
-			}))
-		}
 		for _, obj := range telemetryGenObjs {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
@@ -246,8 +234,5 @@ func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
 
 	// Traces arrive only if the Bearer token was accepted by the receiver.
 	wantEntries := 5
-	require.Eventuallyf(t, func() bool {
-		return len(tracesConsumer.AllTraces()) > wantEntries
-	}, 2*time.Minute, 1*time.Second,
-		"failed to receive %d entries, received %d traces in 2 minutes", wantEntries, len(tracesConsumer.AllTraces()))
+	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
 }

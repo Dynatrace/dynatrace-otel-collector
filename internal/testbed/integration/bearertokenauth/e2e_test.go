@@ -185,9 +185,13 @@ func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
 	// Load the receiver config from config_examples.
 	// GetCollectorConfig replaces ${env:DT_ENDPOINT} → http://<HOST>:4318 (the test sink)
 	// and ${env:DT_API_TOKEN} → "" (not needed for the sink).
+	// The overlay strips the DT-specific Authorization header and disables retry so
+	// export failures surface immediately during the test.
 	receiverConfigPath := filepath.Join(configExamplesDir, "bearertokenauth-receiver.yaml")
+	exporterOverlay := "exporters:\n  otlphttp:\n    headers: {}\n    retry_on_failure:\n      enabled: false\n    sending_queue:\n      enabled: false\n"
 	receiverConfig, err := k8stest.GetCollectorConfig(receiverConfigPath, k8stest.ConfigTemplate{
-		Host: host,
+		Host:      host,
+		Templates: []string{exporterOverlay},
 	})
 	require.NoErrorf(t, err, "failed to read receiver config from %s", receiverConfigPath)
 

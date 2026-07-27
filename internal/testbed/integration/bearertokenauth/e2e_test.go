@@ -28,7 +28,6 @@ import (
 // NOTE: the configs in testdata/ are intentionally NOT placed in config_examples/
 // until WIF is generally available to customers.
 func TestE2E_BearerTokenAuth(t *testing.T) {
-	return
 	testDir := filepath.Join("testdata")
 
 	kubeconfigPath := k8stest.TestKubeConfig

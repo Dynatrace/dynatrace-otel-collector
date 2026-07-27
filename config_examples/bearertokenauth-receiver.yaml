@@ -22,7 +22,7 @@ receivers:
           authenticator: bearertokenauth/server
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
@@ -32,10 +32,10 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
     metrics:
       receivers: [otlp]
-      exporters: [otlphttp]
+      exporters: [otlp_http]
     logs:
       receivers: [otlp]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

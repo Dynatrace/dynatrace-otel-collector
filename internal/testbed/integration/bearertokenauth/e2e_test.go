@@ -139,3 +139,96 @@ func TestE2E_BearerTokenAuth(t *testing.T) {
 	wantEntries := 5
 	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
 }
+
+// TestE2E_BearerTokenAuthReceiver tests the receiver-side bearer token auth:
+// the DT collector protects its OTLP/gRPC ingestion endpoint with
+// bearertokenauthextension (file-based token), and only telemetrygen
+// presenting the correct Bearer token can deliver traces through it.
+// The config under test is config_examples/bearertokenauth-receiver.yaml.
+func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
+	testDir := filepath.Join("testdata")
+	configExamplesDir := "../../../../config_examples"
+
+	kubeconfigPath := k8stest.TestKubeConfig
+	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
+		kubeconfigPath = kubeConfigFromEnv
+	}
+
+	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
+	require.NoError(t, err)
+
+	// Create the namespace specific for the test.
+	nsFile := filepath.Join(testDir, "namespace.yaml")
+	buf, err := os.ReadFile(nsFile)
+	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
+	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
+	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
+
+	testNs := nsObj.GetName()
+	defer func() {
+		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
+	}()
+
+	// Start the local OTLP sink the receiver collector will forward data to.
+	tracesConsumer := new(consumertest.TracesSink)
+	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Traces: []*oteltest.TraceSinkConfig{
+			{
+				Consumer: tracesConsumer,
+			},
+		},
+	})
+	defer shutdownSinks()
+
+	host := otelk8stest.HostEndpoint(t)
+
+	// Load the receiver config from config_examples.
+	// GetCollectorConfig replaces ${env:DT_ENDPOINT} → http://<HOST>:4318 (the test sink)
+	// and ${env:DT_API_TOKEN} → "" (not needed for the sink).
+	receiverConfigPath := filepath.Join(configExamplesDir, "bearertokenauth-receiver.yaml")
+	receiverConfig, err := k8stest.GetCollectorConfig(receiverConfigPath, k8stest.ConfigTemplate{
+		Host: host,
+	})
+	require.NoErrorf(t, err, "failed to read receiver config from %s", receiverConfigPath)
+
+	receiverTestID := uuid.NewString()[:8]
+	receiverObjs := otelk8stest.CreateCollectorObjects(
+		t,
+		k8sClient,
+		receiverTestID,
+		filepath.Join(testDir, "collector-receiver"),
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   receiverConfig,
+		},
+		host,
+	)
+	defer func() {
+		for _, obj := range receiverObjs {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
+	// telemetrygen sends traces with the correct Bearer token in the Authorization header.
+	// The token value matches what is stored in the collector-receiver auth-token ConfigMap.
+	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
+		ManifestsDir: filepath.Join(testDir, "telemetrygen-receiver"),
+		TestID:       receiverTestID,
+		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", receiverTestID, testNs),
+		DataTypes:    []string{"traces"},
+	}
+	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
+	defer func() {
+		for _, obj := range telemetryGenObjs {
+			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+		}
+	}()
+
+	for _, info := range telemetryGenObjInfos {
+		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
+	}
+
+	// Traces arrive only if the Bearer token was accepted by the receiver.
+	wantEntries := 5
+	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
+}

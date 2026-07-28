@@ -1,0 +1,41 @@
+# Protect the OTLP ingestion endpoint with Bearer token authentication.
+# Only clients that present the correct token are allowed to send telemetry
+# to this collector. The token is read from a file and refreshed at runtime
+# without a restart — rotate it by updating the file.
+extensions:
+  bearertokenauth/server:
+    filename: /etc/otelcol/auth-token
+    scheme: "Bearer"
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        auth:
+          authenticator: bearertokenauth/server
+      http:
+        endpoint: 0.0.0.0:4318
+        auth:
+          authenticator: bearertokenauth/server
+
+exporters:
+  otlp_http:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  extensions: [bearertokenauth/server, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlp_http]
+    metrics:
+      receivers: [otlp]
+      exporters: [otlp_http]
+    logs:
+      receivers: [otlp]
+      exporters: [otlp_http]

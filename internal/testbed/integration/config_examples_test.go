@@ -598,7 +598,11 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	expectedLogsData := plog.NewLogs()
 	expectedLogs := expectedLogsData.ResourceLogs().AppendEmpty().ScopeLogs().AppendEmpty().LogRecords()
 
-	timestamp := time.Now()
+	// Truncate to microseconds so the RFC5424 timestamp the sender emits (formatted with
+	// time.RFC3339Nano) never exceeds 6 fractional-second digits. On Linux the nanosecond
+	// clock produces 7-9 digits, which the syslog parser rejects, causing the parse to fail
+	// silently and hiding the fields the receiver would otherwise populate.
+	timestamp := time.Now().Truncate(time.Microsecond)
 
 	actualSimpleLog := actualLogs.AppendEmpty()
 	actualSimpleLog.Body().SetStr("simple_1")
@@ -686,7 +690,11 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	expectedLogsData := plog.NewLogs()
 	expectedLogs := expectedLogsData.ResourceLogs().AppendEmpty().ScopeLogs().AppendEmpty().LogRecords()
 
-	timestamp := time.Now()
+	// Truncate to microseconds so the RFC5424 timestamp the sender emits (formatted with
+	// time.RFC3339Nano) never exceeds 6 fractional-second digits. On Linux the nanosecond
+	// clock produces 7-9 digits, which the syslog parser rejects, causing the parse to fail
+	// silently and hiding the fields the receiver would otherwise populate.
+	timestamp := time.Now().Truncate(time.Microsecond)
 
 	actualSimpleLog := actualLogs.AppendEmpty()
 	actualSimpleLog.Body().SetStr("simple_1")

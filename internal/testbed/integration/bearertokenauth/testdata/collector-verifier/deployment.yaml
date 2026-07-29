@@ -18,7 +18,7 @@ spec:
       serviceAccountName: {{ .Name }}
       containers:
         - name: collector-verifier
-          image: otel/opentelemetry-collector-contrib:0.156.0
+          image: otel/opentelemetry-collector-contrib:0.157.0@sha256:f2f01157055a9b2aab9df7118e1f1c9abf345e99b23bc7a2bc791db374a7d0f6
           args: ["--config=/conf/relay.yaml"]
           ports:
             - name: otlp-http-recv

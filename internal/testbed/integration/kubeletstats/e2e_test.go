@@ -9,7 +9,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"testing"
 	"time"
 
@@ -21,15 +20,12 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
 func TestE2E_KubeletstatsReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
-	expectedFile := testDir + "/e2e/expected.yaml"
 	expectedAssertFile := testDir + "/e2e/expected.assert.yaml"
 	configExamplesDir := "../../../../config_examples"
 
@@ -112,98 +108,4 @@ func TestE2E_KubeletstatsReceiver(t *testing.T) {
 		testutil.DeduplicateResources(actualForAssert)
 		assert.NoError(tt, pmetricassert.AssertMetrics(expectedAssertFile, actualForAssert))
 	}, 3*time.Minute, 1*time.Second)
-
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
-
-	var expected pmetric.Metrics
-	expected, err = golden.ReadMetrics(expectedFile)
-	require.NoError(t, err)
-
-	defaultOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreTimestamp(),
-		pmetrictest.IgnoreStartTimestamp(),
-		pmetrictest.IgnoreMetricValues(
-			"container.cpu.usage",
-			"container.uptime",
-			"k8s.container.cpu.node.utilization",
-			"k8s.container.cpu_limit_utilization",
-			"k8s.container.cpu_request_utilization",
-			"k8s.container.memory.node.utilization",
-			"k8s.container.memory_limit_utilization",
-			"k8s.container.memory_request_utilization",
-			"k8s.node.cpu.usage",
-			"k8s.node.uptime",
-			"k8s.pod.cpu.node.utilization",
-			"k8s.pod.cpu.usage",
-			"k8s.pod.cpu_limit_utilization",
-			"k8s.pod.cpu_request_utilization",
-			"k8s.pod.memory.node.utilization",
-			"k8s.pod.memory_limit_utilization",
-			"k8s.pod.memory_request_utilization",
-			"k8s.pod.uptime",
-			"k8s.volume.available",
-			"k8s.volume.capacity",
-			"k8s.volume.inodes.used",
-			"k8s.volume.inodes",
-			"k8s.volume.inodes.free",
-			"container.cpu.time",
-			"container.filesystem.available",
-			"container.filesystem.capacity",
-			"container.filesystem.usage",
-			"container.memory.available",
-			"container.memory.major_page_faults",
-			"container.memory.page_faults",
-			"container.memory.rss",
-			"container.memory.usage",
-			"container.memory.working_set",
-			"k8s.node.cpu.time",
-			"k8s.node.filesystem.available",
-			"k8s.node.filesystem.capacity",
-			"k8s.node.filesystem.usage",
-			"k8s.node.memory.available",
-			"k8s.node.memory.major_page_faults",
-			"k8s.node.memory.page_faults",
-			"k8s.node.memory.rss",
-			"k8s.node.memory.usage",
-			"k8s.node.memory.working_set",
-			"k8s.node.network.errors",
-			"k8s.node.network.io",
-			"k8s.pod.cpu.time",
-			"k8s.pod.filesystem.available",
-			"k8s.pod.filesystem.capacity",
-			"k8s.pod.filesystem.usage",
-			"k8s.pod.memory.available",
-			"k8s.pod.memory.major_page_faults",
-			"k8s.pod.memory.page_faults",
-			"k8s.pod.memory.rss",
-			"k8s.pod.memory.usage",
-			"k8s.pod.memory.working_set",
-			"k8s.pod.network.errors",
-			"k8s.pod.network.io"),
-		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.ChangeDatapointAttributeValue("interface", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.pod.uid", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteRandomPartWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.volume.name", substituteRandomPartWithStar),
-		pmetrictest.IgnoreDatapointAttributesOrder(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreMetricsOrder(),
-		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreResourceMetricsOrder(),
-	}
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1],
-			defaultOptions...,
-		),
-		)
-	}, 3*time.Minute, 1*time.Second)
-}
-
-func substituteWithStar(_ string) string { return "*" }
-
-func substituteRandomPartWithStar(s string) string {
-	re := regexp.MustCompile(`(-[a-z0-9]{10})?(-[a-z0-9]{5})?$`)
-	return re.ReplaceAllString(s, "-*")
 }

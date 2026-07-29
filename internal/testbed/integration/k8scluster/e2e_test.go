@@ -9,8 +9,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
-	"strings"
 	"testing"
 	"time"
 
@@ -22,15 +20,12 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 )
 
 func TestE2E_K8sClusterReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
-	expectedFile := testDir + "/e2e/expected.yaml"
 	expectedAssertFile := testDir + "/e2e/expected.assert.yaml"
 	configExamplesDir := "../../../../config_examples"
 
@@ -124,82 +119,4 @@ func TestE2E_K8sClusterReceiver(t *testing.T) {
 		testutil.DeduplicateResources(actualForAssert)
 		assert.NoError(tt, pmetricassert.AssertMetrics(expectedAssertFile, actualForAssert))
 	}, 3*time.Minute, 1*time.Second)
-
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
-
-	var expected pmetric.Metrics
-	expected, err = golden.ReadMetrics(expectedFile)
-	require.NoError(t, err)
-
-	defaultOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreTimestamp(),
-		pmetrictest.IgnoreStartTimestamp(),
-		pmetrictest.IgnoreMetricValues(
-			"k8s.node.allocatable_cpu",
-			"k8s.node.allocatable_memory",
-			"k8s.namespace.phase",
-			"k8s.node.condition_ready",
-			"k8s.replicaset.available",
-			"k8s.container.ready",
-			"k8s.replicaset.desired",
-			"k8s.deployment.available",
-			"k8s.container.restarts",
-			"k8s.daemonset.ready_nodes",
-			"k8s.daemonset.current_scheduled_nodes",
-			"k8s.daemonset.desired_scheduled_nodes",
-			"k8s.pod.phase",
-			"k8s.daemonset.misscheduled_nodes",
-			"k8s.deployment.desired",
-			"k8s.node.allocatable_pods",
-			"k8s.container.cpu_limit",
-			"k8s.container.cpu_request",
-			"k8s.container.memory_limit",
-			"k8s.container.memory_request"),
-		pmetrictest.IgnoreScopeVersion(),
-
-		pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.uid", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.deployment.uid", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.namespace.uid", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.node.uid", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.pod.uid", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.uid", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("container.id", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("container.image.tag", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("container.image.name", substituteLocalhostImagePrefix),
-
-		pmetrictest.ChangeResourceAttributeValue("container.image.name", substituteRandomPartWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.container.name", substituteRandomPartWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.daemonset.name", substituteRandomPartWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.deployment.name", substituteRandomPartWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.namespace.name", substituteRandomPartWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteRandomPartWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteRandomPartWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.replicaset.name", substituteRandomPartWithStar),
-
-		pmetrictest.IgnoreDatapointAttributesOrder(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreMetricsOrder(),
-		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreResourceMetricsOrder(),
-		pmetrictest.IgnoreResourceEntityRefs(),
-	}
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		assert.NoError(tt, pmetrictest.CompareMetrics(expected, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1],
-			defaultOptions...,
-		),
-		)
-	}, 3*time.Minute, 1*time.Second)
-}
-
-func substituteWithStar(_ string) string { return "*" }
-
-func substituteRandomPartWithStar(s string) string {
-	re := regexp.MustCompile(`(-[a-z0-9]{8,10})?(-[a-z0-9]+)?(-[a-z0-9]{5})?$`)
-	return re.ReplaceAllString(s, "-*")
-}
-
-func substituteLocalhostImagePrefix(s string) string {
-	return strings.Replace(s, "localhost/", "docker.io/library/", 1)
 }

@@ -17,9 +17,7 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/google/uuid"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -34,7 +32,6 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 	testNs := "e2eselfmonitoringpromcheck"
 
 	// Use a dedicated golden for Prometheus path (it will differ from OTLP push path)
-	expectedFile := "./testdata/e2e/expected-prom-check.yaml"
 	expectedAssertionFile := "./testdata/e2e/expected-prom-check.assert.yaml"
 
 	testDir := filepath.Join("testdata")
@@ -159,36 +156,5 @@ func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
 		testutil.ReplaceAttrValsWithStar(actualForAssert, resourceIgnoreList, dpIgnoreList)
 		testutil.DeduplicateResources(actualForAssert)
 		assert.NoError(tt, pmetricassert.AssertMetrics(expectedAssertionFile, actualForAssert))
-	}, 3*time.Minute, 1*time.Second)
-
-	// Uncomment to regenerate golden:
-	// require.NoError(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
-
-	expected, err := golden.ReadMetrics(expectedFile)
-	require.NoError(t, err)
-
-	defaultOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreResourceAttributeValue("service.instance.id"),
-		pmetrictest.IgnoreResourceAttributeValue("k8s.pod.name"),
-		pmetrictest.IgnoreResourceAttributeValue("k8s.node.name"),
-		pmetrictest.IgnoreResourceAttributeValue("server.port"),
-		pmetrictest.IgnoreResourceAttributeValue("url.scheme"),
-		pmetrictest.IgnoreResourceAttributeValue("service.version"),
-		pmetrictest.IgnoreMetricAttributeValue("server.address"),
-		pmetrictest.IgnoreMetricAttributeValue("server.port"),
-		pmetrictest.IgnoreTimestamp(),
-		pmetrictest.IgnoreStartTimestamp(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreResourceMetricsOrder(),
-		pmetrictest.IgnoreMetricsOrder(),
-		pmetrictest.IgnoreMetricValues(),
-		pmetrictest.IgnoreScopeVersion(),
-	}
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
-		err := pmetrictest.CompareMetrics(expected, actual, defaultOptions...)
-		assert.NoError(tt, err)
 	}, 3*time.Minute, 1*time.Second)
 }

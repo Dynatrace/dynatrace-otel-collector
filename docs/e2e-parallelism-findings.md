@@ -7,23 +7,29 @@ single local run (Apple M-series, 16 GB Docker RAM, Kind v0.32.0, k8s v1.36.1):
 
 | Suite | Time |
 |---|---|
-| k8senrichment | 102s |
-| prometheus | 38s |
-| zipkin | 119s |
-| statsd | 76s |
-| redaction | 50s |
-| bearertokenauth | 77s |
-| resource-detection | 45s |
-| netflow | 48s |
-| self-monitoring | 102s |
-| self-monitoring-prometheus | 84s |
-| k8sobjects | 64s |
-| kubeletstats | 106s |
-| k8scluster | 115s |
-| loadbalancing | 84s |
-| *(remaining 5 TBD)* | — |
+| kafka | 318s | 🐢 outlier |
+| prometheus-large-scale | 140s | |
+| zipkin | 119s | |
+| k8scluster | 115s | |
+| filestorage | 114s | |
+| kubeletstats | 106s | |
+| k8senrichment | 102s | |
+| self-monitoring | 102s | |
+| self-monitoring-prometheus | 84s | |
+| loadbalancing | 84s | |
+| bearertokenauth | 77s | |
+| statsd | 76s | |
+| k8scombined | 75s | |
+| k8sobjects | 64s | |
+| redaction | 50s | |
+| netflow | 48s | |
+| resource-detection | 45s | |
+| hostmetrics | 40s | |
+| prometheus | 38s | |
+| genainormalizer | 28s | |
 
-Total sequential: ~23 minutes (estimated).
+Total sequential: **~1,975s (~33 minutes).**
+kafka alone is 318s — nearly 5× the median and a candidate for targeted speedup.
 
 ## Blocker: port conflicts
 

@@ -598,7 +598,11 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	expectedLogsData := plog.NewLogs()
 	expectedLogs := expectedLogsData.ResourceLogs().AppendEmpty().ScopeLogs().AppendEmpty().LogRecords()
 
-	timestamp := time.Now()
+	// Truncate to microseconds so the RFC5424 timestamp the sender emits (formatted with
+	// time.RFC3339Nano) never exceeds 6 fractional-second digits. On Linux the nanosecond
+	// clock produces 7-9 digits, which the syslog parser rejects, causing the parse to fail
+	// silently and hiding the fields the receiver would otherwise populate.
+	timestamp := time.Now().Truncate(time.Microsecond)
 
 	actualSimpleLog := actualLogs.AppendEmpty()
 	actualSimpleLog.Body().SetStr("simple_1")
@@ -618,14 +622,29 @@ func TestSyslog_WithF5Receiver(t *testing.T) {
 	expectedSimpleLogAttrInstance.PutStr("name", "ip-1xx-xx-x-xx9.ec2.internal")
 	expectedSimpleLogAttrDevice := expectedSimpleLog.Attributes().PutEmptyMap("device")
 	expectedSimpleLogAttrDevice.PutStr("type", "f5bigip")
+	// the following attributes are populated by the RFC5424 syslog parser itself
+	expectedSimpleLog.Attributes().PutInt("priority", 166)
+	expectedSimpleLog.Attributes().PutInt("facility", 20)
+	expectedSimpleLog.Attributes().PutStr("facility_text", "local4")
+	expectedSimpleLog.Attributes().PutInt("version", 1)
+	expectedSimpleLog.Attributes().PutStr("hostname", "127.0.0.1")
+	expectedSimpleLog.Attributes().PutStr("message", "simple_1")
+	expectedSimpleLogAttrSD := expectedSimpleLog.Attributes().PutEmptyMap("structured_data").PutEmptyMap("test@12345")
+	expectedSimpleLogAttrSD.PutStr("foo", "bar")
+	expectedSimpleLogAttrSD.PutStr("span_id", "0000000000000002")
+	expectedSimpleLogAttrSD.PutStr("trace_flags", "0")
+	expectedSimpleLogAttrSD.PutStr("trace_id", "00000000000000000000000000000001")
+	// severity is derived from the syslog priority (166 => facility local4, severity info)
+	expectedSimpleLog.SetSeverityNumber(plog.SeverityNumberInfo)
+	expectedSimpleLog.SetSeverityText("info")
 	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
 	expectedSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(0)))
 	expectedSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(0)))
 	expectedSimpleLog.Body().SetStr("<166>1 " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [test@12345 trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\"] simple_1")
 	// ObservedTimestamp will be the time the receiver "observes" the log, so we test that the timestamp is after what's defined here.
 	expectedSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
-	// the timestamp from the actual log will be discarded (it defaults to the beginning of Unix time)
-	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(time.Unix(0, 0)))
+	// on a successful RFC5424 parse the receiver sets the record timestamp from the message
+	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(timestamp))
 
 	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
 	sender := syslogdatasender.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)
@@ -686,7 +705,11 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	expectedLogsData := plog.NewLogs()
 	expectedLogs := expectedLogsData.ResourceLogs().AppendEmpty().ScopeLogs().AppendEmpty().LogRecords()
 
-	timestamp := time.Now()
+	// Truncate to microseconds so the RFC5424 timestamp the sender emits (formatted with
+	// time.RFC3339Nano) never exceeds 6 fractional-second digits. On Linux the nanosecond
+	// clock produces 7-9 digits, which the syslog parser rejects, causing the parse to fail
+	// silently and hiding the fields the receiver would otherwise populate.
+	timestamp := time.Now().Truncate(time.Microsecond)
 
 	actualSimpleLog := actualLogs.AppendEmpty()
 	actualSimpleLog.Body().SetStr("simple_1")
@@ -702,14 +725,29 @@ func TestSyslog_WithHostReceiver(t *testing.T) {
 	expectedSimpleLogAttrLog.PutStr("source", "syslog")
 	expectedSimpleLogAttrDevice := expectedSimpleLog.Attributes().PutEmptyMap("device")
 	expectedSimpleLogAttrDevice.PutStr("type", "ubuntu-syslog")
+	// the following attributes are populated by the RFC5424 syslog parser itself
+	expectedSimpleLog.Attributes().PutInt("priority", 166)
+	expectedSimpleLog.Attributes().PutInt("facility", 20)
+	expectedSimpleLog.Attributes().PutStr("facility_text", "local4")
+	expectedSimpleLog.Attributes().PutInt("version", 1)
+	expectedSimpleLog.Attributes().PutStr("hostname", "127.0.0.1")
+	expectedSimpleLog.Attributes().PutStr("message", "simple_1")
+	expectedSimpleLogAttrSD := expectedSimpleLog.Attributes().PutEmptyMap("structured_data").PutEmptyMap("test@12345")
+	expectedSimpleLogAttrSD.PutStr("foo", "bar")
+	expectedSimpleLogAttrSD.PutStr("span_id", "0000000000000002")
+	expectedSimpleLogAttrSD.PutStr("trace_flags", "0")
+	expectedSimpleLogAttrSD.PutStr("trace_id", "00000000000000000000000000000001")
+	// severity is derived from the syslog priority (166 => facility local4, severity info)
+	expectedSimpleLog.SetSeverityNumber(plog.SeverityNumberInfo)
+	expectedSimpleLog.SetSeverityText("info")
 	// Trace ID and Span ID are not auto-mapped to plog by the receiver, so we test for empty IDs
 	expectedSimpleLog.SetTraceID(idutils.UInt64ToTraceID(0, uint64(0)))
 	expectedSimpleLog.SetSpanID(idutils.UInt64ToSpanID(uint64(0)))
 	expectedSimpleLog.Body().SetStr("<166>1 " + timestamp.Format(time.RFC3339Nano) + " 127.0.0.1 - - - [test@12345 trace_id=\"00000000000000000000000000000001\" span_id=\"0000000000000002\" trace_flags=\"0\" foo=\"bar\"] simple_1")
 	// ObservedTimestamp will be the time the receiver "observes" the log, so we test that the timestamp is after what's defined here.
 	expectedSimpleLog.SetObservedTimestamp(pcommon.NewTimestampFromTime(timestamp))
-	// the timestamp from the actual log will be discarded (it defaults to the beginning of Unix time)
-	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(time.Unix(0, 0)))
+	// on a successful RFC5424 parse the receiver sets the record timestamp from the message
+	expectedSimpleLog.SetTimestamp(pcommon.NewTimestampFromTime(timestamp))
 
 	dataProvider := NewSampleConfigsLogsDataProvider(actualLogsData)
 	sender := syslogdatasender.NewSyslogWriter("tcp", testbed.DefaultHost, syslogReceiverPort, 1)

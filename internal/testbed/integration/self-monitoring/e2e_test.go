@@ -17,9 +17,7 @@ import (
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/google/uuid"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -174,7 +172,6 @@ func isMetricPresent(m pmetric.Metric, expected pmetric.MetricSlice) bool {
 
 func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	testNs := "e2eselfmonitoringcheckmetrics"
-	expectedFile := "./testdata/e2e/expected-check.yaml"
 	expectedAssertionFile := "./testdata/e2e/expected-check.assert.yaml"
 	testDir := filepath.Join("testdata")
 	configExamplesDir := "../../../../config_examples"
@@ -321,96 +318,4 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 		testutil.DeduplicateResources(actualForAssert)
 		assert.NoError(tt, pmetricassert.AssertMetrics(expectedAssertionFile, actualForAssert))
 	}, 3*time.Minute, 1*time.Second)
-
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
-
-	var expected pmetric.Metrics
-	expected, err = golden.ReadMetrics(expectedFile)
-	require.NoError(t, err)
-
-	defaultOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreMetricValues(
-			"otelcol_cumulativetodelta_streams_tracked",
-			"otelcol_exporter_in_flight_requests",
-			"otelcol_processor_filter_datapoints.filtered",
-			"otelcol_processor_filter_logs.filtered",
-			"otelcol_processor_filter_spans.filtered",
-			"otelcol_receiver_accepted_log_records",
-			"otelcol_receiver_accepted_metric_points",
-			"otelcol_receiver_accepted_spans",
-			"otelcol_receiver_refused_log_records",
-			"otelcol_receiver_refused_metric_points",
-			"otelcol_receiver_refused_spans",
-			"otelcol_receiver_failed_log_records",
-			"otelcol_receiver_failed_metric_points",
-			"otelcol_receiver_failed_spans",
-			"otelcol_process_cpu_seconds",
-			"otelcol_process_memory_rss",
-			"otelcol_process_runtime_heap_alloc_bytes",
-			"otelcol_process_runtime_total_alloc_bytes",
-			"otelcol_process_runtime_total_sys_memory_bytes",
-			"otelcol_process_uptime",
-			"http.server.request.body.size",
-			"http.server.response.body.size",
-			"http.server.request.duration",
-			"http.client.request.body.size",
-			"http.client.request.duration",
-			"otelcol_processor_incoming_items",
-			"otelcol_processor_outgoing_items",
-			"otelcol_processor_internal_duration",
-			"rpc.server.call.duration",
-			"rpc.client.call.duration",
-			"rpc.server.request.size",
-			"rpc.server.response.size",
-			"rpc.client.request.size",
-			"rpc.client.response.size",
-			"otelcol_exporter_queue_capacity",
-			"otelcol_exporter_queue_size",
-			// these metrics are not reported if their value is zero, which is the case in our test since we don't simulate any failed or refused items
-			// should be checked manually for changes when needed
-			// "otelcol_exporter_send_failed_log_records",
-			// "otelcol_exporter_send_failed_metric_points",
-			// "otelcol_exporter_send_failed_spans",
-			"otelcol_exporter_sent_log_records",
-			"otelcol_exporter_sent_metric_points",
-			"otelcol_exporter_sent_spans",
-			"otelcol_exporter_queue_batch_send_size_bytes",
-			"otelcol_exporter_queue_batch_send_size"),
-
-		pmetrictest.ChangeDatapointAttributeValue("server.address", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("net.peer.name", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("server.port", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.node.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("k8s.pod.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("service.instance.id", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("service.version", substituteWithStar),
-
-		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreExemplarSlice(),
-		pmetrictest.IgnoreMetricsOrder(),
-		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreResourceMetricsOrder(),
-		pmetrictest.IgnoreTimestamp(),
-		pmetrictest.IgnoreStartTimestamp(),
-	}
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
-		err := pmetrictest.CompareMetrics(expected, actual, defaultOptions...)
-		if err != nil {
-			// Log the actual metrics in YAML format for debugging
-			marshaler := &pmetric.JSONMarshaler{}
-			actualYAML, marshalErr := marshaler.MarshalMetrics(actual)
-			if marshalErr == nil {
-				t.Logf("Actual metrics received:\n%s", string(actualYAML))
-			} else {
-				t.Logf("Failed to marshal actual metrics: %v", marshalErr)
-			}
-		}
-		assert.NoError(tt, err)
-	}, 3*time.Minute, 1*time.Second)
 }
-
-func substituteWithStar(_ string) string { return "*" }

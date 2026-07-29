@@ -18,7 +18,6 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/plogtest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
@@ -32,8 +31,6 @@ func TestE2E_Kafka(t *testing.T) {
 	testDir := filepath.Join("testdata")
 	expectedLogsFile := filepath.Join(testDir, "e2e", "expected-logs.yaml")
 	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
-	expectedMetricsFile := filepath.Join(testDir, "e2e", "expected-metrics.yaml")
-	expectedKMetricsFile := filepath.Join(testDir, "e2e", "expected-kafka-metrics.yaml")
 	expectedMetricsAssertFile := filepath.Join(testDir, "e2e", "expected-metrics.assert.yaml")
 	expectedKMetricsAssertFile := filepath.Join(testDir, "e2e", "expected-kafka-metrics.assert.yaml")
 	configExamplesDir := filepath.Join("..", "..", "..", "..", "config_examples")
@@ -207,34 +204,6 @@ func TestE2E_Kafka(t *testing.T) {
 		assert.NoError(tt, pmetricassert.AssertMetrics(expectedMetricsAssertFile, actualForAssert))
 	}, compareTimeout, compareTick)
 
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedMetricsFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
-
-	expectedMetrics, err := golden.ReadMetrics(expectedMetricsFile)
-	require.NoError(t, err)
-
-	metricsCompareOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreMetricValues("gen"),
-		pmetrictest.IgnoreTimestamp(),
-		pmetrictest.IgnoreStartTimestamp(),
-		pmetrictest.IgnoreScopeVersion(),
-	}
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		all := metricsConsumer.AllMetrics()
-		require.NotEmpty(tt, all)
-
-		var lastErr error
-		for _, got := range all {
-			err := pmetrictest.CompareMetrics(expectedMetrics, got, metricsCompareOptions...)
-			if err == nil {
-				lastErr = nil
-				return
-			}
-			lastErr = err
-		}
-		assert.NoError(tt, lastErr)
-	}, compareTimeout, compareTick)
 	t.Logf("Metrics checked successfully")
 
 	// Logs
@@ -305,44 +274,6 @@ func TestE2E_Kafka(t *testing.T) {
 		testutil.ReplaceAttrValsWithStar(actualForAssert, nil, nil)
 		testutil.DeduplicateResources(actualForAssert)
 		assert.NoError(tt, pmetricassert.AssertMetrics(expectedKMetricsAssertFile, actualForAssert))
-	}, compareTimeout, compareTick)
-
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteMetrics(t, expectedKMetricsFile, kmetricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
-
-	expectedKMetrics, err := golden.ReadMetrics(expectedKMetricsFile)
-	require.NoError(t, err)
-
-	kmetricsCompareOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreMetricValues(
-			"kafka.brokers",
-			"kafka.consumer_group.members",
-			"kafka.consumer_group.offset",
-			"kafka.consumer_group.offset_sum",
-			"kafka.consumer_group.lag",
-			"kafka.consumer_group.lag_sum",
-			"kafka.partition.current_offset",
-			"kafka.partition.oldest_offset",
-			"kafka.partition.replicas",
-			"kafka.partition.replicas_in_sync",
-			"kafka.topic.partitions"),
-		pmetrictest.IgnoreTimestamp(),
-		pmetrictest.IgnoreStartTimestamp(),
-		pmetrictest.IgnoreScopeVersion(),
-		pmetrictest.IgnoreDatapointAttributesOrder(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreMetricsOrder(),
-		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreResourceMetricsOrder(),
-		pmetrictest.IgnoreResourceEntityRefs(),
-	}
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		all := kmetricsConsumer.AllMetrics()
-		require.NotEmpty(tt, all)
-		got := all[len(all)-1]
-		err := pmetrictest.CompareMetrics(expectedKMetrics, got, kmetricsCompareOptions...)
-		assert.NoError(tt, err)
 	}, compareTimeout, compareTick)
 
 	t.Logf("Kafka Metrics checked successfully")

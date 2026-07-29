@@ -16,9 +16,7 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -32,9 +30,6 @@ import (
 // different metrics being produced based on the underlying OS.
 func TestE2E_HostMetricsReceiver(t *testing.T) {
 	testDir := filepath.Join("testdata")
-	expectedFile1m := testDir + "/e2e/expected-1m.yaml"
-	expectedFile5m := testDir + "/e2e/expected-5m.yaml"
-	expectedFile1h := testDir + "/e2e/expected-1h.yaml"
 	expectedFile1mAssert := testDir + "/e2e/expected-1m.assert.yaml"
 	expectedFile5mAssert := testDir + "/e2e/expected-5m.assert.yaml"
 	expectedFile1hAssert := testDir + "/e2e/expected-1h.assert.yaml"
@@ -163,74 +158,6 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 		compareTick    = 5 * time.Second
 	)
 
-	defaultOptions := []pmetrictest.CompareMetricsOption{
-		pmetrictest.IgnoreTimestamp(),
-		pmetrictest.IgnoreStartTimestamp(),
-		pmetrictest.IgnoreMetricValues(
-			"system.uptime",
-			"system.paging.faults",
-			"system.paging.operations",
-			"system.paging.usage",
-			"system.processes.count",
-			"system.processes.created",
-			"system.network.connections",
-			"system.network.dropped",
-			"system.network.errors",
-			"system.network.io",
-			"system.network.packets",
-			"system.memory.usage",
-			"system.memory.utilization",
-			"system.filesystem.inodes.usage",
-			"system.filesystem.usage",
-			"system.filesystem.utilization",
-			"system.cpu.logical.count",
-			"system.cpu.physical.count",
-			"system.cpu.time",
-			"system.cpu.utilization",
-			"system.cpu.load_average.1m",
-			"system.cpu.load_average.5m",
-			"system.cpu.load_average.15m",
-			"system.disk.io",
-			"system.disk.io_time",
-			"system.disk.operation_time",
-			"system.disk.operations",
-			"process.cpu.time",
-			"process.cpu.utilization",
-			"process.disk.io",
-			"process.memory.usage",
-			"process.memory.virtual",
-			"system.memory.limit"),
-		pmetrictest.IgnoreScopeVersion(),
-
-		pmetrictest.ChangeResourceAttributeValue("host.arch", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("host.ip", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("host.id", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("host.mac", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("host.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("host.cpu.model.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("host.interface", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("os.type", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("os.description", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("os.build.id", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("os.name", substituteWithStar),
-		pmetrictest.ChangeResourceAttributeValue("os.version", substituteWithStar),
-
-		pmetrictest.ChangeDatapointAttributeValue("mountpoint", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("direction", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("cpu", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("state", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("interface", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("device", substituteWithStar),
-		pmetrictest.ChangeDatapointAttributeValue("status", substituteWithStar),
-
-		pmetrictest.IgnoreDatapointAttributesOrder(),
-		pmetrictest.IgnoreMetricDataPointsOrder(),
-		pmetrictest.IgnoreMetricsOrder(),
-		pmetrictest.IgnoreScopeMetricsOrder(),
-		pmetrictest.IgnoreResourceMetricsOrder(),
-		pmetrictest.IgnoreSubsequentDataPoints(),
-	}
-
 	t.Log("Waiting for host metrics...")
 	oteltest.WaitForMetrics(t, 1, metricsConsumer1m)
 	oteltest.WaitForMetrics(t, 1, metricsConsumer5m)
@@ -318,11 +245,6 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 
 	checkMetricsPmetricassert(t, expectedFile1mAssert, metricsConsumer1m, resourceIgnoreList, dpIgnoreList, compareTimeout, compareTick)
 
-	// the commented line below writes the received list of metrics to the expected.yaml
-	//require.Nil(t, golden.WriteMetrics(t, expectedFile1m, metricsConsumer1m.AllMetrics()[len(metricsConsumer1m.AllMetrics())-1]))
-
-	checkMetrics(t, expectedFile1m, metricsConsumer1m, defaultOptions, compareTimeout, compareTick)
-
 	// 5m Metrics
 	t.Logf("Checking 5m metrics...")
 
@@ -330,10 +252,6 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile5mAssert, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
 
 	checkMetricsPmetricassert(t, expectedFile5mAssert, metricsConsumer5m, resourceIgnoreList, dpIgnoreList, compareTimeout, compareTick)
-
-	// the commented line below writes the received list of metrics to the expected.yaml
-	//require.Nil(t, golden.WriteMetrics(t, expectedFile5m, metricsConsumer5m.AllMetrics()[len(metricsConsumer5m.AllMetrics())-1]))
-	checkMetrics(t, expectedFile5m, metricsConsumer5m, defaultOptions, compareTimeout, compareTick)
 
 	// 1h Metrics
 	t.Logf("Checking 1h metrics...")
@@ -343,25 +261,7 @@ func TestE2E_HostMetricsReceiver(t *testing.T) {
 
 	checkMetricsPmetricassert(t, expectedFile1hAssert, metricsConsumer1h, resourceIgnoreList, dpIgnoreList, compareTimeout, compareTick)
 
-	// the commented line below writes the received list of metrics to the expected.yaml
-	//require.Nil(t, golden.WriteMetrics(t, expectedFile1h, metricsConsumer1h.AllMetrics()[len(metricsConsumer1h.AllMetrics())-1]))
-	checkMetrics(t, expectedFile1h, metricsConsumer1h, defaultOptions, compareTimeout, compareTick)
-
 	t.Log("Host metrics checked successfully")
-}
-
-func checkMetrics(t *testing.T, expectedFile string, consumer *consumertest.MetricsSink, options []pmetrictest.CompareMetricsOption, timeout, tick time.Duration) {
-	expectedMetrics, err := golden.ReadMetrics(expectedFile)
-	require.NoError(t, err)
-
-	expectedMerged := testutil.MergeResources(expectedMetrics)
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		actualMerged := testutil.MergeResources(consumer.AllMetrics()[len(consumer.AllMetrics())-1])
-		err := pmetrictest.CompareMetrics(expectedMerged, actualMerged, options...)
-		// the commented line below prints the diff between expected and actual metrics in case of a test failure
-		// testutil.Debug(err, t, expectedMerged, actualMerged)
-		assert.NoError(tt, err)
-	}, timeout, tick)
 }
 
 func checkMetricsPmetricassert(t *testing.T, expectedFile string, consumer *consumertest.MetricsSink, resourceIgnoreList, dpIgnoreList []string, timeout, tick time.Duration) {

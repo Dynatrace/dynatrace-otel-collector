@@ -43,6 +43,9 @@ receivers:
             enabled: true
           system.cpu.time:
             enabled: false
+          # Enabled by default upstream since hostmetricsreceiver v0.157.0; only wanted in the 1h stream.
+          system.cpu.logical.count:
+            enabled: false
 
       # Memory metrics
       memory:
@@ -70,6 +73,9 @@ receivers:
         metrics:
           system.cpu.time:
             enabled: true
+          # Enabled by default upstream since hostmetricsreceiver v0.157.0; only wanted in the 1h stream.
+          system.cpu.logical.count:
+            enabled: false
 
       # Memory metrics
       memory:

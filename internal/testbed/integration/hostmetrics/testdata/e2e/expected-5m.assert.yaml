@@ -125,7 +125,6 @@ resources:
               monotonic: true
               datapoints:
                 - attributes:
-                    cpu: '*'
                     state: '*'
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/diskscraper
           version: '*'

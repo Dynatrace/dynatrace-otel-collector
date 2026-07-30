@@ -68,7 +68,6 @@ v0.157.0:
 
 ### ⚠️ Deprecations ⚠️
 
-- `all`: Remove JMX receiver code ([#45740](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45740))
 - `processor/cumulative_to_delta`: Rename the 'cumulativetodelta' processor to 'cumulative_to_delta'. The old 'cumulativetodelta' type remains available as a deprecated alias. ([#45339](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45339))
 
 ### 💡 Enhancements 💡

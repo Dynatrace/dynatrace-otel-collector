@@ -11,7 +11,7 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 processors:
-  cumulativetodelta:
+  cumulative_to_delta:
   filter:
     error_mode: ignore
     traces:
@@ -81,7 +81,7 @@ service:
 
     metrics:
       receivers: [otlp]
-      processors: [filter, cumulativetodelta]
+      processors: [filter, cumulative_to_delta]
       exporters: [debug, otlp_http]
   # turn on self-monitoring
   telemetry:

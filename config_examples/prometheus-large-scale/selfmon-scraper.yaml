@@ -112,7 +112,7 @@ alternateConfig:
       limit_percentage: 80
       spike_limit_percentage: 20
     metric_start_time:
-    cumulativetodelta:
+    cumulative_to_delta:
       max_staleness: 10m
       initial_value: drop
     k8s_attributes:
@@ -252,7 +252,7 @@ alternateConfig:
           - memory_limiter
           - transform/selfmon_rename
           - metric_start_time
-          - cumulativetodelta
+          - cumulative_to_delta
           - k8s_attributes
           - transform
         exporters:

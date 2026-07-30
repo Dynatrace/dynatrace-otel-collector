@@ -259,7 +259,7 @@ processors:
     metric_conditions:
       - resource.attributes["low-memory-process"] != nil
 
-  cumulativetodelta:
+  cumulative_to_delta:
     max_staleness: 25h
   resource_detection:
     detectors: ["system"]
@@ -316,7 +316,7 @@ service:
   pipelines:
     metrics:
       receivers: [hostmetrics/10s, hostmetrics/5m, hostmetrics/1h]
-      processors: [filter, resource_detection, transform, filter/delete-metrics, cumulativetodelta]
+      processors: [filter, resource_detection, transform, filter/delete-metrics, cumulative_to_delta]
       exporters: [otlp_http]
     logs:
       receivers: [otlp, journald]

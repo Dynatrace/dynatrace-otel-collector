@@ -39,7 +39,7 @@ processors:
           - set(metric.name, "rpc.server.duration") where metric.name == "rpc_server_duration"
           - set(metric.name, "rpc.client.duration") where metric.name == "rpc_client_duration"
 
-  cumulativetodelta:
+  cumulative_to_delta:
     max_staleness: 25h
 
 exporters:
@@ -58,14 +58,14 @@ service:
   pipelines:
     metrics:
       receivers: [otlp]
-      processors: [cumulativetodelta]
+      processors: [cumulative_to_delta]
       exporters: [otlp_http]
 
     # Self-monitoring pipeline: transform must come first
     # so metric names are dotted before delta conversion
     metrics/selfmon:
       receivers: [prometheus/collector-self]
-      processors: [transform/selfmon_rename, metric_start_time, cumulativetodelta]
+      processors: [transform/selfmon_rename, metric_start_time, cumulative_to_delta]
       exporters: [otlp_http]
 
   telemetry:

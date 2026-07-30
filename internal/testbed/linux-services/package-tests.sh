@@ -48,6 +48,23 @@ podman run --name "$container_name" --arch "$ARCH" -d "$image_name"
 podman_cp "$container_name" internal/testbed/linux-services/config.test.yaml /etc/dynatrace-otel-collector/config.yaml
 install_pkg "$container_name" "$PKG_PATH"
 
+if [[ "$pkg_type" == "rpm" ]]; then
+    echo "Checking $SERVICE_NAME service state after install ..."
+    if $container_exec systemctl is-active "$SERVICE_NAME"; then
+        echo "$SERVICE_NAME service running after rpm install" >&2
+        exit 1
+    fi
+    echo "$SERVICE_NAME service correctly not running after rpm install"
+
+    if $container_exec systemctl is-enabled "$SERVICE_NAME"; then
+        echo "$SERVICE_NAME service enabled after rpm install" >&2
+        exit 1
+    fi
+    echo "$SERVICE_NAME service correctly not enabled after rpm install"
+
+    $container_exec systemctl start "$SERVICE_NAME"
+fi
+
 # ensure service has started and still running after 5 seconds
 sleep 5
 echo "Checking $SERVICE_NAME service status ..."

@@ -4,6 +4,170 @@
 
 <!-- next version -->
 
+## 0.53.0
+
+This release includes version v0.157.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.157.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.157.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.157.0>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/exporterhelper`: Replace histogram bucket boundaries for `otelcol_exporter_queue_batch_send_size_bytes` and `otelcol_processor_batch_batch_send_size_bytes` with a power-of-2 byte-scale set spanning 128 B to 16 MiB. ([#15535](https://github.com/open-telemetry/opentelemetry-collector/issues/15535))
+  The previous boundaries included many small sub-kilobyte buckets that were not useful for byte-scale
+  payloads, and `otelcol_exporter_queue_batch_send_size_bytes` topped out at 6000 bytes so nearly all
+  observations fell into the `+Inf` overflow bucket. The new boundaries are powers of two from 128 B
+  to 16777216 (16 MiB), giving a meaningful distribution for real batch payload sizes (including small
+  timeout-flushed batches) and keeping the two
+  metrics directly comparable on the same dashboards. Dashboards or alerts that hard-code specific `le`
+  values for these histograms will need to be updated.
+- `processor/batch`: Replace histogram bucket boundaries for `otelcol_processor_batch_batch_send_size_bytes` with a power-of-2 byte-scale set spanning 128 B to 16 MiB. ([#15535](https://github.com/open-telemetry/opentelemetry-collector/issues/15535))
+  The previous boundaries included many small sub-kilobyte buckets that were not useful for byte-scale
+  payloads. The new boundaries are powers of two from 128 B to 16777216 (16 MiB), giving a meaningful
+  distribution for real batch payload sizes (including small timeout-flushed batches) and keeping the
+  metric directly comparable with
+  `otelcol_exporter_queue_batch_send_size_bytes` on the same dashboards. Dashboards or alerts that
+  hard-code specific `le` values for this histogram will need to be updated.
+- `processor/transform`: Promote the `processor.transform.defaultErrorModeIgnore` feature gate to stable. The default top-level `error_mode` is now permanently `ignore` instead of `propagate`. ([#47231](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47231))
+  The gate will be removed in v0.159.0.
+- `receiver/host_metrics`: Enable the `system.cpu.logical.count` metric by default in the CPU scraper. ([#49325](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49325))
+  To restore the previous behavior, disable the new metric by applying the following config:
+  ```yaml
+  receivers:
+    host_metrics:
+      scrapers:
+        cpu:
+          metrics:
+            system.cpu.logical.count:
+              enabled: false
+  ```
+- `processor/tail_sampling`: Fix metric units to comply with the UCUM specification ([#49453](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49453))
+- `processor/filter`: Promote the `processor.filter.defaultErrorModeIgnore` feature gate to stable. The default top-level `error_mode` is now permanently `ignore` instead of `propagate`. ([#47232](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47232))
+  The gate will be removed in v0.159.0.
+- `receiver/host_metrics`: Make the `cpu` attribute opt-in for hostmetrics CPU time and utilization metrics. ([#49161](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49161))
+  By default, `system.cpu.time` and `system.cpu.utilization` are now aggregated across logical CPUs and no longer include the `cpu` attribute.
+  To restore the previous per-logical-CPU output, configure:
+  ```yaml
+  receivers:
+    hostmetrics:
+      scrapers:
+        cpu:
+          metrics:
+            system.cpu.time:
+              attributes: [cpu, state]
+            system.cpu.utilization:
+              attributes: [cpu, state]
+  ```
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### ⚠️ Deprecations ⚠️
+
+- `processor/cumulative_to_delta`: Rename the 'cumulativetodelta' processor to 'cumulative_to_delta'. The old 'cumulativetodelta' type remains available as a deprecated alias. ([#45339](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45339))
+
+### 💡 Enhancements 💡
+
+- `pkg/service`: Apply experimental `service::telemetry::resource::detection/development` resource detection to the Collector's internal telemetry resource. ([#14311](https://github.com/open-telemetry/opentelemetry-collector/issues/14311))
+  This follows the OpenTelemetry configuration schema by treating
+  `service::telemetry::resource::detection/development::detectors` as detector selection.
+  Currently supported detector entries are `container`, `host`, `process`, and `service`.
+  See the OpenTelemetry Configuration Go support table and search for
+  `ExperimentalResourceDetector` for current detector support:
+  https://github.com/open-telemetry/opentelemetry-configuration/blob/main/language-support-status.md#go
+
+  Example:
+  ```yaml
+  service:
+    telemetry:
+      resource:
+        attributes:
+          - name: foo
+            value: bar
+        detection/development:
+          detectors:
+            - host: {}
+  ```
+- `all`: Bootstrap `config.schema.yaml` for core components (debug/otlp/otlphttp exporters, otlp receiver, batch/memory_limiter processors, memory_limiter/zpages extensions). Implements Phase 1 of the component configuration schema roadmap RFC. ([#14543](https://github.com/open-telemetry/opentelemetry-collector/issues/14543))
+  Schemas are generated using the `schemagen` tool from opentelemetry-collector-contrib and hand-tuned to capture
+  validation rules and references to shared library schemas (confighttp, configgrpc, configretry, exporterhelper,
+  etc.). A `.schemagen.yaml` settings file and a `generate-schemas` Makefile target are added so the schemas can
+  be regenerated reproducibly.
+- `pkg/service`: Add `service.partialReload` feature gate (Alpha) and `service.partialReloadReceivers` feature gate (Beta) that together restart only receivers on config reload when non-receiver config sections are unchanged, avoiding unnecessary disruption to processors, exporters, and extensions. Enable with `--feature-gates=service.partialReload`. ([#5966](https://github.com/open-telemetry/opentelemetry-collector/issues/5966))
+- `processor/tail_sampling`: Add the `processor.tailsamplingprocessor.usetracestate` alpha feature gate, which makes the `probabilistic` policy use W3C `tracestate` randomness for its sampling decision and rewrites the outgoing `th` to the effective sampling threshold across matched policies. ([#48865](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48865))
+- `pkg/ottl`: Add the `When` OTTL converter for selecting a value based on a lambda condition. ([#49356](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49356))
+- `pkg/ottl`: Add the `Find` OTTL converter for returning the first matching slice or map value from a lambda predicate, with an optional mapper to transform the result. ([#49190](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49190))
+- `pkg/ottl`: Add `IsEmpty` converter that returns `true` when the given value is nil or an empty value. ([#49635](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49635))
+- `processor/gen_ai_normalizer`: Add an opt-in `overwrite_schema_url` setting to replace an existing scope schema URL after normalization writes an attribute. ([#48280](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48280))
+- `exporter/kafka`: Add `exporter.kafka.useRequestType` alpha feature gate that routes all signals through a custom exporterhelper.Request ([#48090](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48090))
+  When the gate is enabled, traces, metrics, logs, and profiles all convert
+  pdata into Kafka records at request-creation time and use a custom
+  Request for queue/batch sizing. `queue_batch.sizer: items` then counts
+  Kafka records, not OTLP items. The persistent queue (`sending_queue.storage`)
+  is not supported with this gate; configuring both produces an error at
+  startup. Default OFF.
+- `processor/transform`: Add `ParseCEF` function for parsing Common Event Format (CEF) security event data. ([#48351](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48351))
+- `processor/resource_detection`: Add internal telemetry to observe resource detection, in support of promoting the processor to stable. ([#44595](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44595))
+  Adds three metrics:
+  `otelcol.resourcedetection.detector.results` (count of detection results),
+  `otelcol.resourcedetection.detector.duration` (per-detector latency), and
+  `otelcol.resourcedetection.attributes.detected` (attributes in the detected resource).
+- `pkg/ottl`: Add the `MapEach` OTTL converter for transforming slice and map values with a lambda mapper. ([#49186](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49186))
+- `pkg/ottl`: Add the `Filter` OTTL converter for filtering slice and map values with a lambda predicate. ([#49184](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49184))
+- `pkg/ottl`: Add the `Reduce` OTTL converter for folding slice and map values with a lambda accumulator. ([#49191](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49191))
+- `receiver/journald`: Add the 'include_log_record_original' configuration option to allow adding the raw data read from journalctl as the 'log.record.original' attribute. ([#47921](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47921))
+- `pkg/ottl`: Add the `All` OTTL converter for testing whether every slice or map element matches a lambda predicate. ([#49188](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49188))
+- `pkg/stanza`: The `csv_parser` operator now processes batches of entries without splitting them, improving performance. ([#42390](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42390))
+- `pkg/ottl`: Add the `MapKeys` OTTL converter for transforming map keys with a lambda key mapper. ([#49187](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49187))
+- `pkg/ottl`: Add an optional `truncation_marker` argument to the `truncate_all` function to append a marker to truncated values ([#49319](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49319))
+- `pkg/ottl`: Add the `Any` OTTL converter for testing whether any slice or map element matches a lambda predicate. ([#49188](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49188))
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/service`: Record status events reported by extensions ([#15557](https://github.com/open-telemetry/opentelemetry-collector/issues/15557))
+- `exporter/debug`: Fix the scope index printed by the `normal` verbosity marshaler; each scope was labelled with its parent resource's index instead of its own position ([#15541](https://github.com/open-telemetry/opentelemetry-collector/issues/15541))
+  Affected all four signals (logs, traces, metrics, profiles) — e.g. the second scope under a resource printed `#0` instead of `#1`.
+- `pkg/config/configgrpc`: Fix `WaitForReady` option not being applied to gRPC client connections. ([#15615](https://github.com/open-telemetry/opentelemetry-collector/issues/15615))
+- `pkg/service`: Fix collector startup panic when a resource detector emits a slice-valued attribute (e.g. the `process` detector's `process.command_args`) ([#15571](https://github.com/open-telemetry/opentelemetry-collector/issues/15571))
+  `createResource` passed the OTel SDK attribute value straight into `pcommon.Value.FromRaw`, which
+  only accepts `[]any` for slices, so any string, int, float, or bool slice resource attribute produced
+  an `<Invalid value type>` error and aborted `service.New`. Slice-typed attributes are now converted
+  element-wise.
+- `pkg/fileconsumer`: Fix fingerprint generation for gzip-compressed files when the file descriptor is positioned at a non-zero offset. ([#49473](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49473))
+- `receiver/k8s_objects`: Fix panic and data race in stopperChanList during leader election re-acquisition ([#49601](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49601))
+- `receiver/statsd`: Fix explicit bucket histogram mapping for StatsD timing metrics. ([#49747](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49747))
+- `processor/tail_sampling`: Treat `threshold_ms` as an exclusive lower bound when `upper_threshold_ms` is not set. ([#49593](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49593))
+- `exporter/load_balancing`: Improve endpoint distribution across large backend sets by increasing hash ring size, virtual node count, and removing endpoint-order bias during ring construction. ([#41200](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41200))
+  This update raises the default virtual node count from 100 to 200 and the ring coordinate space from 36000 to 131071.
+  It also changes ring construction so all virtual points are generated first and assigned globally,
+  instead of letting earlier endpoints claim scarce positions before later endpoints are processed.
+  Together with the existing linear-probing collision handling, this reduces skew for large endpoint
+  sets and keeps ring assignment stable when the same endpoints are provided in a different order.
+- `processor/tail_sampling`: Fix race condition where SetMaximumTraceSizeBytes updates could be applied after incoming traces are evaluated, causing traces to be incorrectly dropped as too large. ([#48887](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48887))
+  In the iter loop, pending configuration updates (SetMaximumTraceSizeBytes and
+  SetSamplingPolicy) are now drained before processing incoming trace batches.
+  This prevents a non-deterministic Go select from picking the workChan case
+  before a config update channel, which previously caused TestDropLargeTraces
+  to fail flakily on CI.
+
+---
+
+</details>
+
+
+#### Dynatrace distribution changelog:
+
+### 🚀 New components 🚀
+
+- `bearertokenauthextension`: Add `bearertokenauthextension` to the Dynatrace OTel Collector distribution. (#1090)
+- `genainormalizerprocessor`: Added genainormalizerprocessor to the Dynatrace collector distribution, with e2e integration tests for the OpenInference instrumentation path. (#1067)
+
+<!-- previous-version -->
+
 ## 0.52.0
 
 This release includes version v0.156.0 of the upstream Collector components.

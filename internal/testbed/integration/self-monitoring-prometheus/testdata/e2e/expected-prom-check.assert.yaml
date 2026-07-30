@@ -121,7 +121,7 @@ resources:
               datapoints:
                 - attributes:
                     otel.signal: metrics
-                    processor: cumulativetodelta
+                    processor: cumulative_to_delta
                 - attributes:
                     otel.signal: metrics
                     processor: metric_start_time
@@ -134,7 +134,7 @@ resources:
               datapoints:
                 - attributes:
                     otel.signal: metrics
-                    processor: cumulativetodelta
+                    processor: cumulative_to_delta
                 - attributes:
                     otel.signal: metrics
                     processor: metric_start_time
@@ -148,7 +148,7 @@ resources:
               datapoints:
                 - attributes:
                     otel.signal: metrics
-                    processor: cumulativetodelta
+                    processor: cumulative_to_delta
                 - attributes:
                     otel.signal: metrics
                     processor: metric_start_time

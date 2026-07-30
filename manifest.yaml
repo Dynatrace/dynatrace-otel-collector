@@ -64,6 +64,3 @@ providers:
   - gomod: go.opentelemetry.io/collector/confmap/provider/httpprovider v1.63.0
   - gomod: go.opentelemetry.io/collector/confmap/provider/httpsprovider v1.63.0
   - gomod: go.opentelemetry.io/collector/confmap/provider/yamlprovider v1.63.0
-
-replaces:
-  - google.golang.org/grpc => google.golang.org/grpc v1.82.1

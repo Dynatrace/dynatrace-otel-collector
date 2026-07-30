@@ -15,7 +15,7 @@ builds:
       - -w
     flags:
       - -trimpath
-      - -tags=timetzdata
+      - -tags=timetzdata,remove_all_sd,enable_aws_sd,enable_azure_sd,enable_consul_sd,enable_digitalocean_sd,enable_dns_sd,enable_eureka_sd,enable_gce_sd,enable_hetzner_sd,enable_ionos_sd,enable_kubernetes_sd,enable_linode_sd,enable_marathon_sd,enable_moby_sd,enable_nomad_sd,enable_openstack_sd,enable_ovhcloud_sd,enable_puppetdb_sd,enable_scaleway_sd,enable_stackit_sd,enable_triton_sd,enable_uyuni_sd,enable_vultr_sd,enable_xds_sd,enable_zookeeper_sd
     goos:
       - linux
       - windows
@@ -43,6 +43,7 @@ sboms:
     env:
       - GOARCH={{ .Arch }}
       - GOOS={{ .Os }}
+      - GOFLAGS=-tags=timetzdata,remove_all_sd,enable_aws_sd,enable_azure_sd,enable_consul_sd,enable_digitalocean_sd,enable_dns_sd,enable_eureka_sd,enable_gce_sd,enable_hetzner_sd,enable_ionos_sd,enable_kubernetes_sd,enable_linode_sd,enable_marathon_sd,enable_moby_sd,enable_nomad_sd,enable_openstack_sd,enable_ovhcloud_sd,enable_puppetdb_sd,enable_scaleway_sd,enable_stackit_sd,enable_triton_sd,enable_uyuni_sd,enable_vultr_sd,enable_xds_sd,enable_zookeeper_sd
     documents:
       - >-
         {{ .ProjectName }}_

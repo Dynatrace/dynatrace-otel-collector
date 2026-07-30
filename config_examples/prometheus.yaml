@@ -16,7 +16,7 @@ receivers:
                 - 127.0.0.1:8888
 
 processors:
-  cumulativetodelta:
+  cumulative_to_delta:
     max_staleness: 25h
   metric_start_time:
 
@@ -31,5 +31,5 @@ service:
   pipelines:
     metrics:
       receivers: [prometheus]
-      processors: [metric_start_time, cumulativetodelta]
+      processors: [metric_start_time, cumulative_to_delta]
       exporters: [otlp_http]

@@ -46,5 +46,5 @@ service:
 
     metrics:
       receivers: [otlp]
-      processors: [filter, cumulativetodelta]
+      processors: [filter, cumulative_to_delta]
       exporters: [debug, otlp_http/metrics]

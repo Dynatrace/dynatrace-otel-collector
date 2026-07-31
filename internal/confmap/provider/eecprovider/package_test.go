@@ -1,0 +1,14 @@
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package eecprovider
+
+import (
+	"testing"
+
+	"go.uber.org/goleak"
+)
+
+func TestMain(m *testing.M) {
+	goleak.VerifyTestMain(m)
+}

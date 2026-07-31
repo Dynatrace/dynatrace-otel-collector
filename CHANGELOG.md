@@ -4,6 +4,20 @@
 
 <!-- next version -->
 
+## 0.53.1
+
+#### Dynatrace distribution changelog:
+
+### 🧰 Bug fixes 🧰
+
+- `eecprovider`: Restore the EEC confmap provider, which was previously removed. (#1114)
+- `redaction.yaml`: Escape the word boundary in the IPv4 pattern of the redaction config example so that it matches addresses again. (#1110)
+  In a double-quoted YAML scalar `\b` is the backspace escape, so the pattern
+  required a literal 0x08 byte and never matched an IPv4 address.
+  
+
+<!-- previous-version -->
+
 ## 0.53.0
 
 This release includes version v0.157.0 of the upstream Collector components.

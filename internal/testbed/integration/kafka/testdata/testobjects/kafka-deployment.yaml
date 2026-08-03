@@ -31,6 +31,12 @@ spec:
             - --advertise-kafka-addr=redpanda.e2ekafka.svc.cluster.local:9092
           ports:
             - containerPort: 9092
+          readinessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 30
           resources:
             requests:
               cpu: 50m

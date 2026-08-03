@@ -50,7 +50,7 @@ receivers:
         enabled: true
 
 processors:
-  cumulativetodelta:
+  cumulative_to_delta:
     max_staleness: 25h
   filter:
     error_mode: ignore
@@ -153,7 +153,7 @@ service:
         - filter
         - k8sattributes
         - transform
-        - cumulativetodelta
+        - cumulative_to_delta
       exporters:
         - otlp_http
     metrics:
@@ -162,7 +162,7 @@ service:
       processors:
         - k8sattributes
         - transform
-        - cumulativetodelta
+        - cumulative_to_delta
       exporters:
         - otlp_http
     logs:

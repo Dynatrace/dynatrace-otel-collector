@@ -100,7 +100,7 @@ alternateConfig:
       limit_percentage: 95
       spike_limit_percentage: 5
     metric_start_time:
-    cumulativetodelta:
+    cumulative_to_delta:
       # max_staleness should be greater than scrape interval in allocator to avoid metric drops due to staleness, but not too high to avoid large spikes from state resets
       # it's computed as 10x the scrape interval in allocator plus some buffer for delays
       max_staleness: 10m
@@ -255,7 +255,7 @@ alternateConfig:
         processors:
           - memory_limiter
           - metric_start_time
-          - cumulativetodelta
+          - cumulative_to_delta
           - k8s_attributes
           - transform
         exporters:

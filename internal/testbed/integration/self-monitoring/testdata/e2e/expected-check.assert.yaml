@@ -211,7 +211,7 @@ resources:
                     processor: filter
                 - attributes:
                     otel.signal: metrics
-                    processor: cumulativetodelta
+                    processor: cumulative_to_delta
                 - attributes:
                     otel.signal: metrics
                     processor: filter
@@ -228,7 +228,7 @@ resources:
                     processor: filter
                 - attributes:
                     otel.signal: metrics
-                    processor: cumulativetodelta
+                    processor: cumulative_to_delta
                 - attributes:
                     otel.signal: metrics
                     processor: filter
@@ -246,7 +246,7 @@ resources:
                     processor: filter
                 - attributes:
                     otel.signal: metrics
-                    processor: cumulativetodelta
+                    processor: cumulative_to_delta
                 - attributes:
                     otel.signal: metrics
                     processor: filter

@@ -96,6 +96,14 @@ func TestE2E_Kafka(t *testing.T) {
 	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-deployment.yaml"))
 	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-service.yaml"))
 
+	// Wait for Kafka to accept connections before starting collectors.
+	// Without this, collectors reach "Ready" (health-check HTTP up) while Kafka
+	// is still initialising: the exporter drops/queues messages it can't deliver
+	// and the receiver never registers its consumer group, causing the
+	// kafka-metrics assertion to time out.
+	err = k8stest.WaitForDeploymentPods(k8sClient.DynamicClient, testNs, "redpanda", 5*time.Minute)
+	require.NoError(t, err, "Kafka broker (Redpanda) did not become ready in time")
+
 	// Host endpoint for the receiver exporters
 	host := otelk8stest.HostEndpoint(t)
 
@@ -181,6 +189,11 @@ func TestE2E_Kafka(t *testing.T) {
 	// Create Telemetries
 	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "telemetrygen.yaml"))
 
+	// Wait for telemetrygen pods to be running before starting assertions,
+	// so the compare window is not consumed by a slow image pull or scheduler delay.
+	err = k8stest.WaitForDeploymentPods(k8sClient.DynamicClient, testNs, "temeletrygen-deployment", 3*time.Minute)
+	require.NoError(t, err, "telemetrygen did not become ready in time")
+
 	// Compare timeouts
 	const (
 		compareTimeout   = 3 * time.Minute
@@ -196,7 +209,8 @@ func TestE2E_Kafka(t *testing.T) {
 	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedMetricsAssertFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+		all := metricsConsumer.AllMetrics()
+		actual := all[len(all)-1]
 		actualForAssert := pmetric.NewMetrics()
 		actual.CopyTo(actualForAssert)
 		testutil.ReplaceAttrValsWithStar(actualForAssert, nil, nil)
@@ -268,7 +282,8 @@ func TestE2E_Kafka(t *testing.T) {
 	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedKMetricsAssertFile, kmetricsConsumer.AllMetrics()[len(kmetricsConsumer.AllMetrics())-1]))
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		actualKMetrics := kmetricsConsumer.AllMetrics()[len(kmetricsConsumer.AllMetrics())-1]
+		allKMetrics := kmetricsConsumer.AllMetrics()
+		actualKMetrics := allKMetrics[len(allKMetrics)-1]
 		actualForAssert := pmetric.NewMetrics()
 		actualKMetrics.CopyTo(actualForAssert)
 		testutil.ReplaceAttrValsWithStar(actualForAssert, nil, nil)

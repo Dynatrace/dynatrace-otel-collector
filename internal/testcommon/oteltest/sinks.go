@@ -167,7 +167,7 @@ func WaitForMetrics(t *testing.T, entriesNum int, mc *consumertest.MetricsSink) 
 func WaitForTraces(t *testing.T, entriesNum int, tc *consumertest.TracesSink) {
 	timeoutMinutes := 5
 	require.Eventuallyf(t, func() bool {
-		return len(tc.AllTraces()) > entriesNum
+		return len(tc.AllTraces()) >= entriesNum
 	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
 		"failed to receive %d entries,  received %d traces in %d minutes", entriesNum,
 		len(tc.AllTraces()), timeoutMinutes)
@@ -176,7 +176,7 @@ func WaitForTraces(t *testing.T, entriesNum int, tc *consumertest.TracesSink) {
 func WaitForLogs(t *testing.T, entriesNum int, tc *consumertest.LogsSink) {
 	timeoutMinutes := 5
 	require.Eventuallyf(t, func() bool {
-		return len(tc.AllLogs()) > entriesNum
+		return len(tc.AllLogs()) >= entriesNum
 	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
 		"failed to receive %d entries,  received %d logs in %d minutes", entriesNum,
 		len(tc.AllLogs()), timeoutMinutes)

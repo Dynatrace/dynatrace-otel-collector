@@ -130,7 +130,7 @@ func TestE2E_GenAINormalizerProcessor(t *testing.T) {
 	_, err = traceClient.Export(context.Background(), ptraceotlp.NewExportRequestFromTraces(buildTestTraces()))
 	require.NoError(t, err)
 
-	oteltest.WaitForTraces(t, 0, tracesConsumer)
+	oteltest.WaitForTraces(t, 1, tracesConsumer)
 
 	traceCompareOptions := []ptracetest.CompareTracesOption{
 		ptracetest.IgnoreStartTimestamp(),

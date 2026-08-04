@@ -25,7 +25,7 @@ spec:
         - --rate=1
         - --batch=false
         - --otlp-attributes=service.name="test-logs-deployment"
-        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.157.0@sha256:e84b17f92d096ecf56e1dacbddf38bade4a05b72de6a316b92a38363a2bdc13f
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.158.0@sha256:01bc9fac750e10dd77749ba5fa7a1ceb60cbbda18419e965a93497f6267d8814
         imagePullPolicy: IfNotPresent
         name: telemetrygen
       restartPolicy: Always

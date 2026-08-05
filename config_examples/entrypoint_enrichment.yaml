@@ -1,0 +1,35 @@
+# Example: Promote feature-flag attributes from child spans onto the service entrypoint span.
+# This enriches OpenPipeline RED metrics with feature-flag context from descendant spans.
+#
+# IMPORTANT: All spans for a given local-root subtree must reach the same collector instance.
+# Use a load-balancing exporter (e.g., loadbalancingexporter) in a preceding hop to
+# pin traces to the same instance before this processor.
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  entrypoint_enrichment:
+    wait_duration: 500ms
+    fallback_duration: 5s
+    num_traces: 1000000
+    local_root_detection: flags_with_kind_fallback
+    attributes_to_promote:
+      - "^dt\\.feature_flag\\.result\\..+$"
+    local_root_marker_attribute: "dt.local_root"
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [entrypoint_enrichment]
+      exporters: [otlphttp]

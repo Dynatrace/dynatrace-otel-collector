@@ -53,6 +53,7 @@ processors:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/tailsamplingprocessor v0.157.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/genainormalizerprocessor v0.157.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.157.0
+  - gomod: github.com/Dynatrace/dynatrace-otel-collector/internal/processor/entrypointenrichmentprocessor v0.0.0
 
 connectors:
   - gomod: go.opentelemetry.io/collector/connector/forwardconnector v0.157.0
@@ -68,3 +69,4 @@ providers:
 
 replaces:
   - github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider => ../internal/confmap/provider/eecprovider
+  - github.com/Dynatrace/dynatrace-otel-collector/internal/processor/entrypointenrichmentprocessor => ../internal/processor/entrypointenrichmentprocessor

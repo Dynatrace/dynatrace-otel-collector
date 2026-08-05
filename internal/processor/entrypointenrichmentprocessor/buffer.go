@@ -167,7 +167,7 @@ func (b *Buffer) removeFromOrder(tid pcommon.TraceID) {
 }
 
 // reaches walks parent pointers from spanID toward target.
-// Returns true iff the walk reaches target without crossing another local root.
+// Returns true iff the walk reaches target without crossing a different local root.
 func reaches(spanID, target pcommon.SpanID, index map[pcommon.SpanID]bufferedSpan, mode LocalRootDetectionMode) bool {
 	cur, ok := index[spanID]
 	if !ok {
@@ -177,6 +177,11 @@ func reaches(spanID, target pcommon.SpanID, index map[pcommon.SpanID]bufferedSpa
 		if cur.span.SpanID() == target {
 			return true
 		}
+		// If the current span is itself a local root (and it isn't the target),
+		// it belongs to a different subtree — stop here.
+		if isLocalRoot(cur.span, mode) {
+			return false
+		}
 		pid := cur.span.ParentSpanID()
 		if pid.IsEmpty() {
 			return false
@@ -184,9 +189,6 @@ func reaches(spanID, target pcommon.SpanID, index map[pcommon.SpanID]bufferedSpa
 		parent, ok := index[pid]
 		if !ok {
 			return false
-		}
-		if isLocalRoot(parent.span, mode) && parent.span.SpanID() != target {
-			return false // crossed another subtree's root
 		}
 		cur = parent
 	}

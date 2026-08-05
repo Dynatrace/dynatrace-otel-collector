@@ -6,7 +6,10 @@ package entrypointenrichment
 import (
 	"context"
 	"fmt"
+	"net"
+	"os"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -88,12 +91,22 @@ service:
 	require.NoError(t, err)
 	t.Cleanup(cleanup)
 
-	err = col.Start()
+	err = col.Start(testbed.StartParams{
+		Name:        "dynatrace-otel-collector",
+		LogFilePath: t.TempDir() + "/col.log",
+	})
 	require.NoError(t, err)
-	t.Cleanup(func() { _ = col.Stop() })
+	t.Cleanup(func() { _, _ = col.Stop() })
 
-	// Wait for collector to be ready.
-	time.Sleep(500 * time.Millisecond)
+	// Wait for the collector's OTLP gRPC receiver to be ready.
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", "localhost:"+strconv.Itoa(receiverPort), time.Second)
+		if err == nil {
+			conn.Close()
+			return true
+		}
+		return false
+	}, 15*time.Second, 100*time.Millisecond, "collector OTLP receiver did not become ready")
 
 	// Send traces via gRPC OTLP.
 	conn, err := grpc.NewClient(
@@ -331,11 +344,24 @@ func assertServiceRootLacks(t *testing.T, sink *consumertest.TracesSink, service
 	}
 }
 
-// applyDynatraceExporter injects a Dynatrace OTLP HTTP exporter into the
-// collector config string. Set DT_ENDPOINT and DT_API_TOKEN env vars to use.
+// applyDynatraceExporter injects an otlphttp exporter targeting the Dynatrace
+// endpoint into the collector config string and adds it to the traces pipeline.
+// Requires DT_ENDPOINT and DT_API_TOKEN to be set in the environment; the
+// spawned collector inherits the test process's environment so ${env:...}
+// references resolve correctly at runtime.
 //
 //nolint:unused
 func applyDynatraceExporter(cfg string) (string, error) {
-	// This function is intentionally left for manual use when testing against a real DT tenant.
-	return cfg, fmt.Errorf("applyDynatraceExporter: set DT_ENDPOINT and DT_API_TOKEN and implement this helper")
+	if os.Getenv("DT_ENDPOINT") == "" || os.Getenv("DT_API_TOKEN") == "" {
+		return "", fmt.Errorf("DT_ENDPOINT and DT_API_TOKEN must both be set")
+	}
+	dtExporterBlock := `
+  otlphttp/dynatrace:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+`
+	cfg = strings.Replace(cfg, "\nexporters:", "\nexporters:"+dtExporterBlock, 1)
+	cfg = strings.Replace(cfg, "exporters: [otlp]", "exporters: [otlp, otlphttp/dynatrace]", 1)
+	return cfg, nil
 }

@@ -5,6 +5,7 @@ package entrypointenrichment
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"net"
 	"os"
@@ -68,7 +69,7 @@ processors:
     local_root_marker_attribute: "dt.local_root"
 
 exporters:
-  otlp:
+  otlp_grpc:
     endpoint: localhost:%d
     tls:
       insecure: true
@@ -78,22 +79,23 @@ service:
     traces:
       receivers: [otlp]
       processors: [entrypoint_enrichment]
-      exporters: [otlp]
+      exporters: [otlp_grpc]
 `, receiverPort, sinkPort)
 
 	// Optionally inject DT exporter (uncomment to send to Dynatrace):
-	// var err error
-	// cfg, err = applyDynatraceExporter(cfg)
-	// require.NoError(t, err)
+	var err error
+	cfg, err = applyDynatraceExporter(cfg)
+	require.NoError(t, err)
 
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(collectorExecPath))
 	cleanup, err := col.PrepareConfig(t, cfg)
 	require.NoError(t, err)
 	t.Cleanup(cleanup)
 
+	logPath := t.TempDir() + "/col.log"
 	err = col.Start(testbed.StartParams{
 		Name:        "dynatrace-otel-collector",
-		LogFilePath: t.TempDir() + "/col.log",
+		LogFilePath: logPath,
 	})
 	require.NoError(t, err)
 	t.Cleanup(func() { _, _ = col.Stop() })
@@ -129,157 +131,309 @@ service:
 		"expected %d spans, got %d", expectedSpanCount, tracesSink.SpanCount())
 
 	// Assert each service's local root has its FF attributes promoted.
-	assertServiceRoot(t, tracesSink, "service-a", map[string]string{
+	assertServiceRoot(t, tracesSink, "checkout-service", map[string]string{
 		"dt.feature_flag.result.pricing_v2": "on",
 		"dt.local_root":                     "true",
 	})
-	assertServiceRoot(t, tracesSink, "service-b", map[string]string{
+	assertServiceRoot(t, tracesSink, "order-service", map[string]string{
 		"dt.feature_flag.result.checkout_flow": "variant_b",
 		"dt.feature_flag.result.recs_algo":     "collab",
 		"dt.local_root":                        "true",
 	})
-	assertServiceRoot(t, tracesSink, "service-c", map[string]string{
+	assertServiceRoot(t, tracesSink, "shipping-service", map[string]string{
 		"dt.feature_flag.result.shipping_calc": "fast",
 		"dt.local_root":                        "true",
 	})
 
-	// Assert no cross-contamination: service-a root should NOT have service-b's flags.
-	assertServiceRootLacks(t, tracesSink, "service-a", []string{
+	// Assert no cross-contamination: checkout-service root should NOT have order-service's flags.
+	assertServiceRootLacks(t, tracesSink, "checkout-service", []string{
 		"dt.feature_flag.result.checkout_flow",
 		"dt.feature_flag.result.recs_algo",
 	})
+
+	// b, err := os.Open(logPath)
+	// require.NoError(t, err)
+	// defer b.Close()
+	// logContents, err := io.ReadAll(b)
+	// require.NoError(t, err)
+	// t.Logf("collector log:\n%s", string(logContents))
 }
 
-// buildDistributedTrace constructs a 3-service distributed trace with feature-flag
-// attributes on descendant spans that should be promoted to each service's local root.
+func newTraceID() pcommon.TraceID {
+	var id pcommon.TraceID
+	_, _ = rand.Read(id[:])
+	return id
+}
+
+func newSpanID() pcommon.SpanID {
+	var id pcommon.SpanID
+	_, _ = rand.Read(id[:])
+	return id
+}
+
+// buildDistributedTrace constructs a 3-service distributed trace simulating an
+// HTTP checkout → order → shipping call chain, with feature-flag attributes on
+// descendant spans that should be promoted to each service's local root.
+//
+// Timeline (ms from t0):
+//
+//	Service A (checkout-service):  0–42 ms  POST /api/v1/checkout
+//	  price.calculate              2–7 ms   (ff: pricing_v2=on)
+//	  cart.validate                7–10 ms
+//	  POST order-service           10–40 ms (CLIENT)
+//	Service B (order-service):     12–38 ms POST /api/v1/orders
+//	  checkout.process             14–19 ms (ff: checkout_flow=variant_b)
+//	  recommendations.apply        19–24 ms (ff: recs_algo=collab)
+//	  inventory.check              24–28 ms
+//	  POST shipping-service        28–36 ms (CLIENT)
+//	Service C (shipping-service):  30–34 ms POST /api/v1/shipments
+//	  rate.calculate               31–33 ms (ff: shipping_calc=fast)
+//	  address.validate             31–33 ms
 func buildDistributedTrace() ptrace.Traces {
 	td := ptrace.NewTraces()
-	traceID := pcommon.TraceID([16]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16})
+	traceID := newTraceID()
 
-	// ---- Service A ----
-	// SERVER root (empty parent → always local root)
-	// 2 INTERNAL children (one with FF attr)
-	// 1 CLIENT hop to B
-	aRootID := pcommon.SpanID([8]byte{1})
-	aInternalFFID := pcommon.SpanID([8]byte{2})
-	aInternalID := pcommon.SpanID([8]byte{3})
-	aHopID := pcommon.SpanID([8]byte{4})
+	t0 := time.Now()
+	ms := func(n int) pcommon.Timestamp {
+		return pcommon.NewTimestampFromTime(t0.Add(time.Duration(n) * time.Millisecond))
+	}
+
+	// ---- Service A: checkout-service ----
+	// Receives the original user request; no parent → always a local root.
+	aRootID := newSpanID()
+	aCalcID := newSpanID()
+	aValidID := newSpanID()
+	aHopID := newSpanID()
 
 	rsA := td.ResourceSpans().AppendEmpty()
-	rsA.Resource().Attributes().PutStr("service.name", "service-a")
+	rsA.Resource().Attributes().PutStr("service.name", "checkout-service")
+	rsA.Resource().Attributes().PutStr("service.version", "1.4.2")
+	rsA.Resource().Attributes().PutStr("telemetry.sdk.name", "opentelemetry")
+	rsA.Resource().Attributes().PutStr("telemetry.sdk.language", "go")
+	rsA.Resource().Attributes().PutStr("deployment.environment.name", "production")
 	ssA := rsA.ScopeSpans().AppendEmpty()
+	ssA.Scope().SetName("github.com/example/checkout-service")
+	ssA.Scope().SetVersion("1.4.2")
 
 	aRoot := ssA.Spans().AppendEmpty()
 	aRoot.SetTraceID(traceID)
 	aRoot.SetSpanID(aRootID)
+	aRoot.SetName("POST /api/v1/checkout")
 	aRoot.SetKind(ptrace.SpanKindServer)
-	// empty parent → always local root
+	aRoot.SetStartTimestamp(ms(0))
+	aRoot.SetEndTimestamp(ms(42))
+	aRoot.Status().SetCode(ptrace.StatusCodeOk)
+	aRoot.Attributes().PutStr("http.request.method", "POST")
+	aRoot.Attributes().PutStr("url.path", "/api/v1/checkout")
+	aRoot.Attributes().PutStr("http.route", "/api/v1/checkout")
+	aRoot.Attributes().PutInt("http.response.status_code", 200)
+	aRoot.Attributes().PutStr("network.protocol.version", "1.1")
+	aRoot.Attributes().PutStr("server.address", "checkout-service.internal")
+	aRoot.Attributes().PutInt("server.port", 8080)
+	aRoot.Attributes().PutStr("client.address", "10.0.1.55")
 
-	aInternalFF := ssA.Spans().AppendEmpty()
-	aInternalFF.SetTraceID(traceID)
-	aInternalFF.SetSpanID(aInternalFFID)
-	aInternalFF.SetParentSpanID(aRootID)
-	aInternalFF.SetKind(ptrace.SpanKindInternal)
-	aInternalFF.SetFlags(0x100) // HAS_IS_REMOTE=1, IS_REMOTE=0 → local child
-	aInternalFF.Attributes().PutStr("dt.feature_flag.result.pricing_v2", "on")
+	// price.calculate evaluates the pricing_v2 feature flag.
+	aCalc := ssA.Spans().AppendEmpty()
+	aCalc.SetTraceID(traceID)
+	aCalc.SetSpanID(aCalcID)
+	aCalc.SetParentSpanID(aRootID)
+	aCalc.SetName("price.calculate")
+	aCalc.SetKind(ptrace.SpanKindInternal)
+	aCalc.SetFlags(0x100) // HAS_IS_REMOTE=1, IS_REMOTE=0 → local child
+	aCalc.SetStartTimestamp(ms(2))
+	aCalc.SetEndTimestamp(ms(7))
+	aCalc.Status().SetCode(ptrace.StatusCodeOk)
+	aCalc.Attributes().PutStr("price.strategy", "tiered")
+	aCalc.Attributes().PutStr("dt.feature_flag.result.pricing_v2", "on")
 
-	aInternal := ssA.Spans().AppendEmpty()
-	aInternal.SetTraceID(traceID)
-	aInternal.SetSpanID(aInternalID)
-	aInternal.SetParentSpanID(aRootID)
-	aInternal.SetKind(ptrace.SpanKindInternal)
-	aInternal.SetFlags(0x100)
+	// cart.validate checks stock and coupon validity.
+	aValid := ssA.Spans().AppendEmpty()
+	aValid.SetTraceID(traceID)
+	aValid.SetSpanID(aValidID)
+	aValid.SetParentSpanID(aRootID)
+	aValid.SetName("cart.validate")
+	aValid.SetKind(ptrace.SpanKindInternal)
+	aValid.SetFlags(0x100)
+	aValid.SetStartTimestamp(ms(7))
+	aValid.SetEndTimestamp(ms(10))
+	aValid.Status().SetCode(ptrace.StatusCodeOk)
+	aValid.Attributes().PutInt("cart.item_count", 3)
+	aValid.Attributes().PutBool("cart.coupon_applied", true)
 
+	// CLIENT span that carries the trace context to service B.
 	aHop := ssA.Spans().AppendEmpty()
 	aHop.SetTraceID(traceID)
 	aHop.SetSpanID(aHopID)
 	aHop.SetParentSpanID(aRootID)
+	aHop.SetName("POST order-service")
 	aHop.SetKind(ptrace.SpanKindClient)
 	aHop.SetFlags(0x100)
+	aHop.SetStartTimestamp(ms(10))
+	aHop.SetEndTimestamp(ms(40))
+	aHop.Status().SetCode(ptrace.StatusCodeOk)
+	aHop.Attributes().PutStr("http.request.method", "POST")
+	aHop.Attributes().PutStr("url.full", "http://order-service.internal:8081/api/v1/orders")
+	aHop.Attributes().PutInt("http.response.status_code", 201)
+	aHop.Attributes().PutStr("server.address", "order-service.internal")
+	aHop.Attributes().PutInt("server.port", 8081)
+	aHop.Attributes().PutStr("network.protocol.version", "1.1")
 
-	// ---- Service B ----
-	// SERVER root (remote parent = A's CLIENT hop, flags=0x300 → local root)
-	// 3 INTERNAL children (2 with FF attrs)
-	// 1 CLIENT hop to C
-	bRootID := pcommon.SpanID([8]byte{10})
-	bFF1ID := pcommon.SpanID([8]byte{11})
-	bFF2ID := pcommon.SpanID([8]byte{12})
-	bInternalID := pcommon.SpanID([8]byte{13})
-	bHopID := pcommon.SpanID([8]byte{14})
+	// ---- Service B: order-service ----
+	// Receives from A via HTTP; flags=0x300 (HAS_IS_REMOTE + IS_REMOTE) → local root.
+	bRootID := newSpanID()
+	bCheckoutID := newSpanID()
+	bRecsID := newSpanID()
+	bInventoryID := newSpanID()
+	bHopID := newSpanID()
 
 	rsB := td.ResourceSpans().AppendEmpty()
-	rsB.Resource().Attributes().PutStr("service.name", "service-b")
+	rsB.Resource().Attributes().PutStr("service.name", "order-service")
+	rsB.Resource().Attributes().PutStr("service.version", "2.1.0")
+	rsB.Resource().Attributes().PutStr("telemetry.sdk.name", "opentelemetry")
+	rsB.Resource().Attributes().PutStr("telemetry.sdk.language", "java")
+	rsB.Resource().Attributes().PutStr("deployment.environment.name", "production")
 	ssB := rsB.ScopeSpans().AppendEmpty()
+	ssB.Scope().SetName("io.example.order-service")
+	ssB.Scope().SetVersion("2.1.0")
 
 	bRoot := ssB.Spans().AppendEmpty()
 	bRoot.SetTraceID(traceID)
 	bRoot.SetSpanID(bRootID)
 	bRoot.SetParentSpanID(aHopID)
+	bRoot.SetName("POST /api/v1/orders")
 	bRoot.SetKind(ptrace.SpanKindServer)
 	bRoot.SetFlags(0x300) // HAS_IS_REMOTE=1, IS_REMOTE=1 → remote parent → local root
+	bRoot.SetStartTimestamp(ms(12))
+	bRoot.SetEndTimestamp(ms(38))
+	bRoot.Status().SetCode(ptrace.StatusCodeOk)
+	bRoot.Attributes().PutStr("http.request.method", "POST")
+	bRoot.Attributes().PutStr("url.path", "/api/v1/orders")
+	bRoot.Attributes().PutStr("http.route", "/api/v1/orders")
+	bRoot.Attributes().PutInt("http.response.status_code", 201)
+	bRoot.Attributes().PutStr("network.protocol.version", "1.1")
+	bRoot.Attributes().PutStr("server.address", "order-service.internal")
+	bRoot.Attributes().PutInt("server.port", 8081)
 
-	bFF1 := ssB.Spans().AppendEmpty()
-	bFF1.SetTraceID(traceID)
-	bFF1.SetSpanID(bFF1ID)
-	bFF1.SetParentSpanID(bRootID)
-	bFF1.SetKind(ptrace.SpanKindInternal)
-	bFF1.SetFlags(0x100)
-	bFF1.Attributes().PutStr("dt.feature_flag.result.checkout_flow", "variant_b")
+	// checkout.process evaluates the checkout_flow feature flag.
+	bCheckout := ssB.Spans().AppendEmpty()
+	bCheckout.SetTraceID(traceID)
+	bCheckout.SetSpanID(bCheckoutID)
+	bCheckout.SetParentSpanID(bRootID)
+	bCheckout.SetName("checkout.process")
+	bCheckout.SetKind(ptrace.SpanKindInternal)
+	bCheckout.SetFlags(0x100)
+	bCheckout.SetStartTimestamp(ms(14))
+	bCheckout.SetEndTimestamp(ms(19))
+	bCheckout.Status().SetCode(ptrace.StatusCodeOk)
+	bCheckout.Attributes().PutStr("order.id", "ord-8821")
+	bCheckout.Attributes().PutStr("dt.feature_flag.result.checkout_flow", "variant_b")
 
-	bFF2 := ssB.Spans().AppendEmpty()
-	bFF2.SetTraceID(traceID)
-	bFF2.SetSpanID(bFF2ID)
-	bFF2.SetParentSpanID(bRootID)
-	bFF2.SetKind(ptrace.SpanKindInternal)
-	bFF2.SetFlags(0x100)
-	bFF2.Attributes().PutStr("dt.feature_flag.result.recs_algo", "collab")
+	// recommendations.apply selects the recommendation algorithm.
+	bRecs := ssB.Spans().AppendEmpty()
+	bRecs.SetTraceID(traceID)
+	bRecs.SetSpanID(bRecsID)
+	bRecs.SetParentSpanID(bRootID)
+	bRecs.SetName("recommendations.apply")
+	bRecs.SetKind(ptrace.SpanKindInternal)
+	bRecs.SetFlags(0x100)
+	bRecs.SetStartTimestamp(ms(19))
+	bRecs.SetEndTimestamp(ms(24))
+	bRecs.Status().SetCode(ptrace.StatusCodeOk)
+	bRecs.Attributes().PutInt("recommendations.count", 5)
+	bRecs.Attributes().PutStr("dt.feature_flag.result.recs_algo", "collab")
 
-	bInternal := ssB.Spans().AppendEmpty()
-	bInternal.SetTraceID(traceID)
-	bInternal.SetSpanID(bInternalID)
-	bInternal.SetParentSpanID(bRootID)
-	bInternal.SetKind(ptrace.SpanKindInternal)
-	bInternal.SetFlags(0x100)
+	// inventory.check verifies stock levels.
+	bInventory := ssB.Spans().AppendEmpty()
+	bInventory.SetTraceID(traceID)
+	bInventory.SetSpanID(bInventoryID)
+	bInventory.SetParentSpanID(bRootID)
+	bInventory.SetName("inventory.check")
+	bInventory.SetKind(ptrace.SpanKindInternal)
+	bInventory.SetFlags(0x100)
+	bInventory.SetStartTimestamp(ms(24))
+	bInventory.SetEndTimestamp(ms(28))
+	bInventory.Status().SetCode(ptrace.StatusCodeOk)
+	bInventory.Attributes().PutBool("inventory.all_available", true)
 
+	// CLIENT span that carries the trace context to service C.
 	bHop := ssB.Spans().AppendEmpty()
 	bHop.SetTraceID(traceID)
 	bHop.SetSpanID(bHopID)
 	bHop.SetParentSpanID(bRootID)
+	bHop.SetName("POST shipping-service")
 	bHop.SetKind(ptrace.SpanKindClient)
 	bHop.SetFlags(0x100)
+	bHop.SetStartTimestamp(ms(28))
+	bHop.SetEndTimestamp(ms(36))
+	bHop.Status().SetCode(ptrace.StatusCodeOk)
+	bHop.Attributes().PutStr("http.request.method", "POST")
+	bHop.Attributes().PutStr("url.full", "http://shipping-service.internal:8082/api/v1/shipments")
+	bHop.Attributes().PutInt("http.response.status_code", 200)
+	bHop.Attributes().PutStr("server.address", "shipping-service.internal")
+	bHop.Attributes().PutInt("server.port", 8082)
+	bHop.Attributes().PutStr("network.protocol.version", "1.1")
 
-	// ---- Service C ----
-	// SERVER root (remote parent = B's CLIENT hop, flags=0x300 → local root)
-	// 2 INTERNAL children (one with FF attr)
-	cRootID := pcommon.SpanID([8]byte{20})
-	cFFID := pcommon.SpanID([8]byte{21})
-	cInternalID := pcommon.SpanID([8]byte{22})
+	// ---- Service C: shipping-service ----
+	// Receives from B via HTTP; flags=0x300 → local root.
+	cRootID := newSpanID()
+	cRateID := newSpanID()
+	cAddrID := newSpanID()
 
 	rsC := td.ResourceSpans().AppendEmpty()
-	rsC.Resource().Attributes().PutStr("service.name", "service-c")
+	rsC.Resource().Attributes().PutStr("service.name", "shipping-service")
+	rsC.Resource().Attributes().PutStr("service.version", "3.0.1")
+	rsC.Resource().Attributes().PutStr("telemetry.sdk.name", "opentelemetry")
+	rsC.Resource().Attributes().PutStr("telemetry.sdk.language", "python")
+	rsC.Resource().Attributes().PutStr("deployment.environment.name", "production")
 	ssC := rsC.ScopeSpans().AppendEmpty()
+	ssC.Scope().SetName("example.shipping_service")
+	ssC.Scope().SetVersion("3.0.1")
 
 	cRoot := ssC.Spans().AppendEmpty()
 	cRoot.SetTraceID(traceID)
 	cRoot.SetSpanID(cRootID)
 	cRoot.SetParentSpanID(bHopID)
+	cRoot.SetName("POST /api/v1/shipments")
 	cRoot.SetKind(ptrace.SpanKindServer)
 	cRoot.SetFlags(0x300)
+	cRoot.SetStartTimestamp(ms(30))
+	cRoot.SetEndTimestamp(ms(34))
+	cRoot.Status().SetCode(ptrace.StatusCodeOk)
+	cRoot.Attributes().PutStr("http.request.method", "POST")
+	cRoot.Attributes().PutStr("url.path", "/api/v1/shipments")
+	cRoot.Attributes().PutStr("http.route", "/api/v1/shipments")
+	cRoot.Attributes().PutInt("http.response.status_code", 200)
+	cRoot.Attributes().PutStr("network.protocol.version", "1.1")
+	cRoot.Attributes().PutStr("server.address", "shipping-service.internal")
+	cRoot.Attributes().PutInt("server.port", 8082)
 
-	cFF := ssC.Spans().AppendEmpty()
-	cFF.SetTraceID(traceID)
-	cFF.SetSpanID(cFFID)
-	cFF.SetParentSpanID(cRootID)
-	cFF.SetKind(ptrace.SpanKindInternal)
-	cFF.SetFlags(0x100)
-	cFF.Attributes().PutStr("dt.feature_flag.result.shipping_calc", "fast")
+	// rate.calculate selects the shipping rate via the shipping_calc feature flag.
+	cRate := ssC.Spans().AppendEmpty()
+	cRate.SetTraceID(traceID)
+	cRate.SetSpanID(cRateID)
+	cRate.SetParentSpanID(cRootID)
+	cRate.SetName("rate.calculate")
+	cRate.SetKind(ptrace.SpanKindInternal)
+	cRate.SetFlags(0x100)
+	cRate.SetStartTimestamp(ms(31))
+	cRate.SetEndTimestamp(ms(33))
+	cRate.Status().SetCode(ptrace.StatusCodeOk)
+	cRate.Attributes().PutStr("shipping.carrier", "fedex")
+	cRate.Attributes().PutStr("dt.feature_flag.result.shipping_calc", "fast")
 
-	cInternal := ssC.Spans().AppendEmpty()
-	cInternal.SetTraceID(traceID)
-	cInternal.SetSpanID(cInternalID)
-	cInternal.SetParentSpanID(cRootID)
-	cInternal.SetKind(ptrace.SpanKindInternal)
-	cInternal.SetFlags(0x100)
+	// address.validate confirms the destination address.
+	cAddr := ssC.Spans().AppendEmpty()
+	cAddr.SetTraceID(traceID)
+	cAddr.SetSpanID(cAddrID)
+	cAddr.SetParentSpanID(cRootID)
+	cAddr.SetName("address.validate")
+	cAddr.SetKind(ptrace.SpanKindInternal)
+	cAddr.SetFlags(0x100)
+	cAddr.SetStartTimestamp(ms(31))
+	cAddr.SetEndTimestamp(ms(33))
+	cAddr.Status().SetCode(ptrace.StatusCodeOk)
+	cAddr.Attributes().PutStr("address.country", "US")
+	cAddr.Attributes().PutBool("address.validated", true)
 
 	return td
 }
@@ -356,12 +510,12 @@ func applyDynatraceExporter(cfg string) (string, error) {
 		return "", fmt.Errorf("DT_ENDPOINT and DT_API_TOKEN must both be set")
 	}
 	dtExporterBlock := `
-  otlphttp/dynatrace:
+  otlp_http/dynatrace:
     endpoint: ${env:DT_ENDPOINT}
     headers:
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
 `
 	cfg = strings.Replace(cfg, "\nexporters:", "\nexporters:"+dtExporterBlock, 1)
-	cfg = strings.Replace(cfg, "exporters: [otlp]", "exporters: [otlp, otlphttp/dynatrace]", 1)
+	cfg = strings.Replace(cfg, "exporters: [otlp_grpc]", "exporters: [otlp_grpc, otlp_http/dynatrace]", 1)
 	return cfg, nil
 }

@@ -2,6 +2,7 @@
 #
 # This configuration is tailored for the Dynatrace OpenTelemetry Host Extension (custom:opentelemetry) and Host Monitoring.
 # Only metrics used by the extension and dashboard are enabled to minimize data volume and cardinality.
+# See https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-host-monitoring for a detailed documentation.
 
 extensions:
   health_check:

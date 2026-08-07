@@ -10,14 +10,17 @@ This is ICP-7891, a research spike under VI PRODUCT-16403. The design chose "Opt
 
 **Definitions (from `local/ICP-7891-feasibility.md`):**
 - **Local root span**: a span whose parent context is invalid (no parent) *or* remote (context propagated from another application). Verified across the Java, PHP, and X-Ray SDK codebases.
-- **Detection algorithm**:
+- **Detection algorithm** (see `local/ICP-7891-feasibility.md` § Local-root detection for full rationale):
   ```
-  isLocalRoot(span):
+  isLocalRoot(span, index):
       if span.ParentSpanID().IsEmpty(): return true
       if span.Flags() & 0x100 != 0:  // SPAN_FLAGS_CONTEXT_HAS_IS_REMOTE_MASK
           return span.Flags() & 0x200 != 0  // SPAN_FLAGS_CONTEXT_IS_REMOTE_MASK
-      return span.Kind() in (SERVER, CONSUMER)  // fallback for SDKs that don't set the flags
+      parent, ok := index[span.ParentSpanID()]
+      if !ok: return true                                              // parent not visible; safe default
+      return serviceIdentity(span.resource) != serviceIdentity(parent.resource)
   ```
+  Where `serviceIdentity(resource)` returns a stable key: `(service.name, service.instance.id)` when both present, `service.name` alone when instance.id absent, or a full-Resource hash if `service.name` is missing.
 
 **Prior design docs (all in `local/`):**
 - `ICP-7891-feasibility.md` — full feasibility write-up. Contains the Go/pdata sketch of the lazy-resolution algorithm and scope-item analysis of buffering, latency, and load-balancing implications.
@@ -33,9 +36,11 @@ This is ICP-7891, a research spike under VI PRODUCT-16403. The design chose "Opt
 | Location | `internal/processor/entrypointenrichmentprocessor/` in this repo | DT-local for the prototype; own Go module with a `replaces` entry in the top-level `manifest.yaml`. Same pattern as `internal/confmap/provider/eecprovider`. |
 | Buffering strategy | Lazy resolution (see `ICP-7891-buffering-strategy-comparison.md`) | Simpler than optimistic; O(1) ingest; correctness invariants easier to hold |
 | Attribute matching | `attributes_to_promote`: list of regex patterns | More flexible than prefix-only |
-| Conflict handling | First-wins (target keeps existing value; among descendants, whichever arrives first in the flush walk wins) | Deterministic given traversal, simple to implement; document as "unspecified among concurrent descendants" for the prototype |
+| Promotion target | Every SERVER/CONSUMER span in the emitted subtree (not just the local root) | Nested SERVER spans within one service (ingress + app) all need FF attributes for RED-metric generation |
+| Local-root detection | Flags-first (`HAS_IS_REMOTE`/`IS_REMOTE`); service-identity comparison against parent as fallback (`service.name`/`service.instance.id`); missing-parent defaults to local root | Aligns with the [otel-subtrace-demo](https://github.com/davidHaunschmied/otel-subtrace-demo) boundary heuristic; more precise than kind-based fallback |
+| Conflict handling | First-wins per target (target keeps existing value; among descendants, whichever arrives first in the flush walk wins) | Deterministic given traversal, simple to implement |
 | Source retention | Source (descendant) span keeps the attribute | Spans are read-only from downstream consumers' perspective |
-| Local-root marker attribute | Configurable via `local_root_marker_attribute` (string); default `dt.local_root`; empty disables. Stamped value: `true` (bool) | Useful for demos and downstream OTTL identification |
+| Local-root marker attribute | Configurable via `local_root_marker_attribute` (string); default `dt.local_root`; empty disables. Stamped value: `true` (bool). Stamped on the local root only — not on other SERVER/CONSUMER promotion targets | Debug aid only; keeps the marker's "buffering boundary" meaning clear |
 | Resource/Scope grouping at emit | Coalesce by structural equality (attribute-map serialization + schema URL) | Prototype-appropriate correctness; performance tuning deferred |
 | Concurrency | Single mutex around all buffer state | Simple correctness for prototype. Follow-up: adopt `groupbytraceprocessor`'s `EventMachine` pattern for per-worker serialization |
 | DT distribution wire-up | Add to `manifest.yaml` with a `replaces` entry | Same pattern as `eecprovider` |
@@ -87,31 +92,26 @@ processors:
     # Upper bound on the number of in-flight traces buffered.
     num_traces: 1000000
 
-    # Local-root detection mode.
-    # - flags_with_kind_fallback (default): use OTLP Span.flags bits 8-9 if
-    #   known; otherwise fall back to span.kind in (SERVER, CONSUMER).
-    # - flags_only: use only the flags. Spans without the HAS_IS_REMOTE bit
-    #   are never considered local roots.
-    # - kind_only: ignore flags entirely; use only span.kind.
-    local_root_detection: flags_with_kind_fallback
-
-    # Regex patterns for attribute keys to promote from descendant spans onto
-    # the local root. First-wins: if the local root already has a matching
-    # attribute, its value is preserved.
+    # Regex patterns for attribute keys to promote from any descendant onto
+    # every SERVER/CONSUMER span in the emitted subtree. First-wins: if a
+    # target already has the attribute, its value is preserved.
     attributes_to_promote:
       - "^dt\\.feature_flag\\.result\\..+$"
 
     # If non-empty, stamp this attribute with value `true` on the local root
-    # of each emitted batch. Set to "" to disable.
+    # (as identified by the detection algorithm). Debug aid only — the
+    # marker is NOT stamped on other SERVER/CONSUMER spans in the subtree.
+    # Set to "" to disable.
     local_root_marker_attribute: "dt.local_root"
 ```
+
+There is no `local_root_detection` mode knob. The algorithm is a single well-defined path: flags first, service-identity fallback, missing-parent-defaults-to-local-root.
 
 ### Validation rules (implement in `Config.Validate()`)
 
 - `wait_duration >= 0`. If zero, warn (behavior degenerates to a single-batch pass-through).
 - `fallback_duration >= wait_duration`. If not, error.
 - `num_traces > 0`.
-- `local_root_detection` in {`flags_with_kind_fallback`, `flags_only`, `kind_only`}.
 - Every regex in `attributes_to_promote` must compile; compiled results cached on the Config.
 - `local_root_marker_attribute` may be empty; otherwise treat as an attribute key (no validation beyond string).
 
@@ -124,7 +124,7 @@ processors:
    - If the span is a local root, start its per-subtree wait timer.
 3. On subtree-timer fire (`flushSubtree`):
    - Collect all buffered spans whose ancestry reaches the local root (via the `reaches` walk).
-   - Run the promotion pass over those spans: for each descendant, for each attribute key matching any `attributes_to_promote` regex, first-wins-insert onto the local root.
+   - Run the promotion pass over those spans: for each member, for each attribute key matching any `attributes_to_promote` regex, first-wins-insert onto every SERVER/CONSUMER span in the subtree.
    - If `local_root_marker_attribute` is set, stamp `<marker>=true` on the local root.
    - Reassemble into a `ptrace.Traces` via `assemble` (structural coalescing by Resource+Scope).
    - Call `next.ConsumeTraces(ctx, assembled)`.
@@ -141,7 +141,10 @@ processors:
 ```go
 package entrypointenrichmentprocessor
 
-import "go.opentelemetry.io/collector/pdata/ptrace"
+import (
+    "go.opentelemetry.io/collector/pdata/pcommon"
+    "go.opentelemetry.io/collector/pdata/ptrace"
+)
 
 // OTLP Span.flags bits (see opentelemetry-proto trace.proto:347-356).
 // Constants are only in pdata's internal protogen package, so we redeclare here.
@@ -150,38 +153,48 @@ const (
     spanFlagsContextIsRemoteMask    uint32 = 0x00000200
 )
 
-type LocalRootDetectionMode string
-
-const (
-    ModeFlagsWithKindFallback LocalRootDetectionMode = "flags_with_kind_fallback"
-    ModeFlagsOnly             LocalRootDetectionMode = "flags_only"
-    ModeKindOnly              LocalRootDetectionMode = "kind_only"
-)
-
-func isLocalRoot(span ptrace.Span, mode LocalRootDetectionMode) bool {
+// isLocalRoot decides whether span sits at a local-root (service-entrypoint)
+// boundary. It uses the OTLP `HAS_IS_REMOTE`/`IS_REMOTE` flag bits when the SDK
+// populates them; otherwise it compares service identity against the parent's
+// resource. index is the current buffer's span map for this trace; used to
+// look up the parent.
+func isLocalRoot(span ptrace.Span, index map[pcommon.SpanID]bufferedSpan) bool {
     if span.ParentSpanID().IsEmpty() {
         return true
     }
-    switch mode {
-    case ModeKindOnly:
-        return isEntryKind(span.Kind())
-    case ModeFlagsOnly:
-        f := span.Flags()
-        return f&spanFlagsContextHasIsRemoteMask != 0 &&
-            f&spanFlagsContextIsRemoteMask != 0
-    default: // ModeFlagsWithKindFallback
-        f := span.Flags()
-        if f&spanFlagsContextHasIsRemoteMask != 0 {
-            return f&spanFlagsContextIsRemoteMask != 0
-        }
-        return isEntryKind(span.Kind())
+    f := span.Flags()
+    if f&spanFlagsContextHasIsRemoteMask != 0 {
+        return f&spanFlagsContextIsRemoteMask != 0
     }
+    parent, ok := index[span.ParentSpanID()]
+    if !ok {
+        // Parent not visible in the buffer. Safe default: treat as local root.
+        // See feasibility doc's "known limitation" note.
+        return true
+    }
+    return serviceIdentity(span.resource) != serviceIdentity(parent.resource)  // pseudocode: span.resource must be accessible via the surrounding bufferedSpan; adjust the signature to take the current bufferedSpan or accept a Resource arg.
 }
 
-func isEntryKind(k ptrace.SpanKind) bool {
-    return k == ptrace.SpanKindServer || k == ptrace.SpanKindConsumer
+// serviceIdentity returns a stable string key for a resource's service.
+// Preference order:
+//   1. "<service.name>|<service.instance.id>" if both present
+//   2. "<service.name>" if only name present
+//   3. hash of the full resource attributes as a best-effort fallback
+func serviceIdentity(r pcommon.Resource) string {
+    name, hasName := r.Attributes().Get("service.name")
+    inst, hasInst := r.Attributes().Get("service.instance.id")
+    switch {
+    case hasName && hasInst:
+        return name.AsString() + "|" + inst.AsString()
+    case hasName:
+        return name.AsString()
+    default:
+        return hashResourceAttrs(r)
+    }
 }
 ```
+
+Note on signature: `isLocalRoot` needs access to the current span's resource *and* the parent's resource. In practice the buffer stores `bufferedSpan{resource, scope, span}`, so pass the whole `bufferedSpan` or an equivalent tuple rather than just `ptrace.Span`. Choose one; keep it consistent between `Insert` and `reaches`.
 
 ### Buffer core (lazy resolution)
 
@@ -211,7 +224,6 @@ type Buffer struct {
     traceTimers    map[pcommon.TraceID]*time.Timer
 
     cfg  *Config          // holds compiled regex patterns and marker attribute name
-    mode LocalRootDetectionMode
     next consumer.Traces
 }
 
@@ -244,7 +256,7 @@ func (b *Buffer) Insert(res pcommon.Resource, scope pcommon.InstrumentationScope
         })
     }
 
-    if isLocalRoot(spCopy, b.mode) {
+    if isLocalRoot(spCopy, b.spans[tid]) {
         if b.subtreeTimers[tid] == nil {
             b.subtreeTimers[tid] = make(map[pcommon.SpanID]*time.Timer)
         }
@@ -267,7 +279,7 @@ func (b *Buffer) flushSubtree(tid pcommon.TraceID, rootID pcommon.SpanID) {
 
     var members []bufferedSpan
     for sid, s := range index {
-        if reaches(sid, rootID, index, b.mode) {
+        if reaches(sid, rootID, index) {
             members = append(members, s)
             delete(index, sid)
         }
@@ -294,7 +306,7 @@ func (b *Buffer) flushSubtree(tid pcommon.TraceID, rootID pcommon.SpanID) {
 // reaches walks parent pointers from spanID up through the buffered index.
 // Returns true iff we hit target before hitting a *different* local root
 // (subtree boundary) or running off the chain (parent not in buffer).
-func reaches(spanID, target pcommon.SpanID, index map[pcommon.SpanID]bufferedSpan, mode LocalRootDetectionMode) bool {
+func reaches(spanID, target pcommon.SpanID, index map[pcommon.SpanID]bufferedSpan) bool {
     cur, ok := index[spanID]
     if !ok {
         return false
@@ -311,7 +323,7 @@ func reaches(spanID, target pcommon.SpanID, index map[pcommon.SpanID]bufferedSpa
         if !ok {
             return false
         }
-        if isLocalRoot(parent.span, mode) && parent.span.SpanID() != target {
+        if isLocalRoot(parent.span, index) && parent.span.SpanID() != target {
             return false // hit another subtree's root
         }
         cur = parent
@@ -370,43 +382,48 @@ import (
     "go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-// promote copies matching descendant attributes onto the local root
-// span (identified by rootID) using first-wins semantics.
-// Also stamps the marker attribute if configured.
+// promote copies matching attributes from any span in the emitted subtree
+// onto every SERVER/CONSUMER span in the subtree, using first-wins semantics.
+// The local root (identified by rootID) additionally receives the marker
+// attribute if configured. Multiple SERVER/CONSUMER spans (e.g., ingress
+// SERVER + app SERVER within one service) each get their own copy.
 func promote(members []bufferedSpan, rootID pcommon.SpanID, cfg *Config) {
-    // Find the local root's attributes map.
-    var rootAttrs pcommon.Map
+    // Collect target spans (kind == SERVER || CONSUMER) as pcommon.Map refs to
+    // their attributes.
+    var targets []pcommon.Map
     for _, m := range members {
-        if m.span.SpanID() == rootID {
-            rootAttrs = m.span.Attributes()
-            break
+        k := m.span.Kind()
+        if k == ptrace.SpanKindServer || k == ptrace.SpanKindConsumer {
+            targets = append(targets, m.span.Attributes())
         }
-    }
-    // (rootAttrs is guaranteed non-zero because reaches() only includes
-    //  descendants of rootID plus the root itself; but if the root somehow
-    //  is missing, we degrade gracefully by returning early.)
-    if rootAttrs.Len() == 0 && !rootAttrsPresent(members, rootID) {
-        return
     }
 
+    // Promote matching attributes from any span onto each target.
+    // First-wins per (target, key): once a target already has a matched key,
+    // subsequent same-key values from other spans are skipped for that target.
     for _, m := range members {
-        if m.span.SpanID() == rootID {
-            continue
-        }
         m.span.Attributes().Range(func(k string, v pcommon.Value) bool {
             if !matchesAny(k, cfg.compiledPatterns) {
                 return true
             }
-            if _, exists := rootAttrs.Get(k); exists {
-                return true // first-wins
+            for _, tAttrs := range targets {
+                if _, exists := tAttrs.Get(k); exists {
+                    continue // first-wins for this target
+                }
+                v.CopyTo(tAttrs.PutEmpty(k))
             }
-            v.CopyTo(rootAttrs.PutEmpty(k))
             return true
         })
     }
 
+    // Marker attribute goes on the local root only (not on other targets).
     if cfg.LocalRootMarkerAttribute != "" {
-        rootAttrs.PutBool(cfg.LocalRootMarkerAttribute, true)
+        for _, m := range members {
+            if m.span.SpanID() == rootID {
+                m.span.Attributes().PutBool(cfg.LocalRootMarkerAttribute, true)
+                break
+            }
+        }
     }
 }
 
@@ -483,7 +500,7 @@ Each phase has a concrete acceptance criterion. Do not move to the next phase un
 ### Phase 2 — Config + validation
 
 **Steps:**
-1. Flesh out `Config` with all fields from the schema above. Use `time.Duration` for durations, `int` for `num_traces`, custom `LocalRootDetectionMode` string type, `[]string` for `attributes_to_promote`, and a private `compiledPatterns []*regexp.Regexp` field populated during `Validate`.
+1. Flesh out `Config` with all fields from the schema above. Use `time.Duration` for durations, `int` for `num_traces`, `[]string` for `attributes_to_promote`, and a private `compiledPatterns []*regexp.Regexp` field populated during `Validate`.
 2. Implement `Validate() error` per the validation rules above.
 3. Write `config_test.go`: table-driven tests covering every validation rule, plus a "happy path" with realistic values.
 
@@ -492,25 +509,26 @@ Each phase has a concrete acceptance criterion. Do not move to the next phase un
 ### Phase 3 — Local-root detection
 
 **Steps:**
-1. Write `localroot.go` with `isLocalRoot(span, mode)` and `isEntryKind(kind)` as shown above.
+1. Write `localroot.go` with `isLocalRoot(span, index)` and `serviceIdentity(resource)` as shown above.
 2. Declare `spanFlagsContextHasIsRemoteMask` and `spanFlagsContextIsRemoteMask` constants.
-3. Write `localroot_test.go` covering the truth table:
+3. Write `localroot_test.go` covering the truth table below. Setup: each row describes the current span and (when relevant) the parent span buffered under the same trace. `Parent in index?` = whether the parent SpanID is present in the buffer map at test time.
 
-| ParentSpanID empty? | HAS_IS_REMOTE bit | IS_REMOTE bit | Kind | Mode | Expected |
-|---|---|---|---|---|---|
-| Yes | any | any | any | any | true |
-| No | 1 | 1 | any | flags_with_kind_fallback | true |
-| No | 1 | 0 | any | flags_with_kind_fallback | false |
-| No | 0 | any | SERVER | flags_with_kind_fallback | true |
-| No | 0 | any | CONSUMER | flags_with_kind_fallback | true |
-| No | 0 | any | INTERNAL | flags_with_kind_fallback | false |
-| No | 0 | any | CLIENT | flags_only | false |
-| No | 1 | 1 | INTERNAL | flags_only | true |
-| No | 1 | 0 | SERVER | flags_only | false |
-| No | any | any | SERVER | kind_only | true |
-| No | any | any | CLIENT | kind_only | false |
+| # | ParentSpanID empty? | HAS_IS_REMOTE | IS_REMOTE | Parent in index? | Parent service.name | Parent service.instance.id | Child service.name | Child service.instance.id | Expected |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | Yes | any | any | n/a | n/a | n/a | any | any | **true** (empty parent) |
+| 2 | No  | 1   | 1   | any    | any | any | any | any | **true** (flags authoritative — remote) |
+| 3 | No  | 1   | 0   | Yes    | s   | i   | s   | i   | **false** (flags authoritative — local) |
+| 4 | No  | 1   | 0   | No     | n/a | n/a | any | any | **false** (flags authoritative — local, parent not needed) |
+| 5 | No  | 0   | any | Yes    | svcA | any | svcA | any | **false** (same service.name; instance.id ignored when both share name — actually see rule 6) |
+| 6 | No  | 0   | any | Yes    | svcA | i1  | svcA | i1  | **false** (same name + same instance) |
+| 7 | No  | 0   | any | Yes    | svcA | i1  | svcA | i2  | **true** (same name, different instance) |
+| 8 | No  | 0   | any | Yes    | svcA | any | svcB | any | **true** (different name) |
+| 9 | No  | 0   | any | Yes    | (absent) | any | (absent) | any | Depends on fallback hash — use identical resources ⇒ **false**; different attributes ⇒ **true** |
+| 10 | No | 0   | any | No     | n/a | n/a | any | any | **true** (safe default) |
 
-**Acceptance:** all rows pass. Table-driven test.
+Row 5 nuance: with both spans having only `service.name` set (no instance.id), `serviceIdentity` returns the name alone. Add a row exercising this: parent-only-name = child-only-name ⇒ **false**; parent-only-name ≠ child-only-name ⇒ **true**.
+
+**Acceptance:** all rows pass. Table-driven test. `isEntryKind` is no longer needed and should not appear in the code or tests.
 
 ### Phase 4 — Buffer core
 
@@ -539,16 +557,20 @@ Use a mockable clock or short durations (few ms) in tests to keep them fast.
    - `hashScope`: name + version + schema URL + hashed attributes.
    - Group members by these hashes as shown.
 3. Implement `promote`:
-   - Find local-root attributes (guaranteed present as one of `members`).
-   - For each non-root member's attributes, iterate keys; if any pattern matches AND the local root doesn't already have the key, copy the value.
-   - Stamp marker attribute if configured.
+   - Collect target spans: every span in `members` whose kind is SERVER or CONSUMER. Keep them as `pcommon.Map` references to their attributes.
+   - For each span in `members`, iterate keys; if any pattern matches, copy the value into every target that doesn't already have that key (first-wins per target).
+   - Stamp the marker attribute on the local root (identified by `rootID`) only, if configured.
 4. Write `promote_test.go`:
-   - **Single match**: one descendant with one matching attribute → promoted onto root.
-   - **Multiple matches, same key across descendants**: assert first-wins deterministic behavior (document the order — flush walk order).
-   - **Conflict with root**: root already has the key → root value preserved.
-   - **No matches**: no attributes promoted; marker still stamped.
-   - **Multiple patterns, complex regex**: attributes with `dt.feature_flag.result.foo` and `dt.experiment.id` — assert both patterns match their intended targets.
-   - **Marker attribute disabled**: `local_root_marker_attribute: ""` → marker not stamped.
+   - **Single target — local root only**: subtree with one SERVER local root plus INTERNAL descendants; one descendant has a matching attribute → attribute lands on the SERVER root; marker on the root.
+   - **Multiple targets — SERVER→SERVER**: subtree with an outer SERVER local root and a nested SERVER child (same service; typical for ingress + app) plus INTERNAL descendants carrying matching attributes → **both** SERVER spans receive each matching attribute; marker on the local root only.
+   - **SERVER→SERVER→SERVER amplification**: three nested SERVER spans, matching attribute on a leaf descendant → all three SERVER spans receive it.
+   - **CONSUMER target**: subtree with a CONSUMER local root and INTERNAL descendants → CONSUMER receives promoted attribute.
+   - **Multiple matches, same key across descendants**: assert first-wins per target (once a target has the key, subsequent same-key values on other members are skipped for that target). Document the iteration order.
+   - **Conflict with a target's existing attribute**: target span already has the key → target's value preserved.
+   - **No matches**: no attributes promoted; marker still stamped on the local root.
+   - **Multiple patterns, complex regex**: attributes matching different patterns land as expected on every target.
+   - **Marker attribute disabled**: `local_root_marker_attribute: ""` → marker not stamped on any span.
+   - **No SERVER/CONSUMER in subtree** (edge case): no promotion happens; batch still emits with source attributes intact.
    - **Assembly coalescing**: two spans with the same resource and scope → one `ResourceSpans` with one `ScopeSpans` containing both spans. Two spans with same resource, different scopes → one `ResourceSpans` with two `ScopeSpans`. Two spans with different resources → two `ResourceSpans`.
 
 **Acceptance:** All cases pass.
@@ -560,7 +582,7 @@ Use a mockable clock or short durations (few ms) in tests to keep them fast.
    - `newProcessor(cfg, set, next)` constructs the Buffer.
    - `Start(ctx, host) error` — no-op (or clock initialization).
    - `Shutdown(ctx) error` — delegate to Buffer.
-   - `Capabilities() consumer.Capabilities` — return `{MutatesData: true}` (we do mutate — we add attributes to the local root).
+   - `Capabilities() consumer.Capabilities` — return `{MutatesData: true}` (we do mutate — we add attributes to SERVER/CONSUMER spans).
    - `ConsumeTraces(ctx, td)` — iterate ResourceSpans, ScopeSpans, Spans; call `buffer.Insert` for each.
 2. Wire the factory in `factory.go`:
    - `createDefaultConfig() component.Config` — returns sensible defaults matching the schema example.

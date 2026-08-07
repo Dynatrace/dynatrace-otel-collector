@@ -13,18 +13,17 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-func makeSpan(sid [8]byte, pid [8]byte, attrs map[string]string) bufferedSpan {
+func makeSpan(sid [8]byte, pid [8]byte, kind ptrace.SpanKind, attrs map[string]string) bufferedSpan {
 	span := ptrace.NewSpan()
 	span.SetSpanID(pcommon.SpanID(sid))
 	if pid != ([8]byte{}) {
 		span.SetParentSpanID(pcommon.SpanID(pid))
 	}
+	span.SetKind(kind)
 	for k, v := range attrs {
 		span.Attributes().PutStr(k, v)
 	}
-	res := pcommon.NewResource()
-	scope := pcommon.NewInstrumentationScope()
-	return bufferedSpan{resource: res, scope: scope, span: span}
+	return bufferedSpan{resource: pcommon.NewResource(), scope: pcommon.NewInstrumentationScope(), span: span}
 }
 
 func compiledCfg(patterns []string, marker string) *Config {
@@ -39,105 +38,200 @@ func compiledCfg(patterns []string, marker string) *Config {
 	}
 }
 
+// TestPromote_SingleMatch: one SERVER root + one INTERNAL descendant with a matching attr.
+// The attr should be promoted onto the SERVER root; the marker is stamped on the root.
 func TestPromote_SingleMatch(t *testing.T) {
 	rootID := pcommon.SpanID([8]byte{1})
-	childID := pcommon.SpanID([8]byte{2})
 	cfg := compiledCfg([]string{`^dt\.feature_flag\.`}, "dt.local_root")
 
-	root := makeSpan([8]byte{1}, [8]byte{}, nil)
-	child := makeSpan([8]byte{2}, [8]byte{1}, map[string]string{
+	root := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindServer, nil)
+	child := makeSpan([8]byte{2}, [8]byte{1}, ptrace.SpanKindInternal, map[string]string{
 		"dt.feature_flag.result.foo": "bar",
 	})
 	members := []bufferedSpan{root, child}
-
 	promote(members, rootID, cfg)
 
 	v, ok := root.span.Attributes().Get("dt.feature_flag.result.foo")
 	require.True(t, ok)
 	assert.Equal(t, "bar", v.AsString())
 
-	// marker is set
-	m, ok := root.span.Attributes().Get("dt.local_root")
-	require.True(t, ok)
-	assert.Equal(t, "true", m.AsString())
-
-	// child should still have its attr
+	// child retains its own attr (source retention)
 	cv, ok := child.span.Attributes().Get("dt.feature_flag.result.foo")
 	require.True(t, ok)
 	assert.Equal(t, "bar", cv.AsString())
 
-	_ = childID // suppress unused
+	// marker on root
+	m, ok := root.span.Attributes().Get("dt.local_root")
+	require.True(t, ok)
+	assert.Equal(t, "true", m.AsString())
 }
 
+// TestPromote_MultipleServerTargets: outer SERVER root + nested SERVER child + INTERNAL leaf with FF.
+// Both SERVERs receive the attribute; marker only on the local root.
+func TestPromote_MultipleServerTargets(t *testing.T) {
+	rootID := pcommon.SpanID([8]byte{1})
+	cfg := compiledCfg([]string{`^dt\.feature_flag\.`}, "dt.local_root")
+
+	root := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindServer, nil)
+	inner := makeSpan([8]byte{2}, [8]byte{1}, ptrace.SpanKindServer, nil) // nested SERVER
+	leaf := makeSpan([8]byte{3}, [8]byte{2}, ptrace.SpanKindInternal, map[string]string{
+		"dt.feature_flag.result.pricing_v2": "on",
+	})
+	members := []bufferedSpan{root, inner, leaf}
+	promote(members, rootID, cfg)
+
+	// Both SERVER spans receive the promoted attribute.
+	for _, target := range []bufferedSpan{root, inner} {
+		v, ok := target.span.Attributes().Get("dt.feature_flag.result.pricing_v2")
+		require.True(t, ok, "SERVER span %v missing promoted attr", target.span.SpanID())
+		assert.Equal(t, "on", v.AsString())
+	}
+
+	// Marker on local root only.
+	_, markerOnRoot := root.span.Attributes().Get("dt.local_root")
+	assert.True(t, markerOnRoot)
+	_, markerOnInner := inner.span.Attributes().Get("dt.local_root")
+	assert.False(t, markerOnInner, "marker must not be stamped on non-root SERVER spans")
+}
+
+// TestPromote_ThreeNestedServerAmplification: three nested SERVER spans + INTERNAL leaf with FF.
+// All three SERVER spans receive the attribute.
+func TestPromote_ThreeNestedServerAmplification(t *testing.T) {
+	rootID := pcommon.SpanID([8]byte{1})
+	cfg := compiledCfg([]string{`^dt\.feature_flag\.`}, "")
+
+	s1 := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindServer, nil)
+	s2 := makeSpan([8]byte{2}, [8]byte{1}, ptrace.SpanKindServer, nil)
+	s3 := makeSpan([8]byte{3}, [8]byte{2}, ptrace.SpanKindServer, nil)
+	leaf := makeSpan([8]byte{4}, [8]byte{3}, ptrace.SpanKindInternal, map[string]string{
+		"dt.feature_flag.result.algo": "v2",
+	})
+	members := []bufferedSpan{s1, s2, s3, leaf}
+	promote(members, rootID, cfg)
+
+	for _, target := range []bufferedSpan{s1, s2, s3} {
+		v, ok := target.span.Attributes().Get("dt.feature_flag.result.algo")
+		require.True(t, ok, "SERVER span %v missing promoted attr", target.span.SpanID())
+		assert.Equal(t, "v2", v.AsString())
+	}
+}
+
+// TestPromote_ConsumerTarget: CONSUMER local root + INTERNAL descendants.
+func TestPromote_ConsumerTarget(t *testing.T) {
+	rootID := pcommon.SpanID([8]byte{1})
+	cfg := compiledCfg([]string{`^dt\.feature_flag\.`}, "dt.local_root")
+
+	root := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindConsumer, nil)
+	child := makeSpan([8]byte{2}, [8]byte{1}, ptrace.SpanKindInternal, map[string]string{
+		"dt.feature_flag.result.queue_mode": "batch",
+	})
+	members := []bufferedSpan{root, child}
+	promote(members, rootID, cfg)
+
+	v, ok := root.span.Attributes().Get("dt.feature_flag.result.queue_mode")
+	require.True(t, ok)
+	assert.Equal(t, "batch", v.AsString())
+
+	m, ok := root.span.Attributes().Get("dt.local_root")
+	require.True(t, ok)
+	assert.Equal(t, "true", m.AsString())
+}
+
+// TestPromote_FirstWins: two INTERNAL descendants have the same key; each target receives
+// only the first value it encounters; root retains whichever arrived first.
 func TestPromote_FirstWins(t *testing.T) {
 	rootID := pcommon.SpanID([8]byte{1})
 	cfg := compiledCfg([]string{`^dt\.feature_flag\.`}, "")
 
-	root := makeSpan([8]byte{1}, [8]byte{}, nil)
-	child1 := makeSpan([8]byte{2}, [8]byte{1}, map[string]string{
+	root := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindServer, nil)
+	child1 := makeSpan([8]byte{2}, [8]byte{1}, ptrace.SpanKindInternal, map[string]string{
 		"dt.feature_flag.result.foo": "first",
 	})
-	child2 := makeSpan([8]byte{3}, [8]byte{1}, map[string]string{
+	child2 := makeSpan([8]byte{3}, [8]byte{1}, ptrace.SpanKindInternal, map[string]string{
 		"dt.feature_flag.result.foo": "second",
 	})
-	// Put child1 first in iteration; promote visits child1 then child2.
-	// Because Map iteration order in Go is non-deterministic, we can only assert
-	// that exactly one value is chosen (not which); the first-wins guarantee is
-	// about the root's *pre-existing* value, tested in TestPromote_ConflictWithRoot.
 	members := []bufferedSpan{root, child1, child2}
 	promote(members, rootID, cfg)
 
 	v, ok := root.span.Attributes().Get("dt.feature_flag.result.foo")
 	require.True(t, ok)
-	// exactly one of the two values must be present
+	// Exactly one value wins (slice iteration order is deterministic; map iteration inside Range is not,
+	// but both are valid outcomes — we assert one is present and stable).
 	assert.True(t, v.AsString() == "first" || v.AsString() == "second")
 }
 
+// TestPromote_ConflictWithRoot: target already has the key → target retains its own value.
 func TestPromote_ConflictWithRoot(t *testing.T) {
 	rootID := pcommon.SpanID([8]byte{1})
 	cfg := compiledCfg([]string{`^dt\.feature_flag\.`}, "")
 
-	root := makeSpan([8]byte{1}, [8]byte{}, map[string]string{
-		"dt.feature_flag.result.foo": "root-value",
+	root := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindServer, map[string]string{
+		"dt.feature_flag.result.foo": "preexisting",
 	})
-	child := makeSpan([8]byte{2}, [8]byte{1}, map[string]string{
-		"dt.feature_flag.result.foo": "child-value",
+	child := makeSpan([8]byte{2}, [8]byte{1}, ptrace.SpanKindInternal, map[string]string{
+		"dt.feature_flag.result.foo": "from-child",
 	})
 	members := []bufferedSpan{root, child}
 	promote(members, rootID, cfg)
 
 	v, ok := root.span.Attributes().Get("dt.feature_flag.result.foo")
 	require.True(t, ok)
-	assert.Equal(t, "root-value", v.AsString(), "root's existing value must be preserved")
+	assert.Equal(t, "preexisting", v.AsString())
 }
 
+// TestPromote_NoMatches: no attribute matches the patterns; marker is still stamped.
 func TestPromote_NoMatches(t *testing.T) {
 	rootID := pcommon.SpanID([8]byte{1})
 	cfg := compiledCfg([]string{`^dt\.feature_flag\.`}, "dt.local_root")
 
-	root := makeSpan([8]byte{1}, [8]byte{}, nil)
-	child := makeSpan([8]byte{2}, [8]byte{1}, map[string]string{
+	root := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindServer, nil)
+	child := makeSpan([8]byte{2}, [8]byte{1}, ptrace.SpanKindInternal, map[string]string{
 		"other.attr": "value",
 	})
 	members := []bufferedSpan{root, child}
 	promote(members, rootID, cfg)
 
-	// no feature flag promoted
 	_, ok := root.span.Attributes().Get("other.attr")
 	assert.False(t, ok)
 
-	// marker still stamped
 	m, ok := root.span.Attributes().Get("dt.local_root")
 	require.True(t, ok)
 	assert.Equal(t, "true", m.AsString())
 }
 
+// TestPromote_NoServerConsumerInSubtree: subtree has only INTERNAL/CLIENT spans.
+// No promotion happens; marker is still stamped on the local root.
+func TestPromote_NoServerConsumerInSubtree(t *testing.T) {
+	rootID := pcommon.SpanID([8]byte{1})
+	cfg := compiledCfg([]string{`^dt\.feature_flag\.`}, "dt.local_root")
+
+	// Root is INTERNAL (edge case: local root was identified by buffer logic but isn't SERVER/CONSUMER).
+	root := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindInternal, nil)
+	child := makeSpan([8]byte{2}, [8]byte{1}, ptrace.SpanKindClient, map[string]string{
+		"dt.feature_flag.result.foo": "bar",
+	})
+	members := []bufferedSpan{root, child}
+	promote(members, rootID, cfg)
+
+	// No SERVER/CONSUMER → no targets → attribute not copied anywhere.
+	_, ok := root.span.Attributes().Get("dt.feature_flag.result.foo")
+	assert.False(t, ok)
+	_, ok = child.span.Attributes().Get("dt.feature_flag.result.foo")
+	assert.True(t, ok, "source span retains its own attribute")
+
+	// Marker is still stamped on the designated root span.
+	m, ok := root.span.Attributes().Get("dt.local_root")
+	require.True(t, ok)
+	assert.Equal(t, "true", m.AsString())
+}
+
+// TestPromote_ComplexRegex: two patterns, each matching different attribute prefixes.
 func TestPromote_ComplexRegex(t *testing.T) {
 	rootID := pcommon.SpanID([8]byte{1})
 	cfg := compiledCfg([]string{`^dt\.feature_flag\.`, `^my\.experiment\.`}, "")
 
-	root := makeSpan([8]byte{1}, [8]byte{}, nil)
-	child := makeSpan([8]byte{2}, [8]byte{1}, map[string]string{
+	root := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindServer, nil)
+	child := makeSpan([8]byte{2}, [8]byte{1}, ptrace.SpanKindInternal, map[string]string{
 		"dt.feature_flag.result.foo": "ff-val",
 		"my.experiment.variant":      "exp-val",
 		"unmatched.attr":             "ignored",
@@ -157,20 +251,20 @@ func TestPromote_ComplexRegex(t *testing.T) {
 	assert.False(t, ok)
 }
 
+// TestPromote_MarkerDisabled: empty marker attribute → no marker stamped on any span.
 func TestPromote_MarkerDisabled(t *testing.T) {
 	rootID := pcommon.SpanID([8]byte{1})
 	cfg := compiledCfg([]string{`^dt\.feature_flag\.`}, "") // empty marker
 
-	root := makeSpan([8]byte{1}, [8]byte{}, nil)
+	root := makeSpan([8]byte{1}, [8]byte{}, ptrace.SpanKindServer, nil)
 	members := []bufferedSpan{root}
 	promote(members, rootID, cfg)
 
-	// no marker attribute should be present
+	// Only the marker would have been added; since it's disabled the map should be empty.
 	assert.Equal(t, 0, root.span.Attributes().Len())
 }
 
 func TestAssemble_Coalescing(t *testing.T) {
-	// Same resource + same scope → one RS with one SS.
 	res1 := pcommon.NewResource()
 	res1.Attributes().PutStr("service.name", "svc-a")
 	scope1 := pcommon.NewInstrumentationScope()
@@ -181,16 +275,17 @@ func TestAssemble_Coalescing(t *testing.T) {
 	span2 := ptrace.NewSpan()
 	span2.SetSpanID(pcommon.SpanID([8]byte{2}))
 
+	// Same resource + same scope → one RS with one SS containing both spans.
 	members := []bufferedSpan{
 		{resource: res1, scope: scope1, span: span1},
 		{resource: res1, scope: scope1, span: span2},
 	}
 	result := assemble(members)
-	assert.Equal(t, 1, result.ResourceSpans().Len(), "same resource should be coalesced")
-	assert.Equal(t, 1, result.ResourceSpans().At(0).ScopeSpans().Len(), "same scope should be coalesced")
+	assert.Equal(t, 1, result.ResourceSpans().Len())
+	assert.Equal(t, 1, result.ResourceSpans().At(0).ScopeSpans().Len())
 	assert.Equal(t, 2, result.ResourceSpans().At(0).ScopeSpans().At(0).Spans().Len())
 
-	// Same resource + different scope → one RS, two SS.
+	// Same resource + different scope → one RS with two SS.
 	scope2 := pcommon.NewInstrumentationScope()
 	scope2.SetName("scope-b")
 	span3 := ptrace.NewSpan()

@@ -73,18 +73,38 @@ References:
 
 The pdata Go library exposes `span.Flags() uint32`. The named enum constants live in an internal package (`pdata/internal/data/protogen/trace/v1/trace.pb.go`), so a collector-side consumer defines the two masks locally as `uint32` literals.
 
-**Fallback for SDKs that don't set the flag.** Many older SDKs don't populate the `HAS_IS_REMOTE` bit. When it's not set, the established heuristic — named as the fallback in OTEP 4931's "Alternative: An implementation for traces on the Backend" section, and used in practice by the AWS X-Ray span processor — is `span.kind IN (SERVER, CONSUMER)`, indicating a service entrypoint.
+**Fallback for SDKs that don't set the flag.** Many older SDKs don't populate the `HAS_IS_REMOTE` bit. When it's not set, compare the span's parent's resource identity to the span's own: if the parent belongs to a different service (`service.name` and/or `service.instance.id` differ), the span sits at a service boundary and is a local root. This is a stronger signal than the previously-considered kind-based heuristic (`SERVER`/`CONSUMER`) because it directly reflects the boundary we care about, and it aligns with how the [`otel-subtrace-demo` processor](https://github.com/davidHaunschmied/otel-subtrace-demo) determines subtrace boundaries via resource comparison.
 
 **Detection algorithm (Collector-side):**
 
 ```
-isLocalRoot(span):
+isLocalRoot(span, index):
+    // index maps SpanID -> (span, resource) for all currently-buffered spans of the trace.
+
     if span.ParentSpanID().IsEmpty():
-        return true                                                     // global root is trivially a local root
-    if span.Flags() & SPAN_FLAGS_CONTEXT_HAS_IS_REMOTE_MASK != 0:
-        return span.Flags() & SPAN_FLAGS_CONTEXT_IS_REMOTE_MASK != 0    // authoritative path
-    return span.Kind() in (SERVER, CONSUMER)                            // fallback for SDKs without the flag
+        return true                                                       // global root
+
+    flags := span.Flags()
+    if flags & SPAN_FLAGS_CONTEXT_HAS_IS_REMOTE_MASK != 0:
+        return flags & SPAN_FLAGS_CONTEXT_IS_REMOTE_MASK != 0             // authoritative path
+
+    // Flag not set — fall back to service-identity comparison against the parent.
+    parent, ok := index[span.ParentSpanID()]
+    if !ok:
+        return true                                                       // parent not visible; safe default (see limitation below)
+
+    return serviceIdentity(span.resource) != serviceIdentity(parent.resource)
+
+
+serviceIdentity(resource):
+    // Ordered preference:
+    //   1. If both service.name and service.instance.id present: "<name>|<instance_id>"
+    //   2. If only service.name present: "<name>"
+    //   3. Otherwise: hash of the full Resource attributes (best-effort)
+    // Returns a stable string key comparable via equality.
 ```
+
+**Known limitation.** When `HAS_IS_REMOTE` is unset (older SDKs), and a same-service parent arrives in a *later* OTLP batch than a child, the child gets classified as a local root at insert time and is not reclassified when the parent arrives. The parent then starts its own subtree, and the two are emitted separately. Real-world incidence is low: most SDKs export a request's spans in one batch, and modern SDKs set the flags correctly. Document; do not attempt automatic reclassification.
 
 ### Adjacent spec work (not a substitute)
 
@@ -100,9 +120,9 @@ The prototype is a self-contained processor — `entrypoint_enrichment` (Go pack
 
 - **One processor, not two.** Buffering and attribute promotion are combined. No OTTL surface work is needed for the prototype ([lambda analysis](./ICP-7891-ottl-lambda-analysis.md) covers the follow-up path if we want OTTL-based extensibility later).
 - **Buffering**: lazy resolution grouped by local root (see scope item 3 and the [strategy comparison](./ICP-7891-buffering-strategy-comparison.md)). Per-subtree wait timer starts when the local root arrives; per-trace fallback timer catches stragglers whose local root never arrives.
-- **Local-root detection**: `flags_with_kind_fallback` by default (OTLP `Span.flags` bits 8–9 when known, `span.kind IN (SERVER, CONSUMER)` otherwise), with `flags_only` and `kind_only` modes for testing.
-- **Enrichment**: on subtree flush, walk descendant spans; for every attribute key matching any user-supplied regex (`attributes_to_promote`), first-wins-insert onto the local root. Source spans keep their attributes unchanged.
-- **Marker attribute** on the local root: `dt.local_root=true` by default (configurable via `local_root_marker_attribute`; empty disables).
+- **Local-root detection**: OTLP `Span.flags` bits 8–9 when the SDK sets them; otherwise compare `service.name` / `service.instance.id` against the parent's resource. Empty parent → local root. Parent not visible in the buffer → local root (safe default). See "Local-root detection in the Collector" above.
+- **Enrichment**: on subtree flush, walk the subtree; for every attribute key matching any user-supplied regex (`attributes_to_promote`), first-wins-insert onto **every span in the subtree whose kind is SERVER or CONSUMER**. Source spans keep their attributes unchanged. Multiple SERVER/CONSUMER spans (e.g., an ingress SERVER span plus the app's own SERVER span within one service) all receive the promoted attributes so that any RED-metric-generating span sees them.
+- **Marker attribute** on the local root: `dt.local_root=true` by default (configurable via `local_root_marker_attribute`; empty disables). Marker is stamped on the local root only — not on other SERVER/CONSUMER spans — so it retains a clear "buffering boundary" meaning. Intended for debugging only.
 - **Reassembly**: at flush, coalesce spans into `ptrace.Traces` by structural equality on Resource and Scope so the output batch has one `ResourceSpans` per unique Resource.
 
 ### Config sketch
@@ -113,7 +133,6 @@ processors:
     wait_duration: 500ms
     fallback_duration: 5s
     num_traces: 1000000
-    local_root_detection: flags_with_kind_fallback
     attributes_to_promote:
       - "^dt\\.feature_flag\\.result\\..+$"
     local_root_marker_attribute: "dt.local_root"

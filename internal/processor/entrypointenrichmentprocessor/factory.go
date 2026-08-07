@@ -29,7 +29,6 @@ func createDefaultConfig() component.Config {
 		WaitDuration:             500 * time.Millisecond,
 		FallbackDuration:         5 * time.Second,
 		NumTraces:                1000000,
-		LocalRootDetection:       ModeFlagsWithKindFallback,
 		AttributesToPromote:      []string{`^dt\.feature_flag\.result\..+$`},
 		LocalRootMarkerAttribute: "dt.local_root",
 	}

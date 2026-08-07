@@ -33,7 +33,6 @@ type Buffer struct {
 	order  []pcommon.TraceID // insertion order for eviction
 
 	cfg    *Config
-	mode   LocalRootDetectionMode
 	next   consumer.Traces
 	logger *zap.Logger
 }
@@ -42,7 +41,6 @@ func newBuffer(cfg *Config, next consumer.Traces, logger *zap.Logger) *Buffer {
 	return &Buffer{
 		traces: make(map[pcommon.TraceID]*traceState),
 		cfg:    cfg,
-		mode:   cfg.LocalRootDetection,
 		next:   next,
 		logger: logger,
 	}
@@ -103,7 +101,7 @@ func (b *Buffer) Insert(res pcommon.Resource, scope pcommon.InstrumentationScope
 
 	ts.spans[sid] = bufferedSpan{resource: rCopy, scope: sCopy, span: spCopy}
 
-	if isLocalRoot(spCopy, b.mode) {
+	if isLocalRoot(ts.spans[sid], ts.spans) {
 		if _, ok := ts.subtreeTimers[sid]; !ok {
 			localSid := sid
 			ts.subtreeTimers[localSid] = time.AfterFunc(b.cfg.WaitDuration, func() {
@@ -131,7 +129,7 @@ func (b *Buffer) flushSubtree(tid pcommon.TraceID, rootID pcommon.SpanID) {
 	var memberIDs []pcommon.SpanID
 	var members []bufferedSpan
 	for sid, s := range ts.spans {
-		if reaches(sid, rootID, ts.spans, b.mode) {
+		if reaches(sid, rootID, ts.spans) {
 			memberIDs = append(memberIDs, sid)
 			members = append(members, s)
 		}
@@ -168,7 +166,7 @@ func (b *Buffer) removeFromOrder(tid pcommon.TraceID) {
 
 // reaches walks parent pointers from spanID toward target.
 // Returns true iff the walk reaches target without crossing a different local root.
-func reaches(spanID, target pcommon.SpanID, index map[pcommon.SpanID]bufferedSpan, mode LocalRootDetectionMode) bool {
+func reaches(spanID, target pcommon.SpanID, index map[pcommon.SpanID]bufferedSpan) bool {
 	cur, ok := index[spanID]
 	if !ok {
 		return false
@@ -179,7 +177,7 @@ func reaches(spanID, target pcommon.SpanID, index map[pcommon.SpanID]bufferedSpa
 		}
 		// If the current span is itself a local root (and it isn't the target),
 		// it belongs to a different subtree — stop here.
-		if isLocalRoot(cur.span, mode) {
+		if isLocalRoot(cur, index) {
 			return false
 		}
 		pid := cur.span.ParentSpanID()

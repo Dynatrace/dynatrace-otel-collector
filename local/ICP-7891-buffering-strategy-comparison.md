@@ -11,13 +11,18 @@ To buffer by local root, each incoming span must be attributed to its local-root
 Local-root detection (used by both strategies) — see [feasibility doc](./ICP-7891-feasibility.md#local-root-detection-in-the-collector):
 
 ```
-isLocalRoot(span):
+isLocalRoot(span, index):
     if span.ParentSpanID().IsEmpty():
         return true
     if span.Flags() & SPAN_FLAGS_CONTEXT_HAS_IS_REMOTE_MASK != 0:
         return span.Flags() & SPAN_FLAGS_CONTEXT_IS_REMOTE_MASK != 0
-    return span.Kind() in (SERVER, CONSUMER)
+    parent, ok := index[span.ParentSpanID()]
+    if !ok:
+        return true                                                   // parent not visible; safe default
+    return serviceIdentity(span.resource) != serviceIdentity(parent.resource)
 ```
+
+Note that the fallback is now a **service-identity comparison** against the parent's resource (using `service.name` + `service.instance.id` when both present), rather than a span-kind heuristic.
 
 ---
 
@@ -166,4 +171,5 @@ Both strategies fit a minimal config:
 - `wait_duration` — per-subtree timer duration (starts when local root arrives). No fixed default recommended without validation against real span-arrival distributions; see the feasibility doc's scope item 4 for the tradeoff between an aggressive (~100–300 ms) and conservative (~1–3 s) setting.
 - `fallback_duration` — trace-level timer for stragglers whose local root never arrived. Roughly 3–5× `wait_duration`, exposed as a separate knob.
 - `num_traces` — bound on the number of in-flight traceID entries (existing groupbytrace knob).
-- `local_root_detection` — `flags_with_kind_fallback` (default) | `flags_only` | `kind_only`, for testing and hardening.
+
+No detection-mode knob: the algorithm is flags-first with service-identity fallback, all paths executed unconditionally.

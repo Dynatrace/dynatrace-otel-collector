@@ -59,10 +59,15 @@ This is where the design load-bearing decision sits — whether OTTL lambdas can
 
 ### 3. `IsLocalRoot()` converter
 
-Standalone, small. Implements the flags/kind algorithm ([feasibility doc § local-root detection](./ICP-7891-feasibility.md#local-root-detection-in-the-collector)):
+Standalone, small. Implements the flags/service-identity algorithm ([feasibility doc § local-root detection](./ICP-7891-feasibility.md#local-root-detection-in-the-collector)):
 
 ```go
-func isLocalRoot(span ptrace.Span) bool {
+// Simplified sketch — the actual OTTL converter needs to reach the containing
+// batch (via tCtx.resourceSpans/scopeSpans) to look up the parent's resource.
+// Without cross-span access, the OTTL converter can only implement the "empty
+// parent OR flags say remote" prefix; the service-comparison fallback requires
+// the cross-span lambda work also proposed in this doc.
+func isLocalRoot(span ptrace.Span, /* containing spans + resource lookup */) bool {
     if span.ParentSpanID().IsEmpty() {
         return true
     }
@@ -70,9 +75,14 @@ func isLocalRoot(span ptrace.Span) bool {
     if flags&spanFlagsContextHasIsRemoteMask != 0 {
         return flags&spanFlagsContextIsRemoteMask != 0
     }
-    return span.Kind() == ptrace.SpanKindServer || span.Kind() == ptrace.SpanKindConsumer
+    // Fallback: compare service.name / service.instance.id against the parent's resource.
+    // Requires walking the containing ResourceSpans/ScopeSpans to find the parent.
+    // See feasibility doc for the full algorithm.
+    return serviceIdentity(currentResource) != serviceIdentity(parentResource)
 }
 ```
+
+Note that this converter benefits from the same cross-span access this doc proposes for lambdas — the fallback path needs to look up the parent's resource. A minimal `IsLocalRoot()` restricted to the "empty parent OR flags say remote" cases can ship independently; the service-comparison path lands with the broader lambda extension.
 
 ## What the OTTL config looks like with the extension
 

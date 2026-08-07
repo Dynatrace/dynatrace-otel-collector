@@ -83,9 +83,9 @@ service:
 `, receiverPort, sinkPort)
 
 	// Optionally inject DT exporter (uncomment to send to Dynatrace):
-	var err error
-	cfg, err = applyDynatraceExporter(cfg)
-	require.NoError(t, err)
+	// var err error
+	// cfg, err = applyDynatraceExporter(cfg)
+	// require.NoError(t, err)
 
 	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(collectorExecPath))
 	cleanup, err := col.PrepareConfig(t, cfg)

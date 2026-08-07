@@ -22,7 +22,6 @@ func newIntegrationProcessor(t *testing.T, sink *consumertest.TracesSink) *entry
 		WaitDuration:             10 * time.Millisecond,
 		FallbackDuration:         200 * time.Millisecond,
 		NumTraces:                10000,
-		LocalRootDetection:       ModeFlagsWithKindFallback,
 		AttributesToPromote:      []string{`^dt\.feature_flag\.`},
 		LocalRootMarkerAttribute: "dt.local_root",
 	}
@@ -117,6 +116,7 @@ func TestIntegration_OutOfOrder(t *testing.T) {
 	ch.SetSpanID(childID)
 	ch.SetParentSpanID(rootID)
 	ch.SetKind(ptrace.SpanKindInternal)
+	ch.SetFlags(0x100) // HAS_IS_REMOTE=1, IS_REMOTE=0 → authoritative local child
 	ch.Attributes().PutStr("dt.feature_flag.result.oo", "yes")
 
 	err := p.ConsumeTraces(context.Background(), td1)

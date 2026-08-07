@@ -8,16 +8,16 @@
 ## Overview
 
 The entrypoint enrichment processor promotes attributes from descendant spans
-onto the **local root span** of each trace subtree, using a lazy-resolution
-buffering strategy.
+onto every **SERVER and CONSUMER span** in each local-root subtree, using a
+lazy-resolution buffering strategy.
 
 A local root span is the service-entrypoint span for a given process — the
 first span in a service that was initiated by a remote caller (or the absolute
-root of the whole trace). Attributes such as
-`dt.feature_flag.result.<name>` are often evaluated in child or helper spans,
-but Dynatrace OpenPipeline RED metrics are anchored to the local root span.
-This processor bridges that gap by copying matching child attributes up to the
-local root before forwarding.
+root of the whole trace). Attributes such as `dt.feature_flag.result.<name>`
+are often evaluated in child or helper spans, but Dynatrace OpenPipeline RED
+metrics are anchored to the service entrypoint span. This processor bridges
+that gap by copying matching descendant attributes up to every SERVER/CONSUMER
+span in the subtree before forwarding.
 
 ## Configuration
 
@@ -26,9 +26,8 @@ local root before forwarding.
 | `wait_duration` | duration | `500ms` | How long to wait after a local root is seen before flushing its subtree. |
 | `fallback_duration` | duration | `5s` | Maximum time to hold any trace. After this, all buffered spans for the trace are emitted without promotion. Must be ≥ `wait_duration`. |
 | `num_traces` | int | `1000000` | Upper bound on the number of in-flight traces buffered. When at capacity, the oldest trace is evicted. |
-| `local_root_detection` | string | `flags_with_kind_fallback` | How to identify local root spans. See [Local root detection](#local-root-detection). |
-| `attributes_to_promote` | []string | `["^dt\\.feature_flag\\.result\\..+$"]` | List of RE2 regex patterns. Attributes from descendant spans whose keys match any pattern are promoted to the local root. |
-| `local_root_marker_attribute` | string | `dt.local_root` | If non-empty, this attribute is set to `true` on every local root span. Set to `""` to disable. |
+| `attributes_to_promote` | []string | `["^dt\\.feature_flag\\.result\\..+$"]` | List of RE2 regex patterns. Attributes from descendant spans whose keys match any pattern are promoted onto every SERVER/CONSUMER span in the subtree. |
+| `local_root_marker_attribute` | string | `dt.local_root` | If non-empty, this attribute is set to `true` on the local root span only (as a debug aid). Set to `""` to disable. |
 
 ### Example
 
@@ -38,7 +37,6 @@ processors:
     wait_duration: 500ms
     fallback_duration: 5s
     num_traces: 1000000
-    local_root_detection: flags_with_kind_fallback
     attributes_to_promote:
       - "^dt\\.feature_flag\\.result\\..+$"
     local_root_marker_attribute: "dt.local_root"
@@ -46,21 +44,38 @@ processors:
 
 ## Local root detection
 
-The processor supports three modes for identifying local root spans, controlled
-by `local_root_detection`:
+A span is classified as a local root in the following order:
 
-| Mode | Behavior |
-|------|----------|
-| `flags_with_kind_fallback` (default) | Uses the OTLP `IS_REMOTE` flag when present; falls back to span kind (Server or Consumer) when the flag is absent. |
-| `flags_only` | Uses the OTLP `IS_REMOTE` flag only. Spans without the flag set are not treated as local roots (unless their `parentSpanID` is empty). |
-| `kind_only` | Treats Server and Consumer spans as local roots, regardless of flags. |
+1. **Empty `parentSpanID`** → always a local root (global trace root).
+2. **`HAS_IS_REMOTE` flag set** (OTLP `Span.flags` bit 8) → authoritative:
+   local root if and only if `IS_REMOTE` (bit 9) is also set. Spans with
+   `HAS_IS_REMOTE=1, IS_REMOTE=0` are explicitly marked as *not* a service
+   boundary and are never classified as local roots via this path.
+3. **Flags absent (older SDKs)** → compare the span's service identity against
+   its parent's service identity. Service identity is derived from the resource:
+   - If both `service.name` and `service.instance.id` are present: `"<name>|<instance_id>"`
+   - If only `service.name` is present: `"<name>"`
+   - Otherwise: a stable hash of all resource attributes.
 
-A span with an empty `parentSpanID` is always treated as a local root,
-regardless of the detection mode.
+   If the identities differ, the span is a local root. If the parent is not
+   yet in the buffer, the span defaults to local root (safe default — see [Limitations](#limitations)).
 
-**Recommendation**: use `flags_with_kind_fallback` (the default). Instrumentations
-that emit the `IS_REMOTE` flag correctly will be handled by the flag check;
-older or simpler instrumentations will be handled by the kind fallback.
+## Attribute promotion semantics
+
+- **Promotion targets**: every SERVER and CONSUMER span in the subtree
+  (including the local root if it is a SERVER/CONSUMER, and any nested SERVER
+  spans within the same service).
+- **First-wins**: if a target span already has an attribute with a given key,
+  its existing value is preserved and descendant values for that key are
+  ignored.
+- **Pattern matching**: all RE2 patterns in `attributes_to_promote` are tested
+  against each attribute key using `MatchString`. Anchoring with `^` and `$` is
+  recommended for precision.
+- **Marker attribute**: `local_root_marker_attribute` is stamped only on the
+  local root span (identified by `SpanID`), not on other SERVER/CONSUMER
+  promotion targets. It is intended as a debug aid, not as a promotion target.
+- **Source retention**: source (descendant) spans are not modified; they retain
+  their original attributes.
 
 ## Buffering and latency
 
@@ -74,14 +89,6 @@ A separate `fallback_duration` timer covers the whole trace. If the local root
 never arrives within `fallback_duration`, all buffered spans for the trace are
 emitted as-is (no promotion).
 
-### Attribute promotion semantics
-
-- **First-wins**: if the local root already has an attribute with a given key,
-  its existing value is preserved and the descendant's value is ignored.
-- **Pattern matching**: all RE2 patterns in `attributes_to_promote` are tested
-  against each attribute key using full-string matching (the regex is tested
-  with `MatchString`, so anchoring with `^` and `$` is recommended for precision).
-
 ## Deployment constraints
 
 This processor buffers spans in memory and correlates them by `traceID`. All
@@ -93,6 +100,21 @@ will be incomplete or absent for spans routed to different instances.
 [Load Balancing Exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/loadbalancingexporter)
 in a preceding collector tier to pin traces to the same downstream instance
 before this processor.
+
+## Limitations
+
+**Same-service span arriving across batches.** When the `HAS_IS_REMOTE` flag is
+unset (older SDKs) and a same-service parent arrives in a *later* OTLP batch
+than one of its children, the child is classified as a local root at insert time
+(safe default: parent not visible → assume service boundary) and is not
+reclassified when the parent arrives. Parent and child then end up in separate
+subtree emissions. Real-world incidence is low: most SDKs export a request's
+spans in one batch, and modern SDKs set the `HAS_IS_REMOTE`/`IS_REMOTE` flags.
+
+**Concurrency model.** The current implementation uses a single mutex around all
+buffer state. For high-throughput deployments, this may become a bottleneck. A
+future optimization is to adopt per-trace worker serialization (similar to
+`groupbytraceprocessor`'s EventMachine pattern).
 
 [development]: https://github.com/open-telemetry/opentelemetry-collector#development
 [Dynatrace]: https://www.dynatrace.com

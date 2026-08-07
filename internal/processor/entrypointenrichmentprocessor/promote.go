@@ -12,39 +12,46 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-// promote copies matching descendant attributes onto the local root span (first-wins semantics).
+
+// promote copies matching attributes from every member onto every SERVER/CONSUMER
+// span in the subtree (first-wins per target). The marker attribute is stamped
+// on the local root span only.
 func promote(members []bufferedSpan, rootID pcommon.SpanID, cfg *Config) {
-	var rootAttrs pcommon.Map
-	rootFound := false
+	// Collect all SERVER/CONSUMER spans as promotion targets.
+	var targets []pcommon.Map
 	for i := range members {
-		if members[i].span.SpanID() == rootID {
-			rootAttrs = members[i].span.Attributes()
-			rootFound = true
-			break
+		k := members[i].span.Kind()
+		if k == ptrace.SpanKindServer || k == ptrace.SpanKindConsumer {
+			targets = append(targets, members[i].span.Attributes())
 		}
-	}
-	if !rootFound {
-		return
 	}
 
+	// Copy matching attributes onto every target (first-wins per target).
+	// When a target span iterates its own matching attributes, the key already
+	// exists in its own map, so it skips itself without modification.
 	for i := range members {
-		if members[i].span.SpanID() == rootID {
-			continue
-		}
 		members[i].span.Attributes().Range(func(k string, v pcommon.Value) bool {
 			if !matchesAny(k, cfg.compiledPatterns) {
 				return true
 			}
-			if _, exists := rootAttrs.Get(k); exists {
-				return true // first-wins: root keeps its existing value
+			for _, t := range targets {
+				if _, exists := t.Get(k); exists {
+					continue // first-wins for this target
+				}
+				v.CopyTo(t.PutEmpty(k))
 			}
-			v.CopyTo(rootAttrs.PutEmpty(k))
 			return true
 		})
 	}
 
+	// Marker goes on the local root only.
 	if cfg.LocalRootMarkerAttribute != "" {
-		rootAttrs.PutBool(cfg.LocalRootMarkerAttribute, true)
+		for i := range members {
+			if members[i].span.SpanID() == rootID {
+				members[i].span.Attributes().PutBool(cfg.LocalRootMarkerAttribute, true)
+				break
+			}
+		}
 	}
 }
 

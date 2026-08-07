@@ -18,7 +18,6 @@ func TestNewFactory(t *testing.T) {
 	require.NotNil(t, cfg)
 	c, ok := cfg.(*Config)
 	require.True(t, ok)
-	assert.Equal(t, ModeFlagsWithKindFallback, c.LocalRootDetection)
 	assert.Equal(t, "dt.local_root", c.LocalRootMarkerAttribute)
 	assert.Equal(t, 1000000, c.NumTraces)
 }

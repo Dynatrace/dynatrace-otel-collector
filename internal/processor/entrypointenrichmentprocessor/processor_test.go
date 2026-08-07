@@ -22,7 +22,6 @@ func TestProcessor_Smoke(t *testing.T) {
 		WaitDuration:             10 * time.Millisecond,
 		FallbackDuration:         200 * time.Millisecond,
 		NumTraces:                1000,
-		LocalRootDetection:       ModeFlagsWithKindFallback,
 		AttributesToPromote:      []string{`^dt\.feature_flag\.`},
 		LocalRootMarkerAttribute: "dt.local_root",
 	}

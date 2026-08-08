@@ -1,0 +1,201 @@
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  name: tiered-otel-scraper
+  namespace: ${NAMESPACE}
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  name: tiered-otel-gateway
+  namespace: ${NAMESPACE}
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  name: tiered-otel-sink
+  namespace: ${NAMESPACE}
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  name: tiered-otel-allocator
+  namespace: ${NAMESPACE}
+---
+# Scraper (tier 1): k8s resolver for loadbalancing exporter
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tiered-otel-scraper
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - endpoints
+      - services
+      - namespaces
+      - nodes
+    verbs: [get, list, watch]
+  - apiGroups: [discovery.k8s.io]
+    resources:
+      - endpointslices
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources:
+      - replicasets
+      - deployments
+      - statefulsets
+      - daemonsets
+    verbs: [get, list, watch]
+  - apiGroups: [batch]
+    resources:
+      - jobs
+      - cronjobs
+    verbs: [get, list, watch]
+---
+# Gateway (tier 2): k8s_attributes processor
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tiered-otel-gateway
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - namespaces
+      - nodes
+    verbs: [get, watch, list]
+  - apiGroups: [apps]
+    resources:
+      - replicasets
+    verbs: [get, watch, list]
+  - apiGroups: [batch]
+    resources:
+      - jobs
+      - cronjobs
+    verbs: [get, watch, list]
+---
+# Sink (selfmon): k8s_attributes processor for the OTLP self-monitoring sink
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tiered-otel-sink
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - namespaces
+      - nodes
+    verbs: [get, watch, list]
+  - apiGroups: [apps]
+    resources:
+      - replicasets
+      - deployments
+      - statefulsets
+      - daemonsets
+    verbs: [get, watch, list]
+  - apiGroups: [batch]
+    resources:
+      - jobs
+      - cronjobs
+    verbs: [get, watch, list]
+---
+# Allocator: service discovery + Prometheus CR access
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tiered-otel-allocator
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - endpoints
+      - services
+      - nodes
+      - nodes/metrics
+    verbs: [get, watch, list]
+  - apiGroups: [discovery.k8s.io]
+    resources:
+      - endpointslices
+    verbs: [get, watch, list]
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    verbs: [get]
+  - apiGroups: [""]
+    resources:
+      - secrets
+    verbs: [get, list, watch]
+  - apiGroups: [networking.k8s.io]
+    resources:
+      - ingresses
+    verbs: [get, list, watch]
+  - nonResourceURLs: ["/metrics"]
+    verbs: [get]
+  - apiGroups: [monitoring.coreos.com]
+    resources:
+      - servicemonitors
+      - podmonitors
+      - scrapeconfigs
+      - probes
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources:
+      - namespaces
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiered-otel-scraper
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tiered-otel-scraper
+subjects:
+  - kind: ServiceAccount
+    name: tiered-otel-scraper
+    namespace: ${NAMESPACE}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiered-otel-gateway
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tiered-otel-gateway
+subjects:
+  - kind: ServiceAccount
+    name: tiered-otel-gateway
+    namespace: ${NAMESPACE}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiered-otel-sink
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tiered-otel-sink
+subjects:
+  - kind: ServiceAccount
+    name: tiered-otel-sink
+    namespace: ${NAMESPACE}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiered-otel-allocator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tiered-otel-allocator
+subjects:
+  - kind: ServiceAccount
+    name: tiered-otel-allocator
+    namespace: ${NAMESPACE}

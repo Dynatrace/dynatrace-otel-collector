@@ -122,10 +122,36 @@ func assertExpectedLogs(sm plog.LogRecordSlice) error {
 		"flow.end",
 		"flow.sampling_rate",
 		"flow.sampler_address",
+		"flow.in_if",
+		"flow.out_if",
+		"flow.ip_tos",
+		"flow.ip_ttl",
+		"flow.ip_flags",
+		"flow.fragment_id",
+		"flow.fragment_offset",
+		"flow.ipv6_flow_label",
+		"flow.icmp_type",
+		"flow.icmp_code",
+		"flow.src_mac",
+		"flow.dst_mac",
+		"flow.src_vlan",
+		"flow.dst_vlan",
+		"flow.vlan_id",
+		"flow.next_hop",
+		"flow.next_hop_as",
+		"flow.src_as",
+		"flow.dst_as",
+		"flow.tcp_flags",
+		"flow.src_net",
+		"flow.dst_net",
+		"flow.forwarding_status",
+		"flow.observation_domain_id",
+		"flow.observation_point_id",
 	}
+
 	for i := 0; i < sm.Len(); i++ {
 		attrs := sm.At(i).Attributes()
-		if attrs.Len() != 16 {
+		if attrs.Len() != len(expectedAttributeKeys) {
 			return fmt.Errorf("invalid length of attributes: %d", attrs.Len())
 		}
 		val, ok := attrs.Get("flow.type")
@@ -139,6 +165,7 @@ func assertExpectedLogs(sm plog.LogRecordSlice) error {
 			return fmt.Errorf("invalid attributes: %v", attrs.AsRaw())
 		}
 	}
+
 	return nil
 }
 

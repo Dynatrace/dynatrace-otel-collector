@@ -5,7 +5,7 @@ go 1.26.5
 require (
 	github.com/google/addlicense v1.2.0
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
-	github.com/sigstore/cosign/v3 v3.1.2
+	github.com/sigstore/cosign/v3 v3.1.3
 	go.opentelemetry.io/build-tools/chloggen v0.30.0
 	go.opentelemetry.io/collector/cmd/builder v0.157.0
 )
@@ -213,7 +213,7 @@ require (
 	github.com/sigstore/rekor v1.5.3 // indirect
 	github.com/sigstore/rekor-tiles/v2 v2.3.0 // indirect
 	github.com/sigstore/sigstore v1.10.8 // indirect
-	github.com/sigstore/sigstore-go v1.2.1 // indirect
+	github.com/sigstore/sigstore-go v1.2.2 // indirect
 	github.com/sigstore/sigstore/pkg/signature/kms/aws v1.10.8 // indirect
 	github.com/sigstore/sigstore/pkg/signature/kms/azure v1.10.8 // indirect
 	github.com/sigstore/sigstore/pkg/signature/kms/gcp v1.10.8 // indirect

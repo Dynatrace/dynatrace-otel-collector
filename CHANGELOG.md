@@ -4,6 +4,86 @@
 
 <!-- next version -->
 
+## 0.54.0
+
+This release includes version v0.158.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.158.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.158.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.158.0>
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### ⚠️ Deprecations ⚠️
+
+- `processor/resource_detection`: Deprecate per-detector `fail_on_missing_metadata` in the `ec2` detector config ([#46579](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46579))
+  Use the top-level `fail_on_missing_metadata` in the processor config instead.
+  The field continues to work but will emit a deprecation warning in the logs when set and
+  code will be removed later.
+
+### 💡 Enhancements 💡
+
+- `processor/resource_detection`: Add top-level `fail_on_missing_metadata` to make unreachable metadata services a hard failure ([#46579](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46579))
+  When `true`, network-based detectors return an error instead of silently returning an empty
+  resource when their metadata service is unreachable.
+  Supersedes the per-detector `fail_on_missing_metadata` fields, which are now deprecated.
+- `receiver/kafka_metrics`: Add `kafka.cluster.id` resource attribute, auto-discovered from cluster metadata. Disabled by default; opt in via `resource_attributes`. ([#48892](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48892))
+  The attribute is disabled by default. When enabled, it complements the existing user-configured `kafka.cluster.alias` resource attribute.
+- `processor/transform`: Add `ParseELF` function to parse W3C Extended Log Format (ELF) log blocks into structured maps. ([#48352](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48352))
+  `ParseELF(target)` parses a complete ELF text block and returns a `pcommon.Map` with
+  directive metadata (version, software, date, start_date, end_date, remark), a fields
+  slice, and an entries slice keyed by field name. Multiple #Fields directives and
+  double-quoted values (IIS-style) are supported.
+- `receiver/kubelet_stats`: Add the `receiver.kubeletstats.cpuUsageScrapeBased` feature gate. When enabled, `container.cpu.usage`, `k8s.pod.cpu.usage` and `k8s.node.cpu.usage` (and the cpu utilization metrics derived from them) are calculated as the rate of the corresponding `*.cpu.time` counter between consecutive scrapes, instead of being read directly from the kubelet's `UsageNanoCores` value. ([#49477](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49477))
+- `receiver/netflow`: Add interface, IP header, L2, ICMP, routing, and IPFIX observation attributes to parsed flow log records ([#49946](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49946))
+  Added the following attributes decoded by goflow2 but previously not included in log records:
+  flow.in_if, flow.out_if, flow.ip_tos, flow.ip_ttl, flow.ip_flags, flow.fragment_id,
+  flow.fragment_offset, flow.ipv6_flow_label, flow.icmp_type, flow.icmp_code,
+  flow.src_mac, flow.dst_mac, flow.src_vlan, flow.dst_vlan, flow.vlan_id,
+  flow.next_hop, flow.next_hop_as, flow.src_as, flow.dst_as, flow.bgp_next_hop,
+  flow.src_net, flow.dst_net, flow.forwarding_status, flow.observation_domain_id,
+  flow.observation_point_id.
+- `processor/resource_detection`: Add cloud.region to GKE resource detection by deriving it from cloud.availability_zone ([#49694](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49694))
+- `pkg/stanza`: Change `connection_idle_timeout` on the `tcp_input` operator to a duration field that defaults to no idle timeout, apply it independently of `max_connections`, and add a `tcp_input_refused_connections` metric. ([#49610](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49610))
+- `pkg/stanza`: Add `max_connections` and `connection_idle_timeout` options to the `tcp_input` operator to limit the number of concurrent TCP connections. ([#49610](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49610))
+
+### 🧰 Bug fixes 🧰
+
+- `exporter/debug`: Fix profile sample attribute formatting for non-string values ([#15647](https://github.com/open-telemetry/opentelemetry-collector/issues/15647))
+  Previously, non-string values produced malformed output such as `%!s(int64=42)`.
+  Profile sample attributes now use the debug exporter's typed attribute format, such as `Int(42)`.
+  This will also change strings from `hello-world` to `Str(hello-world)`.
+- `exporter/load_balancing`: Fix a memory leak in the Kubernetes resolver where pod hostnames were retained indefinitely after pods churned when `return_hostnames` is enabled. ([#49757](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49757))
+  During a rolling update a pod frequently appears in an EndpointSlice a moment
+  before its Hostname field is populated. With `return_hostnames: true`, the
+  resolver previously discarded the entire update whenever any endpoint in the
+  slice lacked a hostname, so pods that churned out in that same event were never
+  removed from the endpoint store. Over many pod rolls the store, the hash ring,
+  and the per-endpoint exporter map grew without bound. Endpoints missing a
+  hostname are now skipped individually while the rest of the slice is still
+  processed, so churned-out pods are removed promptly.
+- `processor/redaction`: Apply `blocked_values` patterns in the order they are listed in the configuration instead of a nondeterministic order ([#49858](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49858))
+  Previously the patterns were applied in Go map iteration order. When two patterns
+  could match overlapping parts of the same value, the result changed from run to run,
+  and some orders left data unmasked that another order would have redacted.
+- `receiver/fluent_forward`: Delay Fluent Forward chunk acknowledgments until logs are successfully consumed downstream. ([#46973](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46973))
+- `pkg/stanza`: Discard partial log lines instead of emitting them as truncated entries when the TCP input is shut down mid-transmission. ([#49622](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49622))
+  On graceful shutdown the operator force-closes in-flight connections. Previously any partial
+  (non-delimited) data left in the receive buffer was flushed as a complete log entry, producing
+  truncated records. It is now discarded, while a final line without a trailing delimiter is still
+  emitted when the client closes the connection cleanly.
+
+---
+
+</details>
+
+
+<!-- previous-version -->
+
 ## 0.53.1
 
 #### Dynatrace distribution changelog:

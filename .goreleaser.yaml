@@ -82,6 +82,12 @@ nfpms:
         dst: /lib/systemd/system/dynatrace-otel-collector.service
       - src: internal/release/dynatrace-otel-collector.conf
         dst: /etc/dynatrace-otel-collector/dynatrace-otel-collector.conf
+      - dst: /var/lib/dynatrace-otel-collector
+        type: dir
+        file_info:
+          owner: otel
+          group: otel
+          mode: 0o750
     umask: 0o002
     scripts:
       preinstall: internal/release/preinstall.sh

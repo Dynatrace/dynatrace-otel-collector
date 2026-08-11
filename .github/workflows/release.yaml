@@ -127,69 +127,11 @@ jobs:
         with:
           subject-checksums: ./dist/digests.txt
 
-      - name: Configure AWS credentials for release ingestion
-        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
-        with:
-          role-to-assume: ${{ secrets.RELEASE_INGESTION_ROLE_ARN }}
-          aws-region: eu-central-1
-
       - name: Send release notification
-        env:
-          HMAC_SECRET: ${{ secrets.RELEASE_INGESTION_HMAC_SECRET }}
-          API_URL: ${{ vars.RELEASE_INGESTION_API_URL }}
-        run: |
-          python3 << 'EOF'
-          import boto3, hashlib, hmac, json, os, uuid, urllib.request
-          from botocore.auth import SigV4Auth
-          from botocore.awsrequest import AWSRequest
-
-          tag     = os.environ["GITHUB_REF_NAME"]
-          version = tag.lstrip("v")
-          repo    = os.environ["GITHUB_REPOSITORY"]
-
-          ghcr_prefix  = "ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector"
-          arch_suffixes = ("-amd64", "-arm64", "-ppc64le", "-s390x")
-
-          source_ref = digest = None
-          with open("./dist/digests.txt") as f:
-              for line in f:
-                  ref, dgst = line.strip().split()
-                  if (ref.startswith(f"{ghcr_prefix}:{version}")
-                          and not any(ref.endswith(s) for s in arch_suffixes)):
-                      source_ref, digest = ref, dgst
-                      break
-
-          if not source_ref:
-              raise RuntimeError(f"No GHCR manifest found for version {version} in digests.txt")
-
-          payload = {
-              "schema_version": "1",
-              "component":      "dynatrace-otel-collector",
-              "version":        version,
-              "github_release_url": f"https://github.com/{repo}/releases/tag/{tag}",
-              "source_repo":       repo,
-              "source_commit_sha": os.environ["GITHUB_SHA"],
-              "artifacts": [{
-                  "type":       "docker-image",
-                  "name":       "dynatrace-otel-collector",
-                  "source_ref": source_ref,
-                  "digest":     digest,
-              }],
-          }
-
-          body        = json.dumps(payload, separators=(",", ":")).encode()
-          delivery_id = str(uuid.uuid4())
-          signature   = "sha256=" + hmac.new(os.environ["HMAC_SECRET"].encode(), body, hashlib.sha256).hexdigest()
-          url         = os.environ["API_URL"]
-
-          aws_req = AWSRequest(method="POST", url=url, data=body, headers={
-              "Content-Type":            "application/json",
-              "X-Release-Signature-256": signature,
-              "X-Release-Delivery-Id":   delivery_id,
-          })
-          SigV4Auth(boto3.Session().get_credentials(), "execute-api", "eu-central-1").add_auth(aws_req)
-
-          req = urllib.request.Request(url, data=body, headers=dict(aws_req.headers), method="POST")
-          with urllib.request.urlopen(req) as resp:
-              print(f"Ingestion API response: {resp.status}")
-          EOF
+        uses: ./.github/actions/send-release-notification
+        with:
+          component: dynatrace-otel-collector
+          ghcr_prefix: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
+          role_arn: ${{ secrets.RELEASE_INGESTION_ROLE_ARN }}
+          hmac_secret: ${{ secrets.RELEASE_INGESTION_HMAC_SECRET }}
+          api_url: ${{ vars.RELEASE_INGESTION_API_URL }}

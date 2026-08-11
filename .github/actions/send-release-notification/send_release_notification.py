@@ -15,7 +15,7 @@ with open(os.environ["DIGESTS_FILE"]) as f:
     for line in f:
         dgst, ref = line.strip().split()
         if ref == target_ref:
-            source_ref, digest = ref, dgst
+            source_ref, digest = ref, f"sha256:{dgst}"
             break
 
 if not source_ref:

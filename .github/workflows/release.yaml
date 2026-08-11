@@ -126,3 +126,12 @@ jobs:
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-checksums: ./dist/digests.txt
+
+      - name: Send release notification
+        uses: ./.github/actions/send-release-notification
+        with:
+          component: dynatrace-otel-collector
+          ghcr_prefix: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
+          role_arn: ${{ secrets.RELEASE_INGESTION_ROLE_ARN }}
+          hmac_secret: ${{ secrets.RELEASE_INGESTION_HMAC_SECRET }}
+          api_url: ${{ vars.RELEASE_INGESTION_API_URL }}

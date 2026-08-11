@@ -328,9 +328,16 @@ func TestE2E_OIDCAuthRejectsInvalidTokens(t *testing.T) {
 		},
 	}
 
+	type senderInfo struct {
+		name   string
+		testID string
+	}
+	var senderInfos []senderInfo
+
 	var allTelemetryGenObjInfos []*otelk8stest.TelemetrygenObjInfo
 	for _, tc := range cases {
 		senderTestID := uuid.NewString()[:8]
+		senderInfos = append(senderInfos, senderInfo{name: tc.name, testID: senderTestID})
 
 		senderConfig, err := k8stest.GetCollectorConfig(tc.configPath, k8stest.ConfigTemplate{
 			Host:      host,
@@ -380,4 +387,28 @@ func TestE2E_OIDCAuthRejectsInvalidTokens(t *testing.T) {
 		90*time.Second, 5*time.Second,
 		"oidcauthextension must reject all invalid tokens; no traces should reach the sink",
 	)
+
+	// Confirm the verifier actually received and logged a rejection for each
+	// negative case — guards against a false pass where senders never sent anything.
+	verifierLogs := otelk8stest.FetchPodLogs(t, k8sClient, testNs, map[string]any{
+		"app.kubernetes.io/name":     "opentelemetry-collector",
+		"app.kubernetes.io/instance": "otelcol-" + verifierTestID,
+	})
+	require.Contains(t, verifierLogs, "Authentication failed: missing or empty header",
+		"verifier must log rejection for missing Authorization header (no-token case)")
+	require.Contains(t, verifierLogs, "Authentication failed: could not parse issuer from token",
+		"verifier must log rejection for non-JWT bearer value (invalid-token case)")
+	require.Contains(t, verifierLogs, "Authentication failed: token verification failed",
+		"verifier must log rejection for wrong-audience token")
+
+	// Confirm each sender actually reached the verifier and received a 401:
+	// exporterhelper logs "Permanent error" for non-retryable HTTP responses.
+	for _, si := range senderInfos {
+		senderLogs := otelk8stest.FetchPodLogs(t, k8sClient, testNs, map[string]any{
+			"app.kubernetes.io/name":     "opentelemetry-collector",
+			"app.kubernetes.io/instance": "otelcol-" + si.testID,
+		})
+		require.Contains(t, senderLogs, "Permanent error",
+			"sender %q must log a permanent export error after 401 from verifier", si.name)
+	}
 }

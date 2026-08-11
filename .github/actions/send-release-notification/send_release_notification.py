@@ -13,7 +13,7 @@ target_ref  = f"{ghcr_prefix}:{version}"
 source_ref = digest = None
 with open(os.environ["DIGESTS_FILE"]) as f:
     for line in f:
-        ref, dgst = line.strip().split()
+        dgst, ref = line.strip().split()
         if ref == target_ref:
             source_ref, digest = ref, dgst
             break
@@ -52,7 +52,7 @@ aws_req = AWSRequest(method="POST", url=url, data=body, headers={
 })
 SigV4Auth(boto3.Session().get_credentials(), "execute-api", region).add_auth(aws_req)
 
-http = urllib3.PoolManager(retries=Retry(
+http = urllib3.PoolManager(timeout=urllib3.Timeout(connect=5, read=30), retries=Retry(
     total=3,
     backoff_factor=1,
     backoff_jitter=1.0,

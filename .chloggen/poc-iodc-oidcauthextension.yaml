@@ -10,5 +10,4 @@ subtext: |
   The extension validates short-lived OIDC tokens (e.g. Kubernetes projected
   service-account tokens) on OTLP/gRPC and OTLP/HTTP receivers, enabling
   token-based authentication for collector-to-collector (WIF) flows without
-  shared secrets. See `config_examples/oidcauth-receiver.yaml` for a reference
-  configuration.
+  shared secrets.

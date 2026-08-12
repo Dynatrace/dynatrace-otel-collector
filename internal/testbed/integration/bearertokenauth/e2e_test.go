@@ -404,10 +404,13 @@ func TestE2E_OIDCAuthRejectsInvalidTokens(t *testing.T) {
 		"app.kubernetes.io/name":     "opentelemetry-collector",
 		"app.kubernetes.io/instance": "otelcol-" + verifierTestID,
 	})
+	// sender-no-token-config.yaml: no Authorization header → oidcauthextension rejects at header check
 	require.Contains(t, verifierLogs, "Authentication failed: missing or empty header",
 		"verifier must log rejection for missing Authorization header (no-token case)")
+	// sender-invalid-token-config.yaml: static non-JWT string → oidcauthextension fails issuer extraction
 	require.Contains(t, verifierLogs, "Authentication failed: could not parse issuer from token",
 		"verifier must log rejection for non-JWT bearer value (invalid-token case)")
+	// sender-wrong-audience-config.yaml: valid cluster JWT but wrong audience → oidcauthextension rejects at verification
 	require.Contains(t, verifierLogs, "Authentication failed: token verification failed",
 		"verifier must log rejection for wrong-audience token")
 

@@ -142,7 +142,7 @@ func (l *logsService) Export(_ context.Context, req plogotlp.ExportRequest) (plo
 	logsMarshaler := &plog.JSONMarshaler{}
 	logs, err := logsMarshaler.MarshalLogs(req.Logs())
 	if err != nil {
-		log.Printf("Could not marshal metrics: %v\n", err)
+		log.Printf("Could not marshal logs: %v\n", err)
 		return plogotlp.NewExportResponse(), nil
 	}
 

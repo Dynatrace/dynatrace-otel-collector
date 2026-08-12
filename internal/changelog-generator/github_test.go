@@ -4,6 +4,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -74,7 +75,7 @@ func TestDoGet_RetriesOnRateLimit(t *testing.T) {
 	defer ts.Close()
 
 	c := &githubClient{httpClient: ts.Client()}
-	body, err := c.do(http.MethodGet, ts.URL, nil, true)
+	body, err := c.do(context.Background(), http.MethodGet, ts.URL, nil, true)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -111,7 +112,7 @@ func TestFetchChloggenFiles_GraphQL(t *testing.T) {
 	defer ts.Close()
 
 	c := &githubClient{httpClient: ts.Client(), graphqlURL: ts.URL}
-	files, err := c.fetchChloggenFiles("owner", "repo", "abc123sha")
+	files, err := c.fetchChloggenFiles(context.Background(), "owner", "repo", "abc123sha")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -141,7 +142,7 @@ func TestFetchChloggenFiles_GraphQLError(t *testing.T) {
 	defer ts.Close()
 
 	c := &githubClient{httpClient: ts.Client(), graphqlURL: ts.URL}
-	_, err := c.fetchChloggenFiles("owner", "repo", "abc123sha")
+	_, err := c.fetchChloggenFiles(context.Background(), "owner", "repo", "abc123sha")
 	if err == nil {
 		t.Fatal("expected error from GraphQL errors field")
 	}

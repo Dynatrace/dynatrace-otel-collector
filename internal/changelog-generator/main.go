@@ -4,6 +4,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -18,13 +19,13 @@ func main() {
 
 	prURLs := flag.Args()
 
-	if err := run(*manifestPath, *configPath, *changelogPath, *dryRun, prURLs); err != nil {
+	if err := run(context.Background(), *manifestPath, *configPath, *changelogPath, *dryRun, prURLs); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func run(manifestPath, configPath, changelogPath string, dryRun bool, prURLs []string) error {
+func run(ctx context.Context, manifestPath, configPath, changelogPath string, dryRun bool, prURLs []string) error {
 	// When no upstream PR URLs are provided (distro-only release), remove the
 	// upstream section from the scaffold that was created by `make chlog-update`.
 	if len(prURLs) == 0 {
@@ -66,14 +67,14 @@ func run(manifestPath, configPath, changelogPath string, dryRun bool, prURLs []s
 	for _, prURL := range prURLs {
 		fmt.Fprintf(os.Stderr, "info: fetching PR %s\n", prURL)
 
-		info, err := client.FetchPRInfo(prURL)
+		info, err := client.FetchPRInfo(ctx, prURL)
 		if err != nil {
 			return fmt.Errorf("fetching PR info for %s: %w", prURL, err)
 		}
 		fmt.Fprintf(os.Stderr, "info: PR source=%s version=%s base=%s\n",
 			info.Source, info.UpstreamVersion, info.BaseSHA[:min(8, len(info.BaseSHA))])
 
-		entries, err := client.FetchChloggenEntries(info)
+		entries, err := client.FetchChloggenEntries(ctx, info)
 		if err != nil {
 			return fmt.Errorf("fetching chloggen entries for %s: %w", prURL, err)
 		}
@@ -109,11 +110,4 @@ func run(manifestPath, configPath, changelogPath string, dryRun bool, prURLs []s
 	}
 	fmt.Fprintf(os.Stderr, "info: %s updated successfully\n", changelogPath)
 	return nil
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

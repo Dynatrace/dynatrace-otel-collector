@@ -186,7 +186,7 @@ func filterCollectorReleaseVersions(versions []string) []string {
 		}
 	}
 	if len(collector) > 0 {
-		return sortedUniqueVersions(collector)
+		return collector
 	}
 	return versions
 }

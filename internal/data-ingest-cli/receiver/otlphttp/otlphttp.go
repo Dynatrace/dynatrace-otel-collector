@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
@@ -38,17 +39,20 @@ func NewOTLPHTTPReceiver(c Config) *OTLPHTTPReceiver {
 }
 
 func (r *OTLPHTTPReceiver) Start() error {
-	http.HandleFunc("/v1/traces", r.handleTraces)
-	http.HandleFunc("/v1/metrics", r.handleMetrics)
-	http.HandleFunc("/v1/logs", r.handleLogs)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/traces", r.handleTraces)
+	mux.HandleFunc("/v1/metrics", r.handleMetrics)
+	mux.HandleFunc("/v1/logs", r.handleLogs)
 
-	server := &http.Server{
-		Addr: fmt.Sprintf(":%d", r.config.Port),
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", r.config.Port))
+	if err != nil {
+		return fmt.Errorf("could not listen on %d: %w", r.config.Port, err)
 	}
 
+	server := &http.Server{Handler: mux}
 	go func() {
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Could not listen on %d: %v\n", r.config.Port, err)
+		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
+			log.Printf("HTTP server error: %v\n", err)
 		}
 	}()
 	return nil
@@ -62,15 +66,13 @@ func (r *OTLPHTTPReceiver) Stop() {
 }
 
 func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request) {
-	log.Println("Received metrics")
-	body, err, status := r.readRequest(w, req)
+	log.Println("Received traces")
+	body, err, status := r.readRequest(req)
 	if err != nil {
 		http.Error(w, err.Error(), status)
 		log.Fatalln(err)
 		return
 	}
-
-	req.Body.Close()
 
 	unmarshaler := ptrace.ProtoUnmarshaler{}
 	traces, err := unmarshaler.UnmarshalTraces(body)
@@ -107,20 +109,20 @@ func (r *OTLPHTTPReceiver) handleTraces(w http.ResponseWriter, req *http.Request
 		log.Fatalln(err)
 	}
 
-	w.(http.Flusher).Flush()
+	if f, ok := w.(http.Flusher); ok {
+		f.Flush()
+	}
 	r.receivedDataChan <- struct{}{}
 }
 
 func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Request) {
 	log.Println("Received metrics")
-	body, err, status := r.readRequest(w, req)
+	body, err, status := r.readRequest(req)
 	if err != nil {
 		http.Error(w, err.Error(), status)
 		log.Fatalln(err)
 		return
 	}
-
-	req.Body.Close()
 
 	unmarshaler := pmetric.ProtoUnmarshaler{}
 	metrics, err := unmarshaler.UnmarshalMetrics(body)
@@ -157,20 +159,20 @@ func (r *OTLPHTTPReceiver) handleMetrics(w http.ResponseWriter, req *http.Reques
 		log.Fatalln(err)
 	}
 
-	w.(http.Flusher).Flush()
+	if f, ok := w.(http.Flusher); ok {
+		f.Flush()
+	}
 	r.receivedDataChan <- struct{}{}
 }
 
 func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) {
-	log.Println("Received metrics")
-	body, err, status := r.readRequest(w, req)
+	log.Println("Received logs")
+	body, err, status := r.readRequest(req)
 	if err != nil {
 		http.Error(w, err.Error(), status)
 		log.Fatalln(err)
 		return
 	}
-
-	req.Body.Close()
 
 	unmarshaler := plog.ProtoUnmarshaler{}
 	logs, err := unmarshaler.UnmarshalLogs(body)
@@ -207,23 +209,24 @@ func (r *OTLPHTTPReceiver) handleLogs(w http.ResponseWriter, req *http.Request) 
 		log.Fatalln(err)
 	}
 
-	w.(http.Flusher).Flush()
+	if f, ok := w.(http.Flusher); ok {
+		f.Flush()
+	}
 	r.receivedDataChan <- struct{}{}
 }
 
-func (r *OTLPHTTPReceiver) readRequest(w http.ResponseWriter, req *http.Request) ([]byte, error, int) {
+func (r *OTLPHTTPReceiver) readRequest(req *http.Request) ([]byte, error, int) {
 	if req.Method != http.MethodPost {
 		err := fmt.Errorf("Invalid request method %s", req.Method)
 		return nil, err, http.StatusMethodNotAllowed
 	}
 
+	defer req.Body.Close()
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		err := fmt.Errorf("Failed to read request body %s", err.Error())
 		return nil, err, http.StatusMethodNotAllowed
 	}
-
-	defer req.Body.Close()
 
 	return body, nil, 0
 }

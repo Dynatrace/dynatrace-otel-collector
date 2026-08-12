@@ -5,6 +5,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -62,14 +63,14 @@ func parsePRURL(rawURL string) (owner, repo string, number int, err error) {
 }
 
 // FetchPRInfo retrieves metadata about a "prepare release" PR.
-func (c *githubClient) FetchPRInfo(prURL string) (PRInfo, error) {
+func (c *githubClient) FetchPRInfo(ctx context.Context, prURL string) (PRInfo, error) {
 	owner, repo, number, err := parsePRURL(prURL)
 	if err != nil {
 		return PRInfo{}, err
 	}
 
 	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/pulls/%d", owner, repo, number)
-	body, err := c.get(apiURL)
+	body, err := c.get(ctx, apiURL)
 	if err != nil {
 		return PRInfo{}, fmt.Errorf("fetching PR %s: %w", apiURL, err)
 	}
@@ -93,7 +94,7 @@ func (c *githubClient) FetchPRInfo(prURL string) (PRInfo, error) {
 		return PRInfo{}, fmt.Errorf("PR head SHA is empty")
 	}
 
-	version, err := c.fetchVersionFromVersionsFile(owner, repo, pr.Head.SHA)
+	version, err := c.fetchVersionFromVersionsFile(ctx, owner, repo, pr.Head.SHA)
 	if err != nil {
 		return PRInfo{}, fmt.Errorf("reading versions.yaml for %s/%s at %s: %w", owner, repo, pr.Head.SHA[:min(8, len(pr.Head.SHA))], err)
 	}
@@ -114,10 +115,10 @@ func (c *githubClient) FetchPRInfo(prURL string) (PRInfo, error) {
 	}, nil
 }
 
-func (c *githubClient) fetchVersionFromVersionsFile(owner, repo, ref string) (string, error) {
+func (c *githubClient) fetchVersionFromVersionsFile(ctx context.Context, owner, repo, ref string) (string, error) {
 	// Fetch versions.yaml directly from raw.githubusercontent.com — no metadata round-trip needed.
 	rawURL := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/versions.yaml", owner, repo, ref)
-	data, err := c.getRaw(rawURL)
+	data, err := c.getRaw(ctx, rawURL)
 	if err != nil {
 		return "", fmt.Errorf("fetching versions.yaml: %w", err)
 	}
@@ -167,8 +168,8 @@ func extractVersionFromVersionsYAML(data []byte) (string, error) {
 
 // FetchChloggenEntries fetches and parses all .chloggen/*.yaml files from the
 // base commit of the given PR using a single GraphQL query.
-func (c *githubClient) FetchChloggenEntries(info PRInfo) ([]ChangelogEntry, error) {
-	files, err := c.fetchChloggenFiles(info.Owner, info.Repo, info.BaseSHA)
+func (c *githubClient) FetchChloggenEntries(ctx context.Context, info PRInfo) ([]ChangelogEntry, error) {
+	files, err := c.fetchChloggenFiles(ctx, info.Owner, info.Repo, info.BaseSHA)
 	if err != nil {
 		return nil, fmt.Errorf("fetching .chloggen files for %s/%s@%s: %w", info.Owner, info.Repo, info.BaseSHA[:min(8, len(info.BaseSHA))], err)
 	}
@@ -191,7 +192,7 @@ func (c *githubClient) FetchChloggenEntries(info PRInfo) ([]ChangelogEntry, erro
 
 // fetchChloggenFiles retrieves all .chloggen/*.yaml file contents at the given
 // commit SHA using a single GraphQL query. Returns a map of filename → content.
-func (c *githubClient) fetchChloggenFiles(owner, repo, sha string) (map[string]string, error) {
+func (c *githubClient) fetchChloggenFiles(ctx context.Context, owner, repo, sha string) (map[string]string, error) {
 	const query = `
 query($owner: String!, $repo: String!, $expr: String!) {
   repository(owner: $owner, name: $repo) {
@@ -221,7 +222,7 @@ query($owner: String!, $repo: String!, $expr: String!) {
 		"variables": variables,
 	}
 
-	body, err := c.post(c.graphqlURL, payload)
+	body, err := c.post(ctx, c.graphqlURL, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -272,27 +273,27 @@ query($owner: String!, $repo: String!, $expr: String!) {
 
 // get performs an authenticated GET against the GitHub API and returns the
 // response body. It retries once on rate-limit responses.
-func (c *githubClient) get(url string) ([]byte, error) {
-	return c.do(http.MethodGet, url, nil, true)
+func (c *githubClient) get(ctx context.Context, url string) ([]byte, error) {
+	return c.do(ctx, http.MethodGet, url, nil, true)
 }
 
 // getRaw performs a GET for raw file content (no JSON API headers needed).
-func (c *githubClient) getRaw(url string) ([]byte, error) {
-	return c.do(http.MethodGet, url, nil, false)
+func (c *githubClient) getRaw(ctx context.Context, url string) ([]byte, error) {
+	return c.do(ctx, http.MethodGet, url, nil, false)
 }
 
 // post performs an authenticated POST with a JSON body against the GitHub API.
-func (c *githubClient) post(url string, payload any) ([]byte, error) {
+func (c *githubClient) post(ctx context.Context, url string, payload any) ([]byte, error) {
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return nil, fmt.Errorf("marshalling request: %w", err)
 	}
-	return c.do(http.MethodPost, url, body, true)
+	return c.do(ctx, http.MethodPost, url, body, true)
 }
 
 // do executes an HTTP request with optional auth and GitHub API headers,
 // retrying once on rate-limit responses (403/429).
-func (c *githubClient) do(method, url string, body []byte, apiHeaders bool) ([]byte, error) {
+func (c *githubClient) do(ctx context.Context, method, url string, body []byte, apiHeaders bool) ([]byte, error) {
 	const maxAttempts = 2
 
 	for attempt := 1; attempt <= maxAttempts; attempt++ {
@@ -300,7 +301,7 @@ func (c *githubClient) do(method, url string, body []byte, apiHeaders bool) ([]b
 		if body != nil {
 			bodyReader = bytes.NewReader(body)
 		}
-		req, err := http.NewRequest(method, url, bodyReader)
+		req, err := http.NewRequestWithContext(ctx, method, url, bodyReader)
 		if err != nil {
 			return nil, err
 		}

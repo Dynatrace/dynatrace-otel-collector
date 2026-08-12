@@ -9,6 +9,7 @@ import (
 	"math/big"
 	"net"
 	"os/exec"
+	"regexp"
 	"runtime"
 	"slices"
 	"sort"
@@ -24,7 +25,6 @@ import (
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
-	"gopkg.in/yaml.v3"
 )
 
 type portpair struct {
@@ -168,24 +168,31 @@ func SetFeatureGateForTest(t testing.TB, gate *featuregate.Gate, enabled bool) f
 
 const CollectorTestsExecPath string = "../../../bin/dynatrace-otel-collector"
 
+// replaceEndpointPort swaps oldPort for newPort only within endpoint: fields,
+// preventing silent corruption of other fields that happen to contain the port number.
+func replaceEndpointPort(cfg string, oldPort, newPort int) string {
+	re := regexp.MustCompile(fmt.Sprintf(`(endpoint:\s*\S+:)%d\b`, oldPort))
+	return re.ReplaceAllString(cfg, "${1}"+strconv.Itoa(newPort))
+}
+
 func ReplaceOtlpGrpcReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "4317", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 4317, receiverPort)
 }
 
 func ReplaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "14250", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 14250, receiverPort)
 }
 
 func ReplaceZipkinReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "9411", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 9411, receiverPort)
 }
 
 func ReplaceSyslogHostReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "54527", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 54527, receiverPort)
 }
 
 func ReplaceSyslogF5ReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "54526", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 54526, receiverPort)
 }
 
 func ReplaceDynatraceExporterEndpoint(cfg string, exporterPort int) string {
@@ -313,33 +320,6 @@ service:
 		processorsList,
 		receiver.ProtocolName(),
 	)
-}
-
-type ProcessorConfig struct {
-	Processors map[string]any `yaml:"processors"`
-}
-
-func extractProcessorsFromYAML(yamlStr []byte) (map[string]string, error) {
-	var data ProcessorConfig
-	err := yaml.Unmarshal(yamlStr, &data)
-	if err != nil {
-		return nil, err
-	}
-
-	result := make(map[string]string)
-	for key, value := range data.Processors {
-		processorYAML, err := yaml.Marshal(value)
-		if err != nil {
-			return nil, err
-		}
-
-		// marshall removes the starting indentation and aligns the root element(s) of value with indent == 0
-		// adding the indentation back
-		// name of the processor is indented by 2 spaces, rest of the body, by 4
-		result[key] = "  " + key + ":\n    " + strings.ReplaceAll(string(processorYAML), "\n", "\n"+"    ")
-	}
-
-	return result, nil
 }
 
 const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
@@ -576,7 +556,7 @@ func DeduplicateResources(metrics pmetric.Metrics) {
 	rms := metrics.ResourceMetrics()
 	for i := 0; i < rms.Len(); i++ {
 		rm := rms.At(i)
-		key := canonicalResourceKey(rm.Resource().Attributes())
+		key := canonicalAttrsKey(rm.Resource().Attributes())
 		if firstIdx, exists := seen[key]; exists {
 			// Merge all ScopeMetrics from this duplicate into the first occurrence.
 			first := rms.At(firstIdx)
@@ -737,20 +717,6 @@ func deduplicateExponentialHistogramDataPoints(dps pmetric.ExponentialHistogramD
 		seen[key] = true
 		return false
 	})
-}
-
-func canonicalResourceKey(attrs pcommon.Map) string {
-	keys := make([]string, 0, attrs.Len())
-	for k := range attrs.All() {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	var b strings.Builder
-	for _, k := range keys {
-		v, _ := attrs.Get(k)
-		fmt.Fprintf(&b, "%s=%s,", k, v.AsString())
-	}
-	return b.String()
 }
 
 // mergeMetricDataPoints moves datapoints from src into dst for metrics of the same type.

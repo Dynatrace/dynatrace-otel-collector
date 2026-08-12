@@ -188,7 +188,7 @@ func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 		for i := 0; i < traces.ResourceSpans().Len(); i++ {
 			resource := traces.ResourceSpans().At(i).Resource()
 			service, exist := resource.Attributes().Get(ServiceNameAttribute)
-			assert.True(t, exist, "Resource does not have the 'service.name' attribute")
+			require.True(t, exist, "Resource does not have the 'service.name' attribute")
 			if service.AsString() != expectedService {
 				continue
 			}
@@ -198,8 +198,8 @@ func ScanTracesForAttributes(t *testing.T, ts *consumertest.TracesSink, expected
 				return
 			}
 
-			assert.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().Len())
-			assert.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().At(0).Spans().Len())
+			require.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().Len())
+			require.NotZero(t, traces.ResourceSpans().At(i).ScopeSpans().At(0).Spans().Len())
 
 			scopeSpan := traces.ResourceSpans().At(i).ScopeSpans().At(0)
 
@@ -270,12 +270,13 @@ func ScanForServiceMetrics(t *testing.T, ms *consumertest.MetricsSink, expectedS
 		for i := 0; i < r.ResourceMetrics().Len(); i++ {
 			resource := r.ResourceMetrics().At(i).Resource()
 			service, exist := resource.Attributes().Get(ServiceNameAttribute)
-			assert.Equal(t, true, exist, "resource does not have the 'service.name' attribute")
+			require.True(t, exist, "resource does not have the 'service.name' attribute")
 			if service.AsString() != expectedService {
 				t.Logf("skipping resource with service.name %s", service.AsString())
 				continue
 			}
 
+			require.Positive(t, r.ResourceMetrics().At(i).ScopeMetrics().Len(), "resource has no scope metrics")
 			sm := r.ResourceMetrics().At(i).ScopeMetrics().At(0).Metrics()
 			assert.NoError(t, assertExpectedMetrics(expectedMetrics, sm))
 			return

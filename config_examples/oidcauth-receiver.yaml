@@ -1,0 +1,45 @@
+# Protect the OTLP ingestion endpoint with OIDC token authentication.
+# Only clients that present a valid OIDC token (e.g. a Kubernetes projected
+# service-account token) are allowed to send telemetry to this collector.
+# The extension validates tokens against the issuer's JWKS endpoint.
+extensions:
+  oidc:
+    providers:
+      - issuer_url: https://kubernetes.default.svc.cluster.local
+        audience: my-collector
+        # Path to the CA certificate used to verify TLS when fetching the
+        # OIDC discovery document and JWKS from the issuer.
+        issuer_ca_path: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        auth:
+          authenticator: oidc
+      http:
+        endpoint: 0.0.0.0:4318
+        auth:
+          authenticator: oidc
+
+exporters:
+  otlp_http:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  extensions: [oidc, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlp_http]
+    metrics:
+      receivers: [otlp]
+      exporters: [otlp_http]
+    logs:
+      receivers: [otlp]
+      exporters: [otlp_http]

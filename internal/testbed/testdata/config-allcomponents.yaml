@@ -198,6 +198,10 @@ extensions:
   bearertokenauth:
     filename: /var/run/secrets/dynatrace/token
     scheme: "Bearer"
+  oidc:
+    providers:
+      - issuer_url: https://accounts.example.com
+        audience: my-collector
   file_storage:
     directory: /var/lib/otelcol/file_storage
     create_directory: true

@@ -18,12 +18,24 @@ spec:
       serviceAccountName: {{ .Name }}
       containers:
         - name: collector-verifier
-          image: otel/opentelemetry-collector-contrib:0.158.0@sha256:c5918f78992ee73b0d6f0e599423ac5ec52dd5d9726733114d6eca53d5a32ed5
-          args: ["--config=/conf/relay.yaml"]
+          command:
+            - /dynatrace-otel-collector
+            - --config=/conf/relay.yaml
+          image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
           ports:
             - name: otlp-http-recv
-              containerPort: 8080
+              containerPort: 4318
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 13133
+            initialDelaySeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 13133
+            initialDelaySeconds: 5
           resources:
             limits:
               cpu: 128m

@@ -66,12 +66,16 @@ func TestE2E_BearerTokenAuth(t *testing.T) {
 
 	// Deploy the verifier first so its service name is known before the sender config is rendered.
 	verifierTestID := uuid.NewString()[:8]
-	verifierSvcEndpoint := fmt.Sprintf("http://otelcol-%s.%s:8080", verifierTestID, testNs)
+	verifierSvcEndpoint := fmt.Sprintf("http://otelcol-%s.%s:4318", verifierTestID, testNs)
 
-	// Load the verifier config (oidcauthextension validating the token; exports to test sink).
-	verifierConfigPath := filepath.Join(testDir, "verifier-config.yaml")
+	// Load the verifier config from config_examples, overlaying the test-specific audience and
+	// stripping the DT auth header (the sink does not require authentication).
+	verifierConfigPath := filepath.Join("../../../../config_examples", "oidcauth-receiver.yaml")
 	verifierConfig, err := k8stest.GetCollectorConfig(verifierConfigPath, k8stest.ConfigTemplate{
 		Host: host,
+		Templates: []string{
+			k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "verifier-local.yaml")),
+		},
 	})
 	require.NoErrorf(t, err, "failed to read verifier config from %s", verifierConfigPath)
 
@@ -81,7 +85,8 @@ func TestE2E_BearerTokenAuth(t *testing.T) {
 		verifierTestID,
 		filepath.Join(testDir, "collector-verifier"),
 		map[string]string{
-			"CollectorConfig": verifierConfig,
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   verifierConfig,
 		},
 		host,
 	)
@@ -94,7 +99,7 @@ func TestE2E_BearerTokenAuth(t *testing.T) {
 	// Load the sender config, overriding the exporter endpoint with the verifier's service address.
 	senderTestID := uuid.NewString()[:8]
 	senderConfigPath := filepath.Join(testDir, "sender-config.yaml")
-	endpointOverlay := fmt.Sprintf("exporters:\n  otlphttp:\n    endpoint: %s\n    tls:\n      insecure: true\n", verifierSvcEndpoint)
+	endpointOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "sender-endpoint.yaml")), verifierSvcEndpoint)
 	senderConfig, err := k8stest.GetCollectorConfig(senderConfigPath, k8stest.ConfigTemplate{
 		Host:      host,
 		Templates: []string{endpointOverlay},
@@ -276,18 +281,26 @@ func TestE2E_OIDCAuthRejectsInvalidTokens(t *testing.T) {
 
 	// Deploy the verifier (oidcauthextension, audience: dynatrace-wif-test).
 	verifierTestID := uuid.NewString()[:8]
-	verifierSvcEndpoint := fmt.Sprintf("http://otelcol-%s.%s:8080", verifierTestID, testNs)
+	verifierSvcEndpoint := fmt.Sprintf("http://otelcol-%s.%s:4318", verifierTestID, testNs)
 
 	verifierConfig, err := k8stest.GetCollectorConfig(
-		filepath.Join(testDir, "verifier-config.yaml"),
-		k8stest.ConfigTemplate{Host: host},
+		filepath.Join("../../../../config_examples", "oidcauth-receiver.yaml"),
+		k8stest.ConfigTemplate{
+			Host: host,
+			Templates: []string{
+				k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "verifier-local.yaml")),
+			},
+		},
 	)
 	require.NoErrorf(t, err, "failed to read verifier config")
 
 	verifierObjs := otelk8stest.CreateCollectorObjects(
 		t, k8sClient, verifierTestID,
 		filepath.Join(testDir, "collector-verifier"),
-		map[string]string{"CollectorConfig": verifierConfig},
+		map[string]string{
+			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
+			"CollectorConfig":   verifierConfig,
+		},
 		host,
 	)
 	defer func() {
@@ -297,10 +310,7 @@ func TestE2E_OIDCAuthRejectsInvalidTokens(t *testing.T) {
 	}()
 
 	// Overlay that redirects each bad sender's exporter to the verifier.
-	endpointOverlay := fmt.Sprintf(
-		"exporters:\n  otlphttp:\n    endpoint: %s\n    tls:\n      insecure: true\n",
-		verifierSvcEndpoint,
-	)
+	endpointOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "sender-endpoint.yaml")), verifierSvcEndpoint)
 
 	// Three negative cases.  Each uses a distinct rejection path in oidcauthextension:
 	//   wrong-audience  — valid cluster-issued JWT, but aud != "dynatrace-wif-test"

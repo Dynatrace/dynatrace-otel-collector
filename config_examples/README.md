@@ -30,6 +30,8 @@ Dynatrace distribution of the OpenTelemetry Collector.
 - [Host Metrics Receiver](host-metrics.yaml)
 - [Dynatrace Resource Detector](resource-detection.yaml)
 - [Large Scale Prometheus Scraping](./prometheus-large-scale)
+- [Bearer Token Auth Receiver](bearertokenauth-receiver.yaml)
+- [OIDC Auth Receiver](oidcauth-receiver.yaml)
 
 ## Sending data to Dynatrace
 

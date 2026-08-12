@@ -7,8 +7,8 @@ spec:
   type: ClusterIP
   ports:
     - name: otlp-http
-      port: 8080
-      targetPort: 8080
+      port: 4318
+      targetPort: 4318
       protocol: TCP
   selector:
     app.kubernetes.io/name: opentelemetry-collector

@@ -9,6 +9,7 @@ import (
 	"math/big"
 	"net"
 	"os/exec"
+	"regexp"
 	"runtime"
 	"slices"
 	"sort"
@@ -167,24 +168,31 @@ func SetFeatureGateForTest(t testing.TB, gate *featuregate.Gate, enabled bool) f
 
 const CollectorTestsExecPath string = "../../../bin/dynatrace-otel-collector"
 
+// replaceEndpointPort swaps oldPort for newPort only within endpoint: fields,
+// preventing silent corruption of other fields that happen to contain the port number.
+func replaceEndpointPort(cfg string, oldPort, newPort int) string {
+	re := regexp.MustCompile(fmt.Sprintf(`(endpoint:\s*\S+:)%d\b`, oldPort))
+	return re.ReplaceAllString(cfg, "${1}"+strconv.Itoa(newPort))
+}
+
 func ReplaceOtlpGrpcReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "4317", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 4317, receiverPort)
 }
 
 func ReplaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "14250", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 14250, receiverPort)
 }
 
 func ReplaceZipkinReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "9411", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 9411, receiverPort)
 }
 
 func ReplaceSyslogHostReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "54527", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 54527, receiverPort)
 }
 
 func ReplaceSyslogF5ReceiverPort(cfg string, receiverPort int) string {
-	return strings.Replace(cfg, "54526", strconv.Itoa(receiverPort), 1)
+	return replaceEndpointPort(cfg, 54526, receiverPort)
 }
 
 func ReplaceDynatraceExporterEndpoint(cfg string, exporterPort int) string {

@@ -25,23 +25,10 @@ inputs:
   api_url:
     description: Release ingestion API Gateway URL
     required: true
-  tag:
-    description: Release tag (e.g. v0.54.0). Defaults to GITHUB_REF_NAME if omitted.
-    required: false
-    default: ${{ github.ref_name }}
 
 runs:
   using: composite
   steps:
-    - name: Debug OIDC claims
-      shell: bash
-      env:
-        AUDIENCE: "${{ github.server_url }}/${{ github.repository }}"
-      run: |
-        TOKEN_JSON=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$AUDIENCE")
-        ID_TOKEN=$(echo "$TOKEN_JSON" | jq -r .value)
-        echo "$ID_TOKEN" | awk -F. '{print $2}' | base64 -d 2>/dev/null | jq -r
-
     - name: Configure AWS credentials for release ingestion
       uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
       with:
@@ -57,5 +44,4 @@ runs:
         HMAC_SECRET: ${{ inputs.hmac_secret }}
         API_URL: ${{ inputs.api_url }}
         AWS_REGION: ${{ inputs.aws_region }}
-        GITHUB_REF_NAME: ${{ inputs.tag || github.ref_name }}
       run: python3 ${{ github.action_path }}/send_release_notification.py

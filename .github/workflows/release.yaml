@@ -33,10 +33,6 @@ jobs:
       packages: write
       attestations: write
       artifact-metadata: write
-    # TEMP: GITHUB_REF_NAME override so the notification step resolves the right
-    # version when this is run via workflow_dispatch instead of a tag push.
-    env:
-      GITHUB_REF_NAME: ${{ inputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -65,3 +61,4 @@ jobs:
           role_arn: ${{ secrets.RELEASE_INGESTION_ROLE_ARN }}
           hmac_secret: ${{ secrets.RELEASE_INGESTION_HMAC_SECRET }}
           api_url: ${{ vars.RELEASE_INGESTION_API_URL }}
+          tag: ${{ inputs.tag || github.ref_name }}

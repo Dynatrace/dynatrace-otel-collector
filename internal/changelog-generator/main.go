@@ -111,4 +111,3 @@ func run(ctx context.Context, manifestPath, configPath, changelogPath string, dr
 	fmt.Fprintf(os.Stderr, "info: %s updated successfully\n", changelogPath)
 	return nil
 }
-

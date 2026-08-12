@@ -3,7 +3,7 @@ from botocore.auth import SigV4Auth
 from botocore.awsrequest import AWSRequest
 from urllib3.util.retry import Retry
 
-tag     = os.environ["GITHUB_REF_NAME"]
+tag     = os.environ.get("RELEASE_TAG") or os.environ["GITHUB_REF_NAME"]
 version = tag.lstrip("v")
 repo    = os.environ["GITHUB_REPOSITORY"]
 

@@ -57,5 +57,5 @@ runs:
         HMAC_SECRET: ${{ inputs.hmac_secret }}
         API_URL: ${{ inputs.api_url }}
         AWS_REGION: ${{ inputs.aws_region }}
-        GITHUB_REF_NAME: ${{ inputs.tag || github.ref_name }}
+        RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
       run: python3 ${{ github.action_path }}/send_release_notification.py

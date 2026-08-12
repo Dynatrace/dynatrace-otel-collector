@@ -9,9 +9,12 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
+
+var httpClient = &http.Client{Timeout: 30 * time.Second}
 
 const (
 	ChloggenContribURL = "https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector-contrib/main/.chloggen/config.yaml"
@@ -51,7 +54,7 @@ func ParseChloggenConfig(urlsOrPaths ...string) (map[string]string, error) {
 		var err error
 
 		if strings.HasPrefix(urlOrPath, "http") {
-			resp, err := http.Get(urlOrPath)
+			resp, err := httpClient.Get(urlOrPath)
 			if err != nil {
 				return nil, fmt.Errorf("fetching chloggen config %s: %w", urlOrPath, err)
 			}

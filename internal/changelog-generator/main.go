@@ -111,9 +111,3 @@ func run(manifestPath, configPath, changelogPath string, dryRun bool, prURLs []s
 	return nil
 }
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}

@@ -7,5 +7,6 @@
   "K8sCluster": "kind",
   "CollectorConfig": "relay",
   "OTLPEndpoint": "4317",
-  "DataType" : "testtype"
+  "DataType" : "testtype",
+  "SATokenAudience": "dynatrace-wif-test"
 }

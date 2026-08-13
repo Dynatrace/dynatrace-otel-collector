@@ -1,0 +1,12 @@
+extensions:
+  oidc:
+    providers:
+      - issuer_url: https://kubernetes.default.svc.cluster.local
+        audience: dynatrace-wif-test
+        issuer_ca_path: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+exporters:
+  otlp_http:
+    headers:
+      Authorization: ""
+    tls:
+      insecure: true

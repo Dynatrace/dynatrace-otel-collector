@@ -17,14 +17,14 @@ spec:
     spec:
       serviceAccountName: {{ .Name }}
       containers:
-        - name: collector-verifier
+        - name: collector-sender
           command:
             - /dynatrace-otel-collector
             - --config=/conf/relay.yaml
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
           ports:
-            - name: otlp-http-recv
-              containerPort: 4318
+            - name: otlp-grpc
+              containerPort: 4317
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -43,8 +43,8 @@ spec:
           volumeMounts:
             - mountPath: /conf
               name: opentelemetry-collector-configmap
-            - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-              name: kube-api-ca
+            - mountPath: /var/run/secrets/dynatrace
+              name: sa-token
               readOnly: true
             - mountPath: /tmp
               name: tmp
@@ -67,15 +67,12 @@ spec:
             items:
               - key: relay
                 path: relay.yaml
-        # Cluster CA bundle used by oidcauthextension to verify TLS when
-        # fetching the OIDC discovery document and JWKS from the k8s API server.
-        - name: kube-api-ca
+        - name: sa-token
           projected:
             sources:
-              - configMap:
-                  name: kube-root-ca.crt
-                  items:
-                    - key: ca.crt
-                      path: ca.crt
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 600
+                  audience: {{ .SATokenAudience }}
         - name: tmp
           emptyDir: {}

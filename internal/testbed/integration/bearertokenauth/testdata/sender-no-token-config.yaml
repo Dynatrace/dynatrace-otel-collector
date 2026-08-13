@@ -1,0 +1,23 @@
+# Negative-test sender: no auth extension configured. Exports traces to the
+# verifier without an Authorization header. The oidcauthextension rejects
+# the request with "missing or empty header".
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+exporters:
+  otlphttp:
+    endpoint: ${env:DT_ENDPOINT}
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp]

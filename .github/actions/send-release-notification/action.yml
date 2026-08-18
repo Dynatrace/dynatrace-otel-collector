@@ -6,12 +6,12 @@ inputs:
     description: Component name used in the payload (e.g. dynatrace-otel-collector)
     required: true
   ghcr_prefix:
-    description: GHCR image prefix to match in digests.txt (e.g. ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector)
+    description: GHCR image prefix (e.g. ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector)
     required: true
-  digests_file:
-    description: Path to the goreleaser digests file
+  artifacts_file:
+    description: Path to the goreleaser artifacts.json file
     required: false
-    default: ./dist/digests.txt
+    default: ./dist/artifacts.json
   aws_region:
     description: AWS region for role assumption and SigV4 signing
     required: false
@@ -40,7 +40,7 @@ runs:
       env:
         COMPONENT: ${{ inputs.component }}
         GHCR_PREFIX: ${{ inputs.ghcr_prefix }}
-        DIGESTS_FILE: ${{ inputs.digests_file }}
+        ARTIFACTS_FILE: ${{ inputs.artifacts_file }}
         HMAC_SECRET: ${{ inputs.hmac_secret }}
         API_URL: ${{ inputs.api_url }}
         AWS_REGION: ${{ inputs.aws_region }}

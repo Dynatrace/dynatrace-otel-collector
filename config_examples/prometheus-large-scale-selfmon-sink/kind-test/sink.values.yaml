@@ -1,0 +1,57 @@
+# Local test sink — stands in for Dynatrace.
+# Receives OTLP from the tier2 gateway (customer metrics) and the selfmon collector
+# (self-telemetry) and logs everything via the debug exporter (detailed), so the test
+# can read metric names + resource/datapoint attributes from the sink pod logs.
+# Uses the Dynatrace collector image (arm64/amd64) for parity with the other tiers.
+fullnameOverride: "sink"
+mode: deployment
+replicaCount: 1
+
+image:
+  repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
+  tag: "0.51.0"
+command:
+  name: dynatrace-otel-collector
+
+service:
+  enabled: true
+
+alternateConfig:
+  extensions:
+    health_check:
+      endpoint: "${env:MY_POD_IP}:13133"
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "${env:MY_POD_IP}:4317"
+        http:
+          endpoint: "${env:MY_POD_IP}:4318"
+  exporters:
+    debug:
+      verbosity: detailed
+  service:
+    extensions:
+      - health_check
+    pipelines:
+      metrics:
+        receivers:
+          - otlp
+        exporters:
+          - debug
+
+ports:
+  otlp:
+    enabled: true
+  otlp-http:
+    enabled: true
+  metrics:
+    enabled: false
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false

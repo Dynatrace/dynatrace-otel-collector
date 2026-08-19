@@ -1,4 +1,4 @@
-import base64, boto3, hashlib, hmac, json, os, uuid, urllib3
+import boto3, hashlib, hmac, json, os, uuid, urllib3
 from botocore.auth import SigV4Auth
 from botocore.awsrequest import AWSRequest
 from urllib3.util.retry import Retry
@@ -54,25 +54,14 @@ if not source_ref:
     raise RuntimeError(f"No manifest-list entry found for {target_ref} in {artifacts_file}")
 
 
-def _ghcr_bearer_token(path: str) -> str:
-    """Exchange a GitHub PAT for a short-lived ghcr.io pull token."""
-    github_token = os.environ["GITHUB_TOKEN"]
-    auth = base64.b64encode(f"token:{github_token}".encode()).decode()
-    resp = http.request(
-        "GET",
-        f"https://ghcr.io/token?scope=repository:{path}:pull&service=ghcr.io",
-        headers={"Authorization": f"Basic {auth}"},
-    )
-    return json.loads(resp.data)["token"]
-
-
-def _ghcr_manifest_digest(path: str, tag: str, bearer: str) -> str:
+def _ghcr_manifest_digest(path: str, tag: str) -> str:
     """Return the Docker-Content-Digest for a ghcr.io manifest tag."""
     resp = http.request(
         "HEAD",
         f"https://ghcr.io/v2/{path}/manifests/{tag}",
         headers={
-            "Authorization": f"Bearer {bearer}",
+            # ghcr.io accepts the GITHUB_TOKEN directly as a Bearer token.
+            "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
             # Request the OCI image index media type — cosign stores the referrers
             # index (all sig bundles for a given image digest) as an OCI image index
             # under the tag sha256-<hex> (OCI referrers fallback schema).
@@ -94,11 +83,10 @@ def _ghcr_manifest_digest(path: str, tag: str, bearer: str) -> str:
 # copies the index and all the bundle manifests it references, making cosign verify work on
 # the target registry without any separate signing step.
 ghcr_path  = ghcr_prefix.removeprefix("ghcr.io/")
-bearer     = _ghcr_bearer_token(ghcr_path)
 signatures = []
 for hex_dgst in sorted(ghcr_hexes):   # sorted for deterministic ordering
     ref_tag    = f"sha256-{hex_dgst}"
-    idx_digest = _ghcr_manifest_digest(ghcr_path, ref_tag, bearer)
+    idx_digest = _ghcr_manifest_digest(ghcr_path, ref_tag)
     signatures.append(f"{ghcr_prefix}:{ref_tag}@{idx_digest}")
 
 component = os.environ["COMPONENT"]

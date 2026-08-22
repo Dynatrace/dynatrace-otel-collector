@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/changelog-generator
 
-go 1.26.6
+go 1.27.0
 
 require (
 	golang.org/x/mod v0.40.0

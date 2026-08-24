@@ -10,7 +10,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.158.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.158.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.158.0
-	github.com/stretchr/testify v1.12.0
+	github.com/stretchr/testify v1.12.1
 	go.opentelemetry.io/collector/component v1.64.0
 	go.opentelemetry.io/collector/consumer v1.64.0
 	go.opentelemetry.io/collector/consumer/consumertest v0.158.0

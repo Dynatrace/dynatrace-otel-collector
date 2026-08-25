@@ -75,7 +75,7 @@ def _ghcr_manifest_digest(path: str, tag: str) -> str:
 
 # Build the signatures list: one OCI referrers-index ref per unique signed image digest.
 #
-# cosign 2.x stores signatures using the OCI referrers fallback tag schema: a tag named
+# cosign 3.x stores signatures using the OCI referrers fallback tag schema: a tag named
 # sha256-<image-hex> (no .sig suffix) that is an OCI image index whose children are the
 # Sigstore bundle manifests (artifactType: application/vnd.dev.sigstore.bundle.v0.3+json).
 #

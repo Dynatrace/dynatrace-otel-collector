@@ -1,12 +1,12 @@
 module testcommon
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.158.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest v0.158.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.158.0
-	github.com/stretchr/testify v1.12.0
+	github.com/stretchr/testify v1.12.1
 	go.opentelemetry.io/collector/component v1.64.0
 	go.opentelemetry.io/collector/component/componenttest v0.158.0
 	go.opentelemetry.io/collector/config/configoptional v1.64.0

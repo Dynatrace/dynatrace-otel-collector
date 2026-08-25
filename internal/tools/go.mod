@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/tools
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/google/addlicense v1.2.0

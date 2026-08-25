@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/fluent/fluent-logger-golang v1.10.1
@@ -9,7 +9,7 @@ require (
 	go.opentelemetry.io/collector/config/confignet v1.64.0
 	go.opentelemetry.io/collector/config/configtls v1.64.0
 	go.opentelemetry.io/collector/pdata v1.64.0
-	google.golang.org/grpc v1.83.0
+	google.golang.org/grpc v1.83.1
 )
 
 require (

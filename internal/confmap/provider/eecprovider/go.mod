@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/confmap/provider/eecprovider
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/stretchr/testify v1.12.1

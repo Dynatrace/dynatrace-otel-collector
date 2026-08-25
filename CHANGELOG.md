@@ -4,6 +4,126 @@
 
 <!-- next version -->
 
+## 0.55.0
+
+This release includes version v0.159.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.159.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.159.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.159.0>
+
+### 🛑 Breaking changes 🛑
+
+- `all`: Removes the kafkatopicsobserver extension after being deprecated for 3 months ([#48186](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48186))
+  Use the `kafkareceiver` with topic regex support instead.
+- `receiver/file_log`: `ordering_criteria::top_n: 0` now means 'match all files' instead of silently behaving like `top_n: 1`. ([#47444](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47444))
+  To restore the previous behavior of matching the first file only, set `ordering_criteria::top_n: 1`.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### ⚠️ Deprecations ⚠️
+
+- `receiver/file_log`: Deprecate the implicit `ordering_criteria.top_n` default of 1 when `ordering_criteria.sort_by` is configured. Enable the `filelog.requireExplicitTopN` feature gate to require `top_n` to be set explicitly. ([#47444](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47444))
+  When `ordering_criteria.sort_by` is configured without `top_n`, the matcher
+  silently defaults `top_n` to 1, returning only the single highest-priority file
+  per poll. With multiple actively-written files this causes severe log
+  duplication: the other matching files cycle in and out of the tracker and are
+  re-read from offset 0 on rediscovery.
+
+  Enabling the `filelog.requireExplicitTopN` feature gate makes an unset `top_n` a
+  startup error when `sort_by` is configured, forcing the choice to be explicit.
+  The gate is off by default; it is expected to become the default (and the
+  implicit fallback removed) in a future release. Use `top_n: 1` to keep the
+  previous behavior.
+
+  Independently of the feature gate, `top_n: 0` now means "match all files"
+  instead of silently behaving like `top_n: 1`.
+
+### 💡 Enhancements 💡
+
+- `pkg/exporterhelper`: Add the `pkg.exporterhelper.queueBatchEnabled` feature gate ([#14038](https://github.com/open-telemetry/opentelemetry-collector/issues/14038), [#13582](https://github.com/open-telemetry/opentelemetry-collector/issues/13582), [#12022](https://github.com/open-telemetry/opentelemetry-collector/issues/12022))
+  When enabled, the batch settings returned by `NewDefaultQueueConfig()` have
+  `batch::enabled` true. See [migration RFC](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/rfcs/batching-migration.md#phase-1).
+- `processor/resource_detection`: Add the `processor.resourcedetection.consul.prefixMetaAttributes` feature gate, which emits Consul node metadata as `consul.meta.<key>` resource attributes. ([#49988](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49988))
+  The gate is alpha and disabled by default, so Consul meta attribute names are unchanged unless the
+  gate is enabled. This namespaces Consul meta consistently with the other detectors that expose
+  user-defined key/value data, such as `ec2.tag.` and `openstack.nova.meta.`.
+- `processor/resource_detection`: Add Azure Container Apps resource detector ([#48239](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48239))
+- `pkg/ottl`: `pcommon.Value` is now comparable using all comparison operators (==, !=, <, <=, >=, >) in OTTL expressions ([#49170](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49170))
+- `receiver/kubelet_stats`: Add optional k8s node filesystem inode count/free metrics. ([#48926](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48926))
+  Adds the following optional metrics to kubeletstatsreceiver:
+  - k8s.node.filesystem.inode.count
+  - k8s.node.filesystem.inode.free
+- `pkg/ottl`: The `set` function will pass `nil` values directly to the target when the `ottl.set.allowNil` feature gate is enabled. ([#48714](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48714))
+- `processor/resource_detection`: Support global retry config for resource detection processor ([#46546](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46546))
+- `processor/tail_sampling`: Add `num_shards` config option to run N parallel event loops, sharding traces by trace ID to reduce contention under high load. ([#48699](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48699))
+  The single event loop can become a bottleneck under high throughput because
+  trace ingestion starves sampling decision evaluation. Setting `num_shards`
+  to a value greater than 1 distributes traces across independent goroutines,
+  each with its own storage and decision batcher. The default value of 1
+  preserves the original single-loop behavior.
+  To keep aggregate behavior consistent with the configured values,
+  `num_traces`, `expected_new_traces_per_sec`, `decision_cache` sizes, and
+  per-second rate limits in policies (`rate_limiting`, `bytes_limiting`, and
+  composite `max_total_spans_per_second`) are divided evenly across shards.
+  Limiter `burst_capacity` is not divided so that single large traces remain
+  admissible regardless of the shard count.
+  The `sampling_traces_on_memory` metric reports the total across all shards.
+- `processor/transform`: Add support for semconv `1.41.0`, `1.42.0` and `1.43.0` in the `set_semconv_span_name()` function. ([#50198](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50198))
+- `processor/resource_detection`: Add feature gates to migrate the `elastic_beanstalk` detector to the current deployment semantic conventions. ([#50130](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50130))
+  The detector reports the deployment environment as `deployment.environment`, which is deprecated in
+  the semantic conventions, and the deployment ID as `service.instance.id`. Two alpha feature gates
+  migrate them to `deployment.environment.name` and `deployment.id`:
+  `processor.resourcedetection.elasticbeanstalk.EmitV1DeploymentConventions` adds the current
+  attributes, and `processor.resourcedetection.elasticbeanstalk.DontEmitV0DeploymentConventions`
+  removes the deprecated ones. Enabling only the first reports both sets, so telemetry
+  can be migrated before the deprecated attributes are dropped. Enabling only the second is rejected
+  at startup. The default output is unchanged.
+- `exporter/load_balancing`: Promote metrics support to alpha stability ([#50086](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50086))
+- `pkg/fileconsumer`: Move filelog.allowFileDeletion and filelog.windows.caseInsensitive filelog.featuregates to beta ([#46635](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46635))
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/scraperhelper`: Use `{record}` instead of `{datapoint}` as the unit of the log record and profile record scraper metrics ([#15730](https://github.com/open-telemetry/opentelemetry-collector/issues/15730))
+  Affects `otelcol_scraper_scraped_log_records`, `otelcol_scraper_errored_log_records`,
+  `otelcol_scraper_scraped_profile_records` and `otelcol_scraper_errored_profile_records`.
+- `pkg/exporterhelper`: Record `otelcol_exporter_queue_batch_send_size` and `otelcol_exporter_queue_batch_send_size_bytes` after batching, and add `otelcol_exporter_enqueue_size` and `otelcol_exporter_enqueue_size_bytes` for enqueue-time sizes. ([#14674](https://github.com/open-telemetry/opentelemetry-collector/issues/14674))
+  Previously the batch send size histograms were recorded at enqueue time (`Offer`), so they
+  measured incoming request sizes rather than the post-batching request handed to the
+  downstream sender. Those histograms are now recorded in the obs report sender.
+  The previous enqueue-time measurements are preserved under the new
+  `otelcol_exporter_enqueue_size` and `otelcol_exporter_enqueue_size_bytes` metrics for
+  queue sizing. Users with the exporter batcher enabled will observe different values for
+  `otelcol_exporter_queue_batch_send_size*`.
+  `otelcol_exporter_queue_batch_send_size` and `otelcol_exporter_queue_batch_send_size_bytes`
+  are now only recorded when `sending_queue::batch` is configured; they will not appear at all
+  for exporters that do not enable batching.
+- `processor/k8s_attributes`: Fix memory leak and incorrect deletion for custom association identifiers (labels, annotations) that go through active->stale->active transitions. ([#48588](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48588))
+- `receiver/prometheus`: Prevent the Prometheus receiver from dropping classic histograms without explicit bucket boundaries when `convert_classic_histograms_to_nhcb` is enabled and classic histograms are not retained. ([#49893](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49893))
+- `processor/tail_sampling`: Drop processor state when `TailStorage.Take` fails so failed fetches do not leave stranded traces or forward incomplete batches. ([#49907](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49907))
+- `processor/tail_sampling`: In the composite policy, a sub-policy omitted from `rate_allocation` now receives its default equal share of the budget instead of a zero sampling rate that permanently blocked it from sampling. ([#49828](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49828))
+
+---
+
+</details>
+
+
+#### Dynatrace distribution changelog:
+
+### 🚀 New components 🚀
+
+- `oidcauthextension`: Add `oidcauthextension` to the Dynatrace OTel Collector distribution. (#1138)
+  The extension validates short-lived OIDC tokens (e.g. Kubernetes projected
+  service-account tokens) on OTLP/gRPC and OTLP/HTTP receivers, enabling
+  token-based authentication for collector-to-collector (WIF) flows without
+  shared secrets.
+
+<!-- previous-version -->
+
 ## 0.54.0
 
 This release includes version v0.158.0 of the upstream Collector components.

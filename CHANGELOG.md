@@ -17,8 +17,6 @@ v0.159.0:
 
 ### 🛑 Breaking changes 🛑
 
-- `all`: Removes the kafkatopicsobserver extension after being deprecated for 3 months ([#48186](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48186))
-  Use the `kafkareceiver` with topic regex support instead.
 - `receiver/file_log`: `ordering_criteria::top_n: 0` now means 'match all files' instead of silently behaving like `top_n: 1`. ([#47444](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47444))
   To restore the previous behavior of matching the first file only, set `ordering_criteria::top_n: 1`.
 

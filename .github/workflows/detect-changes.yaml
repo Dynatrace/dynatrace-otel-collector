@@ -1,5 +1,8 @@
 name: Detect Changes
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     outputs:

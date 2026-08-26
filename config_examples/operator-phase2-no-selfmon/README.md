@@ -8,11 +8,6 @@ Prometheus scraper of the other components.
 Purpose: prove the `otelcol-prometheusScraping` dashboard fills correctly under the Operator
 workload layout, and pin down exactly which env vars the Operator has to inject.
 
-Derived from `config_examples/large-scale-no-selfmon/` in
-[dynatrace-otel-collector#1045](https://github.com/Dynatrace/dynatrace-otel-collector/pull/1045),
-with three changes: upstream released Target Allocator instead of a custom build, the released TA
-telemetry config schema, and Operator-style workload names.
-
 ## Workload layout
 
 | Role | K8s object | Name here | Operator name shape |
@@ -60,16 +55,10 @@ TA headers are a **name/value list**; collector headers are a **map**.
 
 ## Target Allocator version requirement
 
-OTLP self-telemetry landed upstream in **v0.157.0** (PR #5294). The config schema is
-`telemetry.metrics.readers[].periodic.otlp_http` — different from the earlier PR #5068 draft
-(`telemetry.metrics.otlp`) that the first PoC used. This directory uses the released schema, and
-the rendered config was parsed and validated against upstream v0.158.0 `config.LoadFromFile` +
-`config.ValidateConfig`.
+OTLP self-telemetry landed upstream in **v0.157.0** (PR #5294).
 
 The chart pin is `opentelemetry-target-allocator` **0.158.0** with the chart's default image
-(`ghcr.io/open-telemetry/opentelemetry-operator/target-allocator:0.158.0`). Anything below
-v0.157.0 exposes `opentelemetry_allocator_collectors_discovered` on `/metrics` only, which without a
-scraper never reaches Dynatrace — the dashboard's `$TargetAllocator` variable would stay empty.
+(`ghcr.io/open-telemetry/opentelemetry-operator/target-allocator:0.158.0`).
 
 ## Run it
 
@@ -79,18 +68,6 @@ export DT_API_TOKEN="<your-api-token>"   # metrics.ingest scope, bare token, no 
 export CLUSTER_NAME="dtp-phase2-test"    # becomes k8s.cluster.name
 ./local-test/setup.sh
 ```
-
-Then open the `otelcol-prometheusScraping` dashboard and check each variable resolves:
-
-| Variable | Discovery metric | Expected value |
-|---|---|---|
-| `$Cluster` / `$Namespace` | `otelcol_process_uptime` | `$CLUSTER_NAME` / `otel-phase2` |
-| `$TargetAllocator` | `opentelemetry_allocator_collectors_discovered` | `dtp-prometheus-allocator` |
-| `$Scrapers` | `otelcol_loadbalancer_num_backends` | `dtp-scraper` |
-| `$Gateways` | `otelcol_otelsvc_k8s_pod_table_size` | `dtp-gateway` |
-| `$ScrapeJobs` | `service.name` on `up` | `dynatrace-com` |
-
-Teardown: `./local-test/teardown.sh`.
 
 ## What this setup gives up
 

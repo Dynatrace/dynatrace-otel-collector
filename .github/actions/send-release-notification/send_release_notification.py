@@ -54,14 +54,29 @@ if not source_ref:
     raise RuntimeError(f"No manifest-list entry found for {target_ref} in {artifacts_file}")
 
 
+def _ghcr_token(path: str) -> str:
+    """Exchange the GITHUB_TOKEN for a scoped ghcr.io Bearer token via OAuth token endpoint."""
+    import base64
+    github_token = os.environ["GITHUB_TOKEN"]
+    basic = base64.b64encode(f"token:{github_token}".encode()).decode()
+    resp = http.request(
+        "GET",
+        f"https://ghcr.io/token?scope=repository:{path}:pull&service=ghcr.io",
+        headers={"Authorization": f"Basic {basic}"},
+    )
+    if resp.status != 200:
+        raise RuntimeError(f"Failed to obtain ghcr.io token for {path} — HTTP {resp.status}")
+    return json.loads(resp.data)["token"]
+
+
 def _ghcr_manifest_digest(path: str, tag: str) -> str:
     """Return the Docker-Content-Digest for a ghcr.io manifest tag."""
+    token = _ghcr_token(path)
     resp = http.request(
         "HEAD",
         f"https://ghcr.io/v2/{path}/manifests/{tag}",
         headers={
-            # ghcr.io accepts the GITHUB_TOKEN directly as a Bearer token.
-            "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+            "Authorization": f"Bearer {token}",
             # Request the OCI image index media type — cosign stores the referrers
             # index (all sig bundles for a given image digest) as an OCI image index
             # under the tag sha256-<hex> (OCI referrers fallback schema).

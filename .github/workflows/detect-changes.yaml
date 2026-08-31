@@ -21,9 +21,15 @@ jobs:
           fetch-depth: 0
       - id: check
         if: github.event_name == 'pull_request'
+        env:
+          SKIP_PATTERNS: |
+            ^docs/
+            ^CHANGELOG\.md$
+            .*\.md$
         run: |
+          regex=$(echo "$SKIP_PATTERNS" | grep -v '^$' | paste -sd'|')
           if git diff --name-only origin/${{ github.base_ref }}...HEAD \
-              | grep -qvE '^(docs/|CHANGELOG\.md|.*\.md$)'; then
+              | grep -qvE "($regex)"; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
           else
             echo "skip=true" >> "$GITHUB_OUTPUT"

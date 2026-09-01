@@ -18,7 +18,7 @@ require (
 	go.opentelemetry.io/otel v1.46.0
 	google.golang.org/grpc v1.83.1
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/apimachinery v0.36.4
+	k8s.io/apimachinery v0.37.0
 )
 
 require (

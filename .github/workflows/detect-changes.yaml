@@ -1,0 +1,36 @@
+name: Detect Changes
+
+permissions:
+  contents: read
+
+on:
+  workflow_call:
+    outputs:
+      skip:
+        description: "Whether to skip CI jobs"
+        value: ${{ jobs.detect.outputs.skip }}
+
+jobs:
+  detect:
+    runs-on: ubuntu-24.04
+    outputs:
+      skip: ${{ steps.check.outputs.skip || 'false' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - id: check
+        if: github.event_name == 'pull_request'
+        env:
+          SKIP_PATTERNS: |
+            ^docs/
+            ^CHANGELOG\.md$
+            .*\.md$
+        run: |
+          regex=$(echo "$SKIP_PATTERNS" | grep -v '^$' | paste -sd'|')
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD \
+              | grep -qvE "($regex)"; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi

@@ -3,10 +3,6 @@ name: Build PR Snapshots
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "CHANGELOG.md"
-      - "docs/**"
-      - "**/*.md"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -19,9 +15,14 @@ env:
   GORELEASER_PRO_VERSION: v2.17.1
 
 jobs:
+  detect-changes:
+    uses: ./.github/workflows/detect-changes.yaml
+
   build:
     name: Build
     runs-on: ubuntu-24.04
+    needs: [detect-changes]
+    if: needs.detect-changes.outputs.skip != 'true'
     strategy:
       matrix:
         goos: ["linux", "darwin"]

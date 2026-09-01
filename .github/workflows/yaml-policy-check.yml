@@ -6,10 +6,6 @@ permissions:
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "CHANGELOG.md"
-      - "docs/**"
-      - "**/*.md"
   push:
     branches: [main]
 
@@ -23,8 +19,13 @@ env:
   OUT_BASE: "/tmp/rendered-collectors-workloads"
 
 jobs:
+  detect-changes:
+    uses: ./.github/workflows/detect-changes.yaml
+
   kyverno-yaml-check:
     runs-on: ubuntu-24.04
+    needs: [detect-changes]
+    if: needs.detect-changes.outputs.skip != 'true'
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

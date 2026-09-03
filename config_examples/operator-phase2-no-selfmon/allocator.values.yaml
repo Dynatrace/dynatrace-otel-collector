@@ -1,0 +1,115 @@
+# Target Allocator — Phase 2 (Operator-managed layout), self-telemetry direct to Dynatrace.
+#
+# Deployed here with the UPSTREAM chart + UPSTREAM released image. No custom build:
+#   helm install dtp-allocator open-telemetry/opentelemetry-target-allocator \
+#     --version 0.158.0 --namespace otel-phase2 -f allocator.values.yaml
+#
+# OTLP self-telemetry landed upstream in v0.157.0 (PR #5294). The config schema below is the
+# RELEASED one (telemetry.metrics.readers[].periodic.otlp_http), which differs from the earlier
+# PR #5068 draft schema (telemetry.metrics.otlp) used in the first PoC.
+
+# Operator-generated name shape: <cr-name>-prometheus-allocator, CR name "dtp".
+fullnameOverride: "dtp-prometheus-allocator"
+
+replicaCount: 1
+
+targetAllocator:
+  image:
+    repository: ghcr.io/open-telemetry/opentelemetry-operator/target-allocator
+    # empty tag => chart appVersion (0.158.0). Must be >= v0.157.0 for OTLP self-telemetry.
+    tag: ""
+    pullPolicy: IfNotPresent
+
+  # The TA pushes its self-telemetry over OTLP; nothing scrapes its /metrics.
+  podAnnotations:
+    metrics.dynatrace.com/scrape: "false"
+
+  serviceAccount:
+    create: false
+    name: "dtp-otel-allocator"
+
+  # Resource attributes come from the downward API + static env.
+  # Kubernetes expands $(VAR) inside a later env entry, so OTEL_RESOURCE_ATTRIBUTES must be
+  # declared AFTER the vars it references.
+  extraEnvs:
+    - name: K8S_POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: K8S_NAMESPACE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: K8S_POD_UID
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.uid
+    - name: K8S_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    # Static, deploy-time. Operator source: DynaKube.Status.KubernetesClusterName.
+    - name: K8S_CLUSTER_NAME
+      value: "REPLACE_ME_CLUSTER_NAME"
+    # Static, deploy-time. Operator source: the Deployment name the TA reconciler computes.
+    - name: K8S_WORKLOAD_NAME
+      value: "dtp-prometheus-allocator"
+    - name: DT_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          name: dynatrace-otelcol-credentials
+          key: DT_ENDPOINT
+    - name: DT_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: dynatrace-otelcol-credentials
+          key: DT_API_TOKEN
+    - name: OTEL_SERVICE_NAME
+      value: "target-allocator"
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "k8s.pod.name=$(K8S_POD_NAME),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.pod.uid=$(K8S_POD_UID),k8s.node.name=$(K8S_NODE_NAME),k8s.cluster.name=$(K8S_CLUSTER_NAME),k8s.workload.name=$(K8S_WORKLOAD_NAME)"
+
+  config:
+    allocation_strategy: consistent-hashing
+    collector_namespace: ${NAMESPACE}
+    collector_selector:
+      matchlabels:
+        app.kubernetes.io/name: opentelemetry-collector
+        app.kubernetes.io/instance: dtp-scraper
+    prometheus_cr:
+      enabled: true
+      scrapeInterval: 15s
+      service_monitor_selector:
+        matchlabels:
+          prometheus.dynatrace.com: "true"
+      pod_monitor_selector:
+        matchlabels:
+          prometheus.dynatrace.com: "true"
+      scrape_config_selector:
+        matchlabels:
+          prometheus.dynatrace.com: "true"
+
+    # Released v0.157.0+ schema. Endpoint is the BASE URL: the TA appends /v1/metrics itself
+    # (telemetry.go newHTTPMetricReader). Headers are a name/value LIST, not a map.
+    # ${env:VAR} is expanded at runtime in endpoint and header values, so the token stays
+    # out of the ConfigMap.
+    telemetry:
+      metrics:
+        readers:
+          - periodic:
+              interval: 15000   # milliseconds
+              timeout: 10000    # milliseconds
+              exporter:
+                otlp_http:
+                  endpoint: "${env:DT_ENDPOINT}"
+                  temporality_preference: delta
+                  headers:
+                    - name: Authorization
+                      value: "Api-Token ${env:DT_API_TOKEN}"
+
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 10m
+      memory: 150Mi

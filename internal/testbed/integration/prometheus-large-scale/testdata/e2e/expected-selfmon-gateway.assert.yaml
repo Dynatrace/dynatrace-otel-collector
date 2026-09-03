@@ -58,11 +58,6 @@ resources:
                     otelcol.signal: metrics
                     pod_identifier: '*'
                     status: '*'
-            - name: otelcol_otelsvc_k8s_ip_lookup_miss
-              type: sum
-              unit: "1"
-              temporality: delta
-              monotonic: true
             - name: otelcol_otelsvc_k8s_namespace_added
               type: sum
               unit: "1"

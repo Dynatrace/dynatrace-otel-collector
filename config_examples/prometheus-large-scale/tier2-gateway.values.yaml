@@ -137,9 +137,6 @@ alternateConfig:
       pod_association:
         - sources:
             - from: resource_attribute
-              name: server.address
-        - sources:
-            - from: resource_attribute
               name: k8s.pod.name
             - from: resource_attribute
               name: k8s.namespace.name

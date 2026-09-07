@@ -58,30 +58,30 @@ resources:
                     otelcol.signal: metrics
                     pod_identifier: '*'
                     status: '*'
-            - name: otelcol_otelsvc_k8s_namespace_added
+            - name: otelcol.k8s.watcher.namespace.added
               type: sum
               unit: "1"
               temporality: delta
               monotonic: true
-            - name: otelcol_otelsvc_k8s_pod_added
+            - name: otelcol.k8s.watcher.pod.added
               type: sum
               unit: "1"
               temporality: delta
               monotonic: true
-            - name: otelcol_otelsvc_k8s_pod_table_size
+            - name: otelcol.k8s.watcher.pod_cache.size
               type: gauge
               unit: "1"
-            - name: otelcol_otelsvc_k8s_pod_updated
+            - name: otelcol.k8s.watcher.pod.updated
               type: sum
               unit: "1"
               temporality: delta
               monotonic: true
-            - name: otelcol_otelsvc_k8s_replicaset_added
+            - name: otelcol.k8s.watcher.replicaset.added
               type: sum
               unit: "1"
               temporality: delta
               monotonic: true
-            - name: otelcol_otelsvc_k8s_replicaset_updated
+            - name: otelcol.k8s.watcher.replicaset.updated
               type: sum
               unit: "1"
               temporality: delta

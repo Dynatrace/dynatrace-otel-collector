@@ -98,7 +98,7 @@ func TestE2E_BearerTokenAuth(t *testing.T) {
 
 	// Load the sender config, overriding the exporter endpoint with the verifier's service address.
 	senderTestID := uuid.NewString()[:8]
-	senderConfigPath := filepath.Join(testDir, "sender-config.yaml")
+	senderConfigPath := filepath.Join("../../../../config_examples", "bearertokenauth-sender.yaml"),
 	endpointOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "sender-endpoint.yaml")), verifierSvcEndpoint)
 	senderConfig, err := k8stest.GetCollectorConfig(senderConfigPath, k8stest.ConfigTemplate{
 		Host:      host,

@@ -3,3 +3,5 @@ exporters:
     endpoint: "%s"
     tls:
       insecure: true
+    auth:
+      authenticator: bearertokenauth

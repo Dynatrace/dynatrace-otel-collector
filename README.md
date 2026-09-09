@@ -94,12 +94,10 @@ The following components are included in the distribution:
 ### Exporters
 
 * [debugexporter](https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/debugexporter)
-* [load_balancing exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/loadbalancingexporter) [^2]
+* [load_balancing exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/loadbalancingexporter) [^1]
 * [otlpexporter](https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/otlpexporter)
 * [otlphttpexporter](https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/otlphttpexporter)
 * [kafkaexporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/kafkaexporter)
-
-[^2]: The load balancing exporter is [**in development**](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/component-stability.md#development) for the metrics signal. There may be bugs or performance issues, and using this component for metrics in production is discouraged. Bugs, performance issues, and feature requests related to metrics should be reported to the upstream repository.
 
 ### Extensions
 
@@ -120,12 +118,11 @@ The following components are included in the distribution:
 
 ## Support
 
-The x86-64 and ARM64 builds of this distribution are supported by the Dynatrace Support team, as described on the Dynatrace [support page].
-For issues reported via GitHub, support contracts and SLAs do not apply.
-Please reach out via our official support channels for full coverage.
+The x86‑64 and ARM64 builds of the Dynatrace OTel Collector distribution are supported by the Dynatrace Support team, in accordance with the Dynatrace [support policy].
 
-Each minor version is supported for three months.
-Fixes are provided either as a patch release for the most recent minor version, or in a new minor version release.
+For full support coverage, contact Dynatrace through the official support channels. Issues reported via GitHub are handled on a best‑effort basis; support contracts and SLAs don't apply.
+
+Each minor version is supported for three months. Fixes are provided either as a patch release for the latest supported minor version or as part of a subsequent minor version release.
 
 This distribution depends on components provided upstream by the OpenTelemetry community.
 We plan to release a new version of the distribution with updated upstream components at least on a monthly cadence.
@@ -134,7 +131,7 @@ as we upgrade to newer versions of these upstream components.
 For the complete list of changes, please refer to the changelogs provided in the [opentelemetry-collector releases] and [opentelemetry-collector-contrib releases] pages.
 Further information on the stability guarantees provided upstream can be found in the definitions for the [OpenTelemetry Collector stability levels].
 
-[support page]: https://support.dynatrace.com/
+[support policy]: https://support.dynatrace.com/
 [opentelemetry-collector releases]: https://github.com/open-telemetry/opentelemetry-collector/releases
 [opentelemetry-collector-contrib releases]: https://github.com/open-telemetry/opentelemetry-collector-contrib/releases
 [OpenTelemetry Collector stability levels]: https://github.com/open-telemetry/opentelemetry-collector#stability-levels

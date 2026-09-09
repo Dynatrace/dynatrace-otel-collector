@@ -6,12 +6,12 @@ inputs:
     description: Component name used in the payload (e.g. dynatrace-otel-collector)
     required: true
   ghcr_prefix:
-    description: GHCR image prefix to match in digests.txt (e.g. ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector)
+    description: GHCR image prefix (e.g. ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector)
     required: true
-  digests_file:
-    description: Path to the goreleaser digests file
+  artifacts_file:
+    description: Path to the goreleaser artifacts.json file
     required: false
-    default: ./dist/digests.txt
+    default: ./dist/artifacts.json
   aws_region:
     description: AWS region for role assumption and SigV4 signing
     required: false
@@ -30,7 +30,7 @@ runs:
   using: composite
   steps:
     - name: Configure AWS credentials for release ingestion
-      uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+      uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
       with:
         role-to-assume: ${{ inputs.role_arn }}
         aws-region: ${{ inputs.aws_region }}
@@ -40,7 +40,8 @@ runs:
       env:
         COMPONENT: ${{ inputs.component }}
         GHCR_PREFIX: ${{ inputs.ghcr_prefix }}
-        DIGESTS_FILE: ${{ inputs.digests_file }}
+        ARTIFACTS_FILE: ${{ inputs.artifacts_file }}
+        GITHUB_TOKEN: ${{ github.token }}
         HMAC_SECRET: ${{ inputs.hmac_secret }}
         API_URL: ${{ inputs.api_url }}
         AWS_REGION: ${{ inputs.aws_region }}

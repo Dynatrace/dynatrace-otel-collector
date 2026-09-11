@@ -1,0 +1,349 @@
+# OpenTelemetry Collector Configuration for Host Monitoring
+#
+# This configuration is tailored for the Dynatrace OpenTelemetry Host Extension (custom:opentelemetry) and Host Monitoring.
+# Only metrics used by the extension and dashboard are enabled to minimize data volume and cardinality.
+# See https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-host-monitoring for a detailed documentation.
+#
+# GCP variant: in addition to host monitoring, this configuration correlates the OpenTelemetry host
+# entity with the Google Compute Engine instance entity created by Dynatrace Cloud Monitoring, via a
+# `runs_on` relationship. It requires GCP Cloud Monitoring to be enabled for the project in your
+# environment.
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  journald:
+    directory: /run/log/journal
+    priority: info
+    start_at: end
+    operators:
+      # Move (rename) _PID to pid
+      - type: move
+        from: body._PID
+        to: body.pid
+
+      # You can rename multiple fields at once
+      - type: move
+        from: body._EXE
+        to: attributes["process.executable.name"]
+
+      # Optional: move MESSAGE to a differently named field
+      - type: move
+        from: body.MESSAGE
+        to: body.message
+  hostmetrics/10s:
+    collection_interval: 10s
+    scrapers:
+      # CPU metrics
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+          system.cpu.time:
+            enabled: false
+          # Enabled by default upstream since hostmetricsreceiver v0.157.0; only wanted in the 1h stream.
+          system.cpu.logical.count:
+            enabled: false
+
+      # Memory metrics
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+          system.memory.usage:
+            enabled: false
+
+      # Load average metrics
+      load:
+        metrics:
+          system.cpu.load_average.1m:
+            enabled: true
+          system.cpu.load_average.5m:
+            enabled: false
+          system.cpu.load_average.15m:
+            enabled: false
+
+  hostmetrics/5m:
+    collection_interval: 5m
+    scrapers:
+      # CPU metrics
+      cpu:
+        metrics:
+          system.cpu.time:
+            enabled: true
+          # Enabled by default upstream since hostmetricsreceiver v0.157.0; only wanted in the 1h stream.
+          system.cpu.logical.count:
+            enabled: false
+
+      # Memory metrics
+      memory:
+        metrics:
+          system.memory.usage:
+            enabled: true
+
+      # Paging/Swap metrics
+      paging:
+        metrics:
+          system.paging.usage:
+            enabled: true
+          system.paging.operations:
+            enabled: true
+          system.paging.faults:
+            enabled: true
+
+      # Network metrics
+      network:
+        metrics:
+          system.network.io:
+            enabled: true
+          system.network.packets:
+            enabled: true
+          system.network.errors:
+            enabled: true
+          system.network.connections:
+            enabled: true
+          system.network.dropped:
+            enabled: true
+
+      # Load average metrics
+      load:
+        metrics:
+          system.cpu.load_average.1m:
+            enabled: false
+          system.cpu.load_average.5m:
+            enabled: true
+          system.cpu.load_average.15m:
+            enabled: true
+
+      # Disk metrics
+      disk:
+        metrics:
+          system.disk.io:
+            enabled: true
+          system.disk.operations:
+            enabled: true
+          system.disk.io_time:
+            enabled: true
+          system.disk.operation_time:
+            enabled: true
+          system.disk.pending_operations:
+            enabled: false
+          system.disk.merged:
+            enabled: false
+          system.disk.weighted_io_time:
+            enabled: false
+
+      # Filesystem metrics
+      filesystem:
+        metrics:
+          system.filesystem.usage:
+            enabled: true
+          system.filesystem.utilization:
+            enabled: true
+          system.filesystem.inodes.usage:
+            enabled: true
+
+      # Process count metrics
+      processes:
+        metrics:
+          system.processes.count:
+            enabled: true
+          system.processes.created:
+            enabled: true
+
+      # Per-process metrics
+      process:
+        mute_process_all_errors: true
+        metrics:
+          process.cpu.utilization:
+            enabled: true
+          process.cpu.time:
+            enabled: true
+          process.memory.usage:
+            enabled: true
+          process.memory.virtual:
+            enabled: true
+          process.disk.io:
+            enabled: true
+
+  hostmetrics/1h:
+    collection_interval: 1h
+    scrapers:
+      # Memory metrics
+      memory:
+        metrics:
+          system.memory.limit:
+            enabled: true
+          system.memory.usage:
+            enabled: false
+
+      # CPU metrics
+      cpu:
+        metrics:
+          system.cpu.logical.count:
+            enabled: true
+          system.cpu.physical.count:
+            enabled: true
+          system.cpu.time:
+            enabled: false
+
+      # System metrics
+      system:
+        metrics:
+          system.uptime:
+            enabled: true
+
+processors:
+  filter:
+    metrics:
+      datapoint:
+        - metric.name == "system.cpu.utilization" and attributes["state"] == "idle"
+  transform:
+    error_mode: ignore
+    metric_statements:
+      - context: datapoint
+        statements:
+          # Mark process metrics for deletion if the process uses less than 1 MiB of memory (value_int < 1048576 bytes).
+          # Adjust the threshold to your needs (e.g. 10485760 for 10 MiB).
+          # This filters out low-memory/insignificant processes to reduce cardinality.
+          - set(resource.attributes["low-memory-process"], "true") where metric.name == "process.memory.usage" and value_int < 1048576 and resource.attributes["process.executable.name"] != nil
+
+          # Allowlist: uncomment and add process executable names to always ingest regardless of memory usage.
+          # For regex pattern matching, use IsMatch() instead, e.g.: IsMatch(resource.attributes["process.executable.name"], "java.*")
+          # - delete_key(resource.attributes, "low-memory-process") where ContainsValue(["my-process", "another-process"], resource.attributes["process.executable.name"])
+      - context: resource
+        statements:
+          # Replace spaces in process command line with underscores for cleaner entity IDs
+          - replace_pattern(resource.attributes["process.command_line"], " ", "_")
+          # Convert host.ip from array to first value of array to avoid the metric being dropped
+          - set(resource.attributes["host.ip"], resource.attributes["host.ip"][0]) where resource.attributes["host.ip"] != nil
+
+      - context: datapoint
+        statements:
+          # For process.* metrics, keep only the attributes needed by the OpenTelemetry Host extension and remove the rest
+          - delete_key(resource.attributes, "process.cgroup") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.command") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.executable.path") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.owner") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.parent_pid") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.pid") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.command_line") where IsMatch(metric.name, "^process\\..*")
+          - delete_key(resource.attributes, "process.command_args") where IsMatch(metric.name, "^process\\..*")
+
+          # Delete empty device attributes
+          - delete_key(datapoint.attributes, "device") where datapoint.attributes["device"] == ""
+
+          - delete_key(datapoint.attributes, "protocol") where IsMatch(metric.name, "^system\\.network\\..*")
+
+          # Filesystem metrics: Extension uses mountpoint and state, but not device, mode, or type
+          - delete_key(datapoint.attributes, "device") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(datapoint.attributes, "mode") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+          - delete_key(datapoint.attributes, "type") where IsMatch(metric.name, "^system\\.filesystem\\..*")
+
+      - context: metric
+        statements:
+          - aggregate_on_attributes("sum", ["cpu"]) where metric.name == "system.cpu.utilization"
+
+      - context: datapoint
+        statements:
+          - delete_key(datapoint.attributes, "cpu") where metric.name == "system.cpu.utilization"
+
+      - context: metric
+        statements:
+          # Average remaining datapoints (one per core) into a single host-level value
+          - aggregate_on_attributes("mean") where metric.name == "system.cpu.utilization"
+
+  filter/delete-metrics:
+    metric_conditions:
+      - resource.attributes["low-memory-process"] != nil
+
+  cumulative_to_delta:
+    max_staleness: 25h
+  # Composes the GCP resource identity field that Dynatrace uses to join this host to its
+  # Compute Engine cloud entity. `resourcedetection` does not emit `gcp.resource.name` itself.
+  # No case conversion is needed: GCP enforces lowercase on project IDs, zones and instance names.
+  transform/dt-cloud-correlation:
+    error_mode: ignore
+    metric_statements:
+      - context: resource
+        statements:
+          - set(resource.attributes["gcp.resource.name"], Concat(["//compute.googleapis.com/projects/", resource.attributes["cloud.account.id"], "/zones/", resource.attributes["cloud.availability_zone"], "/instances/", resource.attributes["gcp.gce.instance.name"]], "")) where resource.attributes["cloud.provider"] == "gcp"
+  resource_detection:
+    # The `gcp` detector precedes `system` so that cloud metadata wins on any attribute both
+    # detectors emit (detector merge is first-writer-wins).
+    detectors: ["gcp", "system"]
+    gcp:
+      resource_attributes:
+        # Opt-in. `gcp.gce.instance.name` carries the same value as `host.name`, but `host.name`
+        # is also emitted by the `system` detector, so a reordered detector list would silently
+        # compose a resource name containing the OS hostname. `system` never emits
+        # `gcp.gce.instance.name`, which makes the composition order-independent.
+        gcp.gce.instance.name:
+          enabled: true
+    system:
+      resource_attributes:
+        host.arch:
+          enabled: true
+        host.id:
+          enabled: true
+        host.name:
+          enabled: true
+        host.ip:
+          enabled: true
+        host.interface:
+          enabled: true
+        host.mac:
+          enabled: true
+        host.cpu.model.name:
+          enabled: true
+        host.cpu.vendor.id:
+          enabled: false
+        host.cpu.family:
+          enabled: false
+        host.cpu.model.id:
+          enabled: false
+        host.cpu.stepping:
+          enabled: false
+        host.cpu.cache.l2.size:
+          enabled: false
+        os.type:
+          enabled: true
+        os.description:
+          enabled: true
+        os.name:
+          enabled: true
+        os.version:
+          enabled: true
+        os.build.id:
+          enabled: true
+
+exporters:
+  otlp_http:
+    endpoint: "${env:DT_ENDPOINT}"
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+    sending_queue:
+      batch:
+        min_size: 3000
+        max_size: 3000
+        flush_timeout: 60s
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [hostmetrics/10s, hostmetrics/5m, hostmetrics/1h]
+      processors: [filter, resource_detection, transform/dt-cloud-correlation, transform, filter/delete-metrics, cumulative_to_delta]
+      exporters: [otlp_http]
+    logs:
+      receivers: [otlp, journald]
+      processors: [resource_detection]
+      exporters: [otlp_http]

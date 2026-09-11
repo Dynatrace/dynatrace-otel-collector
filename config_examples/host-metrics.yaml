@@ -245,14 +245,6 @@ processors:
 
       - context: metric
         statements:
-          - aggregate_on_attributes("sum", ["cpu"]) where metric.name == "system.cpu.utilization"
-
-      - context: datapoint
-        statements:
-          - delete_key(datapoint.attributes, "cpu") where metric.name == "system.cpu.utilization"
-
-      - context: metric
-        statements:
           # Average remaining datapoints (one per core) into a single host-level value
           - aggregate_on_attributes("mean") where metric.name == "system.cpu.utilization"
 

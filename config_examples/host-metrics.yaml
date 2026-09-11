@@ -245,8 +245,8 @@ processors:
 
       - context: metric
         statements:
-          # Average remaining datapoints (one per core) into a single host-level value
-          - aggregate_on_attributes("mean") where metric.name == "system.cpu.utilization"
+          # Sum non-idle state fractions into a single host-level utilization value
+          - aggregate_on_attributes("sum", []) where metric.name == "system.cpu.utilization"
 
   filter/delete-metrics:
     metric_conditions:

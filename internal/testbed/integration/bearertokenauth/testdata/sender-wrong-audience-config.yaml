@@ -16,7 +16,7 @@ receivers:
         endpoint: 0.0.0.0:4317
 
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     auth:
       authenticator: bearertokenauth
@@ -26,4 +26,4 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [otlphttp]
+      exporters: [otlp_http]

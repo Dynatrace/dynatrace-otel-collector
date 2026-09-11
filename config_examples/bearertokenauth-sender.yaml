@@ -1,0 +1,39 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+  bearertokenauth:
+    filename: /var/run/secrets/dynatrace/token
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  cumulative_to_delta:
+    max_staleness: 25h
+
+exporters:
+  otlp_http:
+    endpoint: "${env:DT_ENDPOINT}"
+    auth:
+      authenticator: bearertokenauth
+
+service:
+  extensions: [bearertokenauth, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlp_http]
+    metrics:
+      receivers: [otlp]
+      processors: [cumulative_to_delta]
+      exporters: [otlp_http]
+    logs:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlp_http]

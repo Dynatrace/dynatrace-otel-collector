@@ -1,5 +1,5 @@
 exporters:
-  otlphttp:
+  otlp_http:
     endpoint: "%s"
     tls:
       insecure: true

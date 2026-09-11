@@ -28,6 +28,7 @@ Dynatrace distribution of the OpenTelemetry Collector.
 - [K8s combined scenario](k8scombined.yaml)
 - [Redaction Processor](redaction.yaml)
 - [Host Metrics Receiver](host-metrics.yaml)
+- [Host Metrics Receiver — AWS cloud entity correlation](host-metrics-aws.yaml)
 - [Dynatrace Resource Detector](resource-detection.yaml)
 - [Large Scale Prometheus Scraping](./prometheus-large-scale)
 - [Bearer Token Auth Receiver](bearertokenauth-receiver.yaml)

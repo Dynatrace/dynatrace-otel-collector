@@ -1,0 +1,4 @@
+change_type: enhancement
+component: config_examples
+note: Add host monitoring configuration examples that correlate the OpenTelemetry host entity with its cloud VM entity (AWS, Azure, GCP)
+issues: [1192]

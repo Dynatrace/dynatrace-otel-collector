@@ -1,0 +1,40 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  groupbytrace:
+    wait_duration: 60s
+    emit_strategy: service
+  transform:
+    trace_statements:
+      - statements:
+        - set(spanevent.cache["key_name"], Concat(["dt.feature_flag.result.", spanevent.attributes["feature_flag.set.id"], "/", spanevent.attributes["feature_flag.key"]], "")) where spanevent.attributes["feature_flag.set.id"] != nil
+        - set(spanevent.cache["key_name"], Concat(["dt.feature_flag.result.", spanevent.attributes["feature_flag.key"]], "")) where spanevent.attributes["feature_flag.set.id"] == nil
+          # Variant takes precedence, so only set value if it is not present.
+        - set(span.attributes[spanevent.cache["key_name"]], spanevent.attributes["feature_flag.result.value"]) where spanevent.attributes["feature_flag.result.variant"] == nil and spanevent.attributes["feature_flag.result.value"] != nil
+        - set(span.attributes[spanevent.cache["key_name"]], spanevent.attributes["feature_flag.result.variant"]) where spanevent.attributes["feature_flag.result.variant"] != nil
+      - shared_cache: true
+        statements:
+          - set(span.cache[resource.attributes["service.name"]], {}) where span.cache[resource.attributes["service.name"]] == nil
+          - merge_maps(span.cache[resource.attributes["service.name"]], Filter(span.attributes, (k, _) => IsMatch(k, "^dt\\.feature_flag.*")), "upsert")
+      - shared_cache: true
+        statements:
+          - merge_maps(span.attributes, span.cache[resource.attributes["service.name"]], "upsert") where (span.kind == SPAN_KIND_CONSUMER or span.kind == SPAN_KIND_SERVER) and Len(span.cache[resource.attributes["service.name"]]) > 0
+
+exporters:
+  debug:
+    verbosity: detailed
+  otlp_http:
+    endpoint: ${env:DT_ENDPOINT}
+    headers:
+      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [groupbytrace, transform]
+      exporters: [otlp_http, debug]

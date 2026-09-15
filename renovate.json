@@ -60,6 +60,9 @@
   "kubernetes": {
     "managerFilePatterns": ["/internal/testbed/integration/.*/testdata/.*\\.ya?ml$/"]
   },
+  "helm": {
+    "managerFilePatterns": ["/config_examples/prometheus-large-scale/.*\\.ya?ml$/"]
+  },
   "customManagers": [
     {
       "customType": "regex",

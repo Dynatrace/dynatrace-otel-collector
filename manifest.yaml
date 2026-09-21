@@ -45,7 +45,7 @@ processors:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.160.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/cumulativetodeltaprocessor v0.160.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.160.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor v0.160.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor v1.0.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/metricstarttimeprocessor v0.160.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/probabilisticsamplerprocessor v0.160.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/redactionprocessor v0.160.0

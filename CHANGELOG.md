@@ -4,6 +4,106 @@
 
 <!-- next version -->
 
+## 0.57.0
+
+This release includes version v0.161.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.161.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.161.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.161.0>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/scraperhelper/controller`: Remove deprecated AddScraper func ([#15934](https://github.com/open-telemetry/opentelemetry-collector/issues/15934))
+- `pkg/service`: Remove deprecated ZapOptions ([#15935](https://github.com/open-telemetry/opentelemetry-collector/issues/15935))
+- `processor/k8s_attributes`: Promote logs, metrics, and traces signals from beta to stable. ([#49152](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49152))
+  Promote the following feature gates from alpha to beta (enabled by default):
+  - `processor.k8sattributes.EmitV1K8sConventions`: emits stable semconv attribute names (e.g. `k8s.pod.label.*` singular form).
+  - `processor.k8sattributes.DontEmitV0K8sConventions`: disables legacy semconv attribute names (e.g. `k8s.pod.labels.*` plural form).
+  Users relying on the legacy names should disable these gates or migrate to the stable names.
+  It is advised that dual emission is used for the migration period. This can be achieved through the feature gates:
+  `--feature-gates=-processor.k8sattributes.DontEmitV0K8sConventions,processor.k8sattributes.EmitV1K8sConventions`.
+  More information can be found at the respective documentation [section](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#semantic-conventions-compatibility).
+- `all`: Remove the deprecated mezmo exporter. ([#49953](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49953))
+  Use the OTLP/HTTP exporter to send logs directly to Mezmo instead. See
+  https://docs.mezmo.com/telemetry-pipelines/otel-collector and
+  https://docs.mezmo.com/telemetry-pipelines/open-telemetry-source for migration guidance.
+- `pkg/kafka/configkafka`: Reject configurations that set both `auth.sasl` and `auth.kerberos`. ([#50748](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50748))
+- `pkg/ottl`: Promote the `ottl.set.allowNil` feature gate to beta, enabling it by default. ([#49741](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49741))
+  When enabled, the `set` function passes `nil` values directly to the target instead of treating them as a no-op.
+- `pkg/ottl`: Promote the `ottl.PanicDuplicateName` feature gate to stable. ([#50873](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50873))
+- `pkg/ottl`: Remove the deprecated `Base64Decode` converter. Use the `Decode` converter with the `base64` encoding instead. ([#50875](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50875))
+- `receiver/kubelet_stats`: Promote the `receiver.kubeletstats.cpuUsageScrapeBased` feature gate to beta (enabled by default). ([#49477](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49477))
+  `container.cpu.usage`, `k8s.pod.cpu.usage` and `k8s.node.cpu.usage` (and the cpu utilization
+  metrics derived from them) are now calculated as the rate of the corresponding `*.cpu.time`
+  counter between consecutive scrapes, instead of being read from the kubelet's `UsageNanoCores`
+  value. As a result these metrics are not reported on the first scrape after startup.
+  To restore the previous behavior, run the collector with
+  `--feature-gates=-receiver.kubeletstats.cpuUsageScrapeBased`.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 💡 Enhancements 💡
+
+- `pkg/fileconsumer`: Move filelog.mtimeSortType featuregate to beta ([#46635](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46635))
+- `receiver/k8s_cluster`: Add the `k8s.statefulset.pod.available` metric reporting the number of available pods (StatefulSetStatus.availableReplicas) per stateful set. ([#50345](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50345))
+- `pkg/stanza`: Add optional server authenticator support to the `tcp_input` operator via a new `auth` configuration block. ([#49339](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49339))
+  When `auth.authenticator` references a server auth extension, the `tcp_input` operator authenticates each
+  accepted connection before reading logs, closing the connection if authentication fails. The connection's
+  remote address is exposed to the authenticator through the `client.Info` in the context. This is also
+  available to receivers built on the operator, such as `tcplogreceiver` and `syslogreceiver`.
+- `pkg/ottl`: Allow `Concat` to accept slice values produced by paths and converter expressions. ([#27821](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/27821), [#38690](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/38690))
+- `processor/resource_detection`: Populate `host.type` on GKE in the `gcp` detector via the Compute API when the `host.type` resource attribute is enabled. ([#50662](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50662))
+  The machine type is not available from the GKE metadata server, so fetching it requires
+  a Compute API call and the `compute.instances.get` permission (covered by `roles/compute.viewer`).
+  If the permission is missing, the attribute is skipped and the failure is logged. Disable the
+  `host.type` resource attribute to avoid the API call.
+- `pkg/ottl`: Promote the `ottl.contexts.enableOTelColContext` feature gate to stable. ([#46437](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46437))
+  The `otelcol` context is now always available and the feature gate can no longer be disabled.
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/scraperhelper`: Fix shutdown being delayed by extra scrapes when a scrape runs longer than the collection interval ([#15736](https://github.com/open-telemetry/opentelemetry-collector/issues/15736))
+  If a scrape was still running when the next tick fired, the pending tick and the shutdown
+  signal could both be ready when it finished and the controller chose between them at random.
+- `pkg/confmap`: Fix bug where an escaped URI appearing before a valid URI prevented the subsequent URI from being expanded. ([#15867](https://github.com/open-telemetry/opentelemetry-collector/issues/15867))
+  URI scanning now continues after an escaped URI while preserving the escaped expression as literal text.
+- `all`: Do not panic on AIX ([#50764](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50764))
+  These components do not work on AIX. However, they panic if incorporated in a distribution running on AIX, even if not used.
+  The fix is to return an error instead of a panic when trying to run on this OS. 
+  The components affected are:
+  - connector/datadogconnector
+  - exporter/datadogexporter
+  - exporter/pulsarexporter
+  - extension/datadogextension
+  - extension/tailstorage/pebbletailstorageextension
+  - receiver/pulsarreceiver
+- `exporter/load_balancing`: Remove stale Kubernetes endpoints when a relist recovers a missed watch deletion. ([#50741](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50741))
+- `pkg/stanza`: Fix strptime `%Z` matched as Zulu (UTC) in `setLocation` ([#50225](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50225))
+  Since v0.155.0 strptime layouts no longer converted to gotime before checking for a `Z` suffix.
+  This results in `setLocation` to match `%Z` as Zulu (UTC) setting time.UTC instead of time.Local.
+  Timestamps with non-IANA timezone abbreviations (like `PST`) then failed to parse.
+- `receiver/prometheus`: Only convert exemplar `trace_id` and `span_id` labels that are valid IDs, and keep the rest as filtered attributes ([#50598](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50598))
+  A `trace_id` or `span_id` label with an invalid length was previously zero padded
+  or truncated before being stored in the exemplar. This could create an ID that
+  the sender never wrote, while the original value was lost. The receiver now
+  converts only valid IDs with the expected OpenTelemetry width and preserves an
+  invalid value unchanged as a filtered attribute.
+- `processor/gen_ai_normalizer`: Reconstruct text parts from OpenInference's indexed content array, and stop removing message attributes that were not folded into the reconstructed message ([#50133](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50133))
+- `exporter/load_balancing`: Skip endpoints whose `EndpointSlice` `conditions.ready` is explicitly `false` in the kubernetes resolver, so traffic is not routed to them. ([#50436](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50436))
+  The Kubernetes resolver now excludes `EndpointSlice` endpoints whose `conditions.ready` field is `false`. To preserve the previous behaviour and keep not-ready endpoints in the routing ring, set `publishNotReadyAddresses: true` on the Service.
+
+---
+
+</details>
+
+
+<!-- previous-version -->
+
 ## 0.56.0
 
 This release includes version v0.160.0 of the upstream Collector components.

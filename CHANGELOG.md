@@ -17,8 +17,6 @@ v0.161.0:
 
 ### 🛑 Breaking changes 🛑
 
-- `pkg/scraperhelper/controller`: Remove deprecated AddScraper func ([#15934](https://github.com/open-telemetry/opentelemetry-collector/issues/15934))
-- `pkg/service`: Remove deprecated ZapOptions ([#15935](https://github.com/open-telemetry/opentelemetry-collector/issues/15935))
 - `processor/k8s_attributes`: Promote logs, metrics, and traces signals from beta to stable. ([#49152](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49152))
   Promote the following feature gates from alpha to beta (enabled by default):
   - `processor.k8sattributes.EmitV1K8sConventions`: emits stable semconv attribute names (e.g. `k8s.pod.label.*` singular form).
@@ -27,10 +25,6 @@ v0.161.0:
   It is advised that dual emission is used for the migration period. This can be achieved through the feature gates:
   `--feature-gates=-processor.k8sattributes.DontEmitV0K8sConventions,processor.k8sattributes.EmitV1K8sConventions`.
   More information can be found at the respective documentation [section](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/k8sattributesprocessor/README.md#semantic-conventions-compatibility).
-- `all`: Remove the deprecated mezmo exporter. ([#49953](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49953))
-  Use the OTLP/HTTP exporter to send logs directly to Mezmo instead. See
-  https://docs.mezmo.com/telemetry-pipelines/otel-collector and
-  https://docs.mezmo.com/telemetry-pipelines/open-telemetry-source for migration guidance.
 - `pkg/kafka/configkafka`: Reject configurations that set both `auth.sasl` and `auth.kerberos`. ([#50748](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50748))
 - `pkg/ottl`: Promote the `ottl.set.allowNil` feature gate to beta, enabling it by default. ([#49741](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49741))
   When enabled, the `set` function passes `nil` values directly to the target instead of treating them as a no-op.
@@ -72,16 +66,6 @@ v0.161.0:
   signal could both be ready when it finished and the controller chose between them at random.
 - `pkg/confmap`: Fix bug where an escaped URI appearing before a valid URI prevented the subsequent URI from being expanded. ([#15867](https://github.com/open-telemetry/opentelemetry-collector/issues/15867))
   URI scanning now continues after an escaped URI while preserving the escaped expression as literal text.
-- `all`: Do not panic on AIX ([#50764](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50764))
-  These components do not work on AIX. However, they panic if incorporated in a distribution running on AIX, even if not used.
-  The fix is to return an error instead of a panic when trying to run on this OS. 
-  The components affected are:
-  - connector/datadogconnector
-  - exporter/datadogexporter
-  - exporter/pulsarexporter
-  - extension/datadogextension
-  - extension/tailstorage/pebbletailstorageextension
-  - receiver/pulsarreceiver
 - `exporter/load_balancing`: Remove stale Kubernetes endpoints when a relist recovers a missed watch deletion. ([#50741](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50741))
 - `pkg/stanza`: Fix strptime `%Z` matched as Zulu (UTC) in `setLocation` ([#50225](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50225))
   Since v0.155.0 strptime layouts no longer converted to gotime before checking for a `Z` suffix.

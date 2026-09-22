@@ -64,8 +64,10 @@ func TestE2E_KubeletstatsReceiver(t *testing.T) {
 	require.NoError(t, err)
 	collectorConfigPath := path.Join(configExamplesDir, "kubeletstats.yaml")
 	host := otelk8stest.HostEndpoint(t)
+	overlay := k8stest.MustRead(t, filepath.Join("testdata", "config-overlays", "kubeletstats.yaml"))
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host: host,
+		Host:      host,
+		Templates: []string{overlay},
 	})
 	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
 	collectorObjs := otelk8stest.CreateCollectorObjects(
@@ -86,8 +88,17 @@ func TestE2E_KubeletstatsReceiver(t *testing.T) {
 		}
 	}()
 
-	oteltest.WaitForMetrics(t, 10, metricsConsumer)
+	oteltest.WaitForMetrics(t, 3, metricsConsumer)
 
+	// To regenerate: uncomment, run the test once, re-comment.
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertFile, getSanitizedMetricData(metricsConsumer)))
+
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.NoError(tt, pmetricassert.AssertMetrics(expectedAssertFile, getSanitizedMetricData(metricsConsumer)))
+	}, 3*time.Minute, 1*time.Second)
+}
+
+func getSanitizedMetricData(metricsConsumer *consumertest.MetricsSink) pmetric.Metrics {
 	resourceIgnoreList := []string{
 		"k8s.pod.uid",
 		"k8s.pod.name",
@@ -97,15 +108,10 @@ func TestE2E_KubeletstatsReceiver(t *testing.T) {
 		"interface",
 	}
 
-	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
-		actualForAssert := pmetric.NewMetrics()
-		actual.CopyTo(actualForAssert)
-		testutil.ReplaceAttrValsWithStar(actualForAssert, resourceIgnoreList, dpIgnoreList)
-		testutil.DeduplicateResources(actualForAssert)
-		assert.NoError(tt, pmetricassert.AssertMetrics(expectedAssertFile, actualForAssert))
-	}, 3*time.Minute, 1*time.Second)
+	actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
+	actualForAssert := pmetric.NewMetrics()
+	actual.CopyTo(actualForAssert)
+	testutil.ReplaceAttrValsWithStar(actualForAssert, resourceIgnoreList, dpIgnoreList)
+	testutil.DeduplicateResources(actualForAssert)
+	return actualForAssert
 }

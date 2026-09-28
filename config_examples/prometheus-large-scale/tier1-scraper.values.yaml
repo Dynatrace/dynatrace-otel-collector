@@ -30,7 +30,7 @@ autoscaling:
 image:
   repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
   # renovate: datasource=docker depName=ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
-  tag: 0.56.0@sha256:c5e66a81cf9c8241d2d4601c7524f3acd89f4e96ce2e6b5888dfefa0083a11c9
+  tag: 0.57.0@sha256:8f905b9657da9aa5604b783f0f26cccc798de0bb5afe2cf5faaaa59563c84ed5
 command:
   name: dynatrace-otel-collector
 

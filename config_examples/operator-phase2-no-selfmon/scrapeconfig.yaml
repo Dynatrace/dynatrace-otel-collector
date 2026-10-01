@@ -1,0 +1,52 @@
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: dynatrace-com
+  namespace: ${NAMESPACE}
+  labels:
+    prometheus.dynatrace.com: "true"
+spec:
+  jobName: dynatrace-com
+  scrapeInterval: 60s
+  sampleLimit: 5000000
+  labelLimit: 50
+  labelNameLengthLimit: 100
+  labelValueLengthLimit: 1000
+  kubernetesSDConfigs:
+    - role: Pod
+      namespaces:
+        names:
+          - avalanche
+  relabelings:
+    - sourceLabels:
+        - __meta_kubernetes_pod_annotation_metrics_dynatrace_com_scrape
+        - __meta_kubernetes_pod_annotationpresent_metrics_dynatrace_com_scrape
+      action: keep
+      regex: true;true
+    - sourceLabels:
+        - __meta_kubernetes_pod_annotation_metrics_dynatrace_com_secure
+        - __meta_kubernetes_pod_annotationpresent_metrics_dynatrace_com_secure
+      action: replace
+      regex: true;true
+      targetLabel: __scheme__
+      replacement: https
+    - sourceLabels:
+        - __address__
+        - __meta_kubernetes_pod_annotation_metrics_dynatrace_com_port
+        - __meta_kubernetes_pod_annotationpresent_metrics_dynatrace_com_port
+      action: replace
+      regex: (.+?)(?::\d+)?;(\d+);true
+      targetLabel: __address__
+      replacement: $1:$2
+    - sourceLabels:
+        - __meta_kubernetes_pod_annotation_metrics_dynatrace_com_path
+        - __meta_kubernetes_pod_annotationpresent_metrics_dynatrace_com_path
+      action: replace
+      regex: (.+);true
+      targetLabel: __metrics_path__
+      replacement: $1
+    - sourceLabels:
+        - __meta_kubernetes_pod_phase
+      action: drop
+      regex: (Failed|Succeeded)

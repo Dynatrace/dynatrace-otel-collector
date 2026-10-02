@@ -15,6 +15,11 @@
 - **Symbol notation** in a local entry: `Func` or `Type.Method`. Verify the list against the fix commit, not only the advisory text.
 - **`-show verbose` on source mode first prints every scanned module.** Read only the `=== Symbol Results ===`, `=== Package Results ===` sections.
 - **Result wording:** "your code is affected by 0 vulnerabilities ... 1 in packages you import" means present, not called. Binary mode counts every symbol compiled in, so it reports more than source mode. Report both and explain the difference.
+- **Local entry needs `details` and `database_specific.url`.** Without them `govulncheck -show verbose` panics (nil deref in `x/vuln` `text.go`, `TextHandler.vulnerability`) and dumps a huge goroutine trace. `mk-osv-db.sh` now writes both. If a panic still shows, rerun with `-format json` and filter: `jq -c 'select(.finding!=null)|.finding|{fixed_version,trace:[.trace[]|{package,function}]}'`. Only findings with a `function` are symbol-level.
+- **A local entry only finds the symbols you list.** "Zero symbols called" is only as good as that list. The bug often sits in an internal package, not the one with the public entry points. Read the fix commit, list the entry points and the internal functions, and pass the extra package as a `<pkg> <symbols>` pair to `mk-osv-db.sh`. Confirm the package is linked with `go list -deps ./... | grep <pkg>`.
+- **Set `WORK` and the scripts dir once.** Scripts `cd` nowhere, but the shell cwd resets after each call. Use absolute paths.
+- **Use `PRESENT_ONLY=1` with `attribute-components.sh`** to print only the components that link the package. The full list is about 35 rows.
+- **No ticket id in the request?** Name the report after the advisory id, for example `GHSA-xxxx.md`, and ask for the ticket id.
 - **macOS has no `timeout`.** Run long commands without it, or use the harness timeout.
 - **Callgraph size:** `callgraph -algo=rta .` on the full distro writes millions of lines. Save to a file and query with grep or a BFS script, never print it.
 
@@ -94,6 +99,6 @@ Downstream pins (for example remoteplugin) are not assessed. If the ticket names
 
 - Vulnerable `<= 0.27.0`, fixed `0.27.1`. Trigger: ordered-JSON target (`JSONMapSlice`) parsing deeply nested input gives an unrecoverable stack overflow.
 - Version table: v0.55.0 and later ship `v0.28.0`. v0.54.0 ships `v0.26.0`. v0.48 to v0.53.1 ship `v0.25.5`, v0.44 to v0.47 ship `v0.25.4`.
-- Present in 8 components of v0.54.0 (receivers: prometheus, k8sobjects, kubeletstats, k8scluster; processors: k8sattributes, resourcedetection; exporter: loadbalancing; extension: k8sleaderelector), not in the core `otelcol`. The import chain for the k8s ones runs through client-go and kube-openapi.
+- Present in 9 components of v0.54.0 (receivers: prometheus, k8sobjects, kubeletstats, k8scluster, k8sevents; processors: k8sattributes, resourcedetection; exporter: loadbalancing; extension: k8sleaderelector), not in the core `otelcol`. The import chain for the k8s ones runs through client-go and kube-openapi.
 - Reachable: none. `govulncheck` with a local entry reported the package as imported with zero symbols called. RTA paths to `UnmarshalJSON` and `WriteJSON` went through closure and `reflect.Value.Call` artifacts. `FromDynamicJSON` and `ReadJSON` were unreachable from `main`.
 - Verdict: affected versions up to v0.54.0, not exploitable, fixed by v0.55.0.

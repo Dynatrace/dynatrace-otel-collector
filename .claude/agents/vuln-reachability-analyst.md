@@ -16,7 +16,7 @@ You judge whether a vulnerable Go symbol is really reachable from `main` in a Dy
 
 ## Method
 
-1. Find the shortest path from `github.com/Dynatrace/dynatrace-otel-collector.main` to each vulnerable symbol in the call graph file (breadth-first search). If the file does not exist, create it first.
+1. Find the shortest path from `github.com/Dynatrace/dynatrace-otel-collector.main` to each vulnerable symbol in the call graph file with `scripts/callgraph-path.py` in the skill dir. If the file does not exist, create it first with the `callgraph` command in `reference.md`.
 2. Judge every hop of each path. RTA over-approximates: interface dispatch links a call to every instantiated type with that method, and `reflect.Value.Call` links to every function. A hop is real only if the caller's code can pass the vulnerable type or value to the callee.
 3. Check the trigger. Read the vulnerable function at the vulnerable version and find the condition that sends execution into the vulnerable path (for example, the target must implement a specific interface). Then check whether any non-test code in the linked packages ever creates or decodes into that type.
 4. For a real path, answer the exploitability questions: which input, which component receives it, is it enabled in the shipped default configs, who controls it.

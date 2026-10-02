@@ -20,6 +20,7 @@
 - **Set `WORK` and the scripts dir once.** Scripts `cd` nowhere, but the shell cwd resets after each call. Use absolute paths.
 - **Use `PRESENT_ONLY=1` with `attribute-components.sh`** to print only the components that link the package. The full list is about 35 rows.
 - **No ticket id in the request?** Name the report after the advisory id, for example `GHSA-xxxx.md`, and ask for the ticket id.
+- **`gen-sources.sh` leaves a git worktree** at `<workdir>/src-<tag>`. Remove it when done: `git worktree remove --force <path>`.
 - **macOS has no `timeout`.** Run long commands without it, or use the harness timeout.
 - **Callgraph size:** `callgraph -algo=rta .` on the full distro writes millions of lines. Save to a file and query with grep or a BFS script, never print it.
 
@@ -28,33 +29,19 @@
 RTA (rapid type analysis) over-approximates: a call to any interface method is linked to every instantiated type with that method, and `reflect.Value.Call` is linked to every function.
 
 - Read the path hop by hop from `main`. Closures such as `cobra.Command.preRun -> some closure -> library X` are artifacts when the middle hops share no real data flow.
-- An edge from a JSON/YAML library's `Unmarshaler` dispatch to the vulnerable `UnmarshalJSON` only matters if some code actually decodes into the vulnerable type. Grep non-test code in every linked package for the type (including aliases such as `swag.JSONMapSlice`).
-- Direct calls to the entry points from packages linked in only as library dependencies (for example OpenAPI validation packages pulled in by Kubernetes or alertmanager code) matter only if their own callers are reachable. Run a BFS from `main` to the specific function and read the result.
+- An edge from a JSON/YAML library's `Unmarshaler` dispatch to the vulnerable `UnmarshalJSON` only matters if some code actually decodes into the vulnerable type. Grep non-test code in every linked package for the type (including type aliases re-exported by other packages).
+- Direct calls to the entry points from packages linked in only as library dependencies (for example validation or client libraries pulled in by a receiver) matter only if their own callers are reachable. Run a BFS from `main` to the specific function and read the result.
 - Read the vulnerable function's own source at the vulnerable version. The trigger is often narrower than the advisory title, for example "only when the target implements an ordered-map interface".
 - `crypto/...` or `bufio` calling a library closure is always noise.
 
-Small BFS used in the first triage (edge format `caller --> callee`, root is `github.com/Dynatrace/dynatrace-otel-collector.main`):
+Create the call graph file once per release and query it with the script. Never print the graph.
 
-```python
-import sys, collections
-g = collections.defaultdict(list)
-for line in open(sys.argv[1]):
-    a, sep, b = line.rstrip("\n").partition(" --> ")
-    if sep: g[a].append(b)
-root = "github.com/Dynatrace/dynatrace-otel-collector.main"
-for target in sys.argv[2:]:
-    prev, q, hit = {root: None}, collections.deque([root]), False
-    while q:
-        n = q.popleft()
-        if n == target: hit = True; break
-        for m in g.get(n, ()):
-            if m not in prev: prev[m] = n; q.append(m)
-    print("\n==", target)
-    if not hit: print("  unreachable from main"); continue
-    path, n = [], target
-    while n: path.append(n); n = prev[n]
-    for i, n in enumerate(reversed(path)): print(f"  {i:2d} {n}")
 ```
+callgraph -algo=rta -format='{{.Caller}} --> {{.Callee}}' . > $WORK/callgraph.txt
+python3 scripts/callgraph-path.py $WORK/callgraph.txt <target-function>...
+```
+
+`callgraph` is `golang.org/x/tools/cmd/callgraph`. Run it in the generated module dir. Target names use the callgraph's own notation, for example `(*pkg/path.Type).Method`.
 
 ## Exploitable: questions to answer
 
@@ -94,11 +81,3 @@ Reflection and RTA limits, assumptions, items needing human confirmation.
 ## Out of scope
 Downstream pins (for example remoteplugin) are not assessed. If the ticket names a module version that does not appear in any release, say so and ask the reporter for the manifest path.
 ```
-
-## Worked example: ICP-10434 (GHSA-xh24-9qpg-8w28, go-openapi/swag/jsonutils)
-
-- Vulnerable `<= 0.27.0`, fixed `0.27.1`. Trigger: ordered-JSON target (`JSONMapSlice`) parsing deeply nested input gives an unrecoverable stack overflow.
-- Version table: v0.55.0 and later ship `v0.28.0`. v0.54.0 ships `v0.26.0`. v0.48 to v0.53.1 ship `v0.25.5`, v0.44 to v0.47 ship `v0.25.4`.
-- Present in 9 components of v0.54.0 (receivers: prometheus, k8sobjects, kubeletstats, k8scluster, k8sevents; processors: k8sattributes, resourcedetection; exporter: loadbalancing; extension: k8sleaderelector), not in the core `otelcol`. The import chain for the k8s ones runs through client-go and kube-openapi.
-- Reachable: none. `govulncheck` with a local entry reported the package as imported with zero symbols called. RTA paths to `UnmarshalJSON` and `WriteJSON` went through closure and `reflect.Value.Call` artifacts. `FromDynamicJSON` and `ReadJSON` were unreachable from `main`.
-- Verdict: affected versions up to v0.54.0, not exploitable, fixed by v0.55.0.

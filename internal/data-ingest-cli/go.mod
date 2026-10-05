@@ -3,7 +3,7 @@ module github.com/Dynatrace/dynatrace-otel-collector/internal/data-ingest-cli
 go 1.27.1
 
 require (
-	github.com/fluent/fluent-logger-golang v1.10.1
+	github.com/fluent/fluent-logger-golang v1.10.2
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/zipkin v0.161.0
 	github.com/openzipkin/zipkin-go v0.4.3
 	go.opentelemetry.io/collector/config/confignet v1.67.0

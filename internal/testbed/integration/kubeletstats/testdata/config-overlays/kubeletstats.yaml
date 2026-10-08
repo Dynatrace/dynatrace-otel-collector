@@ -1,0 +1,4 @@
+receivers:
+  kubelet_stats:
+    # Some metrics are only updated every 10-15s, so wait for the maximum period before collecting.
+    collection_interval: 15s

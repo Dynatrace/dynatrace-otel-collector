@@ -56,6 +56,22 @@ resources:
                     reason: initial
             - name: otelcol_cumulativetodelta_streams_tracked
               type: gauge
+            - name: otelcol_exporter_enqueue_size
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    exporter: otlp_http
+                - attributes:
+                    exporter: otlp_http/selfmon
+            - name: otelcol_exporter_enqueue_size_bytes
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    exporter: otlp_http
+                - attributes:
+                    exporter: otlp_http/selfmon
             - name: otelcol_exporter_in_flight_requests
               type: gauge
               datapoints:
@@ -71,16 +87,18 @@ resources:
               datapoints:
                 - attributes:
                     exporter: otlp_http
-                - attributes:
-                    exporter: otlp_http/selfmon
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/metrics
             - name: otelcol_exporter_queue_batch_send_size_bytes
               type: histogram
               temporality: delta
               datapoints:
                 - attributes:
                     exporter: otlp_http
-                - attributes:
-                    exporter: otlp_http/selfmon
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/metrics
             - name: otelcol_exporter_queue_capacity
               type: gauge
               datapoints:

@@ -44,6 +44,32 @@ resources:
                     filter: filter
         - name: go.opentelemetry.io/collector/exporter/exporterhelper
           metrics:
+            - name: otelcol_exporter_enqueue_size
+              type: histogram
+              unit: '{unit}'
+              temporality: delta
+              datapoints:
+                - attributes:
+                    exporter: otlp_grpc/self
+                - attributes:
+                    exporter: otlp_http/logs
+                - attributes:
+                    exporter: otlp_http/metrics
+                - attributes:
+                    exporter: otlp_http/traces
+            - name: otelcol_exporter_enqueue_size_bytes
+              type: histogram
+              unit: By
+              temporality: delta
+              datapoints:
+                - attributes:
+                    exporter: otlp_grpc/self
+                - attributes:
+                    exporter: otlp_http/logs
+                - attributes:
+                    exporter: otlp_http/metrics
+                - attributes:
+                    exporter: otlp_http/traces
             - name: otelcol_exporter_in_flight_requests
               type: sum
               unit: '{request}'
@@ -84,12 +110,23 @@ resources:
               datapoints:
                 - attributes:
                     exporter: otlp_grpc/self
+                    server.address: '*'
+                    server.port: '*'
                 - attributes:
                     exporter: otlp_http/logs
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/logs
                 - attributes:
                     exporter: otlp_http/metrics
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/metrics
                 - attributes:
                     exporter: otlp_http/traces
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/traces
             - name: otelcol_exporter_queue_batch_send_size_bytes
               type: histogram
               unit: By
@@ -97,12 +134,23 @@ resources:
               datapoints:
                 - attributes:
                     exporter: otlp_grpc/self
+                    server.address: '*'
+                    server.port: '*'
                 - attributes:
                     exporter: otlp_http/logs
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/logs
                 - attributes:
                     exporter: otlp_http/metrics
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/metrics
                 - attributes:
                     exporter: otlp_http/traces
+                    server.address: '*'
+                    server.port: '*'
+                    url.path: /v1/traces
             - name: otelcol_exporter_queue_capacity
               type: gauge
               unit: '{batch}'

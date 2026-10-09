@@ -1,5 +1,7 @@
 # Dynatrace distribution of the OpenTelemetry Collector
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Dynatrace/dynatrace-otel-collector/badge)](https://scorecard.dev/viewer/?uri=github.com/Dynatrace/dynatrace-otel-collector)
+
 The Dynatrace distribution of the [OpenTelemetry Collector] allows collecting observability data from a
 variety of sources for sending to Dynatrace. It includes a set of Collector
 components that have been verified to work well for common Dynatrace use cases.

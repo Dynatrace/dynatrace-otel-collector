@@ -33,7 +33,6 @@ v0.162.0:
   running with franz-go's default of 20. The new default preserves that behavior now that the
   field is applied. Only configurations that set `metadata::retry::max` explicitly change
   behavior: the configured value is now honored.
-- `all`: Remove the wavefront receiver after a period of deprecation ([#51397](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51397))
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>
@@ -123,7 +122,6 @@ v0.162.0:
   pre-allocate a large slice before failing to read the (absent) data. The Thrift `/api/traces` handler now
   caps the decoder's max message size at the number of bytes actually received, so a container that declares
   more elements than the payload can hold is rejected instead of being pre-allocated.
-- `receiver/netflow`: Exclude netflowreceiver on solaris ([#51328](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51328))
 - `processor/transform`: Ensure each batch of data receives a fresh cache when `shared_cache` is enabled ([#51087](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51087))
 - `receiver/prometheus`: Drop malformed classic histograms with decreasing bucket counts or overall count below largest bucket count instead of emitting invalid OTLP data. ([#50348](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50348))
   Also applies when classic histograms are converted to NHCB via the `convert_classic_histograms_to_nhcb` scrape option.
@@ -140,7 +138,6 @@ v0.162.0:
   `metadata::retry::backoff` is the minimum wait between retries; each successive retry doubles
   the wait, with jitter applied, capped at `max(5s, backoff)`. Unlike `max`, it applies to every
   retry path, including fetches.
-- `all`: Exclude datadogconnector, datadogexporter, and datadogextension on solaris ([#51329](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51329))
 - `receiver/kafka`: Stop processing a fetched batch once the partition consumer is cancelled, instead of marking and dropping the rest of it ([#50753](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50753))
   `message_marking.on_error` and `message_marking.on_permanent_error` no longer mark a
   record that was interrupted by the cancellation. At shutdown, records that were

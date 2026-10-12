@@ -4,6 +4,156 @@
 
 <!-- next version -->
 
+## 0.58.0
+
+This release includes version v0.162.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.162.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.162.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.162.0>
+
+### 🛑 Breaking changes 🛑
+
+- `pkg/ottl`: Remove the stable `ottl.PanicDuplicateName` and `ottl.contexts.enableOTelColContext` feature gates. ([#44630](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44630), [#46437](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46437))
+- `processor/transform`: Remove the stable `processor.transform.defaultErrorModeIgnore` feature gate. ([#51242](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51242))
+- `receiver/prometheus`: Promote the `receiver.prometheusreceiver.IgnoreScopeInfoMetric` feature gate to stable ([#47312](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47312))
+  The `otel_scope_info` metric is no longer used for scope attribute extraction and is
+  converted like any other metric. Scope attributes are populated from `otel_scope_`-prefixed
+  metric labels instead. The feature gate can no longer be disabled and will be removed in v0.164.0.
+- `receiver/kafka_metrics`: Change the default for `metadata::retry::max` from 3 to 20 to match franz-go's default. ([#50116](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50116))
+  The field was unwired since the migration to franz-go, so every collector has effectively been
+  running with franz-go's default of 20. The new default preserves that behavior now that the
+  field is applied. Only configurations that set `metadata::retry::max` explicitly change
+  behavior: the configured value is now honored.
+- `receiver/kafka`: Change the default for `metadata::retry::max` from 3 to 20 to match franz-go's default. ([#50116](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50116))
+  The field was unwired since the migration to franz-go, so every collector has effectively been
+  running with franz-go's default of 20. The new default preserves that behavior now that the
+  field is applied. Only configurations that set `metadata::retry::max` explicitly change
+  behavior: the configured value is now honored.
+- `all`: Remove the wavefront receiver after a period of deprecation ([#51397](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51397))
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### ⚠️ Deprecations ⚠️
+
+- `receiver/kafka`: Deprecate `metadata::full`, which became a no-op after the migration to franz-go. ([#50116](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50116))
+  franz-go has no full-metadata mode; it only fetches metadata for the topics the receiver
+  consumes from. The field is still accepted in configuration for backwards compatibility, but has
+  no effect at runtime. It will be removed in a future release.
+- `receiver/kafka_metrics`: Deprecate `metadata::full`, which became a no-op after the migration to franz-go. ([#50116](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50116))
+  franz-go has no full-metadata mode; it only fetches metadata for the topics the scrapers query.
+  The field is still accepted in configuration for backwards compatibility, but has no effect at
+  runtime. It will be removed in a future release.
+- `receiver/kubelet_stats`: Deprecate `k8s.pod.cpu.node.utilization`, `k8s.pod.memory.node.utilization`, `k8s.container.cpu.node.utilization`, and `k8s.container.memory.node.utilization` metrics. ([#50857](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50857))
+  These metrics are deprecated following the decision in the K8s SemConv SIG
+  (https://github.com/open-telemetry/semantic-conventions/issues/2768).
+  They will be removed in a future release.
+
+### 💡 Enhancements 💡
+
+- `pkg/exporterhelper`: Make the multi-batcher partition LRU cache size configurable and export cache size metrics. ([#14526](https://github.com/open-telemetry/opentelemetry-collector/issues/14526))
+  Adds `sending_queue::batch::partition::cache_size` (default 10000) to cap the
+  number of active partition batchers. The value
+  must be positive. Current size and configured capacity are exported as
+  `otelcol_exporter_queue_batch_partition_cache_size`
+  and `otelcol_exporter_queue_batch_partition_cache_capacity`.
+- `pkg/exporterhelper`: Make the partition idle timeout configurable via `batch::partition::idle_timeout` and raise the default to 90s. ([#15894](https://github.com/open-telemetry/opentelemetry-collector/issues/15894))
+- `receiver/prometheus`: Enable keepalive by default ([#49316](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49316))
+- `pkg/ottl`: Promote the `ottl.set.allowNil` feature gate to stable. ([#49741](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49741))
+- `processor/transform`: Add extract_avg_metric OTTL function to transform processor ([#49238](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49238))
+- `receiver/kafka`: Link the receive span to the trace context in Kafka record headers, using the propagators configured in `service::telemetry::traces::propagators`. ([#51077](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51077))
+- `receiver/journald`: Add "convert_to_semantic_conventions" config option to map well-known journald fields to OpenTelemetry semantic convention attributes ([#7298](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/7298))
+  See the [Semantic Conventions Mapping](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/journaldreceiver/README.md#semantic-conventions-mapping) section of the receiver README for details on what `convert_to_semantic_conventions` does.
+- `exporter/load_balancing`: Add `randomness` routing key that routes spans by the OTel tracestate randomness value (`ot=rv`), falling back to trace ID randomness when absent, so traces sharing an explicit randomness value are routed to the same backend. ([#49660](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49660))
+- `receiver/jaeger`: Enable keepalive by default ([#49316](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49316))
+- `receiver/prometheus`: Use value types and pre-allocate slices when processing scraped samples and building OTLP metrics. ([#51133](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51133))
+- `receiver/zipkin`: Enable keepalive connections by default ([#51139](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51139))
+- `processor/resource_detection`: Add Azure Functions resource detector ([#50633](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50633))
+- `extension/health_check`: Enable keepalive by default ([#51175](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51175))
+
+### 🧰 Bug fixes 🧰
+
+- `receiver/otlp`: Error handler preserves the HTTP status code when the request Content-Type is not one a Status can be encoded in ([#15995](https://github.com/open-telemetry/opentelemetry-collector/issues/15995))
+  Extends the fix in #13414, which handled a missing Content-Type. A Content-Type that was
+  present but unsupported, or malformed, still fell through to
+  `500 {"code": 13, "message": "failed to marshal error message"}`, reporting client errors
+  such as 401 from a server auth extension or 400 from an unsupported Content-Encoding as
+  server faults.
+- `pkg/exporterhelper`: Drop only the oversized item when splitting a batch, instead of discarding every item queued behind it ([#15936](https://github.com/open-telemetry/opentelemetry-collector/issues/15936))
+  Applied to logs only for now
+- `exporter/debug`: Support known sync error handling on AIX ([#15924](https://github.com/open-telemetry/opentelemetry-collector/issues/15924))
+  Enable the debug exporter to handle known synchronous errors on AIX.
+- `pkg/exporterhelper`: Add exporter and data_type attributes to exporter/enqueue spans. ([#16022](https://github.com/open-telemetry/opentelemetry-collector/issues/16022))
+- `processor/resource_detection`: Honor the configured `timeout` in the `gcp` detector when the metadata server is unreachable. ([#50754](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50754))
+  The `gcp` detector did not honor the configured `timeout`. It now checks the metadata
+  server with a context that carries the deadline.
+- `pkg/stanza`: Call the Windows Event Log API through `*windows.LazyProc` directly so that pointer arguments stay alive for the duration of the call. ([#51074](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51074))
+  The wrappers in the windows_eventlog_input operator routed every call through a `SyscallProc` interface, which hid
+  the callee from the compiler and let the garbage collector free a buffer while the Windows API was still reading it.
+  The interface is removed and tests mock the wrapper functions instead.
+- `receiver/kafka_metrics`: Set the `kafka.cluster.alias` resource attribute to enabled when `cluster_alias` is defined. ([#47573](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47573))
+- `pkg/kafka/configkafka`: Fix missing AWS MSK SASL validation and incomplete OAUTHBEARER error message ([#50934](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50934))
+  Validate that the region is not empty when the AWS MSK mechanism is used, and add the missing OAuth mechanism to the default switch case error message.
+- `receiver/kafka`: Stop reporting stale offset lag and current offset metrics for revoked Kafka partitions. ([#36093](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36093))
+  The `otelcol_kafka_receiver_offset_lag` and `otelcol_kafka_receiver_current_offset` metrics will now be reported using async gauges.
+- `processor/tail_sampling`: Reuse the original decision's threshold when rewriting tracestate for late-arriving spans of an already-sampled trace. ([#50623](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50623))
+- `exporter/kafka`: Apply `metadata::retry::backoff`, which was silently ignored since the migration to franz-go. ([#50116](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50116))
+  `metadata::retry::backoff` is the minimum wait between retries; each successive retry doubles
+  the wait, with jitter applied, capped at `max(5s, backoff)`. On the exporter this paces produce
+  retries. Produce retry counts remain governed by `retry_on_failure` and `timeout`.
+- `receiver/k8s_events`: Keep the watcher in the Kubernetes events receiver retry when retrieving fresh resource version after a 410 Gone response but fails transiently. ([#49962](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49962))
+- `receiver/fluent_forward`: Cap decoded msgpack array entries at 1,000,000 and map options at 1,000 to avoid excessive memory allocation. ([#49223](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49223))
+- `processor/k8s_attributes`: Emit the semantic convention deprecation warnings that were unreachable because they were evaluated before the extraction rules were populated ([#51188](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51188))
+- `receiver/k8s_objects`: Keep the watcher in the Kubernetes objects receiver retry when retrieving fresh resource version after a 410 Gone response but fails transiently. ([#49962](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49962))
+- `processor/cumulative_to_delta`: Fix histogram and exponential histogram reset recovery by updating prevPoint on reset detection ([#50828](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50828))
+- `processor/k8s_attributes`: Reject an invalid `exclude.pods[].name` regex at config load instead of panicking at startup ([#50957](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50957))
+- `receiver/kafka_metrics`: Apply `metadata::retry::max` and `metadata::retry::backoff`, which were silently ignored since the migration to franz-go. ([#50116](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50116))
+  `metadata::retry::max` governs retries for the admin and offset fetch requests issued by the
+  scrapers. It does not apply to the client's internal metadata refresh, which caps itself at 3
+  retries.
+
+  `metadata::retry::backoff` is the minimum wait between retries; each successive retry doubles
+  the wait, with jitter applied, capped at `max(5s, backoff)`.
+- `receiver/jaeger`: Bound the Thrift decoder's max message size to the HTTP request body length to prevent a memory-amplification DoS. ([#49218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49218))
+  A tiny Thrift-binary payload could declare a spans list with a huge element count, forcing the decoder to
+  pre-allocate a large slice before failing to read the (absent) data. The Thrift `/api/traces` handler now
+  caps the decoder's max message size at the number of bytes actually received, so a container that declares
+  more elements than the payload can hold is rejected instead of being pre-allocated.
+- `receiver/netflow`: Exclude netflowreceiver on solaris ([#51328](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51328))
+- `processor/transform`: Ensure each batch of data receives a fresh cache when `shared_cache` is enabled ([#51087](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51087))
+- `receiver/prometheus`: Drop malformed classic histograms with decreasing bucket counts or overall count below largest bucket count instead of emitting invalid OTLP data. ([#50348](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50348))
+  Also applies when classic histograms are converted to NHCB via the `convert_classic_histograms_to_nhcb` scrape option.
+- `pkg/ottl`: Reject lambda expressions at parse time when they are not passed to a function argument that accepts them. ([#51560](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51560))
+- `processor/transform`: Fix exponential-to-explicit histogram conversion ([#50737](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50737))
+  The conversion now handles positive, negative, and zero buckets, includes the
+  required overflow bucket, preserves data point metadata, and uses the
+  exponential histogram mapping implementation for bucket boundaries.
+- `receiver/kafka`: Apply `metadata::retry::max` and `metadata::retry::backoff`, which were silently ignored since the migration to franz-go. ([#50116](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50116))
+  `metadata::retry::max` governs retries for consumer group and offset commit/fetch requests. It
+  does not apply to fetch requests, nor to the client's internal metadata refresh, which caps
+  itself at 3 retries.
+
+  `metadata::retry::backoff` is the minimum wait between retries; each successive retry doubles
+  the wait, with jitter applied, capped at `max(5s, backoff)`. Unlike `max`, it applies to every
+  retry path, including fetches.
+- `all`: Exclude datadogconnector, datadogexporter, and datadogextension on solaris ([#51329](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51329))
+- `receiver/kafka`: Stop processing a fetched batch once the partition consumer is cancelled, instead of marking and dropping the rest of it ([#50753](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50753))
+  `message_marking.on_error` and `message_marking.on_permanent_error` no longer mark a
+  record that was interrupted by the cancellation. At shutdown, records that were
+  fetched but not delivered are redelivered on the next run instead of being committed.
+- `receiver/k8s_events`: move units to singular form ([#51262](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51262))
+
+---
+
+</details>
+
+
+<!-- previous-version -->
+
 ## 0.57.0
 
 This release includes version v0.161.0 of the upstream Collector components.

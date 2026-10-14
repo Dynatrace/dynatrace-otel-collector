@@ -26,7 +26,7 @@ spec:
         - --rate=1
         - --batch=false
         - --otlp-attributes=service.name="test-traces-deployment"
-        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.162.0@sha256:5350f77dbc914034321dc7629058e141996c8dc2cdde076d281e573efee1a67e
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.163.0@sha256:569b79a39f8313db839a727e8eac161c66b8a6c2e633f2da4ad352ce7b383c23
         imagePullPolicy: IfNotPresent
         name: telemetrygen-traces
       - command:
@@ -39,7 +39,7 @@ spec:
         - --rate=1
         - --batch=false
         - --otlp-attributes=service.name="test-metrics-deployment"
-        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.162.0@sha256:5350f77dbc914034321dc7629058e141996c8dc2cdde076d281e573efee1a67e
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.163.0@sha256:569b79a39f8313db839a727e8eac161c66b8a6c2e633f2da4ad352ce7b383c23
         imagePullPolicy: IfNotPresent
         name: telemetrygen-metrics
       - command:
@@ -52,7 +52,7 @@ spec:
         - --rate=1
         - --batch=false
         - --otlp-attributes=service.name="test-logs-deployment"
-        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.162.0@sha256:5350f77dbc914034321dc7629058e141996c8dc2cdde076d281e573efee1a67e
+        image: ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.163.0@sha256:569b79a39f8313db839a727e8eac161c66b8a6c2e633f2da4ad352ce7b383c23
         imagePullPolicy: IfNotPresent
         name: telemetrygen-logs
       restartPolicy: Always

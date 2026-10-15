@@ -145,6 +145,7 @@ jobs:
           - kafka
           - filestorage
           - genainormalizer
+          - feature-flags
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

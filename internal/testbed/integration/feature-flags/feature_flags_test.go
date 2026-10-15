@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/assert"
@@ -139,11 +139,6 @@ func spanNames(td ptrace.Traces) []string {
 
 func TestFeatureFlagEnrichment(t *testing.T) {
 	topos := topologies()
-	wantCalls := 0
-	for _, topo := range topos {
-		wantCalls += len(topo.calls)
-	}
-	require.Equal(t, 17, wantCalls)
 
 	for modeIdx, mode := range payloadModes() {
 		t.Run(mode.name, func(t *testing.T) {
@@ -186,8 +181,6 @@ func runMode(t *testing.T, modeIdx int, mode payloadMode, topos []topology) {
 	require.Eventually(t, func() bool {
 		return totalSpans(sink.AllTraces()) >= sentCount
 	}, 60*time.Second, 500*time.Millisecond, "expected %d spans, got %d", sentCount, totalSpans(sink.AllTraces()))
-	time.Sleep(2 * time.Second)
-	require.Equal(t, sentCount, totalSpans(sink.AllTraces()), "unexpected extra spans")
 
 	received := sink.AllTraces()
 

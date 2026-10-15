@@ -132,6 +132,7 @@ processors:
       log_record:
         - 'IsMatch(body, ".*password.*")'
         - 'severity_number < SEVERITY_NUMBER_WARN'
+  groupbytrace:
   k8s_attributes:
   memory_limiter:
     check_interval: 1s

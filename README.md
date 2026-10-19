@@ -1,5 +1,7 @@
 # Dynatrace distribution of the OpenTelemetry Collector
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Dynatrace/dynatrace-otel-collector/badge)](https://scorecard.dev/viewer/?uri=github.com/Dynatrace/dynatrace-otel-collector)
+
 The Dynatrace distribution of the [OpenTelemetry Collector] allows collecting observability data from a
 variety of sources for sending to Dynatrace. It includes a set of Collector
 components that have been verified to work well for common Dynatrace use cases.
@@ -80,6 +82,7 @@ The following components are included in the distribution:
 * [batchprocessor](https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor)
 * [cumulativetodeltaprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/cumulativetodeltaprocessor)
 * [filterprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/filterprocessor) [^1]
+* [groupbytraceprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/groupbytraceprocessor)
 * [k8sattributesprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/k8sattributesprocessor)
 * [metricstarttimeprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/metricstarttimeprocessor)
 * [memorylimiterprocessor](https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/memorylimiterprocessor)

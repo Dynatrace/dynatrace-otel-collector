@@ -72,7 +72,7 @@ processors:
           - delete_key(attributes, "metadata.dynatrace.com")
     log_statements:
       - context: resource
-        statements: &k8s-statements
+        statements: *k8s-statements
 
 exporters:
   otlp_http:

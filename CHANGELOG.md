@@ -4,6 +4,17 @@
 
 <!-- next version -->
 
+## 0.58.1
+
+#### Dynatrace distribution changelog:
+
+### 🧰 Bug fixes 🧰
+
+- `all`: Build release artifacts using Alpine `ca-certificates` 20261020-r0 or later ()
+- `all`: Bump Go to v1.27.3 to fix CVE-2026-111943 (#1249)
+
+<!-- previous-version -->
+
 ## 0.58.0
 
 This release includes version v0.162.0 of the upstream Collector components.

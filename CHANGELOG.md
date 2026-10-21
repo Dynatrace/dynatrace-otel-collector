@@ -10,7 +10,7 @@
 
 ### 🧰 Bug fixes 🧰
 
-- `all`: Build release artifacts using Alpine `ca-certificates` 20261020-r0 or later ()
+- `all`: Build release artifacts using Alpine `ca-certificates` 20261020-r0 or later (e343977)
 - `all`: Bump Go to v1.27.3 to fix CVE-2026-111943 (#1249)
 
 <!-- previous-version -->

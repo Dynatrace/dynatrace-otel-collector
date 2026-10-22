@@ -1,0 +1,41 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: collector-k8spodlogs-securitycontext
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: enforce-k8spodlogs-deployment-securitycontext
+      match:
+        resources:
+          kinds:
+            - Deployment
+          namespaces:
+            - e2ek8spodlogs
+
+      preconditions:
+        all:
+          - key: "{{ request.object.spec.template.metadata.labels.\"app.kubernetes.io/name\" }}"
+            operator: Equals
+            value: opentelemetry-collector
+
+      validate:
+        message: "Pod logs Deployment must use the approved securityContext for reading pod log files."
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: "?*"
+                    securityContext:
+                      privileged: false
+                      readOnlyRootFilesystem: true
+                      allowPrivilegeEscalation: false
+                      runAsUser: 0
+                      runAsGroup: 0
+                      seccompProfile:
+                        type: RuntimeDefault
+                      capabilities:
+                        drop:
+                          - ALL

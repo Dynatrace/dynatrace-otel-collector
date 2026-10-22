@@ -19,6 +19,7 @@ spec:
         resources:
           namespaces:
             - e2ehostmetrics
+            - e2ek8spodlogs
       preconditions:
         all:
           - key: "{{ request.object.spec.template.metadata.labels.\"app.kubernetes.io/name\" }}"

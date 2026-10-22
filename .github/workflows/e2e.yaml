@@ -134,23 +134,24 @@ jobs:
       fail-fast: false
       matrix:
         usecase:
-          - k8senrichment
-          - prometheus
-          - zipkin
-          - statsd
-          - redaction
           - bearertokenauth
-          - resource-detection
-          - netflow
-          - self-monitoring
-          - self-monitoring-prometheus
-          - k8sobjects
-          - kubeletstats
-          - k8scluster
-          - loadbalancing
-          - kafka
           - filestorage
           - genainormalizer
+          - k8scluster
+          - k8senrichment
+          - k8sobjects
+          - k8spodlogs
+          - kafka
+          - kubeletstats
+          - loadbalancing
+          - netflow
+          - prometheus
+          - redaction
+          - resource-detection
+          - self-monitoring
+          - self-monitoring-prometheus
+          - statsd
+          - zipkin
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

@@ -3,6 +3,8 @@ name: E2E-Test
 on:
   pull_request:
     branches: [main]
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
 
@@ -21,7 +23,8 @@ jobs:
   docker-build:
     runs-on: ubuntu-24.04
     needs: [detect-changes]
-    if: needs.detect-changes.outputs.skip != 'true'
+    # E2E tests are not run in the merge queue, see the e2e-success job.
+    if: needs.detect-changes.outputs.skip != 'true' && github.event_name != 'merge_group'
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -227,7 +230,7 @@ jobs:
           ./internal/testbed/scripts/install_dt_collector_helm.sh || exit 1;
 
   hostmetrics-e2e-test:
-    name: Test Hostmetrics configuraration
+    name: Test Hostmetrics configuration
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:
@@ -251,6 +254,21 @@ jobs:
         run: |
           cd internal/testbed/integration/hostmetrics
           go test -v --tags=e2e
+
+  # Single required status check. Skipped jobs (docs-only changes, merge queue)
+  # count as success, failed or cancelled ones fail this job.
+  e2e-success:
+    name: E2E Success
+    if: always()
+    needs: [detect-changes, docker-build, k8s-multinode-matrix, k8s-e2e-test-matrix, e2e-test-matrix, hostmetrics-e2e-test]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check results
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "$RESULTS"
+          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1;; esac
 
   notify-slack-combined-load-test:
     runs-on: ubuntu-24.04

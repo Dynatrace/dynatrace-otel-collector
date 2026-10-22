@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -89,24 +90,23 @@ func TestE2E_K8PodLogs(t *testing.T) {
 		}
 	}()
 
-	oteltest.WaitForLogs(t, 10, logsConsumer)
-
-	// search for the log of the test deployment in the logs received by the logsConsumer
+	// The collector tails the logs of every pod on the node, so keep searching
+	// the received logs until the logs of the test deployment show up.
 	deplName := deploymentObj.GetName()
-	found := false
-	for _, lastLogs := range logsConsumer.AllLogs() {
-		for i := 0; i < lastLogs.ResourceLogs().Len() && !found; i++ {
-			rl := lastLogs.ResourceLogs().At(i)
-			attrs := rl.Resource().Attributes()
-			if v, ok := attrs.Get("k8s.deployment.name"); ok && v.Str() == deplName {
-				found = true
-				break
-			}
-			if v, ok := attrs.Get("k8s.pod.name"); ok && strings.HasPrefix(v.Str(), deplName) {
-				found = true
-				break
+	timeoutMinutes := 5
+	require.Eventuallyf(t, func() bool {
+		for _, logs := range logsConsumer.AllLogs() {
+			for _, rl := range logs.ResourceLogs().All() {
+				attrs := rl.Resource().Attributes()
+				if v, ok := attrs.Get("k8s.deployment.name"); ok && v.Str() == deplName {
+					return true
+				}
+				if v, ok := attrs.Get("k8s.pod.name"); ok && strings.HasPrefix(v.Str(), deplName) {
+					return true
+				}
 			}
 		}
-	}
-	require.Truef(t, found, "could not find logs for deployment %s", deplName)
+		return false
+	}, time.Duration(timeoutMinutes)*time.Minute, 1*time.Second,
+		"could not find logs for deployment %s in %d minutes", deplName, timeoutMinutes)
 }

@@ -23,7 +23,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
 func TestE2E_Kafka(t *testing.T) {
@@ -224,8 +226,10 @@ func TestE2E_Kafka(t *testing.T) {
 	t.Logf("Checking logs...")
 	oteltest.WaitForLogs(t, 1, logsConsumer)
 
+	// The exporter batches by time, so the number of identical log records per
+	// payload varies. Compare only the distinct records.
 	// the commented line below writes the received list of logs to the expected.yaml
-	// require.Nil(t, golden.WriteLogs(t, expectedLogsFile, logsConsumer.AllLogs()[len(logsConsumer.AllLogs())-1]))
+	// got := plog.NewLogs(); logsConsumer.AllLogs()[len(logsConsumer.AllLogs())-1].CopyTo(got); testutil.DeduplicateLogs(got); require.Nil(t, golden.WriteLogs(t, expectedLogsFile, got))
 
 	expectedLogs, err := golden.ReadLogs(expectedLogsFile)
 	require.NoError(t, err)
@@ -237,7 +241,9 @@ func TestE2E_Kafka(t *testing.T) {
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		all := logsConsumer.AllLogs()
 		require.NotEmpty(tt, all)
-		got := all[len(all)-1]
+		got := plog.NewLogs()
+		all[len(all)-1].CopyTo(got)
+		testutil.DeduplicateLogs(got)
 		assert.NoError(tt, plogtest.CompareLogs(expectedLogs, got, logCompareOptions...))
 	}, compareTimeout, compareTick)
 
@@ -247,8 +253,10 @@ func TestE2E_Kafka(t *testing.T) {
 	t.Log("Checking traces...")
 	oteltest.WaitForTraces(t, 1, tracesConsumer)
 
-	// the commented line below writes the received list of metrics to the expected.yaml
-	// require.Nil(t, golden.WriteTraces(t, expectedTracesFile, tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1]))
+	// The exporter batches by time, so the number of identical spans per payload
+	// varies and a trace may be split across payloads. Compare only the distinct spans.
+	// the commented line below writes the received list of traces to the expected.yaml
+	// got := ptrace.NewTraces(); tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1].CopyTo(got); testutil.DeduplicateTraces(got); require.Nil(t, golden.WriteTraces(t, expectedTracesFile, got))
 
 	traceCompareOptions := []ptracetest.CompareTracesOption{
 		ptracetest.IgnoreStartTimestamp(),
@@ -262,12 +270,14 @@ func TestE2E_Kafka(t *testing.T) {
 
 	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
 	require.NoError(t, err)
+	testutil.MaskParentSpanID(expectedTraces)
 
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
 		all := tracesConsumer.AllTraces()
 		require.NotEmpty(tt, all)
-		got := all[len(all)-1]
-		testutil.MaskParentSpanID(expectedTraces)
+		got := ptrace.NewTraces()
+		all[len(all)-1].CopyTo(got)
+		testutil.DeduplicateTraces(got)
 		testutil.MaskParentSpanID(got)
 		assert.NoError(tt, ptracetest.CompareTraces(expectedTraces, got, traceCompareOptions...))
 	}, compareTimeout, compareTraceTick)

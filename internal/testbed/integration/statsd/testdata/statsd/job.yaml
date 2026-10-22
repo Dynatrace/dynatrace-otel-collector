@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: netcat
-        image: alpine@sha256:71e9b7bae160ba167fa17414401b94cbcdaf3c32feeab9298bd794a2a0614c35
+        image: alpine:3.24.3@sha256:71e9b7bae160ba167fa17414401b94cbcdaf3c32feeab9298bd794a2a0614c35
         command: ["/bin/sh", "-c"]
         args: [
           "echo 'test.metric:42|g|#myKey:myVal' | nc -u -w 1 -v otelcolsvc.e2estatsd.svc.cluster.local 8125 && \

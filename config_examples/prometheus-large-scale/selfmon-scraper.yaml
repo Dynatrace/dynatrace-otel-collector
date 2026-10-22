@@ -11,7 +11,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
   # renovate: datasource=docker depName=ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector
-  tag: 0.58.0@sha256:7210de4b4b3fe843e5d72673033eeb2d6864cbcdc107f42f6a63782e509bf165
+  tag: 0.58.1@sha256:29a09e6a19daae245dce5b9adba42055ce3f34655fbd41b9b62d2e1a806c5589
 command:
   name: dynatrace-otel-collector
 

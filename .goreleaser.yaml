@@ -108,7 +108,7 @@ nfpms:
     description: Dynatrace distribution of the OpenTelemetry Collector
     license: Apache 2.0
 signs:
-q  - id: checksum
+  - id: checksum
     cmd: cosign
     signature: "${artifact}.sigstore.json"
     artifacts: checksum

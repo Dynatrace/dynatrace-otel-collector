@@ -10,7 +10,7 @@ targetAllocator:
   image:
     repository: ghcr.io/dynatrace/otel-target-allocator/target-allocator
     # renovate: datasource=docker depName=ghcr.io/dynatrace/otel-target-allocator/target-allocator
-    tag: 0.9.0@sha256:fec49b1673839dc7dfbd20c51ac33ce927205283379c2ba7e09b60ed9df0e248
+    tag: 0.9.1@sha256:f8623d2cfacb138c67ccf6a3ddce9621ed53b4ec24e8cc8dcb9e79e10d11f76a
   serviceAccount:
     create: false
     name: "tiered-otel-allocator"

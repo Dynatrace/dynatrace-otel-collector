@@ -35,19 +35,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: ${{ env.GO_VERSION }}
-          # Go caches are restored and saved by the steps below.
-          cache: false
-
-      - name: Restore Go cache
-        id: go-cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: |
-            ~/go/pkg/mod
-            ~/.cache/go-build
-          key: go-linux-amd64-${{ env.GO_VERSION }}-${{ hashFiles('manifest.yaml', '**/go.sum') }}
-          restore-keys: |
-            go-linux-amd64-${{ env.GO_VERSION }}-
+          cache-dependency-path: "**/*.sum"
 
       - name: Install tools
         run: |
@@ -68,18 +56,6 @@ jobs:
 
       - name: Verify
         run: make test
-
-      # Only main saves the cache, so all PRs and merge queue entries restore
-      # it. It is shared with the e2e and snapshot linux/amd64 builds, which use
-      # the same goreleaser build flags.
-      - name: Save Go cache
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.go-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: |
-            ~/go/pkg/mod
-            ~/.cache/go-build
-          key: ${{ steps.go-cache.outputs.cache-primary-key }}
 
   notify-slack:
     runs-on: ubuntu-24.04

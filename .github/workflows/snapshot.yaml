@@ -24,8 +24,8 @@ jobs:
     uses: ./.github/workflows/detect-changes.yaml
 
   # The merge queue only builds and tests linux/amd64 to keep queue times short.
-  matrix:
-    name: Set up matrix
+  select-targets:
+    name: Select build and package test targets
     runs-on: ubuntu-24.04
     outputs:
       build: ${{ steps.matrix.outputs.build }}
@@ -58,10 +58,10 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-24.04
-    needs: [detect-changes, matrix]
+    needs: [detect-changes, select-targets]
     if: needs.detect-changes.outputs.skip != 'true'
     strategy:
-      matrix: ${{ fromJson(needs.matrix.outputs.build) }}
+      matrix: ${{ fromJson(needs.select-targets.outputs.build) }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -71,19 +71,7 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: ${{ env.GO_VERSION }}
-          # Go caches are restored in the next step, see ci.yaml for how they are saved.
-          cache: false
-
-      - name: Restore Go cache
-        id: go-cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: |
-            ~/go/pkg/mod
-            ~/.cache/go-build
-          key: go-linux-amd64-${{ env.GO_VERSION }}-${{ hashFiles('manifest.yaml', '**/go.sum') }}
-          restore-keys: |
-            go-linux-amd64-${{ env.GO_VERSION }}-
+          cache-dependency-path: "**/*.sum"
 
       - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
         if: matrix.goarch != 'amd64'
@@ -159,9 +147,9 @@ jobs:
   linux-package-tests:
     name: Test Linux Packages
     runs-on: ubuntu-24.04
-    needs: [matrix, build]
+    needs: [select-targets, build]
     strategy:
-      matrix: ${{ fromJson(needs.matrix.outputs.package-tests) }}
+      matrix: ${{ fromJson(needs.select-targets.outputs.package-tests) }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -204,7 +192,7 @@ jobs:
   snapshot-success:
     name: Snapshot Success
     if: always()
-    needs: [detect-changes, matrix, build, linux-package-tests]
+    needs: [detect-changes, select-targets, build, linux-package-tests]
     runs-on: ubuntu-24.04
     steps:
       - name: Check results

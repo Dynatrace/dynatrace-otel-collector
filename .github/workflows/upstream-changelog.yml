@@ -15,9 +15,12 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: read
+
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.27.2"
+  GO_VERSION: "1.27.3"
 
 jobs:
   generate-changelog:

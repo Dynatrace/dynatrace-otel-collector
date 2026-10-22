@@ -6,6 +6,8 @@ permissions:
 on:
   pull_request:
     branches: [main]
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
 
@@ -15,7 +17,7 @@ defaults:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.27.2"
+  GO_VERSION: "1.27.3"
   OUT_BASE: "/tmp/rendered-collectors-workloads"
 
 jobs:

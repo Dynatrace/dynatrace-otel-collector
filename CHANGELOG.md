@@ -4,6 +4,144 @@
 
 <!-- next version -->
 
+## 0.59.0
+
+This release includes version v0.163.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.163.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.163.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.163.0>
+
+### 🛑 Breaking changes 🛑
+
+- `processor/redaction`: Keep every redaction summary attribute intact when data re-enters the processor ([#50770](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50770))
+  Only five of the fourteen summary attributes the processor writes survived a second redaction processor. When data
+  passed through one, `redaction.allowed.keys`, `redaction.allowed.count` and the seven `redaction.body.*` attributes
+  were treated as unknown keys, deleted, and reported in `redaction.redacted.keys`.
+
+  The processor now treats all fourteen as its own bookkeeping rather than as user data, so they are no longer deleted,
+  masked, obfuscated or counted as redacted, and the summary accumulates across chained processors as intended.
+  Previously a `blocked_key_patterns` or `blocked_values` rule matching one of these attributes replaced the summary
+  with a masked value, and with `redact_all_types` enabled it rewrote the `*.count` integers as strings, which made the
+  running totals read back as zero at the next hop.
+
+  Chaining two processors also reported the same attribute more than once: the allowed and ignored summaries
+  describe the record as it currently stands, which every processor re-derives in full, so merging them with an
+  upstream value counted one attribute twice. `redaction.allowed.keys` read `email,email` with
+  `redaction.allowed.count` of 2 for a single allowed attribute. Those two outcomes now replace the upstream
+  value, while the redacted and masked outcomes keep accumulating, because a removed key and an already masked
+  value cannot be detected again.
+
+  Two behaviour changes come with this, both of which can affect an existing chained configuration.
+
+  A processor whose `summary` is not `debug` or `info` now claims no ownership of a summary it finds, so the ordinary
+  allow list decides whether it survives. This lets a strict egress processor strip an upstream audit trail, which it
+  could not do before. It also means a downstream processor with `allow_all_keys: false` now removes the five summary
+  attributes it previously kept unconditionally, unless they are named in `allowed_keys` or `allow_all_keys` is set.
+  `summary` is unset by default, which counts as silent, so a chained configuration that never sets it is affected.
+
+  A key inside a log body named after a summary attribute is now redacted like any other unknown key. The processor
+  only ever writes its summary to the record attributes, so such a key in a body carries user data.
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### 💡 Enhancements 💡
+
+- `processor/tail_sampling`: Move spans out of incoming batches instead of copying them, and declare that the processor mutates data. ([#51920](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51920))
+- `receiver/kubelet_stats`: Add optional k8s node pid limit and usage metrics. ([#48926](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48926))
+  Adds the following optional metrics to kubeletstatsreceiver:
+  - k8s.node.pid.limit
+  - k8s.node.pid.usage
+- `processor/resource_detection`: Add `omit_detector_azure_aks` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `pkg/ottl`: Add the `pkg.ottl.functions.enableExperimental` feature gate, which must be enabled to use experimental OTTL functions. ([#51564](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51564))
+- `pkg/ottl`: Allow `keep_keys` to accept slice values from paths and converter expressions when the `pkg.ottl.functions.enableDynamicSliceArguments` feature gate is enabled. ([#45980](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45980))
+- `processor/resource_detection`: Add `omit_detector_aws_ec2` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `pkg/stanza`: Add default scope name and version for stanza log entries without scope name ([#51084](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51084))
+  This introduces the `pkg.stanza.addDefaultScopeName` feature gate (currently in beta) to ensure Stanza log entries are assigned a default scope name and version when not explicitly provided.
+- `processor/resource_detection`: Add `omit_detector_heroku` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `pkg/ottl`: Add the beta `pkg.ottl.functions.enableDynamicSliceArguments` feature gate, which controls whether slice arguments of stable functions such as `Concat` accept paths and converters. ([#51565](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51565))
+- `pkg/stanza`: Optimize container parser operator by replacing CRI line and File path regexes with a hand-written parsers and caching log filepath metadata extraction, reducing CPU usage by ~70% on the container parser hot path ([#41672](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41672))
+- `processor/resource_detection`: Add `omit_detector_aws_lambda` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `pkg/ottl`: Improve OTTL parse error diagnostics by reporting the line and column of the input where available. ([#51680](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51680))
+  Not all parse errors carry a position: errors that aggregate multiple statements, and some
+  inner errors that didn't already carry one, are still returned without one. The exact
+  wording and position of statement, condition, and value expression parse error messages
+  has changed as a result. The position is exposed programmatically via the new experimental
+  `xottl.Error` type.
+- `processor/resource_detection`: Add `omit_detector_docker` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_azure_containerapps` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_azure_functions` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_env` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/groupbytrace`: Allow grouping spans by the service that emitted them within a trace ([#50553](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50553))
+  Adds an `emit_strategy` option that can be set to `service` to allow
+  emitting spans sourced from a single service within a trace. In some
+  setups this may allow spans to move more quickly through the processor
+  while still permitting operations such as  RED metric generation,
+  service discovery, etc. that require spans to be grouped by trace.
+- `processor/resource_detection`: Add `omit_detector_gcp` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_aws_elastic_beanstalk` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_azure_appservice` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_aws_eks` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_system` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_openshift` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_kubeadm` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `exporter/kafka`: Add the trace context to Kafka record headers using the propagators configured in `service::telemetry::traces::propagators`. ([#51078](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51078))
+- `processor/resource_detection`: Add `omit_detector_k8s_api` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `receiver/kafka`: Add `partition_processing.max_in_flight.records` to run concurrent unmarshal-plus-Consume calls on one independent partition worker. ([#51080](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51080))
+  When `max_in_flight.records` is above 1, the worker always marks after processing. `message_marking.after: false` does not mark before Consume.
+- `processor/resource_detection`: Add `omit_detector_aws_ecs` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add `omit_detector_consul` go build tag to omit detector at build time. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/exporterhelper`: Drop only the oversized profile when splitting a profiles batch, instead of discarding every profile queued behind it ([#16087](https://github.com/open-telemetry/opentelemetry-collector/issues/16087))
+  Same fix as
+- `pkg/exporterhelper`: Fix sending queue deadlocks when blocked offers are cancelled with block_on_overflow enabled. ([#15700](https://github.com/open-telemetry/opentelemetry-collector/issues/15700))
+- `pkg/exporterhelper`: Drop only the oversized span when splitting a traces batch, instead of discarding every span queued behind it ([#16087](https://github.com/open-telemetry/opentelemetry-collector/issues/16087))
+  Same fix as
+- `receiver/kafka`: Fix records from healthy partitions being dropped when a poll also contains a fetch error. ([#51852](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51852))
+- `pkg/stanza`: Fix the `container` parser rejecting containerd logs whose timestamps use a UTC offset instead of `Z` when `format: containerd` is set. ([#51284](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51284))
+- `receiver/host_metrics`: Reject negative `metadata_collection_interval` values during configuration validation. ([#51640](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51640))
+- `pkg/ottl`: Reject literal values that are not lists for slice arguments, such as `keep_keys(attributes, "http.method")` or `Concat("a", "-")`, at parse time instead of failing on every execution ([#51833](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51833))
+- `processor/cumulative_to_delta`: Fix ExponentialBuckets.Diff missing reset when old buckets precede current histogram offset ([#51303](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51303))
+- `receiver/statsd`: Close the TCP connection when the client disconnects and bound the size of an unterminated line, fixing a per-connection file descriptor leak and an unbounded memory growth path in the TCP transport. ([#50123](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50123))
+- `processor/resource_detection`: Honor `fail_on_missing_metadata` also for the instance identity document and hostname lookups of the `ec2` detector ([#50826](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50826))
+  The `ec2` detector guarded only its initial `instance-id` lookup with `fail_on_missing_metadata`. The
+  subsequent instance identity document and hostname lookups always returned their respective errors,
+  regardless of the fail_on_missing_metadata setting.
+
+  On clusters where the metadata service implements the EC2-compatible `meta-data` tree, but not the AWS-specific
+  `dynamic/instance-identity` endpoints, this would lead to a crash on startup even with
+  `fail_on_missing_metadata: false`. The `instance-id` lookup would succeed and then the identity document lookup would
+  fail with HTTP 404. OpenStack Nova based clusters behave this way, so a collector configured with the `ec2` detector and
+  `fail_on_missing_metadata: false` failed to start on those hosts rather than skipping the detector.
+
+  The identity document lookup now honors the flag: when `fail_on_missing_metadata` is `false` and the endpoint
+  responds with HTTP 404, the detector logs at debug level and returns an empty resource. Any other error is still
+  returned, since it might be transient. When the flag is `true` the error is returned as before.
+
+  The hostname lookup honors the flag as well: when `fail_on_missing_metadata` is `false`, the detector logs at
+  debug level and returns the resource without the `host.name` attribute, instead of failing the detection or skipping
+  the instance tags. When it is `true`, the error is returned.
+- `pkg/ottl`: `Time` no longer treats a trailing strptime `%Z` as Zulu (UTC) when no location is given ([#51416](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51416))
+
+---
+
+</details>
+
+
+#### Dynatrace distribution changelog:
+
+### 🚀 New components 🚀
+
+- `processor/groupbytrace`: Add the group-by-trace processor (#1236)
+
+<!-- previous-version -->
+
 ## 0.58.0
 
 This release includes version v0.162.0 of the upstream Collector components.

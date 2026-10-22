@@ -3,14 +3,19 @@ name: Build PR Snapshots
 on:
   pull_request:
     branches: [main]
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.27.2"
+  GO_VERSION: "1.27.3"
   # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
   GORELEASER_PRO_VERSION: v2.18.3
 
@@ -18,23 +23,45 @@ jobs:
   detect-changes:
     uses: ./.github/workflows/detect-changes.yaml
 
+  # The merge queue only builds and tests linux/amd64 to keep queue times short.
+  select-targets:
+    name: Select build and package test targets
+    runs-on: ubuntu-24.04
+    outputs:
+      build: ${{ steps.matrix.outputs.build }}
+      package-tests: ${{ steps.matrix.outputs.package-tests }}
+    steps:
+      - id: matrix
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "merge_group" ]; then
+            build='{"goos":["linux"],"goarch":["amd64"]}'
+            package_tests='{"os":["deb","rpm"],"arch":["amd64"]}'
+          else
+            build='{
+              "goos": ["linux", "darwin"],
+              "goarch": ["amd64", "arm64", "ppc64le", "s390x"],
+              "exclude": [
+                {"goos": "darwin", "goarch": "s390x"},
+                {"goos": "darwin", "goarch": "ppc64le"}
+              ],
+              "include": [
+                {"goos": "windows", "goarch": "amd64"}
+              ]
+            }'
+            package_tests='{"os":["deb","rpm"],"arch":["amd64","arm64"]}'
+          fi
+          echo "build=$(jq -c . <<< "$build")" >> "$GITHUB_OUTPUT"
+          echo "package-tests=$(jq -c . <<< "$package_tests")" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build
     runs-on: ubuntu-24.04
-    needs: [detect-changes]
+    needs: [detect-changes, select-targets]
     if: needs.detect-changes.outputs.skip != 'true'
     strategy:
-      matrix:
-        goos: ["linux", "darwin"]
-        goarch: ["amd64", "arm64", "ppc64le", "s390x"]
-        exclude:
-          - goos: darwin
-            goarch: s390x
-          - goos: darwin
-            goarch: ppc64le
-        include:
-          - goos: windows
-            goarch: amd64
+      matrix: ${{ fromJson(needs.select-targets.outputs.build) }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -59,6 +86,8 @@ jobs:
           make install-tools
 
       - name: Free up disk space
+        # Only linux/amd64 is built in the merge queue, which needs ~4G of the ~76G free.
+        if: github.event_name != 'merge_group'
         run: |
           df -h
           rm -r /opt/hostedtoolcache/CodeQL
@@ -70,7 +99,7 @@ jobs:
           df -h
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
+        uses: goreleaser/goreleaser-action@a4f02ab5355a589de60d917a659ce617ed19b3de # v7.3.0
         with:
           distribution: goreleaser-pro
           version: ${{ env.GORELEASER_PRO_VERSION }}
@@ -118,11 +147,9 @@ jobs:
   linux-package-tests:
     name: Test Linux Packages
     runs-on: ubuntu-24.04
-    needs: build
+    needs: [select-targets, build]
     strategy:
-      matrix:
-        os: ["deb", "rpm"]
-        arch: ["amd64", "arm64"]
+      matrix: ${{ fromJson(needs.select-targets.outputs.package-tests) }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -159,3 +186,18 @@ jobs:
       - name: Test arm64
         if: matrix.arch == 'arm64'
         run: make package-test ARCH=${{ matrix.arch }} PACKAGE_PATH=linux-packages/linux_${{ matrix.arch }}/dynatrace-otel-collector_${{ steps.extract-version.outputs.version }}_Linux_${{ matrix.arch }}.${{ matrix.os }}
+
+  # Single required status check. Skipped jobs (docs-only changes) count as
+  # success, failed or cancelled ones fail this job.
+  snapshot-success:
+    name: Snapshot Success
+    if: always()
+    needs: [detect-changes, select-targets, build, linux-package-tests]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check results
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "$RESULTS"
+          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1;; esac

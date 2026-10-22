@@ -23,6 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/featuregate"
 	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
@@ -368,6 +369,64 @@ func MaskParentSpanID(traces ptrace.Traces) {
 			}
 		}
 	}
+}
+
+// DeduplicateLogs removes ResourceLogs entries that are identical to an earlier
+// entry when log record timestamps are ignored, keeping the first occurrence.
+func DeduplicateLogs(logs plog.Logs) {
+	seen := make(map[string]bool)
+	logs.ResourceLogs().RemoveIf(func(rl plog.ResourceLogs) bool {
+		key := logsKey(rl)
+		if seen[key] {
+			return true
+		}
+		seen[key] = true
+		return false
+	})
+}
+
+func logsKey(rl plog.ResourceLogs) string {
+	l := plog.NewLogs()
+	rl.CopyTo(l.ResourceLogs().AppendEmpty())
+	for _, sl := range l.ResourceLogs().At(0).ScopeLogs().All() {
+		for _, lr := range sl.LogRecords().All() {
+			lr.SetTimestamp(0)
+			lr.SetObservedTimestamp(0)
+		}
+	}
+	b, _ := (&plog.ProtoMarshaler{}).MarshalLogs(l)
+	return string(b)
+}
+
+// DeduplicateTraces removes ResourceSpans entries that are identical to an
+// earlier entry when span timestamps and IDs are ignored, keeping the first
+// occurrence.
+func DeduplicateTraces(traces ptrace.Traces) {
+	seen := make(map[string]bool)
+	traces.ResourceSpans().RemoveIf(func(rs ptrace.ResourceSpans) bool {
+		key := tracesKey(rs)
+		if seen[key] {
+			return true
+		}
+		seen[key] = true
+		return false
+	})
+}
+
+func tracesKey(rs ptrace.ResourceSpans) string {
+	t := ptrace.NewTraces()
+	rs.CopyTo(t.ResourceSpans().AppendEmpty())
+	for _, ss := range t.ResourceSpans().At(0).ScopeSpans().All() {
+		for _, span := range ss.Spans().All() {
+			span.SetStartTimestamp(0)
+			span.SetEndTimestamp(0)
+			span.SetTraceID(pcommon.NewTraceIDEmpty())
+			span.SetSpanID(pcommon.NewSpanIDEmpty())
+			span.SetParentSpanID(pcommon.NewSpanIDEmpty())
+		}
+	}
+	b, _ := (&ptrace.ProtoMarshaler{}).MarshalTraces(t)
+	return string(b)
 }
 
 // Debug can be used in integration tests after a pmetrictest.CompareMetrics to display diverging metrics values

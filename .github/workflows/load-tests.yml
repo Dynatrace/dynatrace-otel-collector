@@ -6,9 +6,12 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+*"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.27.2"
+  GO_VERSION: "1.27.3"
 
 jobs:
   setup-environment:
@@ -112,6 +115,8 @@ jobs:
 
   update-benchmarks:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write # push results to the benchmarks branch
     needs: [loadtest]
     if: github.event_name == 'push'
     steps:

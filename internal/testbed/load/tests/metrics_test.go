@@ -10,7 +10,7 @@ package loadtest
 import (
 	"testing"
 
-	datasenders2 "github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/load/tests/datasenders"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/load/tests/datasenders"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/datasenders/prometheusdatasender"
@@ -221,7 +221,7 @@ func TestPrometheusMetric(t *testing.T) {
 		},
 		{
 			name:     "Prometheus 1kDPS - 5 Prometheus Endpoints",
-			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePorts(t, 5)),
+			sender:   datasenders.NewMultiHostPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePorts(t, 5)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{
@@ -246,7 +246,7 @@ func TestPrometheusMetric(t *testing.T) {
 		},
 		{
 			name:     "Prometheus 1kDPS - 10 Prometheus Endpoints",
-			sender:   datasenders2.NewMultiHostPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePorts(t, 10)),
+			sender:   datasenders.NewMultiHostPrometheusDataSender(testbed.DefaultHost, testutil.GetAvailablePorts(t, 10)),
 			receiver: testbed.NewOTLPDataReceiver(testutil.GetAvailablePort(t)),
 			extendedLoadOptions: ExtendedLoadOptions{
 				resourceSpec: testbed.ResourceSpec{

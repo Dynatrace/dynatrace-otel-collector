@@ -20,15 +20,24 @@ jobs:
         with:
           fetch-depth: 0
       - id: check
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
         env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          MERGE_GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
           SKIP_PATTERNS: |
             ^docs/
             ^CHANGELOG\.md$
             .*\.md$
         run: |
           regex=$(echo "$SKIP_PATTERNS" | grep -v '^$' | paste -sd'|')
-          if git diff --name-only origin/${{ github.base_ref }}...HEAD \
+          if [ "$EVENT_NAME" = "merge_group" ]; then
+            range="${MERGE_GROUP_BASE_SHA}...${MERGE_GROUP_HEAD_SHA}"
+          else
+            range="origin/${BASE_REF}...HEAD"
+          fi
+          if git diff --name-only "$range" \
               | grep -qvE "($regex)"; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
           else

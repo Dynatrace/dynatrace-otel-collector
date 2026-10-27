@@ -133,7 +133,7 @@ jobs:
       - name: Run e2e tests
         run: |
           cd internal/testbed/integration/${{ matrix.usecase }}
-          go test -v --tags=e2e
+          go test -v
 
   k8s-e2e-test-matrix:
     strategy:
@@ -170,7 +170,7 @@ jobs:
       - name: Run e2e tests
         run: |
           cd internal/testbed/integration/${{ matrix.usecase }}
-          go test -v --tags=e2e
+          go test -v
 
   e2e-test-matrix:
     strategy:

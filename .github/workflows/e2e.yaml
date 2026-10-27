@@ -7,9 +7,6 @@ on:
     types: [checks_requested]
   push:
     branches: [main]
-  schedule:
-    - cron: "0 2 * * *" # Nightly combined load test.
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -116,7 +113,6 @@ jobs:
           path: /tmp/dynatrace-otel-collector-journald.tar
 
   k8s-multinode-matrix:
-    if: github.event_name != 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -140,7 +136,6 @@ jobs:
           go test -v --tags=e2e
 
   k8s-e2e-test-matrix:
-    if: github.event_name != 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -178,7 +173,6 @@ jobs:
           go test -v --tags=e2e
 
   e2e-test-matrix:
-    if: github.event_name != 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -231,7 +225,6 @@ jobs:
 
   hostmetrics-e2e-test:
     name: Test Hostmetrics configuration
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

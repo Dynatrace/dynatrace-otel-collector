@@ -1,0 +1,4 @@
+change_type: breaking
+component: eecprovider
+note: Remove the `eec` confmap provider and the mock EEC server.
+issues: [1275]

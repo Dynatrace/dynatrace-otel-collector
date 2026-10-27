@@ -178,7 +178,6 @@ jobs:
       matrix:
         path:
           - testbed/integration/feature-flags
-          - confmap/provider/eecprovider
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:

@@ -75,12 +75,12 @@ endif
 oteltestbedcol: genoteltestbedcol
 	cd ./cmd/oteltestbedcol && GO111MODULE=on CGO_ENABLED=0 go build -trimpath -o ../../bin/oteltestbedcol_$(GOOS)_$(GOARCH)$(EXTENSION) .
 
-# 1. Copy and modify the manifest -> change local path to eecprovider -> move the modified file to the cmd/oteltestbedcol directory
+# 1. Copy the manifest to the cmd/oteltestbedcol directory
 # 2. Add pprofextension used for load tests to the test manifest in cmd/oteltestbedcol directory
 # 3. Generate code
 .PHONY: genoteltestbedcol
 genoteltestbedcol: $(BUILDER)
-	awk '{gsub(/\.\.\/internal\/confmap\/provider\/eecprovider/, "../../internal/confmap/provider/eecprovider"); print}' manifest.yaml > cmd/oteltestbedcol/manifest.yaml
+	cp manifest.yaml cmd/oteltestbedcol/manifest.yaml
 	awk '/healthcheckextension $(OTEL_UPSTREAM_VERSION)/ {print; print "  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension $(OTEL_UPSTREAM_VERSION)"; next}1' cmd/oteltestbedcol/manifest.yaml > cmd/oteltestbedcol/manifest-dev.yaml
 	$(BUILDER) --skip-compilation --config cmd/oteltestbedcol/manifest-dev.yaml --output-path cmd/oteltestbedcol
 

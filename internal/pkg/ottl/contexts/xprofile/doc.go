@@ -1,4 +1,5 @@
 // Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
 // SPDX-License-Identifier: Apache-2.0
 
 // Package xprofile houses OTTL's profiles support outside of OTTL's stability

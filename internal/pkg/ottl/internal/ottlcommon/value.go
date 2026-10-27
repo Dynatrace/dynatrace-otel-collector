@@ -1,4 +1,5 @@
 // Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
 // SPDX-License-Identifier: Apache-2.0
 
 package ottlcommon // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/internal/ottlcommon"

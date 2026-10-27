@@ -1,4 +1,5 @@
 // Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
 // SPDX-License-Identifier: Apache-2.0
 
 package ctxutil // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/internal/ctxutil"

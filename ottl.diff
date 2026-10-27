@@ -1,0 +1,349 @@
+Only in /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl: Makefile
+diff '--color=auto' -ru /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/go.mod internal/pkg/ottl/go.mod
+--- /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/go.mod	2026-10-27 12:57:21.034752830 -0400
++++ internal/pkg/ottl/go.mod	2026-10-27 12:35:15.237075871 -0400
+@@ -1,6 +1,6 @@
+ module github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl
+ 
+-go 1.26.0
++go 1.27.3
+ 
+ require (
+ 	github.com/alecthomas/participle/v2 v2.1.4
+@@ -56,17 +56,3 @@
+ 	golang.org/x/sys v0.47.0 // indirect
+ 	gopkg.in/yaml.v3 v3.0.1 // indirect
+ )
+-
+-replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/common => ../../internal/common
+-
+-replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal => ../../internal/coreinternal
+-
+-retract (
+-	v0.76.2
+-	v0.76.1
+-	v0.65.0
+-)
+-
+-replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest => ../pdatatest
+-
+-replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden => ../golden
+diff '--color=auto' -ru /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/go.sum internal/pkg/ottl/go.sum
+--- /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/go.sum	2026-10-27 12:57:21.034859024 -0400
++++ internal/pkg/ottl/go.sum	2026-10-27 12:33:36.966884551 -0400
+@@ -59,6 +59,14 @@
+ github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
+ github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee h1:W5t00kpgFdJifH4BDsTlE89Zl93FEloxaWZfGcifgq8=
+ github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
++github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.162.0 h1:Zfodm2n7XmFGV7U6gIK8RFPngEo2wTWJoNRa+gEKrYw=
++github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.162.0/go.mod h1:vTWIgJJ0a12tRSswfgQ9ycYK5Kiuuj3zeACtaaWmaTQ=
++github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.162.0 h1:TK03OZhrtC1QZ0hkeJbUt6ZtKXZAVplGBOl5sOHzQVI=
++github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.162.0/go.mod h1:NoEPEE+IlllTE3yfpUmzmzyUMgciY6uinYKhsIqhouI=
++github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.162.0 h1:oG82viE5Q8LpVOy12gD0uxEiK28ayVyfSKIA05KSD24=
++github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.162.0/go.mod h1:Z8sNzsWLjB2HeCgKfphmYLpXIFZzLr3dVcLboZ2jnVA=
++github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.162.0 h1:Is4v2LutLm9LEC+FgTZ/p6AjJvd0d86j2y0q5WphVBk=
++github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.162.0/go.mod h1:Hc1mqfHFJuCdKgECoNTnIeyfZBVccz39w+J+E2/6bL8=
+ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+ github.com/rogpeppe/go-internal v1.14.1 h1:UQB4HGPB6osV0SQTLymcB4TgvyWu6ZyliaW0tI/otEQ=
+ github.com/rogpeppe/go-internal v1.14.1/go.mod h1:MaRKkUm5W0goXpeCfT7UZI6fk/L7L7so1lCWt35ZSgc=
+diff '--color=auto' -ru /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/internal/metadata/generated_feature_gates.go internal/pkg/ottl/internal/metadata/generated_feature_gates.go
+--- /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/internal/metadata/generated_feature_gates.go	2026-10-27 12:57:21.034982072 -0400
++++ internal/pkg/ottl/internal/metadata/generated_feature_gates.go	2026-10-27 12:24:22.294435311 -0400
+@@ -16,7 +16,7 @@
+ 
+ var OttlSetAllowNilFeatureGate = featuregate.GlobalRegistry().MustRegister(
+ 	"ottl.set.allowNil",
+-	featuregate.StageStable,
++	featuregate.StageAlpha,
+ 	featuregate.WithRegisterDescription("When enabled, the set function passes nil values directly to the target."),
+ 	featuregate.WithRegisterReferenceURL("https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/49741"),
+ 	featuregate.WithRegisterFromVersion("v0.158.0"),
+diff '--color=auto' -ru /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs/func_set.go internal/pkg/ottl/ottlfuncs/func_set.go
+--- /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs/func_set.go	2026-10-27 12:57:21.053606506 -0400
++++ internal/pkg/ottl/ottlfuncs/func_set.go	2026-10-27 12:25:23.917529250 -0400
+@@ -6,38 +6,49 @@
+ import (
+ 	"context"
+ 	"errors"
++	"sync"
+ 
+ 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
++	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/internal/metadata"
+ )
+ 
+-type setArguments[K any] struct {
++var warnOnce sync.Once
++
++type SetArguments[K any] struct {
+ 	Target ottl.Setter[K]
+ 	Value  ottl.Getter[K]
+ }
+ 
+-// NewSetFactory returns a factory for the set OTTL function.
+-// See https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/ottlfuncs/README.md#set
+ func NewSetFactory[K any]() ottl.Factory[K] {
+-	return ottl.NewFactory("set", &setArguments[K]{}, createSetFunction[K])
++	return ottl.NewFactory("set", &SetArguments[K]{}, createSetFunction[K])
+ }
+ 
+-func createSetFunction[K any](_ ottl.FunctionContext, oArgs ottl.Arguments) (ottl.ExprFunc[K], error) {
+-	args, ok := oArgs.(*setArguments[K])
++func createSetFunction[K any](fCtx ottl.FunctionContext, oArgs ottl.Arguments) (ottl.ExprFunc[K], error) {
++	args, ok := oArgs.(*SetArguments[K])
+ 
+ 	if !ok {
+-		return nil, errors.New("SetFactory args must be of type *setArguments[K]")
++		return nil, errors.New("SetFactory args must be of type *SetArguments[K]")
+ 	}
+ 
+-	return set(args.Target, args.Value), nil
++	return set(args.Target, args.Value, fCtx), nil
+ }
+ 
+-func set[K any](target ottl.Setter[K], value ottl.Getter[K]) ottl.ExprFunc[K] {
++func set[K any](target ottl.Setter[K], value ottl.Getter[K], fCtx ottl.FunctionContext) ottl.ExprFunc[K] {
+ 	return func(ctx context.Context, tCtx K) (any, error) {
+ 		val, err := value.Get(ctx, tCtx)
+ 		if err != nil {
+ 			return nil, err
+ 		}
+ 
++		if val == nil {
++			if !metadata.OttlSetAllowNilFeatureGate.IsEnabled() {
++				warnOnce.Do(func() {
++					fCtx.Set.Logger.Warn("The OTTL 'set' function silently ignored a nil value. This behavior is deprecated and will change in a future release. Enable the feature gate 'ottl.set.allowNil' to pass nil to the target.")
++				})
++				return nil, nil
++			}
++		}
++
+ 		err = target.Set(ctx, tCtx, val)
+ 		if err != nil {
+ 			return nil, err
+diff '--color=auto' -ru /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs/func_set_test.go internal/pkg/ottl/ottlfuncs/func_set_test.go
+--- /home/ihsmwaqhcpfwcime/code/github.com/evan-bradley/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs/func_set_test.go	2026-10-27 12:57:21.053653430 -0400
++++ internal/pkg/ottl/ottlfuncs/func_set_test.go	2026-10-27 12:25:28.540524462 -0400
+@@ -9,9 +9,12 @@
+ 
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
++	"go.opentelemetry.io/collector/component/componenttest"
++	"go.opentelemetry.io/collector/featuregate"
+ 	"go.opentelemetry.io/collector/pdata/pcommon"
+ 
+ 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
++	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/internal/metadata"
+ )
+ 
+ func Test_set(t *testing.T) {
+@@ -27,13 +30,14 @@
+ 	}
+ 
+ 	tests := []struct {
+-		name   string
+-		setter ottl.Setter[pcommon.Value]
+-		getter ottl.Getter[pcommon.Value]
+-		want   func(pcommon.Value)
++		name         string
++		setter       ottl.Setter[pcommon.Value]
++		getter       ottl.Getter[pcommon.Value]
++		want         func(pcommon.Value)
++		allowNilGate bool
+ 	}{
+ 		{
+-			name:   "set name",
++			name:   "set name (gate disabled)",
+ 			setter: target,
+ 			getter: &ottl.StandardGetSetter[pcommon.Value]{
+ 				Getter: func(_ context.Context, _ pcommon.Value) (any, error) {
+@@ -43,9 +47,36 @@
+ 			want: func(expectedValue pcommon.Value) {
+ 				expectedValue.SetStr("new name")
+ 			},
++			allowNilGate: false,
+ 		},
+ 		{
+-			name:   "set nil",
++			name:   "set name (gate enabled)",
++			setter: target,
++			getter: &ottl.StandardGetSetter[pcommon.Value]{
++				Getter: func(_ context.Context, _ pcommon.Value) (any, error) {
++					return "new name", nil
++				},
++			},
++			want: func(expectedValue pcommon.Value) {
++				expectedValue.SetStr("new name")
++			},
++			allowNilGate: true,
++		},
++		{
++			name:   "set nil (gate disabled)",
++			setter: target,
++			getter: &ottl.StandardGetSetter[pcommon.Value]{
++				Getter: func(_ context.Context, _ pcommon.Value) (any, error) {
++					return nil, nil
++				},
++			},
++			want: func(expectedValue pcommon.Value) {
++				expectedValue.SetStr("original name")
++			},
++			allowNilGate: false,
++		},
++		{
++			name:   "set nil (gate enabled)",
+ 			setter: target,
+ 			getter: &ottl.StandardGetSetter[pcommon.Value]{
+ 				Getter: func(_ context.Context, _ pcommon.Value) (any, error) {
+@@ -55,12 +86,25 @@
+ 			want: func(expectedValue pcommon.Value) {
+ 				expectedValue.SetStr("nil was set")
+ 			},
++			allowNilGate: true,
+ 		},
+ 	}
+ 
+ 	for _, tt := range tests {
+ 		t.Run(tt.name, func(t *testing.T) {
+-			exprFunc := set(tt.setter, tt.getter)
++			originalGateValue := metadata.OttlSetAllowNilFeatureGate.IsEnabled()
++			err := featuregate.GlobalRegistry().Set(metadata.OttlSetAllowNilFeatureGate.ID(), tt.allowNilGate)
++			require.NoError(t, err)
++
++			defer func() {
++				_ = featuregate.GlobalRegistry().Set(metadata.OttlSetAllowNilFeatureGate.ID(), originalGateValue)
++			}()
++
++			fCtx := ottl.FunctionContext{
++				Set: componenttest.NewNopTelemetrySettings(),
++			}
++
++			exprFunc := set[pcommon.Value](tt.setter, tt.getter, fCtx)
+ 			input := pcommon.NewValueStr("original name")
+ 
+ 			result, err := exprFunc(t.Context(), input)
+@@ -76,27 +120,63 @@
+ }
+ 
+ func Test_set_get_nil(t *testing.T) {
+-	setterCalled := false
+-	setter := &ottl.StandardGetSetter[any]{
+-		Setter: func(_ context.Context, _, _ any) error {
+-			setterCalled = true
+-			return nil
++	tests := []struct {
++		name         string
++		allowNilGate bool
++		expectCalled bool
++	}{
++		{
++			name:         "gate enabled",
++			allowNilGate: true,
++			expectCalled: true,
+ 		},
+-	}
+-
+-	getter := &ottl.StandardGetSetter[any]{
+-		Getter: func(_ context.Context, _ any) (any, error) {
+-			return nil, nil
++		{
++			name:         "gate disabled",
++			allowNilGate: false,
++			expectCalled: false,
+ 		},
+ 	}
+ 
+-	exprFunc := set[any](setter, getter)
++	for _, tt := range tests {
++		t.Run(tt.name, func(t *testing.T) {
++			originalGateValue := metadata.OttlSetAllowNilFeatureGate.IsEnabled()
++			err := featuregate.GlobalRegistry().Set(metadata.OttlSetAllowNilFeatureGate.ID(), tt.allowNilGate)
++			require.NoError(t, err)
++			defer func() {
++				_ = featuregate.GlobalRegistry().Set(metadata.OttlSetAllowNilFeatureGate.ID(), originalGateValue)
++			}()
++
++			setterCalled := false
++			setter := &ottl.StandardGetSetter[any]{
++				Setter: func(_ context.Context, _, _ any) error {
++					setterCalled = true
++					return nil
++				},
++			}
++
++			getter := &ottl.StandardGetSetter[any]{
++				Getter: func(_ context.Context, _ any) (any, error) {
++					return nil, nil
++				},
++			}
++
++			fCtx := ottl.FunctionContext{
++				Set: componenttest.NewNopTelemetrySettings(),
++			}
++
++			exprFunc := set[any](setter, getter, fCtx)
+ 
+-	result, err := exprFunc(t.Context(), nil)
+-	require.NoError(t, err)
+-	assert.Nil(t, result)
++			result, err := exprFunc(t.Context(), nil)
++			require.NoError(t, err)
++			assert.Nil(t, result)
+ 
+-	assert.True(t, setterCalled, "setter should have been called with nil")
++			if tt.expectCalled {
++				assert.True(t, setterCalled, "setter should have been called with nil")
++			} else {
++				assert.False(t, setterCalled, "setter should not have been called")
++			}
++		})
++	}
+ }
+ 
+ func Test_SetFactory(t *testing.T) {
+@@ -109,14 +189,14 @@
+ 		factory := NewSetFactory[any]()
+ 		args := factory.CreateDefaultArguments()
+ 
+-		assert.IsType(t, &setArguments[any]{}, args)
++		assert.IsType(t, &SetArguments[any]{}, args)
+ 		assertArgumentFieldNames(t, args, []string{"Target", "Value"})
+ 	})
+ 
+ 	t.Run("function creation", func(t *testing.T) {
+ 		factory := NewSetFactory[any]()
+ 		args := factory.CreateDefaultArguments()
+-		setArgs, ok := args.(*setArguments[any])
++		setArgs, ok := args.(*SetArguments[any])
+ 		require.True(t, ok)
+ 		setArgs.Target = &ottl.StandardGetSetter[any]{
+ 			Setter: func(context.Context, any, any) error {
+@@ -136,27 +216,6 @@
+ 
+ 	t.Run("invalid arguments type", func(t *testing.T) {
+ 		_, err := createSetFunction[any](ottl.FunctionContext{}, "invalid args")
+-		assert.ErrorContains(t, err, "SetFactory args must be of type *setArguments[K]")
++		assert.ErrorContains(t, err, "SetFactory args must be of type *SetArguments[K]")
+ 	})
+ }
+-
+-func BenchmarkSet(b *testing.B) {
+-	target := &ottl.StandardGetSetter[any]{
+-		Setter: func(context.Context, any, any) error {
+-			return nil
+-		},
+-	}
+-	getter := &ottl.StandardGetSetter[any]{
+-		Getter: func(context.Context, any) (any, error) {
+-			return "new value", nil
+-		},
+-	}
+-	exprFunc := set[any](target, getter)
+-	ctx := b.Context()
+-	b.ReportAllocs()
+-	for b.Loop() {
+-		if _, err := exprFunc(ctx, nil); err != nil {
+-			b.Fatal(err)
+-		}
+-	}
+-}
+Only in internal/pkg/ottl: ottltest

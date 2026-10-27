@@ -7,9 +7,18 @@ on:
     types: [checks_requested]
   push:
     branches: [main]
+  schedule:
+    - cron: "0 2 * * *" # Nightly combined load test.
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+# Superseded PR pushes are cancelled. Other events get a unique group per commit
+# so that main and merge queue runs are never cancelled or dropped.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 defaults:
   run:
@@ -107,6 +116,7 @@ jobs:
           path: /tmp/dynatrace-otel-collector-journald.tar
 
   k8s-multinode-matrix:
+    if: github.event_name != 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -130,6 +140,7 @@ jobs:
           go test -v --tags=e2e
 
   k8s-e2e-test-matrix:
+    if: github.event_name != 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -167,6 +178,7 @@ jobs:
           go test -v --tags=e2e
 
   e2e-test-matrix:
+    if: github.event_name != 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -200,7 +212,7 @@ jobs:
           go test -v --tags=e2e
 
   combined-load-test:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04
     needs: docker-build
     steps:
@@ -235,6 +247,7 @@ jobs:
 
   hostmetrics-e2e-test:
     name: Test Hostmetrics configuration
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:
@@ -277,7 +290,7 @@ jobs:
   notify-slack-combined-load-test:
     runs-on: ubuntu-24.04
     needs: [combined-load-test]
-    if: failure() && github.event_name == 'push'
+    if: failure() && github.event_name == 'schedule'
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@33ca3be66c6f378fe1610fd1d5258632dbed5e58 # v2.4.0

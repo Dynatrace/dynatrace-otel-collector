@@ -1,9 +1,10 @@
 name: load-tests
 on:
   push:
-    branches: [main]
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+*"
+  schedule:
+    - cron: "30 2 * * *" # Nightly, after the combined load test.
   workflow_dispatch:
 
 permissions:
@@ -102,7 +103,7 @@ jobs:
   notify-slack:
     runs-on: ubuntu-24.04
     needs: [loadtest]
-    if: failure() && github.event_name == 'push'
+    if: failure() && (github.event_name == 'push' || github.event_name == 'schedule')
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@33ca3be66c6f378fe1610fd1d5258632dbed5e58 # v2.4.0
@@ -118,7 +119,7 @@ jobs:
     permissions:
       contents: write # push results to the benchmarks branch
     needs: [loadtest]
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'schedule'
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

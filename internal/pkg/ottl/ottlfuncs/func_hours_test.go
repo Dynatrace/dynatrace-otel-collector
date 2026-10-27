@@ -1,0 +1,120 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func Test_Hours(t *testing.T) {
+	tests := []struct {
+		name     string
+		duration ottl.DurationGetter[any]
+		expected float64
+	}{
+		{
+			name: "100 hours",
+			duration: &ottl.StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.ParseDuration("100h")
+				},
+			},
+			expected: 100,
+		},
+		{
+			name: "1 min",
+			duration: &ottl.StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.ParseDuration("100m")
+				},
+			},
+			expected: 1.6666666666666665,
+		},
+		{
+			name: "234 milliseconds",
+			duration: &ottl.StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.ParseDuration("234ms")
+				},
+			},
+			expected: 0.000065,
+		},
+		{
+			name: "1 hour 40 mins 3 seconds 30 milliseconds 100 microseconds 1 nanosecond",
+			duration: &ottl.StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.ParseDuration("1h40m3s30ms100us1ns")
+				},
+			},
+			expected: 1.667508361111389,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exprFunc := hours(tt.duration)
+			result, err := exprFunc(nil, nil)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func Test_HoursFactory(t *testing.T) {
+	t.Run("factory creation", func(t *testing.T) {
+		factory := NewHoursFactory[any]()
+		assert.Equal(t, "Hours", factory.Name())
+	})
+
+	t.Run("default arguments", func(t *testing.T) {
+		factory := NewHoursFactory[any]()
+		args := factory.CreateDefaultArguments()
+
+		assert.IsType(t, &hoursArguments[any]{}, args)
+		assertArgumentFieldNames(t, args, []string{"Duration"})
+	})
+
+	t.Run("function creation", func(t *testing.T) {
+		factory := NewHoursFactory[any]()
+		args := factory.CreateDefaultArguments()
+		hoursArgs, ok := args.(*hoursArguments[any])
+		require.True(t, ok)
+		hoursArgs.Duration = &ottl.StandardDurationGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return time.Hour, nil
+			},
+		}
+
+		fn, err := factory.CreateFunction(ottl.FunctionContext{}, args)
+		require.NoError(t, err)
+		assert.NotNil(t, fn)
+	})
+
+	t.Run("invalid arguments type", func(t *testing.T) {
+		_, err := createHoursFunction[any](ottl.FunctionContext{}, "invalid args")
+		assert.ErrorContains(t, err, "HoursFactory args must be of type *hoursArguments[K]")
+	})
+}
+
+func BenchmarkHours(b *testing.B) {
+	exprFunc := hours[any](&ottl.StandardDurationGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return time.ParseDuration("1h40m3s30ms100us1ns")
+		},
+	})
+	ctx := b.Context()
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := exprFunc(ctx, nil); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

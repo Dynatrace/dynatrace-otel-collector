@@ -1,0 +1,80 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs"
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/ptrace"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/ottlspan"
+)
+
+func Test_IsRootSpan(t *testing.T) {
+	exprFunc, err := isRootSpan()
+	require.NoError(t, err)
+
+	// root span
+	spanRoot := ptrace.NewSpan()
+	spanRoot.SetParentSpanID(pcommon.SpanID{
+		0, 0, 0, 0, 0, 0, 0, 0,
+	})
+
+	rootCtx := ottlspan.NewTransformContext(ptrace.NewResourceSpans(), ptrace.NewScopeSpans(), spanRoot)
+	defer rootCtx.Close()
+	value, err := exprFunc(nil, rootCtx)
+	require.NoError(t, err)
+	require.Equal(t, true, value)
+
+	// non root span
+	spanNonRoot := ptrace.NewSpan()
+	spanNonRoot.SetParentSpanID(pcommon.SpanID{
+		1, 0, 0, 0, 0, 0, 0, 0,
+	})
+
+	nonRootCtx := ottlspan.NewTransformContext(ptrace.NewResourceSpans(), ptrace.NewScopeSpans(), spanNonRoot)
+	defer nonRootCtx.Close()
+	value, err = exprFunc(nil, nonRootCtx)
+	require.NoError(t, err)
+	require.Equal(t, false, value)
+}
+
+func Test_IsRootSpanFactory(t *testing.T) {
+	t.Run("factory creation", func(t *testing.T) {
+		assert.Equal(t, "IsRootSpan", NewIsRootSpanFactory().Name())
+	})
+
+	t.Run("default arguments", func(t *testing.T) {
+		assert.Nil(t, NewIsRootSpanFactory().CreateDefaultArguments())
+	})
+
+	t.Run("function creation", func(t *testing.T) {
+		fn, err := NewIsRootSpanFactory().CreateFunction(ottl.FunctionContext{}, nil)
+		require.NoError(t, err)
+		assert.NotNil(t, fn)
+	})
+}
+
+func BenchmarkIsRootSpan(b *testing.B) {
+	exprFunc, err := isRootSpan()
+	require.NoError(b, err)
+
+	span := ptrace.NewSpan()
+	span.SetParentSpanID(pcommon.SpanID{1, 0, 0, 0, 0, 0, 0, 0})
+	tCtx := ottlspan.NewTransformContext(ptrace.NewResourceSpans(), ptrace.NewScopeSpans(), span)
+	defer tCtx.Close()
+
+	ctx := b.Context()
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := exprFunc(ctx, tCtx); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

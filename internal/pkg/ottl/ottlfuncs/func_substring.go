@@ -1,0 +1,87 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs"
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"unicode/utf8"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+type substringArguments[K any] struct {
+	Target   ottl.StringGetter[K]
+	Start    ottl.IntGetter[K]
+	Length   ottl.IntGetter[K]
+	Utf8Safe ottl.Optional[bool]
+}
+
+// NewSubstringFactory returns a factory for the Substring OTTL function.
+// See https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/ottlfuncs/README.md#substring
+func NewSubstringFactory[K any]() ottl.Factory[K] {
+	return ottl.NewFactory("Substring", &substringArguments[K]{}, createSubstringFunction[K])
+}
+
+func createSubstringFunction[K any](_ ottl.FunctionContext, oArgs ottl.Arguments) (ottl.ExprFunc[K], error) {
+	args, ok := oArgs.(*substringArguments[K])
+
+	if !ok {
+		return nil, errors.New("SubstringFactory args must be of type *substringArguments[K]")
+	}
+
+	return substring(args.Target, args.Start, args.Length, args.Utf8Safe), nil
+}
+
+func substring[K any](
+	target ottl.StringGetter[K],
+	startGetter, lengthGetter ottl.IntGetter[K],
+	utf8Safe ottl.Optional[bool],
+) ottl.ExprFunc[K] {
+	useUTF8Safe := utf8Safe.GetOr(false)
+	return func(ctx context.Context, tCtx K) (any, error) {
+		start, err := startGetter.Get(ctx, tCtx)
+		if err != nil {
+			return nil, err
+		}
+		if start < 0 {
+			return nil, fmt.Errorf("invalid start for substring function, %d cannot be negative", start)
+		}
+		length, err := lengthGetter.Get(ctx, tCtx)
+		if err != nil {
+			return nil, err
+		}
+		if length <= 0 {
+			return nil, fmt.Errorf("invalid length for substring function, %d cannot be negative or zero", length)
+		}
+		val, err := target.Get(ctx, tCtx)
+		if err != nil {
+			return nil, err
+		}
+		if start > int64(len(val)) || length > int64(len(val))-start {
+			return nil, fmt.Errorf(
+				"invalid range for substring function, start(%d)+length(%d) cannot be greater than the length of target string(%d)",
+				start,
+				length,
+				len(val),
+			)
+		}
+		byteStart := int(start)
+		byteEnd := int(start + length)
+		if useUTF8Safe {
+			for byteStart < len(val) && !utf8.RuneStart(val[byteStart]) {
+				byteStart++
+			}
+			for byteStart < byteEnd && byteEnd < len(val) && !utf8.RuneStart(val[byteEnd]) {
+				byteEnd--
+			}
+			if byteEnd < byteStart {
+				byteEnd = byteStart
+			}
+		}
+		return val[byteStart:byteEnd], nil
+	}
+}

@@ -4,6 +4,14 @@
 
 <!-- next version -->
 
+## 0.58.2
+
+#### Dynatrace distribution changelog:
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/ottl`: Revert the `ottl.set.allowNil` feature gate to alpha. Calling `set` to set a value that is `nil` will now result in a no-op by default. This replicates the default behavior present in upstream until `v0.161.0`.
+
 ## 0.58.1
 
 #### Dynatrace distribution changelog:

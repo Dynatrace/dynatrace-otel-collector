@@ -1,0 +1,30 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs"
+
+import (
+	"context"
+
+	guuid "github.com/google/uuid"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func uuid[K any]() (ottl.ExprFunc[K], error) {
+	return func(_ context.Context, _ K) (any, error) {
+		u := guuid.New()
+		return u.String(), nil
+	}, nil
+}
+
+func createUUIDFunction[K any](_ ottl.FunctionContext, _ ottl.Arguments) (ottl.ExprFunc[K], error) {
+	return uuid[K]()
+}
+
+// NewUUIDFactory returns a factory for the UUID OTTL function.
+// See https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/ottlfuncs/README.md#uuid
+func NewUUIDFactory[K any]() ottl.Factory[K] {
+	return ottl.NewFactory("UUID", nil, createUUIDFunction[K])
+}

@@ -1,0 +1,259 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs"
+
+import (
+	"context"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func Test_InsertXML(t *testing.T) {
+	tests := []struct {
+		name      string
+		document  string
+		xPath     string
+		subdoc    string
+		want      string
+		expectErr string
+	}{
+		{
+			name:     "add single element",
+			document: `<a></a>`,
+			xPath:    "/a",
+			subdoc:   `<b/>`,
+			want:     `<a><b></b></a>`,
+		},
+		{
+			name:     "add single element to multiple matches",
+			document: `<a></a><a></a>`,
+			xPath:    "/a",
+			subdoc:   `<b/>`,
+			want:     `<a><b></b></a><a><b></b></a>`,
+		},
+		{
+			name:     "add single element at multiple levels",
+			document: `<a></a><z><a></a></z>`,
+			xPath:    "//a",
+			subdoc:   `<b/>`,
+			want:     `<a><b></b></a><z><a><b></b></a></z>`,
+		},
+		{
+			name:     "add multiple elements at root",
+			document: `<a></a>`,
+			xPath:    "/",
+			subdoc:   `<b/><c/>`,
+			want:     `<a></a><b></b><c></c>`,
+		},
+		{
+			name:     "add multiple elements to other element",
+			document: `<a></a>`,
+			xPath:    "/a",
+			subdoc:   `<b/><c/>`,
+			want:     `<a><b></b><c></c></a>`,
+		},
+		{
+			name:     "add multiple elements to multiple elements",
+			document: `<a></a><a></a>`,
+			xPath:    "/a",
+			subdoc:   `<b/><c/>`,
+			want:     `<a><b></b><c></c></a><a><b></b><c></c></a>`,
+		},
+		{
+			name:     "add multiple elements at multiple levels",
+			document: `<a></a><z><a></a></z>`,
+			xPath:    "//a",
+			subdoc:   `<b/><c/>`,
+			want:     `<a><b></b><c></c></a><z><a><b></b><c></c></a></z>`,
+		},
+		{
+			name:     "add rich doc",
+			document: `<a></a>`,
+			xPath:    "/a",
+			subdoc:   `<x foo="bar"><b>text</b><c><d><e>1</e><e><![CDATA[two]]></e></d></c></x>`,
+			want:     `<a><x foo="bar"><b>text</b><c><d><e>1</e><e><![CDATA[two]]></e></d></c></x></a>`,
+		},
+		{
+			name:     "add root element to empty document",
+			document: ``,
+			xPath:    "/",
+			subdoc:   `<a/>`,
+			want:     `<a></a>`,
+		},
+		{
+			name:     "add root element to non-empty document",
+			document: `<a></a>`,
+			xPath:    "/",
+			subdoc:   `<a/>`,
+			want:     `<a></a><a></a>`,
+		},
+		{
+			name:      "err on attribute",
+			document:  `<a foo="bar"></a>`,
+			xPath:     "/a/@foo",
+			subdoc:    "<b/>",
+			want:      `<a foo="bar"></a>`,
+			expectErr: `InsertXML XPath selected non-element: "foo"`,
+		},
+		{
+			name:      "err on text content",
+			document:  `<a>foo</a>`,
+			xPath:     "/a/text()",
+			subdoc:    "<b/>",
+			want:      `<a>foo</a>`,
+			expectErr: `InsertXML XPath selected non-element: "foo"`,
+		},
+		{
+			name:     "insert missing elements",
+			document: `<a><b>has b</b></a><a></a><a><b>also has b</b></a>`,
+			xPath:    "//a[not(b)]", // elements of a which do not have a b
+			subdoc:   `<b></b>`,
+			want:     `<a><b>has b</b></a><a><b></b></a><a><b>also has b</b></a>`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := NewInsertXMLFactory[any]()
+			exprFunc, err := f.CreateFunction(
+				ottl.FunctionContext{},
+				&insertXMLArguments[any]{
+					Target: ottl.StandardStringGetter[any]{
+						Getter: func(context.Context, any) (any, error) {
+							return tt.document, nil
+						},
+					},
+					XPath: tt.xPath,
+					SubDocument: ottl.StandardStringGetter[any]{
+						Getter: func(context.Context, any) (any, error) {
+							return tt.subdoc, nil
+						},
+					},
+				},
+			)
+			require.NoError(t, err)
+
+			result, err := exprFunc(t.Context(), nil)
+			if tt.expectErr == "" {
+				require.NoError(t, err)
+			} else {
+				assert.EqualError(t, err, tt.expectErr)
+			}
+			assert.Equal(t, tt.want, result)
+		})
+	}
+}
+
+func TestCreateInsertXMLFunc(t *testing.T) {
+	factory := NewInsertXMLFactory[any]()
+	fCtx := ottl.FunctionContext{}
+
+	// Invalid arg type
+	exprFunc, err := factory.CreateFunction(fCtx, nil)
+	assert.Error(t, err)
+	assert.Nil(t, exprFunc)
+
+	// Invalid XPath should error on function creation
+	exprFunc, err = factory.CreateFunction(
+		fCtx, &insertXMLArguments[any]{
+			XPath: "!",
+		},
+	)
+	assert.Error(t, err)
+	assert.Nil(t, exprFunc)
+
+	// Invalid XML target should error on function execution
+	exprFunc, err = factory.CreateFunction(
+		fCtx, &insertXMLArguments[any]{
+			Target: invalidXMLGetter(),
+			XPath:  "/",
+		},
+	)
+	require.NoError(t, err)
+	assert.NotNil(t, exprFunc)
+	_, err = exprFunc(t.Context(), nil)
+	assert.Error(t, err)
+
+	// Invalid XML subdoc should error on function execution
+	exprFunc, err = factory.CreateFunction(
+		fCtx, &insertXMLArguments[any]{
+			Target: ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "<a/>", nil
+				},
+			},
+			XPath:       "/",
+			SubDocument: invalidXMLGetter(),
+		},
+	)
+	require.NoError(t, err)
+	assert.NotNil(t, exprFunc)
+	_, err = exprFunc(t.Context(), nil)
+	assert.Error(t, err)
+}
+
+func Test_InsertXMLFactory(t *testing.T) {
+	t.Run("factory creation", func(t *testing.T) {
+		factory := NewInsertXMLFactory[any]()
+		assert.Equal(t, "InsertXML", factory.Name())
+	})
+
+	t.Run("default arguments", func(t *testing.T) {
+		factory := NewInsertXMLFactory[any]()
+		args := factory.CreateDefaultArguments()
+
+		assert.IsType(t, &insertXMLArguments[any]{}, args)
+		assertArgumentFieldNames(t, args, []string{"Target", "XPath", "SubDocument"})
+	})
+
+	t.Run("function creation", func(t *testing.T) {
+		factory := NewInsertXMLFactory[any]()
+		args := factory.CreateDefaultArguments()
+		insertXMLArgs, ok := args.(*insertXMLArguments[any])
+		require.True(t, ok)
+		insertXMLArgs.Target = &ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return "<a></a>", nil
+			},
+		}
+		insertXMLArgs.XPath = "/a"
+		insertXMLArgs.SubDocument = &ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return "<b></b>", nil
+			},
+		}
+
+		fn, err := factory.CreateFunction(ottl.FunctionContext{}, args)
+		require.NoError(t, err)
+		assert.NotNil(t, fn)
+	})
+
+	t.Run("invalid arguments type", func(t *testing.T) {
+		_, err := createInsertXMLFunction[any](ottl.FunctionContext{}, "invalid args")
+		assert.ErrorContains(t, err, "InsertXML args must be of type *InsertXMLAguments[K]")
+	})
+}
+
+func BenchmarkInsertXML(b *testing.B) {
+	exprFunc := insertXML[any](
+		ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) { return `<a></a>`, nil },
+		},
+		"/a",
+		ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) { return `<b/>`, nil },
+		},
+	)
+	ctx := b.Context()
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := exprFunc(ctx, nil); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

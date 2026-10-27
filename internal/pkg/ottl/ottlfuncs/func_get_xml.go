@@ -1,0 +1,80 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs"
+
+import (
+	"context"
+	"errors"
+
+	"github.com/antchfx/xmlquery"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+type getXMLArguments[K any] struct {
+	Target ottl.StringGetter[K]
+	XPath  string
+}
+
+// NewGetXMLFactory returns a factory for the GetXML OTTL function.
+// See https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/ottlfuncs/README.md#getxml
+func NewGetXMLFactory[K any]() ottl.Factory[K] {
+	return ottl.NewFactory("GetXML", &getXMLArguments[K]{}, createGetXMLFunction[K])
+}
+
+func createGetXMLFunction[K any](_ ottl.FunctionContext, oArgs ottl.Arguments) (ottl.ExprFunc[K], error) {
+	args, ok := oArgs.(*getXMLArguments[K])
+
+	if !ok {
+		return nil, errors.New("GetXML args must be of type *GetXMLAguments[K]")
+	}
+
+	if err := validateXPath(args.XPath); err != nil {
+		return nil, err
+	}
+
+	return getXML(args.Target, args.XPath), nil
+}
+
+// getXML returns a XML formatted string that is a result of matching elements from the target XML.
+func getXML[K any](target ottl.StringGetter[K], xPath string) ottl.ExprFunc[K] {
+	return func(ctx context.Context, tCtx K) (any, error) {
+		var doc *xmlquery.Node
+		targetVal, err := target.Get(ctx, tCtx)
+		if err != nil {
+			return nil, err
+		}
+
+		if targetVal == "" {
+			return "", nil
+		}
+
+		if doc, err = parseNodesXML(targetVal); err != nil {
+			return nil, err
+		}
+
+		nodes, err := xmlquery.QueryAll(doc, xPath)
+		if err != nil {
+			return nil, err
+		}
+
+		result := &xmlquery.Node{Type: xmlquery.DocumentNode}
+		for _, n := range nodes {
+			switch n.Type {
+			case xmlquery.ElementNode, xmlquery.TextNode:
+				xmlquery.AddChild(result, n)
+			case xmlquery.AttributeNode, xmlquery.CharDataNode:
+				// get the value
+				xmlquery.AddChild(result, &xmlquery.Node{
+					Type: xmlquery.TextNode,
+					Data: n.InnerText(),
+				})
+			default:
+				continue
+			}
+		}
+		return result.OutputXML(false), nil
+	}
+}

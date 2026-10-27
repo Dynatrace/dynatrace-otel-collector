@@ -1,0 +1,232 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs
+
+import (
+	"context"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func Test_extractPatterns(t *testing.T) {
+	target := &ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return `a=b c=d`, nil
+		},
+	}
+	tests := []struct {
+		name    string
+		target  ottl.StringGetter[any]
+		pattern ottl.StringGetter[any]
+		want    func(pcommon.Map)
+	}{
+		{
+			name:   "extract patterns",
+			target: target,
+			pattern: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return `^a=(?P<a>\w+)\s+c=(?P<c>\w+)$`, nil
+				},
+			},
+			want: func(expectedMap pcommon.Map) {
+				expectedMap.PutStr("a", "b")
+				expectedMap.PutStr("c", "d")
+			},
+		},
+		{
+			name:   "no pattern found",
+			target: target,
+			pattern: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return `^a=(?P<a>\w+)$`, nil
+				},
+			},
+			want: func(_ pcommon.Map) {},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exprFunc, err := extractPatterns(tt.target, tt.pattern)
+			require.NoError(t, err)
+
+			result, err := exprFunc(t.Context(), nil)
+			require.NoError(t, err)
+
+			resultMap, ok := result.(pcommon.Map)
+			require.True(t, ok)
+
+			expected := pcommon.NewMap()
+			tt.want(expected)
+
+			assert.Equal(t, expected.Len(), resultMap.Len())
+			for k := range expected.All() {
+				ev, _ := expected.Get(k)
+				av, _ := resultMap.Get(k)
+				assert.Equal(t, ev, av)
+			}
+		})
+	}
+}
+
+func Test_extractPatterns_validation(t *testing.T) {
+	tests := []struct {
+		name    string
+		target  ottl.StringGetter[any]
+		pattern ottl.StringGetter[any]
+	}{
+		{
+			name: "bad regex",
+			target: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "foobar", nil
+				},
+			},
+			pattern: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "(", nil
+				},
+			},
+		},
+		{
+			name: "no named capture group",
+			target: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "foobar", nil
+				},
+			},
+			pattern: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "(.*)", nil
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exprFunc, err := extractPatterns[any](tt.target, tt.pattern)
+			require.NoError(t, err)
+			assert.NotNil(t, exprFunc)
+			_, err = exprFunc(t.Context(), nil)
+			assert.Error(t, err)
+		})
+	}
+}
+
+func Test_extractPatterns_bad_input(t *testing.T) {
+	tests := []struct {
+		name    string
+		target  ottl.StringGetter[any]
+		pattern ottl.StringGetter[any]
+	}{
+		{
+			name: "target is non-string",
+			target: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return 123, nil
+				},
+			},
+			pattern: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "(?P<line>.*)", nil
+				},
+			},
+		},
+		{
+			name: "target is nil",
+			target: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			pattern: &ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "(?P<line>.*)", nil
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exprFunc, err := extractPatterns[any](tt.target, tt.pattern)
+			require.NoError(t, err)
+
+			result, err := exprFunc(nil, nil)
+			assert.Error(t, err)
+			assert.Nil(t, result)
+		})
+	}
+}
+
+func Test_ExtractPatternsFactory(t *testing.T) {
+	t.Run("factory creation", func(t *testing.T) {
+		factory := NewExtractPatternsFactory[any]()
+		assert.Equal(t, "ExtractPatterns", factory.Name())
+	})
+
+	t.Run("default arguments", func(t *testing.T) {
+		factory := NewExtractPatternsFactory[any]()
+		args := factory.CreateDefaultArguments()
+
+		assert.IsType(t, &extractPatternsArguments[any]{}, args)
+		assertArgumentFieldNames(t, args, []string{"Target", "Pattern"})
+	})
+
+	t.Run("function creation", func(t *testing.T) {
+		factory := NewExtractPatternsFactory[any]()
+		args := factory.CreateDefaultArguments()
+		extractPatternsArgs, ok := args.(*extractPatternsArguments[any])
+		require.True(t, ok)
+		extractPatternsArgs.Target = &ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return "value", nil
+			},
+		}
+		extractPatternsArgs.Pattern = &ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return "(?P<key>\\w+)", nil
+			},
+		}
+
+		fn, err := factory.CreateFunction(ottl.FunctionContext{}, args)
+		require.NoError(t, err)
+		assert.NotNil(t, fn)
+	})
+
+	t.Run("invalid arguments type", func(t *testing.T) {
+		_, err := createExtractPatternsFunction[any](ottl.FunctionContext{}, "invalid args")
+		assert.ErrorContains(t, err, "ExtractPatternsFactory args must be of type *extractPatternsArguments[K]")
+	})
+}
+
+func BenchmarkExtractPatterns(b *testing.B) {
+	target := &ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return "a=b c=d", nil
+		},
+	}
+	pattern, err := ottl.NewTestingLiteralGetter[any, string](true, &ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return `^a=(?P<a>\w+)\s+c=(?P<c>\w+)$`, nil
+		},
+	})
+	require.NoError(b, err)
+
+	exprFunc, err := extractPatterns[any](target, pattern)
+	require.NoError(b, err)
+
+	ctx := b.Context()
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := exprFunc(ctx, nil); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

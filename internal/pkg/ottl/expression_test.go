@@ -1,0 +1,3992 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottl
+
+import (
+	"context"
+	"errors"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/component/componenttest"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+)
+
+func hello() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return "world", nil
+	}, nil
+}
+
+func pmap() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		m := pcommon.NewMap()
+		m.PutEmptyMap("foo").PutStr("bar", "pass")
+		return m, nil
+	}, nil
+}
+
+func basicMap() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return map[string]any{
+			"foo": map[string]any{
+				"bar": "pass",
+			},
+		}, nil
+	}, nil
+}
+
+func pslice() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		s := pcommon.NewSlice()
+		s.AppendEmpty().SetEmptySlice().AppendEmpty().SetStr("pass")
+		return s, nil
+	}, nil
+}
+
+func basicSlice() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return []any{
+			[]any{
+				"pass",
+			},
+		}, nil
+	}, nil
+}
+
+func basicSliceString() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return []any{
+			[]string{
+				"pass",
+			},
+		}, nil
+	}, nil
+}
+
+func basicSliceBool() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return []any{
+			[]bool{
+				true,
+			},
+		}, nil
+	}, nil
+}
+
+func basicSliceInteger() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return []any{
+			[]int64{
+				1,
+			},
+		}, nil
+	}, nil
+}
+
+func basicSliceFloat() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return []any{
+			[]float64{
+				1,
+			},
+		}, nil
+	}, nil
+}
+
+func basicSliceByte() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return []any{
+			[]byte{
+				byte('p'),
+			},
+		}, nil
+	}, nil
+}
+
+func strFoo() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return "foo", nil
+	}, nil
+}
+
+func intZero() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return int64(0), nil
+	}, nil
+}
+
+func returnsNilKey() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return nil, nil
+	}, nil
+}
+
+func returnsBoolKey() (ExprFunc[any], error) {
+	return func(context.Context, any) (any, error) {
+		return true, nil
+	}, nil
+}
+
+func Test_newGetter(t *testing.T) {
+	tests := []struct {
+		name        string
+		val         value
+		ctx         any
+		want        any
+		wantLiteral bool
+		assertValue func(t *testing.T, a any) bool
+	}{
+		{
+			name: "string literal",
+			val: value{
+				String: new("str"),
+			},
+			want:        "str",
+			wantLiteral: true,
+		},
+		{
+			name: "float literal",
+			val: value{
+				Literal: &mathExprLiteral{
+					Float: new(1.2),
+				},
+			},
+			want:        1.2,
+			wantLiteral: true,
+		},
+		{
+			name: "int literal",
+			val: value{
+				Literal: &mathExprLiteral{
+					Int: new(int64(12)),
+				},
+			},
+			want:        int64(12),
+			wantLiteral: true,
+		},
+		{
+			name: "bytes literal",
+			val: value{
+				Bytes: (*byteSlice)(&[]byte{1, 2, 3, 4, 5, 6, 7, 8}),
+			},
+			want:        []byte{1, 2, 3, 4, 5, 6, 7, 8},
+			wantLiteral: true,
+		},
+		{
+			name: "nil literal",
+			val: value{
+				IsNil: (*isNil)(new(true)),
+			},
+			want:        nil,
+			wantLiteral: true,
+		},
+		{
+			name: "bool literal",
+			val: value{
+				Bool: (*boolean)(new(true)),
+			},
+			want:        true,
+			wantLiteral: true,
+		},
+		{
+			name: "path expression",
+			val: value{
+				Literal: &mathExprLiteral{
+					Path: &path{
+						Fields: []field{
+							{
+								Name: "name",
+							},
+						},
+					},
+				},
+			},
+			want: "bear",
+		},
+		{
+			name: "complex path expression",
+			val: value{
+				Literal: &mathExprLiteral{
+					Path: &path{
+						Fields: []field{
+							{
+								Name: "attributes",
+								Keys: []key{
+									{
+										String: new("foo"),
+									},
+									{
+										String: new("bar"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Hello",
+					},
+				},
+			},
+			want: "world",
+		},
+		{
+			name: "function call nested pcommon map",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PMap",
+						Keys: []key{
+							{
+								String: new("foo"),
+							},
+							{
+								String: new("bar"),
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call nested map",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Map",
+						Keys: []key{
+							{
+								String: new("foo"),
+							},
+							{
+								String: new("bar"),
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call pcommon slice",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PSlice",
+						Keys: []key{
+							{
+								Int: new(int64(0)),
+							},
+							{
+								Int: new(int64(0)),
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call nested slice",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Slice",
+						Keys: []key{
+							{
+								Int: new(int64(0)),
+							},
+							{
+								Int: new(int64(0)),
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call nested SliceString",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "SliceString",
+						Keys: []key{
+							{
+								Int: new(int64(0)),
+							},
+							{
+								Int: new(int64(0)),
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call nested SliceBool",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "SliceBool",
+						Keys: []key{
+							{
+								Int: new(int64(0)),
+							},
+							{
+								Int: new(int64(0)),
+							},
+						},
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "function call nested SliceInteger",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "SliceInteger",
+						Keys: []key{
+							{
+								Int: new(int64(0)),
+							},
+							{
+								Int: new(int64(0)),
+							},
+						},
+					},
+				},
+			},
+			want: int64(1),
+		},
+		{
+			name: "function call nested SliceFloat",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "SliceFloat",
+						Keys: []key{
+							{
+								Int: new(int64(0)),
+							},
+							{
+								Int: new(int64(0)),
+							},
+						},
+					},
+				},
+			},
+			want: 1.0,
+		},
+		{
+			name: "function call nested SliceByte",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "SliceByte",
+						Keys: []key{
+							{
+								Int: new(int64(0)),
+							},
+							{
+								Int: new(int64(0)),
+							},
+						},
+					},
+				},
+			},
+			want: byte('p'),
+		},
+		{
+			name: "function call nested pcommon map dynamic string key",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PMap",
+						Keys: []key{
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "StrFoo",
+									},
+								},
+							},
+							{
+								String: new("bar"),
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call nested map dynamic string key",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Map",
+						Keys: []key{
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "StrFoo",
+									},
+								},
+							},
+							{
+								String: new("bar"),
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call pcommon slice dynamic int key",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PSlice",
+						Keys: []key{
+							{
+								MathExpression: &mathExpression{
+									Left: &addSubTerm{
+										Left: &mathValue{
+											Literal: &mathExprLiteral{
+												Int: new(int64(0)),
+											},
+										},
+									},
+								},
+							},
+							{
+								MathExpression: &mathExpression{
+									Left: &addSubTerm{
+										Left: &mathValue{
+											Literal: &mathExprLiteral{
+												Int: new(int64(0)),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call nested slice dynamic int key",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Slice",
+						Keys: []key{
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "IntZero",
+									},
+								},
+							},
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "IntZero",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "function call nested SliceString dynamic int key",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "SliceString",
+						Keys: []key{
+							{
+								MathExpression: &mathExpression{
+									Left: &addSubTerm{
+										Left: &mathValue{
+											Literal: &mathExprLiteral{
+												Int: new(int64(0)),
+											},
+										},
+									},
+								},
+							},
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "IntZero",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: "pass",
+		},
+		{
+			name: "enum",
+			val: value{
+				Enum: (*enumSymbol)(new("TEST_ENUM_ONE")),
+			},
+			want:        int64(1),
+			wantLiteral: true,
+		},
+		{
+			name: "empty list",
+			val: value{
+				List: &list{
+					Values: []value{},
+				},
+			},
+			want:        []any{},
+			wantLiteral: true,
+		},
+		{
+			name: "string list",
+			val: value{
+				List: &list{
+					Values: []value{
+						{
+							String: new("test0"),
+						},
+						{
+							String: new("test1"),
+						},
+					},
+				},
+			},
+			want:        []any{"test0", "test1"},
+			wantLiteral: true,
+		},
+		{
+			name: "int list",
+			val: value{
+				List: &list{
+					Values: []value{
+						{
+							Literal: &mathExprLiteral{
+								Int: new(int64(1)),
+							},
+						},
+						{
+							Literal: &mathExprLiteral{
+								Int: new(int64(2)),
+							},
+						},
+					},
+				},
+			},
+			want:        []any{int64(1), int64(2)},
+			wantLiteral: true,
+		},
+		{
+			name: "float list",
+			val: value{
+				List: &list{
+					Values: []value{
+						{
+							Literal: &mathExprLiteral{
+								Float: new(1.2),
+							},
+						},
+						{
+							Literal: &mathExprLiteral{
+								Float: new(2.4),
+							},
+						},
+					},
+				},
+			},
+			want:        []any{1.2, 2.4},
+			wantLiteral: true,
+		},
+		{
+			name: "bool list",
+			val: value{
+				List: &list{
+					Values: []value{
+						{
+							Bool: (*boolean)(new(true)),
+						},
+						{
+							Bool: (*boolean)(new(false)),
+						},
+					},
+				},
+			},
+			want:        []any{true, false},
+			wantLiteral: true,
+		},
+		{
+			name: "byte slice list",
+			val: value{
+				List: &list{
+					Values: []value{
+						{
+							Bytes: (*byteSlice)(&[]byte{1, 2, 3, 4, 5, 6, 7, 8}),
+						},
+						{
+							Bytes: (*byteSlice)(&[]byte{9, 8, 7, 6, 5, 4, 3, 2}),
+						},
+					},
+				},
+			},
+			want:        []any{[]byte{1, 2, 3, 4, 5, 6, 7, 8}, []byte{9, 8, 7, 6, 5, 4, 3, 2}},
+			wantLiteral: true,
+		},
+		{
+			name: "path expression",
+			val: value{
+				List: &list{
+					Values: []value{
+						{
+							Literal: &mathExprLiteral{
+								Path: &path{
+									Fields: []field{
+										{
+											Name: "name",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			ctx:  "bear",
+			want: []any{"bear"},
+		},
+		{
+			name: "function call",
+			val: value{
+				List: &list{
+					Values: []value{
+						{
+							Literal: &mathExprLiteral{
+								Converter: &converter{
+									Function: "Hello",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: []any{"world"},
+		},
+		{
+			name: "nil slice",
+			val: value{
+				List: &list{
+					Values: []value{
+						{
+							IsNil: (*isNil)(new(true)),
+						},
+						{
+							IsNil: (*isNil)(new(true)),
+						},
+					},
+				},
+			},
+			want:        []any{nil, nil},
+			wantLiteral: true,
+		},
+		{
+			name: "heterogeneous slice",
+			val: value{
+				List: &list{
+					Values: []value{
+						{
+							String: new("test0"),
+						},
+						{
+							Literal: &mathExprLiteral{
+								Int: new(int64(1)),
+							},
+						},
+					},
+				},
+			},
+			want:        []any{"test0", int64(1)},
+			wantLiteral: true,
+		},
+		{
+			name: "empty map",
+			val: value{
+				Map: &mapValue{
+					Values: []mapItem{},
+				},
+			},
+			want:        pcommon.NewMap(),
+			wantLiteral: true,
+		},
+		{
+			name: "map",
+			val: value{
+				Map: &mapValue{
+					Values: []mapItem{
+						{
+							Key:   new("stringAttr"),
+							Value: &value{String: new("value")},
+						},
+						{
+							Key: new("intAttr"),
+							Value: &value{
+								Literal: &mathExprLiteral{
+									Int: new(int64(3)),
+								},
+							},
+						},
+						{
+							Key: new("floatAttr"),
+							Value: &value{
+								Literal: &mathExprLiteral{
+									Float: new(2.5),
+								},
+							},
+						},
+						{
+							Key:   new("boolAttr"),
+							Value: &value{Bool: (*boolean)(new(true))},
+						},
+						{
+							Key:   new("byteAttr"),
+							Value: &value{Bytes: (*byteSlice)(&[]byte{1, 2, 3, 4, 5, 6, 7, 8})},
+						},
+						{
+							Key:   new("enumAttr"),
+							Value: &value{Enum: (*enumSymbol)(new("TEST_ENUM_ONE"))},
+						},
+						{
+							Key: new("pathAttr"),
+							Value: &value{
+								Literal: &mathExprLiteral{
+									Path: &path{
+										Fields: []field{
+											{
+												Name: "name",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Key: new("mapAttr"),
+							Value: &value{
+								Map: &mapValue{
+									Values: []mapItem{
+										{
+											Key: new("foo"),
+											Value: &value{
+												Map: &mapValue{
+													Values: []mapItem{
+														{
+															Key:   new("test"),
+															Value: &value{String: new("value")},
+														},
+													},
+												},
+											},
+										},
+										{
+											Key: new("listAttr"),
+											Value: &value{
+												List: &list{
+													Values: []value{
+														{
+															String: new("test0"),
+														},
+														{
+															Literal: &mathExprLiteral{
+																Int: new(int64(1)),
+															},
+														},
+														{
+															Map: &mapValue{
+																Values: []mapItem{
+																	{
+																		Key:   new("stringAttr"),
+																		Value: &value{String: new("value")},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			ctx: "bear",
+			want: map[string]any{
+				"enumAttr": int64(1),
+				"pathAttr": "bear",
+				"mapAttr": map[string]any{
+					"foo": map[string]any{
+						"test": "value",
+					},
+					"listAttr": []any{"test0", int64(1), map[string]any{"stringAttr": "value"}},
+				},
+				"stringAttr": "value",
+				"intAttr":    int64(3),
+				"floatAttr":  2.5,
+				"boolAttr":   true,
+				"byteAttr":   []byte{1, 2, 3, 4, 5, 6, 7, 8},
+			},
+		},
+	}
+
+	functions := CreateFactoryMap(
+		createFactory("Hello", &struct{}{}, hello),
+		createFactory("PMap", &struct{}{}, pmap),
+		createFactory("Map", &struct{}{}, basicMap),
+		createFactory("PSlice", &struct{}{}, pslice),
+		createFactory("Slice", &struct{}{}, basicSlice),
+		createFactory("SliceString", &struct{}{}, basicSliceString),
+		createFactory("SliceBool", &struct{}{}, basicSliceBool),
+		createFactory("SliceInteger", &struct{}{}, basicSliceInteger),
+		createFactory("SliceFloat", &struct{}{}, basicSliceFloat),
+		createFactory("SliceByte", &struct{}{}, basicSliceByte),
+		createFactory("StrFoo", &struct{}{}, strFoo),
+		createFactory("IntZero", &struct{}{}, intZero),
+	)
+
+	p, _ := NewParser[any](
+		functions,
+		testParsePath[any],
+		componenttest.NewNopTelemetrySettings(),
+		WithEnumParser[any](testParseEnum),
+	)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			reader, err := p.newParseContext().newGetter(tt.val)
+			require.NoError(t, err)
+
+			tCtx := tt.want
+
+			if tt.ctx != nil {
+				tCtx = tt.ctx
+			}
+
+			valueComparator := NewValueComparator()
+
+			var val any
+			if tt.wantLiteral {
+				require.True(t, isLiteralGetter(reader))
+				val, err = reader.Get(t.Context(), nil)
+				require.NoError(t, err)
+			} else {
+				require.False(t, isLiteralGetter(reader))
+				val, err = reader.Get(t.Context(), tCtx)
+				require.NoError(t, err)
+			}
+
+			if tt.assertValue != nil {
+				tt.assertValue(t, val)
+			} else {
+				assert.Truef(t, valueComparator.Equal(tt.want, val), "expected: %v, got: %v", tt.want, val)
+			}
+		})
+	}
+
+	t.Run("empty value", func(t *testing.T) {
+		_, err := p.newParseContext().newGetter(value{})
+		assert.Error(t, err)
+	})
+
+	t.Run("lambda", func(t *testing.T) {
+		lambdaValue := value{
+			Lambda: &lambdaExpr{
+				Params: []localIdentifierDecl{"value"},
+				Body: lambdaBody{
+					Value: &value{
+						Literal: &mathExprLiteral{
+							Path: &path{Fields: []field{{Name: "value"}}},
+						},
+					},
+				},
+			},
+		}
+		for name, val := range map[string]value{
+			"bare":    lambdaValue,
+			"in list": {List: &list{Values: []value{lambdaValue}}},
+			"in map":  {Map: &mapValue{Values: []mapItem{{Key: new("key"), Value: &lambdaValue}}}},
+		} {
+			t.Run(name, func(t *testing.T) {
+				_, err := p.newParseContext().newGetter(val)
+				assert.EqualError(t, err, "lambda expressions can only be passed to function arguments that accept them")
+			})
+		}
+	})
+}
+
+func Test_newGetter_dynamic_path_key(t *testing.T) {
+	functions := CreateFactoryMap(
+		createFactory("PMap", &struct{}{}, pmap),
+	)
+
+	p, err := NewParser[any](
+		functions,
+		testParsePath[any],
+		componenttest.NewNopTelemetrySettings(),
+		WithEnumParser[any](testParseEnum),
+	)
+	require.NoError(t, err)
+
+	val := value{
+		Literal: &mathExprLiteral{
+			Converter: &converter{
+				Function: "PMap",
+				Keys: []key{
+					{
+						Expression: &mathExprLiteral{
+							Path: &path{
+								Fields: []field{
+									{Name: "mapKey"},
+								},
+							},
+						},
+					},
+					{
+						String: new("bar"),
+					},
+				},
+			},
+		},
+	}
+
+	reader, err := p.newParseContext().newGetter(val)
+	require.NoError(t, err)
+
+	got, err := reader.Get(t.Context(), nil)
+	require.NoError(t, err)
+	assert.Equal(t, "pass", got)
+}
+
+func Test_exprGetter_Get_Invalid(t *testing.T) {
+	tests := []struct {
+		name string
+		val  value
+		err  error
+	}{
+		{
+			name: "key not in pcommon map",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PMap",
+						Keys: []key{
+							{
+								String: new("unknown key"),
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("key not found in map"),
+		},
+		{
+			name: "key not in map",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Map",
+						Keys: []key{
+							{
+								String: new("unknown key"),
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("key not found in map"),
+		},
+		{
+			name: "index too large for pcommon slice",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PSlice",
+						Keys: []key{
+							{
+								Int: new(int64(100)),
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("index 100 out of bounds"),
+		},
+		{
+			name: "negative for pcommon slice",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PSlice",
+						Keys: []key{
+							{
+								Int: new(int64(-1)),
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("index -1 out of bounds"),
+		},
+		{
+			name: "index too large for Go slice",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Slice",
+						Keys: []key{
+							{
+								Int: new(int64(100)),
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("index 100 out of bounds"),
+		},
+		{
+			name: "negative for Go slice",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Slice",
+						Keys: []key{
+							{
+								Int: new(int64(-1)),
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("index -1 out of bounds"),
+		},
+		{
+			name: "invalid int indexing type",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Hello",
+						Keys: []key{
+							{
+								Int: new(int64(-1)),
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("type string does not support int indexing"),
+		},
+		{
+			name: "invalid string indexing type",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Hello",
+						Keys: []key{
+							{
+								String: new("test"),
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("type string does not support string indexing"),
+		},
+		{
+			name: "dynamic key not in pcommon map",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PMap",
+						Keys: []key{
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "StrFoo",
+									},
+								},
+							},
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "StrFoo",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("key not found in map"),
+		},
+		{
+			name: "dynamic key invalid type for indexing",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Hello",
+						Keys: []key{
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "StrFoo",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("type string does not support string indexing"),
+		},
+		{
+			name: "dynamic key invalid index type",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "Hello",
+						Keys: []key{
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "IntZero",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("type string does not support int indexing"),
+		},
+		{
+			name: "malformed empty indexing key",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PMap",
+						Keys: []key{
+							{},
+						},
+					},
+				},
+			},
+			err: errors.New("malformed or empty indexing key"),
+		},
+		{
+			name: "dynamic key expression returns nil",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PMap",
+						Keys: []key{
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "ReturnsNilKey",
+									},
+								},
+							},
+							{
+								String: new("bar"),
+							},
+						},
+					},
+				},
+			},
+			err: errNilKeyExpressionResult,
+		},
+		{
+			name: "dynamic key expression returns invalid type",
+			val: value{
+				Literal: &mathExprLiteral{
+					Converter: &converter{
+						Function: "PMap",
+						Keys: []key{
+							{
+								Expression: &mathExprLiteral{
+									Converter: &converter{
+										Function: "ReturnsBoolKey",
+									},
+								},
+							},
+							{
+								String: new("bar"),
+							},
+						},
+					},
+				},
+			},
+			err: errors.New("key expression must evaluate to string or int, got bool"),
+		},
+	}
+
+	functions := CreateFactoryMap(
+		createFactory("Hello", &struct{}{}, hello),
+		createFactory("PMap", &struct{}{}, pmap),
+		createFactory("Map", &struct{}{}, basicMap),
+		createFactory("PSlice", &struct{}{}, pslice),
+		createFactory("Slice", &struct{}{}, basicSlice),
+		createFactory("StrFoo", &struct{}{}, strFoo),
+		createFactory("IntZero", &struct{}{}, intZero),
+		createFactory("ReturnsNilKey", &struct{}{}, returnsNilKey),
+		createFactory("ReturnsBoolKey", &struct{}{}, returnsBoolKey),
+	)
+
+	p, _ := NewParser[any](
+		functions,
+		testParsePath[any],
+		componenttest.NewNopTelemetrySettings(),
+		WithEnumParser[any](testParseEnum),
+	)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			reader, err := p.newParseContext().newGetter(tt.val)
+			require.NoError(t, err)
+			_, err = reader.Get(t.Context(), nil)
+			assert.Equal(t, tt.err, err)
+		})
+	}
+}
+
+func Test_StandardStringGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           StandardStringGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "string type",
+			getter: StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "str", nil
+				},
+			},
+			want:  "str",
+			valid: true,
+		},
+		{
+			name: "ValueTypeString type",
+			getter: StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return pcommon.NewValueStr("str"), nil
+				},
+			},
+			want:  "str",
+			valid: true,
+		},
+		{
+			name: "Incorrect type",
+			getter: StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected string but got bool",
+		},
+		{
+			name: "nil",
+			getter: StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected string but got nil",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, val)
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+func Test_FunctionGetter(t *testing.T) {
+	functions := CreateFactoryMap(
+		createFactory[any](
+			"SHA256",
+			&stringGetterArguments{},
+			functionWithStringGetter,
+		),
+		createFactory[any](
+			"test_arg_mismatch",
+			&multipleArgsArguments{},
+			functionWithStringGetter,
+		),
+		NewFactory(
+			"cannot_create_function",
+			&stringGetterArguments{},
+			func(FunctionContext, Arguments) (ExprFunc[any], error) {
+				return functionWithErr()
+			},
+		),
+	)
+	type EditorArguments struct {
+		Replacement StringGetter[any]
+		Function    FunctionGetter[any]
+	}
+	type FuncArgs struct {
+		Input StringGetter[any]
+	}
+	tests := []struct {
+		name             string
+		getter           StringGetter[any]
+		function         FunctionGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "function getter",
+			getter: StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "str", nil
+				},
+			},
+			function: StandardFunctionGetter[any]{FCtx: FunctionContext{Set: componenttest.NewNopTelemetrySettings()}, Fact: functions["SHA256"]},
+			want:     "anything",
+			valid:    true,
+		},
+		{
+			name: "function getter nil",
+			getter: StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			function:         StandardFunctionGetter[any]{FCtx: FunctionContext{Set: componenttest.NewNopTelemetrySettings()}, Fact: functions["SHA250"]},
+			want:             "anything",
+			valid:            false,
+			expectedErrorMsg: "undefined function",
+		},
+		{
+			name: "function arg mismatch",
+			getter: StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			function:         StandardFunctionGetter[any]{FCtx: FunctionContext{Set: componenttest.NewNopTelemetrySettings()}, Fact: functions["test_arg_mismatch"]},
+			want:             "anything",
+			valid:            false,
+			expectedErrorMsg: "incorrect number of arguments. Expected: 4 Received: 1",
+		},
+		{
+			name: "Cannot create function",
+			getter: StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			function:         StandardFunctionGetter[any]{FCtx: FunctionContext{Set: componenttest.NewNopTelemetrySettings()}, Fact: functions["cannot_create_function"]},
+			want:             "anything",
+			valid:            false,
+			expectedErrorMsg: "couldn't create function: error",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			editorArgs := EditorArguments{
+				Replacement: tt.getter,
+				Function:    tt.function,
+			}
+			fn, err := editorArgs.Function.Get(&FuncArgs{Input: editorArgs.Replacement})
+			if tt.valid {
+				var result any
+				result, err = fn.Eval(t.Context(), nil)
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, result.(string))
+			} else {
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardStringGetter_WrappedError(t *testing.T) {
+	getter := StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardStringLikeGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           StringLikeGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "string type",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "str", nil
+				},
+			},
+			want:  "str",
+			valid: true,
+		},
+		{
+			name: "bool type",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			want:  "true",
+			valid: true,
+		},
+		{
+			name: "int64 type",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return int64(1), nil
+				},
+			},
+			want:  "1",
+			valid: true,
+		},
+		{
+			name: "float64 type",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return 1.1, nil
+				},
+			},
+			want:  "1.1",
+			valid: true,
+		},
+		{
+			name: "byte[] type",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []byte{0}, nil
+				},
+			},
+			want:  "00",
+			valid: true,
+		},
+		{
+			name: "pcommon.map type",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					m := pcommon.NewMap()
+					m.PutStr("test", "passed")
+					return m, nil
+				},
+			},
+			want:  `{"test":"passed"}`,
+			valid: true,
+		},
+		{
+			name: "pcommon.slice type",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					s := pcommon.NewSlice()
+					v := s.AppendEmpty()
+					v.SetStr("test")
+					return s, nil
+				},
+			},
+			want:  `["test"]`,
+			valid: true,
+		},
+		{
+			name: "pcommon.value type",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueInt(int64(100))
+					return v, nil
+				},
+			},
+			want:  "100",
+			valid: true,
+		},
+		{
+			name: "nil",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			want:  nil,
+			valid: true,
+		},
+		{
+			name: "invalid type",
+			getter: StandardStringLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return make(chan int), nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unsupported type: chan int",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, ok, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				if tt.want == nil {
+					assert.False(t, ok)
+				} else {
+					assert.True(t, ok)
+					assert.Equal(t, tt.want, val)
+				}
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardStringLikeGetter_WrappedError(t *testing.T) {
+	getter := StandardStringLikeGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, _, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardFloatGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           StandardFloatGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "float64 type",
+			getter: StandardFloatGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return 1.1, nil
+				},
+			},
+			want:  1.1,
+			valid: true,
+		},
+		{
+			name: "ValueTypeFloat type",
+			getter: StandardFloatGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return pcommon.NewValueDouble(1.1), nil
+				},
+			},
+			want:  1.1,
+			valid: true,
+		},
+		{
+			name: "Incorrect type",
+			getter: StandardFloatGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected float64 but got bool",
+		},
+		{
+			name: "nil",
+			getter: StandardFloatGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected float64 but got nil",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, val)
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardFloatGetter_WrappedError(t *testing.T) {
+	getter := StandardFloatGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardFloatLikeGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           FloatLikeGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "string type",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "1.0", nil
+				},
+			},
+			want:  1.0,
+			valid: true,
+		},
+		{
+			name: "int64 type",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return int64(1), nil
+				},
+			},
+			want:  float64(1),
+			valid: true,
+		},
+		{
+			name: "float64 type",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return 1.1, nil
+				},
+			},
+			want:  1.1,
+			valid: true,
+		},
+		{
+			name: "float64 bool true",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			want:  float64(1),
+			valid: true,
+		},
+		{
+			name: "float64 bool false",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return false, nil
+				},
+			},
+			want:  float64(0),
+			valid: true,
+		},
+		{
+			name: "pcommon.value type int",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueInt(int64(100))
+					return v, nil
+				},
+			},
+			want:  float64(100),
+			valid: true,
+		},
+		{
+			name: "pcommon.value type float",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueDouble(float64(1.1))
+					return v, nil
+				},
+			},
+			want:  1.1,
+			valid: true,
+		},
+		{
+			name: "pcommon.value type string",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueStr("1.1")
+					return v, nil
+				},
+			},
+			want:  1.1,
+			valid: true,
+		},
+		{
+			name: "pcommon.value type bool true",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueBool(true)
+					return v, nil
+				},
+			},
+			want:  float64(1),
+			valid: true,
+		},
+		{
+			name: "pcommon.value type bool false",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueBool(false)
+					return v, nil
+				},
+			},
+			want:  float64(0),
+			valid: true,
+		},
+		{
+			name: "nil",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			want:  nil,
+			valid: true,
+		},
+		{
+			name: "invalid type",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []byte{}, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unsupported type: []uint8",
+		},
+		{
+			name: "invalid pcommon.Value type",
+			getter: StandardFloatLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueMap()
+					return v, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unsupported value type: Map",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, ok, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				if tt.want == nil {
+					assert.False(t, ok)
+				} else {
+					assert.True(t, ok)
+					assert.Equal(t, tt.want, val)
+				}
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardFloatLikeGetter_WrappedError(t *testing.T) {
+	getter := StandardFloatLikeGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, _, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardIntGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           StandardIntGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "int64 type",
+			getter: StandardIntGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return int64(1), nil
+				},
+			},
+			want:  int64(1),
+			valid: true,
+		},
+		{
+			name: "ValueTypeInt type",
+			getter: StandardIntGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return pcommon.NewValueInt(1), nil
+				},
+			},
+			want:  int64(1),
+			valid: true,
+		},
+		{
+			name: "Incorrect type",
+			getter: StandardIntGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected int64 but got bool",
+		},
+		{
+			name: "nil",
+			getter: StandardIntGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected int64 but got nil",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, val)
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardIntGetter_WrappedError(t *testing.T) {
+	getter := StandardIntGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardIntLikeGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           IntLikeGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "string type",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "1", nil
+				},
+			},
+			want:  int64(1),
+			valid: true,
+		},
+		{
+			name: "int64 type",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return int64(1), nil
+				},
+			},
+			want:  int64(1),
+			valid: true,
+		},
+		{
+			name: "float64 type",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return 1.1, nil
+				},
+			},
+			want:  int64(1),
+			valid: true,
+		},
+		{
+			name: "primitive bool true",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			want:  int64(1),
+			valid: true,
+		},
+		{
+			name: "primitive bool false",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return false, nil
+				},
+			},
+			want:  int64(0),
+			valid: true,
+		},
+		{
+			name: "pcommon.value type int",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueInt(int64(100))
+					return v, nil
+				},
+			},
+			want:  int64(100),
+			valid: true,
+		},
+		{
+			name: "pcommon.value type float",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueDouble(float64(1.9))
+					return v, nil
+				},
+			},
+			want:  int64(1),
+			valid: true,
+		},
+		{
+			name: "pcommon.value type string",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueStr("1")
+					return v, nil
+				},
+			},
+			want:  int64(1),
+			valid: true,
+		},
+		{
+			name: "pcommon.value type bool true",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueBool(true)
+					return v, nil
+				},
+			},
+			want:  int64(1),
+			valid: true,
+		},
+		{
+			name: "pcommon.value type bool false",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueBool(false)
+					return v, nil
+				},
+			},
+			want:  int64(0),
+			valid: true,
+		},
+		{
+			name: "nil",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			want:  nil,
+			valid: true,
+		},
+		{
+			name: "invalid type",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []byte{}, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unsupported type: []uint8",
+		},
+		{
+			name: "invalid pcommon.Value type",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueMap()
+					return v, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unsupported value type: Map",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, ok, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				if tt.want == nil {
+					assert.False(t, ok)
+				} else {
+					assert.True(t, ok)
+					assert.Equal(t, tt.want, val)
+				}
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardIntLikeGetter_WrappedError(t *testing.T) {
+	getter := StandardIntLikeGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, _, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardIntLikeGetter_UnparsableString(t *testing.T) {
+	tests := []struct {
+		name   string
+		getter IntLikeGetter[any]
+	}{
+		{
+			name: "string type",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "not an int", nil
+				},
+			},
+		},
+		{
+			name: "pcommon.value type string",
+			getter: StandardIntLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return pcommon.NewValueStr("not an int"), nil
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, ok, err := tt.getter.Get(t.Context(), nil)
+			require.Error(t, err)
+			assert.False(t, ok)
+			assert.Zero(t, val)
+		})
+	}
+}
+
+func Test_StandardByteSliceLikeGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           ByteSliceLikeGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "string type",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "1", nil
+				},
+			},
+			want:  []byte{49},
+			valid: true,
+		},
+		{
+			name: "byte type",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []byte{49}, nil
+				},
+			},
+			want:  []byte{49},
+			valid: true,
+		},
+		{
+			name: "int64 type",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return int64(12), nil
+				},
+			},
+			want:  []byte{0, 0, 0, 0, 0, 0, 0, 12},
+			valid: true,
+		},
+		{
+			name: "float64 type",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return 1.1, nil
+				},
+			},
+			want:  []byte{63, 241, 153, 153, 153, 153, 153, 154},
+			valid: true,
+		},
+		{
+			name: "primitive bool true",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			want:  []byte{1},
+			valid: true,
+		},
+		{
+			name: "primitive bool false",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return false, nil
+				},
+			},
+			want:  []byte{0},
+			valid: true,
+		},
+		{
+			name: "pcommon.value type int",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueInt(int64(100))
+					return v, nil
+				},
+			},
+			want:  []byte{0, 0, 0, 0, 0, 0, 0, 100},
+			valid: true,
+		},
+		{
+			name: "pcommon.value type float",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueDouble(float64(1.9))
+					return v, nil
+				},
+			},
+			want:  []byte{63, 254, 102, 102, 102, 102, 102, 102},
+			valid: true,
+		},
+		{
+			name: "pcommon.value type string",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueStr("1")
+					return v, nil
+				},
+			},
+			want:  []byte{49},
+			valid: true,
+		},
+		{
+			name: "pcommon.value type bytes",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueBytes()
+					v.SetEmptyBytes().Append(byte(12))
+					return v, nil
+				},
+			},
+			want:  []byte{12},
+			valid: true,
+		},
+		{
+			name: "pcommon.value type bool true",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueBool(true)
+					return v, nil
+				},
+			},
+			want:  []byte{1},
+			valid: true,
+		},
+		{
+			name: "pcommon.value type bool false",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueBool(false)
+					return v, nil
+				},
+			},
+			want:  []byte{0},
+			valid: true,
+		},
+		{
+			name: "nil",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			want:  nil,
+			valid: true,
+		},
+		{
+			name: "invalid type",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return map[string]string{}, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unsupported type: map[string]string",
+		},
+		{
+			name: "invalid pcommon.Value type",
+			getter: StandardByteSliceLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueMap()
+					return v, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unsupported value type: Map",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, ok, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				if tt.want == nil {
+					assert.False(t, ok)
+					assert.Nil(t, val)
+				} else {
+					assert.True(t, ok)
+					assert.Equal(t, tt.want, val)
+				}
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardByteSliceLikeGetter_WrappedError(t *testing.T) {
+	getter := StandardByteSliceLikeGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, _, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardBoolGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           StandardBoolGetter[any]
+		want             bool
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "primitive bool type",
+			getter: StandardBoolGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			want:  true,
+			valid: true,
+		},
+		{
+			name: "ValueTypeBool type",
+			getter: StandardBoolGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return pcommon.NewValueBool(true), nil
+				},
+			},
+			want:  true,
+			valid: true,
+		},
+		{
+			name: "Incorrect type",
+			getter: StandardBoolGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return 1, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected bool but got int",
+		},
+		{
+			name: "nil",
+			getter: StandardBoolGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected bool but got nil",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, val)
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardBoolGetter_WrappedError(t *testing.T) {
+	getter := StandardBoolGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardBoolLikeGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           BoolLikeGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "string type true",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "true", nil
+				},
+			},
+			want:  true,
+			valid: true,
+		},
+		{
+			name: "string type false",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "false", nil
+				},
+			},
+			want:  false,
+			valid: true,
+		},
+		{
+			name: "int type",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return 0, nil
+				},
+			},
+			want:  false,
+			valid: true,
+		},
+		{
+			name: "float64 type",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return float64(0.0), nil
+				},
+			},
+			want:  false,
+			valid: true,
+		},
+		{
+			name: "pcommon.value type int",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueInt(int64(0))
+					return v, nil
+				},
+			},
+			want:  false,
+			valid: true,
+		},
+		{
+			name: "pcommon.value type string",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueStr("false")
+					return v, nil
+				},
+			},
+			want:  false,
+			valid: true,
+		},
+		{
+			name: "pcommon.value type bool",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueBool(true)
+					return v, nil
+				},
+			},
+			want:  true,
+			valid: true,
+		},
+		{
+			name: "pcommon.value type double",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueDouble(float64(0.0))
+					return v, nil
+				},
+			},
+			want:  false,
+			valid: true,
+		},
+		{
+			name: "nil",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			want:  nil,
+			valid: true,
+		},
+		{
+			name: "invalid type",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []byte{}, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unsupported type: []uint8",
+		},
+		{
+			name: "invalid pcommon.value type",
+			getter: StandardBoolLikeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					v := pcommon.NewValueMap()
+					return v, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unsupported value type: Map",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, ok, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				if tt.want == nil {
+					assert.False(t, ok)
+				} else {
+					assert.True(t, ok)
+					assert.Equal(t, tt.want, val)
+				}
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardBoolLikeGetter_WrappedError(t *testing.T) {
+	getter := StandardBoolLikeGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, _, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardPSliceGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           StandardPSliceGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "pcommon.slice type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return pcommon.NewSlice(), nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]any type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []any{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]string type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []string{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]int type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []int{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]int16 type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []int32{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]int32 type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []int32{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]int64 type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []int64{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]uint type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []uint{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]uint16 type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []uint16{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]uint32 type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []uint32{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]uint64 type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []uint64{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]float32 type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []float32{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "[]float64 type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return []float64{}, nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "ValueTypeSlice type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return pcommon.NewValueSlice(), nil
+				},
+			},
+			want:  pcommon.NewSlice(),
+			valid: true,
+		},
+		{
+			name: "Incorrect type",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected pcommon.Slice but got bool",
+		},
+		{
+			name: "nil",
+			getter: StandardPSliceGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected pcommon.Slice but got nil",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, val)
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+func Test_StandardPSliceGetter_WrappedError(t *testing.T) {
+	getter := StandardPSliceGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	var typeError TypeError
+	assert.ErrorAs(t, err, &typeError)
+}
+
+func Test_StandardPMapGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           StandardPMapGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "pcommon.map type",
+			getter: StandardPMapGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return pcommon.NewMap(), nil
+				},
+			},
+			want:  pcommon.NewMap(),
+			valid: true,
+		},
+		{
+			name: "map[string]any type",
+			getter: StandardPMapGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return make(map[string]any), nil
+				},
+			},
+			want:  pcommon.NewMap(),
+			valid: true,
+		},
+		{
+			name: "ValueTypeMap type",
+			getter: StandardPMapGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return pcommon.NewValueMap(), nil
+				},
+			},
+			want:  pcommon.NewMap(),
+			valid: true,
+		},
+		{
+			name: "Incorrect type",
+			getter: StandardPMapGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected pcommon.Map but got bool",
+		},
+		{
+			name: "nil",
+			getter: StandardPMapGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected pcommon.Map but got nil",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, val)
+			} else {
+				var typeErr TypeError
+				assert.ErrorAs(t, err, &typeErr)
+				assert.EqualError(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardPMapGetter_WrappedError(t *testing.T) {
+	getter := StandardPMapGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardDurationGetter(t *testing.T) {
+	oneHourOneMinuteOneSecond, err := time.ParseDuration("1h1m1s")
+	require.NoError(t, err)
+
+	oneHundredNsecs, err := time.ParseDuration("100ns")
+	require.NoError(t, err)
+
+	tenMilliseconds, err := time.ParseDuration("10ms66us7000ns")
+	require.NoError(t, err)
+
+	tests := []struct {
+		name             string
+		getter           StandardDurationGetter[any]
+		want             any
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "complex duration",
+			getter: StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.ParseDuration("1h1m1s")
+				},
+			},
+			want:  oneHourOneMinuteOneSecond,
+			valid: true,
+		},
+		{
+			name: "simple duration",
+			getter: StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.ParseDuration("100ns")
+				},
+			},
+			want:  oneHundredNsecs,
+			valid: true,
+		},
+		{
+			name: "complex duation values less than 1 seconc",
+			getter: StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.ParseDuration("10ms66us7000ns")
+				},
+			},
+			want:  tenMilliseconds,
+			valid: true,
+		},
+		{
+			name: "invalid duration units",
+			getter: StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.ParseDuration("70ps")
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "unknown unit",
+		},
+		{
+			name: "wrong type - int",
+			getter: StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return 1, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected duration but got int",
+		},
+		{
+			name: "nil",
+			getter: StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected duration but got nil",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, val)
+			} else {
+				assert.ErrorContains(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardDurationGetter_WrappedError(t *testing.T) {
+	getter := StandardDurationGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+func Test_StandardTimeGetter(t *testing.T) {
+	tests := []struct {
+		name             string
+		getter           StandardTimeGetter[any]
+		want             string
+		valid            bool
+		expectedErrorMsg string
+	}{
+		{
+			name: "2023 time",
+			getter: StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2023, 8, 17, 1, 1, 1, 1, time.UTC), nil
+				},
+			},
+			want:  "2023-08-17T01:01:01.000000001Z",
+			valid: true,
+		},
+		{
+			name: "before 2000 time",
+			getter: StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(1999, 12, 1, 10, 59, 58, 57, time.UTC), nil
+				},
+			},
+			want:  "1999-12-01T10:59:58.000000057Z",
+			valid: true,
+		},
+		{
+			name: "wrong type - duration",
+			getter: StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.ParseDuration("70ns")
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected time but got time.Duration",
+		},
+		{
+			name: "wrong type - bool",
+			getter: StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return true, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected time but got bool",
+		},
+		{
+			name: "nil",
+			getter: StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return nil, nil
+				},
+			},
+			valid:            false,
+			expectedErrorMsg: "expected time but got nil",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, err := tt.getter.Get(t.Context(), nil)
+			if tt.valid {
+				require.NoError(t, err)
+				var want time.Time
+				want, err = time.Parse("2006-01-02T15:04:05.000000000Z", tt.want)
+				require.NoError(t, err)
+				assert.Equal(t, want, val)
+			} else {
+				assert.ErrorContains(t, err, tt.expectedErrorMsg)
+			}
+		})
+	}
+}
+
+//nolint:errorlint
+func Test_StandardTimeGetter_WrappedError(t *testing.T) {
+	getter := StandardTimeGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return nil, TypeError("")
+		},
+	}
+	_, err := getter.Get(t.Context(), nil)
+	assert.Error(t, err)
+	_, ok := err.(TypeError)
+	assert.False(t, ok)
+}
+
+type mockedGetter[K any] struct {
+	value any
+}
+
+func (g mockedGetter[K]) Get(_ context.Context, _ K) (any, error) {
+	return g.value, nil
+}
+
+func Test_newStandardStringGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: "foo"},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantLiteralTrue: true,
+			wantErr:         true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any]("foo"),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardStringGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, "foo", val)
+		})
+	}
+}
+
+func Test_newStandardStringLikeGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: "foo"},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any]("foo"),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardStringLikeGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, ok, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.True(t, ok)
+			assert.Equal(t, "foo", val)
+		})
+	}
+}
+
+func Test_newStandardIntGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: int64(1)},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](int64(1)),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardIntGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, int64(1), val)
+		})
+	}
+}
+
+func Test_newStandardIntLikeGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: int64(1)},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](int64(1)),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardIntLikeGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, ok, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.True(t, ok)
+			assert.Equal(t, int64(1), val)
+		})
+	}
+}
+
+func Test_newStandardFloatGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: float64(1)},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](float64(1)),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardFloatGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, float64(1), val)
+		})
+	}
+}
+
+func Test_newStandardFloatLikeGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: float64(1)},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](float64(1)),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardFloatLikeGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, ok, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.True(t, ok)
+			assert.Equal(t, float64(1), val)
+		})
+	}
+}
+
+func Test_newStandardBoolGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: true},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](true),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardBoolGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.True(t, val)
+		})
+	}
+}
+
+func Test_newStandardBoolLikeGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: true},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](true),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardBoolLikeGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, ok, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.True(t, ok)
+			assert.True(t, val)
+		})
+	}
+}
+
+func Test_newStandardDurationGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: 100 * time.Millisecond},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](100 * time.Millisecond),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardDurationGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, 100*time.Millisecond, val)
+		})
+	}
+}
+
+func Test_newStandardTimeGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	currentTime := time.Now()
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: currentTime},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](currentTime),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardTimeGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, currentTime, val)
+		})
+	}
+}
+
+func Test_newStandardByteSliceLikeGetterGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: []byte{0, 1}},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any]([]byte{0, 1}),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardByteSliceLikeGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, ok, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.True(t, ok)
+			assert.Equal(t, []byte{0, 1}, val)
+		})
+	}
+}
+
+func Test_newStandardPMapGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	m := pcommon.NewMap()
+	m.PutStr("foo", "bar")
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: m},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](m),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardPMapGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, m, val)
+		})
+	}
+}
+
+func Test_newStandardPSliceGetter(t *testing.T) {
+	type args[K any] struct {
+		getter Getter[K]
+	}
+	type testCase[K any] struct {
+		name            string
+		args            args[K]
+		wantLiteralTrue bool
+		wantErr         bool
+	}
+
+	s := pcommon.NewSlice()
+	s.AppendEmpty().SetStr("foo")
+
+	tests := []testCase[any]{
+		{
+			name: "getter does not implement literalGetter",
+			args: args[any]{
+				getter: &mockedGetter[any]{value: s},
+			},
+			wantLiteralTrue: false,
+		},
+		{
+			name: "getter implements literalGetter with error",
+			args: args[any]{
+				getter: newErrLiteral(errors.New("foo")),
+			},
+			wantErr: true,
+		},
+		{
+			name: "getter implements literalGetter",
+			args: args[any]{
+				getter: newLiteral[any, any](s),
+			},
+			wantLiteralTrue: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g, err := newStandardPSliceGetter(tt.args.getter)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLiteralTrue, isLiteralGetter(g))
+
+			val, err := g.Get(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, s, val)
+		})
+	}
+}
+
+func Test_coerceToIndexKey(t *testing.T) {
+	strVal := "foo"
+	intVal := 3
+	int64Val := int64(4)
+
+	tests := []struct {
+		name    string
+		val     any
+		want    any
+		wantErr error
+	}{
+		{
+			name: "string",
+			val:  "foo",
+			want: "foo",
+		},
+		{
+			name: "int64",
+			val:  int64Val,
+			want: int64Val,
+		},
+		{
+			name: "int",
+			val:  intVal,
+			want: int64(3),
+		},
+		{
+			name: "string pointer",
+			val:  &strVal,
+			want: "foo",
+		},
+		{
+			name: "int pointer",
+			val:  &intVal,
+			want: int64(3),
+		},
+		{
+			name: "int64 pointer",
+			val:  &int64Val,
+			want: int64(4),
+		},
+		{
+			name:    "nil string pointer",
+			val:     (*string)(nil),
+			wantErr: errNilKeyExpressionResult,
+		},
+		{
+			name:    "nil int pointer",
+			val:     (*int)(nil),
+			wantErr: errNilKeyExpressionResult,
+		},
+		{
+			name:    "nil int64 pointer",
+			val:     (*int64)(nil),
+			wantErr: errNilKeyExpressionResult,
+		},
+		{
+			name: "pcommon string",
+			val:  pcommon.NewValueStr("bar"),
+			want: "bar",
+		},
+		{
+			name: "pcommon int",
+			val:  pcommon.NewValueInt(5),
+			want: int64(5),
+		},
+		{
+			name:    "pcommon bool",
+			val:     pcommon.NewValueBool(true),
+			wantErr: errors.New("key expression must evaluate to string or int, got Bool"),
+		},
+		{
+			name:    "unsupported type",
+			val:     true,
+			wantErr: errors.New("key expression must evaluate to string or int, got bool"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := coerceToIndexKey(tt.val)
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				assert.Equal(t, tt.wantErr, err)
+				assert.Nil(t, got)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_resolveExpressionIndexKey(t *testing.T) {
+	ctx := t.Context()
+
+	t.Run("malformed or empty indexing key", func(t *testing.T) {
+		_, err := resolveExpressionIndexKey(ctx, nil, &baseKey[any]{})
+		require.Error(t, err)
+		assert.Equal(t, errors.New("malformed or empty indexing key"), err)
+	})
+
+	t.Run("nil key expression result", func(t *testing.T) {
+		key := &baseKey[any]{
+			g: &StandardGetSetter[any]{
+				Getter: func(_ context.Context, _ any) (any, error) {
+					return nil, nil
+				},
+				Setter: func(_ context.Context, _, _ any) error {
+					return nil
+				},
+			},
+		}
+		_, err := resolveExpressionIndexKey(ctx, nil, key)
+		require.Error(t, err)
+		assert.ErrorIs(t, err, errNilKeyExpressionResult)
+	})
+
+	t.Run("typed nil string pointer in interface", func(t *testing.T) {
+		var s *string
+		key := &baseKey[any]{
+			g: newLiteral[any, any](s),
+		}
+		_, err := resolveExpressionIndexKey(ctx, nil, key)
+		require.Error(t, err)
+		assert.ErrorIs(t, err, errNilKeyExpressionResult)
+	})
+}
+
+type errLiteral[K any] struct {
+	err error
+}
+
+func (l *errLiteral[K]) Get(context.Context, K) (any, error) {
+	return nil, l.err
+}
+
+func (*errLiteral[K]) isLiteral() {}
+
+func newErrLiteral(err error) *errLiteral[any] {
+	return &errLiteral[any]{err: err}
+}
+
+func Test_StandardGetSetter_Set(t *testing.T) {
+	var got any
+	gs := StandardGetSetter[any]{
+		Setter: func(_ context.Context, _, val any) error {
+			got = val
+			return nil
+		},
+	}
+
+	require.NoError(t, gs.Set(t.Context(), nil, "value"))
+	assert.Equal(t, "value", got)
+
+	setErr := errors.New("set error")
+	gs = StandardGetSetter[any]{
+		Setter: func(context.Context, any, any) error {
+			return setErr
+		},
+	}
+	assert.ErrorIs(t, gs.Set(t.Context(), nil, "value"), setErr)
+}
+
+func Test_StandardPSliceGetSetter(t *testing.T) {
+	want := pcommon.NewSlice()
+	require.NoError(t, want.FromRaw([]any{"a", "b"}))
+
+	var got any
+	gs := StandardPSliceGetSetter[any]{
+		Getter: func(context.Context, any) (pcommon.Slice, error) {
+			return want, nil
+		},
+		Setter: func(_ context.Context, _, val any) error {
+			got = val
+			return nil
+		},
+	}
+
+	result, err := gs.Get(t.Context(), nil)
+	require.NoError(t, err)
+	assert.Equal(t, want, result)
+
+	require.NoError(t, gs.Set(t.Context(), nil, want))
+	assert.Equal(t, want, got)
+}
+
+func Test_StandardPMapGetSetter(t *testing.T) {
+	want := pcommon.NewMap()
+	require.NoError(t, want.FromRaw(map[string]any{"k": "v"}))
+
+	var got any
+	gs := StandardPMapGetSetter[any]{
+		Getter: func(context.Context, any) (pcommon.Map, error) {
+			return want, nil
+		},
+		Setter: func(_ context.Context, _, val any) error {
+			got = val
+			return nil
+		},
+	}
+
+	result, err := gs.Get(t.Context(), nil)
+	require.NoError(t, err)
+	assert.Equal(t, want, result)
+
+	require.NoError(t, gs.Set(t.Context(), nil, want))
+	assert.Equal(t, want, got)
+}

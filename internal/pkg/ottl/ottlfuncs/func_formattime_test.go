@@ -1,0 +1,224 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func Test_FormatTime(t *testing.T) {
+	tests := []struct {
+		name         string
+		time         ottl.TimeGetter[any]
+		format       string
+		expected     string
+		errorMsg     string
+		funcErrorMsg string
+	}{
+		{
+			name:     "empty format",
+			time:     &ottl.StandardTimeGetter[any]{},
+			format:   "",
+			errorMsg: "format cannot be nil",
+		},
+		{
+			name: "invalid time",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "something", nil
+				},
+			},
+			format:       "%Y-%m-%d",
+			funcErrorMsg: "expected time but got string",
+		},
+		{
+			name: "simple short form",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2023, 4, 12, 0, 0, 0, 0, time.Local), nil
+				},
+			},
+			format:   "%Y-%m-%d",
+			expected: "2023-04-12",
+		},
+		{
+			name: "simple short form with short year and slashes",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2011, 11, 11, 0, 0, 0, 0, time.Local), nil
+				},
+			},
+			format:   "%d/%m/%y",
+			expected: "11/11/11",
+		},
+		{
+			name: "month day year",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2023, 2, 4, 0, 0, 0, 0, time.Local), nil
+				},
+			},
+			format:   "%m/%d/%Y",
+			expected: "02/04/2023",
+		},
+		{
+			name: "simple long form",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(1993, 7, 31, 0, 0, 0, 0, time.Local), nil
+				},
+			},
+			format:   "%B %d, %Y",
+			expected: "July 31, 1993",
+		},
+		{
+			name: "date with FormatTime",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2023, 3, 14, 17, 0o2, 59, 0, time.Local), nil
+				},
+			},
+			format:   "%b %d %Y %H:%M:%S",
+			expected: "Mar 14 2023 17:02:59",
+		},
+		{
+			name: "day of the week long form",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2023, 5, 1, 0, 0, 0, 0, time.Local), nil
+				},
+			},
+			format:   "%A, %B %d, %Y",
+			expected: "Monday, May 01, 2023",
+		},
+		{
+			name: "short weekday, short month, long format",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2023, 5, 20, 0, 0, 0, 0, time.Local), nil
+				},
+			},
+			format:   "%a, %b %d, %Y",
+			expected: "Sat, May 20, 2023",
+		},
+		{
+			name: "short months",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2023, 2, 15, 0, 0, 0, 0, time.Local), nil
+				},
+			},
+			format:   "%b %d, %Y",
+			expected: "Feb 15, 2023",
+		},
+		{
+			name: "simple short form with time",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2023, 5, 26, 12, 34, 56, 0, time.Local), nil
+				},
+			},
+			format:   "%Y-%m-%d %H:%M:%S",
+			expected: "2023-05-26 12:34:56",
+		},
+		{
+			name: "RFC 3339 in custom format",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2012, 11, 0o1, 22, 8, 41, 0, time.Local), nil
+				},
+			},
+			format:   "%Y-%m-%dT%H:%M:%S",
+			expected: "2012-11-01T22:08:41",
+		},
+		{
+			name: "RFC 3339 in custom format before 2000",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(1986, 10, 0o1, 0o0, 17, 33, 0o0, time.Local), nil
+				},
+			},
+			format:   "%Y-%m-%dT%H:%M:%S",
+			expected: "1986-10-01T00:17:33",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exprFunc, err := formatTime(tt.time, tt.format)
+			if tt.errorMsg != "" {
+				assert.ErrorContains(t, err, tt.errorMsg)
+			} else {
+				require.NoError(t, err)
+				result, err := exprFunc(nil, nil)
+				if tt.funcErrorMsg != "" {
+					assert.ErrorContains(t, err, tt.funcErrorMsg)
+				} else {
+					require.NoError(t, err)
+					assert.Equal(t, tt.expected, result)
+				}
+			}
+		})
+	}
+}
+
+func Test_FormatTimeFactory(t *testing.T) {
+	t.Run("factory creation", func(t *testing.T) {
+		factory := NewFormatTimeFactory[any]()
+		assert.Equal(t, "FormatTime", factory.Name())
+	})
+
+	t.Run("default arguments", func(t *testing.T) {
+		factory := NewFormatTimeFactory[any]()
+		args := factory.CreateDefaultArguments()
+
+		assert.IsType(t, &formatTimeArguments[any]{}, args)
+		assertArgumentFieldNames(t, args, []string{"Time", "Format"})
+	})
+
+	t.Run("function creation", func(t *testing.T) {
+		factory := NewFormatTimeFactory[any]()
+		args := factory.CreateDefaultArguments()
+		formatTimeArgs, ok := args.(*formatTimeArguments[any])
+		require.True(t, ok)
+		formatTimeArgs.Time = &ottl.StandardTimeGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return time.Now(), nil
+			},
+		}
+		formatTimeArgs.Format = "%Y-%m-%d"
+
+		fn, err := factory.CreateFunction(ottl.FunctionContext{}, args)
+		require.NoError(t, err)
+		assert.NotNil(t, fn)
+	})
+
+	t.Run("invalid arguments type", func(t *testing.T) {
+		_, err := createFormatTimeFunction[any](ottl.FunctionContext{}, "invalid args")
+		assert.ErrorContains(t, err, "FormatTimeFactory args must be of type *formatTimeArguments[K]")
+	})
+}
+
+func BenchmarkFormatTime(b *testing.B) {
+	exprFunc, err := formatTime[any](&ottl.StandardTimeGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return time.Date(2023, 4, 12, 17, 2, 59, 0, time.Local), nil
+		},
+	}, "%Y-%m-%d %H:%M:%S")
+	require.NoError(b, err)
+	ctx := b.Context()
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := exprFunc(ctx, nil); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

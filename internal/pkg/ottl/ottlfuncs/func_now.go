@@ -1,0 +1,28 @@
+// Copyright The OpenTelemetry Authors
+// Copyright Dynatrace LLC
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs"
+
+import (
+	"context"
+	"time"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func now[K any]() (ottl.ExprFunc[K], error) {
+	return func(_ context.Context, _ K) (any, error) {
+		return time.Now(), nil
+	}, nil
+}
+
+func createNowFunction[K any](_ ottl.FunctionContext, _ ottl.Arguments) (ottl.ExprFunc[K], error) {
+	return now[K]()
+}
+
+// NewNowFactory returns a factory for the Now OTTL function.
+// See https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/ottlfuncs/README.md#now
+func NewNowFactory[K any]() ottl.Factory[K] {
+	return ottl.NewFactory("Now", nil, createNowFunction[K])
+}

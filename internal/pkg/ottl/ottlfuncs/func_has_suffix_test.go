@@ -1,0 +1,153 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs
+
+import (
+	"context"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func Test_HasSuffix(t *testing.T) {
+	tests := []struct {
+		name     string
+		target   any
+		suffix   ottl.StringGetter[any]
+		expected bool
+	}{
+		{
+			name:     "has suffix true",
+			target:   "hello world",
+			suffix:   &ottl.StandardStringGetter[any]{Getter: func(context.Context, any) (any, error) { return " world", nil }},
+			expected: true,
+		},
+		{
+			name:     "has suffix false",
+			target:   "hello world",
+			suffix:   &ottl.StandardStringGetter[any]{Getter: func(context.Context, any) (any, error) { return "hello ", nil }},
+			expected: false,
+		},
+		{
+			name:     "target pcommon.Value",
+			target:   pcommon.NewValueStr("hello world"),
+			suffix:   &ottl.StandardStringGetter[any]{Getter: func(context.Context, any) (any, error) { return "world", nil }},
+			expected: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			factory := NewHasSuffixFactory[any]()
+			exprFunc, err := factory.CreateFunction(
+				ottl.FunctionContext{},
+				&hasSuffixArguments[any]{
+					Target: ottl.StandardStringGetter[any]{
+						Getter: func(context.Context, any) (any, error) {
+							return tt.target, nil
+						},
+					},
+					Suffix: tt.suffix,
+				},
+			)
+			require.NoError(t, err)
+			result, err := exprFunc(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func Test_HasSuffix_Error(t *testing.T) {
+	target := &ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return true, nil
+		},
+	}
+	suffix := &ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return "test", nil
+		},
+	}
+	exprFunc := hasSuffix[any](target, suffix)
+	_, err := exprFunc(t.Context(), nil)
+	require.Error(t, err)
+}
+
+func Test_HasSuffix_Error_suffix(t *testing.T) {
+	target := &ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return true, nil
+		},
+	}
+	suffix := &ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return true, nil
+		},
+	}
+	exprFunc := hasSuffix[any](target, suffix)
+	_, err := exprFunc(t.Context(), nil)
+	require.Error(t, err)
+}
+
+func Test_HasSuffixFactory(t *testing.T) {
+	t.Run("factory creation", func(t *testing.T) {
+		factory := NewHasSuffixFactory[any]()
+		assert.Equal(t, "HasSuffix", factory.Name())
+	})
+
+	t.Run("default arguments", func(t *testing.T) {
+		factory := NewHasSuffixFactory[any]()
+		args := factory.CreateDefaultArguments()
+
+		assert.IsType(t, &hasSuffixArguments[any]{}, args)
+		assertArgumentFieldNames(t, args, []string{"Target", "Suffix"})
+	})
+
+	t.Run("function creation", func(t *testing.T) {
+		factory := NewHasSuffixFactory[any]()
+		args := factory.CreateDefaultArguments()
+		hasSuffixArgs, ok := args.(*hasSuffixArguments[any])
+		require.True(t, ok)
+		hasSuffixArgs.Target = &ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return "value", nil
+			},
+		}
+		hasSuffixArgs.Suffix = &ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return "lue", nil
+			},
+		}
+
+		fn, err := factory.CreateFunction(ottl.FunctionContext{}, args)
+		require.NoError(t, err)
+		assert.NotNil(t, fn)
+	})
+
+	t.Run("invalid arguments type", func(t *testing.T) {
+		_, err := createHasSuffixFunction[any](ottl.FunctionContext{}, "invalid args")
+		assert.ErrorContains(t, err, "HasSuffixFactory args must be of type *hasSuffixArguments[K]")
+	})
+}
+
+func BenchmarkHasSuffix(b *testing.B) {
+	target := &ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) { return "hello world", nil },
+	}
+	suffix := &ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) { return " world", nil },
+	}
+	exprFunc := hasSuffix[any](target, suffix)
+	ctx := b.Context()
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := exprFunc(ctx, nil); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

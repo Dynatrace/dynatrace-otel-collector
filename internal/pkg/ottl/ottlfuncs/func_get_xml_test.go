@@ -1,0 +1,200 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/ottlfuncs"
+
+import (
+	"context"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func Test_GetXML(t *testing.T) {
+	tests := []struct {
+		name     string
+		document string
+		xPath    string
+		want     string
+	}{
+		{
+			name:     "get single element",
+			document: `<a><b/></a>`,
+			xPath:    "/a/b",
+			want:     `<b></b>`,
+		},
+		{
+			name:     "get single complex element",
+			document: `<a foo="bar"><b>hello</b></a>`,
+			xPath:    "/a",
+			want:     `<a foo="bar"><b>hello</b></a>`,
+		},
+		{
+			name:     "get uniform elements from same parent",
+			document: `<a><b>hello</b><b>world</b></a>`,
+			xPath:    "/a/b",
+			want:     `<b>hello</b><b>world</b>`,
+		},
+		{
+			name:     "get nonuniform elements from same parent",
+			document: `<a><b>hello</b><b><c>world</c></b><d/></a>`,
+			xPath:    "/a/*",
+			want:     `<b>hello</b><b><c>world</c></b><d></d>`,
+		},
+		{
+			name:     "get elements from various places",
+			document: `<a><x>1</x><b><x>2</x></b><d><e><f><x>3</x></f></e></d></a>`,
+			xPath:    "/a//x",
+			want:     `<x>1</x><x>2</x><x>3</x>`,
+		},
+		{
+			name:     "get filtered elements from various places",
+			document: `<a><x env="prod">1</x><b><x env="dev">2</x></b><d><e><f><x env="prod">3</x></f></e></d></a>`,
+			xPath:    "/a//x[@env='prod']",
+			want:     `<x env="prod">1</x><x env="prod">3</x>`,
+		},
+		{
+			name:     "ignore empty",
+			document: ``,
+			xPath:    "/",
+			want:     ``,
+		},
+		{
+			name:     "ignore declaration",
+			document: `<?xml version="1.0" encoding="UTF-8"?><a></a>`,
+			xPath:    "/*",
+			want:     `<a></a>`,
+		},
+		{
+			name:     "ignore comments",
+			document: `<!-- comment --><a></a><!-- comment -->`,
+			xPath:    "/*",
+			want:     `<a></a>`,
+		},
+		{
+			name:     "get attribute selection",
+			document: `<a foo="bar"></a>`,
+			xPath:    "/a/@foo",
+			want:     `bar`,
+		},
+		{
+			name:     "get text selection",
+			document: `<a>hello</a>`,
+			xPath:    "/a/text()",
+			want:     `hello`,
+		},
+		{
+			name:     "get chardata selection",
+			document: `<a><![CDATA[hello]]></a>`,
+			xPath:    "/a/text()",
+			want:     `hello`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			factory := NewGetXMLFactory[any]()
+			exprFunc, err := factory.CreateFunction(
+				ottl.FunctionContext{},
+				&getXMLArguments[any]{
+					Target: ottl.StandardStringGetter[any]{
+						Getter: func(context.Context, any) (any, error) {
+							return tt.document, nil
+						},
+					},
+					XPath: tt.xPath,
+				},
+			)
+			require.NoError(t, err)
+
+			result, err := exprFunc(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, result)
+		})
+	}
+}
+
+func TestCreateGetXMLFunc(t *testing.T) {
+	factory := NewGetXMLFactory[any]()
+	fCtx := ottl.FunctionContext{}
+
+	// Invalid arg type
+	exprFunc, err := factory.CreateFunction(fCtx, nil)
+	assert.Error(t, err)
+	assert.Nil(t, exprFunc)
+
+	// Invalid XPath should error on function creation
+	exprFunc, err = factory.CreateFunction(
+		fCtx, &getXMLArguments[any]{
+			XPath: "!",
+		},
+	)
+	assert.Error(t, err)
+	assert.Nil(t, exprFunc)
+
+	// Invalid XML should error on function execution
+	exprFunc, err = factory.CreateFunction(
+		fCtx, &getXMLArguments[any]{
+			Target: invalidXMLGetter(),
+			XPath:  "/",
+		},
+	)
+	require.NoError(t, err)
+	assert.NotNil(t, exprFunc)
+	_, err = exprFunc(t.Context(), nil)
+	assert.Error(t, err)
+}
+
+func Test_GetXMLFactory(t *testing.T) {
+	t.Run("factory creation", func(t *testing.T) {
+		factory := NewGetXMLFactory[any]()
+		assert.Equal(t, "GetXML", factory.Name())
+	})
+
+	t.Run("default arguments", func(t *testing.T) {
+		factory := NewGetXMLFactory[any]()
+		args := factory.CreateDefaultArguments()
+
+		assert.IsType(t, &getXMLArguments[any]{}, args)
+		assertArgumentFieldNames(t, args, []string{"Target", "XPath"})
+	})
+
+	t.Run("function creation", func(t *testing.T) {
+		factory := NewGetXMLFactory[any]()
+		args := factory.CreateDefaultArguments()
+		getXMLArgs, ok := args.(*getXMLArguments[any])
+		require.True(t, ok)
+		getXMLArgs.Target = &ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return "<a></a>", nil
+			},
+		}
+		getXMLArgs.XPath = "/a"
+
+		fn, err := factory.CreateFunction(ottl.FunctionContext{}, args)
+		require.NoError(t, err)
+		assert.NotNil(t, fn)
+	})
+
+	t.Run("invalid arguments type", func(t *testing.T) {
+		_, err := createGetXMLFunction[any](ottl.FunctionContext{}, "invalid args")
+		assert.ErrorContains(t, err, "GetXML args must be of type *GetXMLAguments[K]")
+	})
+}
+
+func BenchmarkGetXML(b *testing.B) {
+	exprFunc := getXML[any](ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return `<a><x>1</x><b><x>2</x></b><d><e><f><x>3</x></f></e></d></a>`, nil
+		},
+	}, "/a//x")
+	ctx := b.Context()
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := exprFunc(ctx, nil); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

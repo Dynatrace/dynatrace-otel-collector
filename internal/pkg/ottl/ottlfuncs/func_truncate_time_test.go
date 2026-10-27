@@ -1,0 +1,183 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func Test_TruncateTime(t *testing.T) {
+	tests := []struct {
+		name     string
+		time     ottl.TimeGetter[any]
+		duration ottl.DurationGetter[any]
+		expected time.Time
+	}{
+		{
+			name: "truncate to 1s",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2022, 1, 1, 1, 1, 1, 999999999, time.UTC), nil
+				},
+			},
+			duration: &ottl.StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					d, _ := time.ParseDuration("1s")
+					return d, nil
+				},
+			},
+			expected: time.Date(2022, 1, 1, 1, 1, 1, 0, time.UTC),
+		},
+		{
+			name: "truncate to 1ms",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(2022, 1, 1, 1, 1, 1, 999999999, time.UTC), nil
+				},
+			},
+			duration: &ottl.StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					d, _ := time.ParseDuration("1ms")
+					return d, nil
+				},
+			},
+			expected: time.Date(2022, 1, 1, 1, 1, 1, 999000000, time.UTC),
+		},
+		{
+			name: "truncate old time",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Date(1980, 9, 9, 9, 59, 59, 999999999, time.UTC), nil
+				},
+			},
+			duration: &ottl.StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					d, _ := time.ParseDuration("1h")
+					return d, nil
+				},
+			},
+			expected: time.Date(1980, 9, 9, 9, 0, 0, 0, time.UTC),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exprFunc := truncateTime(tt.time, tt.duration)
+			result, err := exprFunc(t.Context(), nil)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expected.UnixNano(), result.(time.Time).UnixNano())
+		})
+	}
+}
+
+func Test_TruncateTimeError(t *testing.T) {
+	tests := []struct {
+		name          string
+		time          ottl.TimeGetter[any]
+		duration      ottl.DurationGetter[any]
+		expectedError string
+	}{
+		{
+			name: "not a time",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "11/11/11", nil
+				},
+			},
+			duration: &ottl.StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					d, _ := time.ParseDuration("1ms")
+					return d, nil
+				},
+			},
+			expectedError: "expected time but got string",
+		},
+		{
+			name: "not a duration",
+			time: &ottl.StandardTimeGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return time.Now(), nil
+				},
+			},
+			duration: &ottl.StandardDurationGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return "string", nil
+				},
+			},
+			expectedError: "expected duration but got string",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exprFunc := truncateTime[any](tt.time, tt.duration)
+			_, err := exprFunc(t.Context(), nil)
+			assert.ErrorContains(t, err, tt.expectedError)
+		})
+	}
+}
+
+func Test_TruncateTimeFactory(t *testing.T) {
+	t.Run("factory creation", func(t *testing.T) {
+		factory := NewTruncateTimeFactory[any]()
+		assert.Equal(t, "TruncateTime", factory.Name())
+	})
+
+	t.Run("default arguments", func(t *testing.T) {
+		factory := NewTruncateTimeFactory[any]()
+		args := factory.CreateDefaultArguments()
+
+		assert.IsType(t, &truncateTimeArguments[any]{}, args)
+		assertArgumentFieldNames(t, args, []string{"Time", "Duration"})
+	})
+
+	t.Run("function creation", func(t *testing.T) {
+		factory := NewTruncateTimeFactory[any]()
+		args := factory.CreateDefaultArguments()
+		truncateTimeArgs, ok := args.(*truncateTimeArguments[any])
+		require.True(t, ok)
+		truncateTimeArgs.Time = &ottl.StandardTimeGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return time.Now(), nil
+			},
+		}
+		truncateTimeArgs.Duration = &ottl.StandardDurationGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return time.Hour, nil
+			},
+		}
+
+		fn, err := factory.CreateFunction(ottl.FunctionContext{}, args)
+		require.NoError(t, err)
+		assert.NotNil(t, fn)
+	})
+
+	t.Run("invalid arguments type", func(t *testing.T) {
+		_, err := createTruncateTimeFunction[any](ottl.FunctionContext{}, "invalid args")
+		assert.ErrorContains(t, err, "TimeFactory args must be of type *truncateTimeArguments[K]")
+	})
+}
+
+func BenchmarkTruncateTime(b *testing.B) {
+	exprFunc := truncateTime[any](
+		&ottl.StandardTimeGetter[any]{Getter: func(context.Context, any) (any, error) {
+			return time.Date(2022, 1, 1, 1, 1, 1, 999999999, time.UTC), nil
+		}},
+		&ottl.StandardDurationGetter[any]{Getter: func(context.Context, any) (any, error) {
+			return time.Second, nil
+		}},
+	)
+	ctx := b.Context()
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := exprFunc(ctx, nil); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

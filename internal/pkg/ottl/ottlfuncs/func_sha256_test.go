@@ -1,0 +1,132 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
+
+package ottlfuncs
+
+import (
+	"context"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
+)
+
+func Test_SHA256(t *testing.T) {
+	tests := []struct {
+		name     string
+		value    any
+		expected any
+		err      bool
+	}{
+		{
+			name:     "string",
+			value:    "hello world",
+			expected: "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9",
+		},
+		{
+			name:     "empty string",
+			value:    "",
+			expected: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exprFunc := sha256HashString[any](&ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return tt.value, nil
+				},
+			})
+			result, err := exprFunc(nil, nil)
+			if tt.err {
+				assert.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func Test_SHA256Error(t *testing.T) {
+	tests := []struct {
+		name          string
+		value         any
+		err           bool
+		expectedError string
+	}{
+		{
+			name:          "non-string",
+			value:         10,
+			expectedError: "expected string but got int",
+		},
+		{
+			name:          "nil",
+			value:         nil,
+			expectedError: "expected string but got nil",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exprFunc := sha256HashString[any](&ottl.StandardStringGetter[any]{
+				Getter: func(context.Context, any) (any, error) {
+					return tt.value, nil
+				},
+			})
+			_, err := exprFunc(nil, nil)
+			assert.ErrorContains(t, err, tt.expectedError)
+		})
+	}
+}
+
+func Test_SHA256Factory(t *testing.T) {
+	t.Run("factory creation", func(t *testing.T) {
+		factory := NewSHA256Factory[any]()
+		assert.Equal(t, "SHA256", factory.Name())
+	})
+
+	t.Run("default arguments", func(t *testing.T) {
+		factory := NewSHA256Factory[any]()
+		args := factory.CreateDefaultArguments()
+
+		assert.IsType(t, &sHA256Arguments[any]{}, args)
+		assertArgumentFieldNames(t, args, []string{"Target"})
+	})
+
+	t.Run("function creation", func(t *testing.T) {
+		factory := NewSHA256Factory[any]()
+		args := factory.CreateDefaultArguments()
+		shaArgs, ok := args.(*sHA256Arguments[any])
+		require.True(t, ok)
+		shaArgs.Target = &ottl.StandardStringGetter[any]{
+			Getter: func(context.Context, any) (any, error) {
+				return "hello", nil
+			},
+		}
+
+		fn, err := factory.CreateFunction(ottl.FunctionContext{}, args)
+		require.NoError(t, err)
+		assert.NotNil(t, fn)
+	})
+
+	t.Run("invalid arguments type", func(t *testing.T) {
+		_, err := createSHA256Function[any](ottl.FunctionContext{}, "invalid args")
+		assert.ErrorContains(t, err, "SHA256Factory args must be of type *sHA256Arguments[K]")
+	})
+}
+
+func BenchmarkSHA256(b *testing.B) {
+	exprFunc := sha256HashString[any](&ottl.StandardStringGetter[any]{
+		Getter: func(context.Context, any) (any, error) {
+			return "hello world", nil
+		},
+	})
+	ctx := b.Context()
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := exprFunc(ctx, nil); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

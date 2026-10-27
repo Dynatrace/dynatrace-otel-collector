@@ -1,0 +1,97 @@
+name: Combined-Load-Test
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # Nightly, before the load tests.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+env:
+  KUBECONFIG: /tmp/kube-config-collector-e2e-testing
+  # renovate: datasource=golang-version depName=go
+  GO_VERSION: "1.27.3"
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: "**/*.sum"
+
+      - name: Install tools
+        run: |
+          mkdir -p .tools
+          make install-tools
+
+      - name: Generate source files
+        run: make generate
+
+      - name: Build collector artifact
+        run: make build
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ./bin
+          file: Dockerfile
+          push: false
+          load: true
+          tags: dynatrace-otel-collector:e2e-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Export image to tar
+        run: |
+          docker save dynatrace-otel-collector:e2e-test > /tmp/dynatrace-otel-collector.tar
+
+      - name: Upload container image artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dynatrace-otel-collector-image
+          path: /tmp/dynatrace-otel-collector.tar
+
+  combined-load-test:
+    runs-on: "Linux-x64-16-64GB-Runner" # Ubuntu 24.04
+    needs: docker-build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup cluster
+        uses: ./.github/actions/create-cluster
+
+      - name: Run e2e tests
+        run: |
+          cd internal/testbed/integration/combinedload
+          go test -v --tags=e2e
+
+  notify-slack:
+    runs-on: ubuntu-24.04
+    needs: [combined-load-test]
+    if: failure() && github.event_name == 'schedule'
+    steps:
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@33ca3be66c6f378fe1610fd1d5258632dbed5e58 # v2.4.0
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: "DT OTel Collector Distro - Combined Load Test Failure"
+          SLACK_COLOR: "failure"
+          SLACK_USERNAME: "GitHub Actions Notifier"
+          SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"

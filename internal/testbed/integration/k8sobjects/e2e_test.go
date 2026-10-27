@@ -1,16 +1,15 @@
 // Copyright Dynatrace LLC
 // SPDX-License-Identifier: Apache-2.0
 
-//go:build e2e
-
 package k8sobjects
 
 import (
-	"go.opentelemetry.io/collector/pdata/pcommon"
 	"os"
 	"path"
 	"path/filepath"
 	"testing"
+
+	"go.opentelemetry.io/collector/pdata/pcommon"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"

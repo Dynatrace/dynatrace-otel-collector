@@ -4,7 +4,7 @@ resourceLogs:
         - key: service.name
           value:
             stringValue: test-logs-deployment
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
+    schemaUrl: https://opentelemetry.io/schemas/1.43.0
     scopeLogs:
       - logRecords:
           - attributes:

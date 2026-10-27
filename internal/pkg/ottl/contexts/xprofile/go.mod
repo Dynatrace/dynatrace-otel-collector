@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/xprofile
 
-go 1.26.0
+go 1.27.3
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.162.0
@@ -59,11 +59,3 @@ require (
 )
 
 replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl => ../..
-
-replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal => ../../../../internal/coreinternal
-
-replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest => ../../../pdatatest
-
-replace github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden => ../../../golden
-
-replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/common => ../../../../internal/common

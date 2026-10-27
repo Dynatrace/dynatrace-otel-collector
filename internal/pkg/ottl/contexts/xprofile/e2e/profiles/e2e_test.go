@@ -270,15 +270,11 @@ func Test_e2e_editors(t *testing.T) {
 		},
 		{
 			statement: `set(attributes["test"], nil)`,
-			want: func(t *testing.T, tCtx *ottlprofile.TransformContext) {
-				putAttribute(t, tCtx.GetProfilesDictionary(), tCtx.GetProfile(), "test", pcommon.NewValueEmpty())
-			},
+			want:      func(t *testing.T, tCtx *ottlprofile.TransformContext) {},
 		},
 		{
 			statement: `set(attributes["test"], attributes["unknown"])`,
-			want: func(t *testing.T, tCtx *ottlprofile.TransformContext) {
-				putAttribute(t, tCtx.GetProfilesDictionary(), tCtx.GetProfile(), "test", pcommon.NewValueEmpty())
-			},
+			want:      func(t *testing.T, tCtx *ottlprofile.TransformContext) {},
 		},
 		{
 			statement: `set(attributes["foo"]["test"], "pass")`,
@@ -1373,9 +1369,7 @@ func Test_e2e_ottl_features(t *testing.T) {
 		{
 			name:      "complex indexing not found",
 			statement: `set(attributes["test"], attributes["metadata"]["uid"])`,
-			want: func(t *testing.T, tCtx *ottlprofile.TransformContext) {
-				putAttribute(t, tCtx.GetProfilesDictionary(), tCtx.GetProfile(), "test", pcommon.NewValueEmpty())
-			},
+			want:      func(t *testing.T, tCtx *ottlprofile.TransformContext) {},
 		},
 		{
 			name:      "map value as input to function",

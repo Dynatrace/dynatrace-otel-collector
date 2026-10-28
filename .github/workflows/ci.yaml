@@ -7,6 +7,9 @@ on:
     branches: [main, "release/*"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   # renovate: datasource=golang-version depName=go
   GO_VERSION: "1.27.3"

@@ -2,9 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [main]
+    branches: [main, "release/*"]
   pull_request:
-    branches: [main]
+    branches: [main, "release/*"]
   merge_group:
     types: [checks_requested]
   workflow_dispatch:
@@ -64,7 +64,7 @@ jobs:
   notify-slack:
     runs-on: ubuntu-24.04
     needs: [build]
-    if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: failure() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/'))
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@33ca3be66c6f378fe1610fd1d5258632dbed5e58 # v2.4.0

@@ -76,6 +76,8 @@ jobs:
 
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
+        with:
+          go-cache-dependency-path: internal/testbed/integration/go.sum
 
       - name: Run e2e tests
         run: |

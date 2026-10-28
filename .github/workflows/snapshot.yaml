@@ -2,10 +2,11 @@ name: Build PR Snapshots
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "release/*"]
+  workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -92,7 +93,7 @@ jobs:
       - name: Upload Pull Request Preview
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: otelcol_dynatrace_${{ matrix.goos }}_${{ matrix.goarch }}_${{ github.event.pull_request.number }}_${{ github.run_number }}
+          name: otelcol_dynatrace_${{ matrix.goos }}_${{ matrix.goarch }}_${{ github.event.pull_request.number || 'dispatch' }}_${{ github.run_number }}
           path: dist/*
 
       - name: Upload linux service packages

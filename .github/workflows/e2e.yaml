@@ -2,9 +2,9 @@ name: E2E-Test
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "release/*"]
   push:
-    branches: [main]
+    branches: [main, "release/*"]
 
 defaults:
   run:
@@ -245,6 +245,21 @@ jobs:
         run: |
           cd internal/testbed/integration/hostmetrics
           go test -v --tags=e2e
+
+  # Single required status check. Skipped jobs (docs-only changes) count as
+  # success, failed or cancelled ones fail this job.
+  e2e-success:
+    name: E2E Success
+    if: always()
+    needs: [detect-changes, docker-build, k8s-multinode-matrix, k8s-e2e-test-matrix, eec-confmap-provider, hostmetrics-e2e-test]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check results
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "$RESULTS"
+          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1;; esac
 
   notify-slack-combined-load-test:
     runs-on: ubuntu-24.04

@@ -79,7 +79,9 @@ jobs:
           load: true
           tags: dynatrace-otel-collector:e2e-test
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Only pushes write the layer cache. PRs read main's, so they don't fill the
+          # repo cache quota with PR-scoped blobs.
+          cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
       - name: export image to tar
         run: |
@@ -100,7 +102,9 @@ jobs:
           load: true
           tags: dynatrace-otel-collector-journald:e2e-test
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Only pushes write the layer cache. PRs read main's, so they don't fill the
+          # repo cache quota with PR-scoped blobs.
+          cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
       - name: Export journald image to tar
         run: |
@@ -129,6 +133,7 @@ jobs:
         uses: ./.github/actions/create-cluster
         with:
           config: "./.github/actions/create-cluster/multi-node.yaml"
+          go-cache-dependency-path: internal/testbed/integration/go.sum
 
       - name: Run e2e tests
         run: |
@@ -166,6 +171,8 @@ jobs:
 
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
+        with:
+          go-cache-dependency-path: internal/testbed/integration/go.sum
 
       - name: Run e2e tests
         run: |
@@ -176,9 +183,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        path:
-          - testbed/integration/feature-flags
-          - confmap/provider/eecprovider
+        include:
+          - path: testbed/integration/feature-flags
+            module: testbed/integration
+          - path: confmap/provider/eecprovider
+            module: confmap/provider/eecprovider
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:
@@ -189,8 +198,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: ${{ env.GO_VERSION }}
-          check-latest: true
-          cache-dependency-path: "**/*.sum"
+          cache-dependency-path: internal/${{ matrix.module }}/go.sum
 
       - name: Download artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -233,6 +241,8 @@ jobs:
 
       - name: Setup cluster
         uses: ./.github/actions/create-cluster
+        with:
+          go-cache-dependency-path: internal/testbed/integration/go.sum
 
       - name: Download journald image artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2

@@ -9,7 +9,6 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"encoding/pem"
-	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -19,7 +18,8 @@ import (
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
-	"github.com/go-jose/go-jose/v4"
+	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/coreos/go-oidc/v3/oidc/oidctest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
@@ -125,6 +125,9 @@ func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
 	})
 }
 
+// keyID identifies the signing key of the mock OIDC issuer.
+const keyID = "test-key"
+
 // oidcIssuer is a mock OIDC issuer serving the discovery document and the JWKS over TLS.
 type oidcIssuer struct {
 	server *httptest.Server
@@ -142,19 +145,12 @@ func newOIDCIssuer(t *testing.T) *oidcIssuer {
 	}
 	iss := &oidcIssuer{key: newKey(), otherKey: newKey()}
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, _ *http.Request) {
-		_ = json.NewEncoder(w).Encode(map[string]string{
-			"issuer":   iss.url(),
-			"jwks_uri": iss.url() + "/jwks",
-		})
-	})
-	mux.HandleFunc("/jwks", func(w http.ResponseWriter, _ *http.Request) {
-		jwk := jose.JSONWebKey{Key: &iss.key.PublicKey, KeyID: "test-key", Algorithm: string(jose.RS256), Use: "sig"}
-		_ = json.NewEncoder(w).Encode(jose.JSONWebKeySet{Keys: []jose.JSONWebKey{jwk}})
-	})
-	iss.server = httptest.NewTLSServer(mux)
+	handler := &oidctest.Server{PublicKeys: []oidctest.PublicKey{
+		{PublicKey: &iss.key.PublicKey, KeyID: keyID, Algorithm: oidc.RS256},
+	}}
+	iss.server = httptest.NewTLSServer(handler)
 	t.Cleanup(iss.server.Close)
+	handler.SetIssuer(iss.server.URL)
 
 	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: iss.server.Certificate().Raw})
 	iss.caPath = filepath.Join(t.TempDir(), "ca.crt")
@@ -184,12 +180,6 @@ func (i *oidcIssuer) mint(t *testing.T, mod func(*tokenOpts)) string {
 	if opts.unpublishedKey {
 		key = i.otherKey
 	}
-	signer, err := jose.NewSigner(
-		jose.SigningKey{Algorithm: jose.RS256, Key: jose.JSONWebKey{Key: key, KeyID: "test-key"}},
-		(&jose.SignerOptions{}).WithType("JWT"),
-	)
-	require.NoError(t, err)
-
 	now := time.Now()
 	payload, err := json.Marshal(map[string]any{
 		"iss": opts.issuer,
@@ -199,11 +189,7 @@ func (i *oidcIssuer) mint(t *testing.T, mod func(*tokenOpts)) string {
 		"exp": now.Add(opts.expires).Unix(),
 	})
 	require.NoError(t, err)
-	jws, err := signer.Sign(payload)
-	require.NoError(t, err)
-	token, err := jws.CompactSerialize()
-	require.NoError(t, err)
-	return token
+	return oidctest.SignIDToken(key, keyID, oidc.RS256, string(payload))
 }
 
 // TestE2E_OIDCAuthRejectsInvalidTokens verifies that the oidcauthextension of the DT Collector

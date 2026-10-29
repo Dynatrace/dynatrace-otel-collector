@@ -9,13 +9,10 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"encoding/pem"
-	"fmt"
-	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -23,126 +20,43 @@ import (
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
 	"github.com/go-jose/go-jose/v4"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-const (
-	collectorExecPath = "../../../../bin/dynatrace-otel-collector"
-	configExamplesDir = "../../../../config_examples"
-	// audience is the audience configured in config_examples/oidcauth-receiver.yaml.
-	audience = "my-collector"
-)
+// audience is the audience configured in config_examples/oidcauth-receiver.yaml.
+const audience = "my-collector"
 
-// ports holds the ports a locally started Collector and its sink use.
-type ports struct {
-	grpc     int
-	http     int
-	health   int
-	exporter int
-}
+// startCollector starts the DT Collector with an example config whose OTLP receiver is protected
+// by an auth extension. edit adapts the config to the test on top of the common local overrides.
+// It returns the port of the OTLP/gRPC receiver and the sink the Collector exports to.
+func startCollector(t *testing.T, example string, edit func(*testutil.Config)) (int, *consumertest.TracesSink) {
+	sink, sinkPorts := oteltest.StartTracesSink(t)
+	grpcPort := testutil.GetAvailablePort(t)
+	httpPort := testutil.GetAvailablePort(t)
+	healthPort := testutil.GetAvailablePort(t)
 
-// startSink starts a traces sink that the Collector under test exports to and returns
-// the sink together with the ports of the Collector.
-func startSink(t *testing.T) (*consumertest.TracesSink, ports) {
-	p := ports{
-		grpc:     testutil.GetAvailablePort(t),
-		http:     testutil.GetAvailablePort(t),
-		health:   testutil.GetAvailablePort(t),
-		exporter: testutil.GetAvailablePort(t),
-	}
-	sink := new(consumertest.TracesSink)
-	shutdown := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Traces: []*oteltest.TraceSinkConfig{{
-			Consumer: sink,
-			Ports:    &oteltest.ReceiverPorts{Grpc: testutil.GetAvailablePort(t), Http: p.exporter},
-		}},
+	cfg := testutil.LoadConfigExample(t, example).
+		Replace("grpc receiver port", func(s string) string { return testutil.ReplaceOtlpGrpcReceiverPort(s, grpcPort) }).
+		Replace("http receiver port", func(s string) string { return testutil.ReplaceOtlpHttpReceiverPort(s, httpPort) }).
+		Replace("health_check port", func(s string) string { return testutil.ReplaceHealthCheckPort(s, healthPort) }).
+		Replace("exporter endpoint", func(s string) string { return testutil.ReplaceDynatraceExporterEndpoint(s, sinkPorts.Http) }).
+		Replace("sending_queue and retry_on_failure", func(s string) string { return testutil.DisableSendingQueueAndRetry(s, "otlp_http") }).
+		Replace("internal metrics", testutil.DisableInternalMetrics)
+	edit(cfg)
+
+	testutil.StartCollector(t, testutil.CollectorParams{
+		Name:      strings.TrimSuffix(example, ".yaml"),
+		Config:    cfg.String(),
+		ReadyPort: grpcPort,
 	})
-	t.Cleanup(shutdown)
-	return sink, p
-}
-
-// prepareConfig reads an example config and adapts it for the test. Each replacement is
-// required to change the config so that edits to the example can't silently break the test.
-// The returned replace function can be used for further, test specific adaptations.
-func prepareConfig(t *testing.T, example string, p ports) (cfg *string, replace func(name string, f func(string) string)) {
-	raw, err := os.ReadFile(filepath.Join(configExamplesDir, example))
-	require.NoError(t, err)
-	out := string(raw)
-	cfg = &out
-
-	replace = func(name string, f func(string) string) {
-		res := f(*cfg)
-		require.NotEqual(t, *cfg, res, "config replacement %q had no effect", name)
-		*cfg = res
-	}
-	replace("grpc receiver port", func(s string) string { return testutil.ReplaceOtlpGrpcReceiverPort(s, p.grpc) })
-	replace("http receiver port", func(s string) string { return testutil.ReplaceOtlpHttpReceiverPort(s, p.http) })
-	replace("health_check port", func(s string) string {
-		return strings.Replace(s, "0.0.0.0:13133", "0.0.0.0:"+strconv.Itoa(p.health), 1)
-	})
-	replace("exporter endpoint", func(s string) string { return testutil.ReplaceDynatraceExporterEndpoint(s, p.exporter) })
-	replace("api token", func(s string) string { return strings.Replace(s, "${env:DT_API_TOKEN}", "", 1) })
-	// Export results should be synchronous so that failures show up immediately.
-	replace("sending_queue and retry_on_failure", func(s string) string {
-		return strings.Replace(s, "  otlp_http:\n    endpoint:",
-			"  otlp_http:\n    retry_on_failure:\n      enabled: false\n    sending_queue:\n      enabled: false\n    endpoint:", 1)
-	})
-	// The Collector's internal metrics server binds the fixed port 8888, which would clash with
-	// other Collectors on the machine (or a leftover from an aborted run).
-	replace("internal telemetry", func(s string) string {
-		return strings.Replace(s, "service:\n", "service:\n  telemetry:\n    metrics:\n      level: none\n", 1)
-	})
-	return cfg, replace
-}
-
-func startCollector(t *testing.T, name, cfg string, readyPort int) {
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(collectorExecPath))
-	cleanupCfg, err := col.PrepareConfig(t, cfg)
-	require.NoError(t, err)
-	t.Cleanup(cleanupCfg)
-
-	logPath := filepath.Join(t.TempDir(), "collector.log")
-	require.NoError(t, col.Start(testbed.StartParams{
-		Name:        name,
-		LogFilePath: logPath,
-	}))
-	t.Cleanup(func() {
-		_, err := col.Stop()
-		assert.NoError(t, err)
-		if t.Failed() {
-			if b, err := os.ReadFile(logPath); err == nil {
-				t.Logf("collector log:\n%s", b)
-			}
-		}
-	})
-
-	addr := net.JoinHostPort("localhost", strconv.Itoa(readyPort))
-	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", addr, time.Second)
-		if err != nil {
-			return false
-		}
-		_ = conn.Close()
-		return true
-	}, 30*time.Second, 200*time.Millisecond, "collector did not start listening on %s", addr)
-}
-
-// newTraceClient returns an OTLP/gRPC traces client connected to the Collector's receiver.
-func newTraceClient(t *testing.T, port int) ptraceotlp.GRPCClient {
-	conn, err := grpc.NewClient(fmt.Sprintf("localhost:%d", port), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	require.NoError(t, err)
-	t.Cleanup(func() { _ = conn.Close() })
-	return ptraceotlp.NewGRPCClient(conn)
+	return grpcPort, sink
 }
 
 // export sends a single span, setting the authorization header if it is not empty.
@@ -162,20 +76,6 @@ func export(client ptraceotlp.GRPCClient, authorization string) error {
 	return err
 }
 
-func spanCount(sink *consumertest.TracesSink) int {
-	n := 0
-	for _, td := range sink.AllTraces() {
-		n += td.SpanCount()
-	}
-	return n
-}
-
-func waitForSpans(t *testing.T, sink *consumertest.TracesSink, want int) {
-	require.Eventually(t, func() bool {
-		return spanCount(sink) >= want
-	}, 30*time.Second, 200*time.Millisecond, "expected %d spans, got %d", want, spanCount(sink))
-}
-
 // TestE2E_BearerTokenAuthReceiver tests the receiver-side bearer token auth: the DT
 // Collector protects its OTLP/gRPC ingestion endpoint with bearertokenauthextension
 // (file-based token), and only clients presenting the correct Bearer token can deliver traces.
@@ -185,16 +85,14 @@ func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
 	tokenFile := filepath.Join(t.TempDir(), "auth-token")
 	require.NoError(t, os.WriteFile(tokenFile, []byte(token), 0o600))
 
-	sink, p := startSink(t)
-	cfg, replace := prepareConfig(t, "bearertokenauth-receiver.yaml", p)
-	replace("token file", func(s string) string { return strings.Replace(s, "/etc/otelcol/auth-token", tokenFile, 1) })
-	startCollector(t, "bearertokenauth-receiver", *cfg, p.grpc)
-
-	client := newTraceClient(t, p.grpc)
+	grpcPort, sink := startCollector(t, "bearertokenauth-receiver.yaml", func(c *testutil.Config) {
+		c.ReplaceString("/etc/otelcol/auth-token", tokenFile)
+	})
+	client := oteltest.NewTracesClient(t, grpcPort)
 
 	t.Run("valid", func(t *testing.T) {
 		require.NoError(t, export(client, "Bearer "+token))
-		waitForSpans(t, sink, 1)
+		oteltest.WaitForTraces(t, 1, sink)
 	})
 
 	rejected := []struct {
@@ -311,27 +209,21 @@ func (i *oidcIssuer) mint(t *testing.T, mod func(*tokenOpts)) string {
 // TestE2E_OIDCAuthRejectsInvalidTokens verifies that the oidcauthextension of the DT Collector
 // accepts a valid token and rejects tokens that are missing, malformed, have a wrong audience,
 // are expired, are signed with an unknown key or come from a different issuer.
-// The issuer is mocked; the Kubernetes API server as issuer is covered by k8s-bearertokenauth.
+// The issuer is mocked; the Kubernetes API server as issuer is covered by k8sbearertokenauth.
 // The config under test is config_examples/oidcauth-receiver.yaml.
 func TestE2E_OIDCAuthRejectsInvalidTokens(t *testing.T) {
 	issuer := newOIDCIssuer(t)
 
-	sink, p := startSink(t)
-	cfg, replace := prepareConfig(t, "oidcauth-receiver.yaml", p)
-	replace("issuer_url", func(s string) string {
-		return strings.Replace(s, "https://kubernetes.default.svc.cluster.local", issuer.url(), 1)
+	grpcPort, sink := startCollector(t, "oidcauth-receiver.yaml", func(c *testutil.Config) {
+		c.ReplaceString("https://kubernetes.default.svc.cluster.local", issuer.url()).
+			ReplaceString("/var/run/secrets/kubernetes.io/serviceaccount/ca.crt", issuer.caPath)
 	})
-	replace("issuer_ca_path", func(s string) string {
-		return strings.Replace(s, "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt", issuer.caPath, 1)
-	})
-	startCollector(t, "oidcauth-receiver", *cfg, p.grpc)
-
-	client := newTraceClient(t, p.grpc)
+	client := oteltest.NewTracesClient(t, grpcPort)
 
 	// The positive control proves that the setup works, so that the rejections below can't be false passes.
 	t.Run("valid", func(t *testing.T) {
 		require.NoError(t, export(client, "Bearer "+issuer.mint(t, nil)))
-		waitForSpans(t, sink, 1)
+		oteltest.WaitForTraces(t, 1, sink)
 	})
 
 	rejected := []struct {
@@ -354,5 +246,5 @@ func TestE2E_OIDCAuthRejectsInvalidTokens(t *testing.T) {
 	}
 
 	// Nothing but the span of the positive control may have reached the sink.
-	assert.Equal(t, 1, spanCount(sink), "rejected requests must not reach the sink")
+	assert.Equal(t, 1, sink.SpanCount(), "rejected requests must not reach the sink")
 }

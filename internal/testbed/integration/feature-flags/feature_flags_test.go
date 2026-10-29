@@ -5,95 +5,33 @@ package featureflags
 
 import (
 	"context"
-	"fmt"
-	"net"
-	"os"
-	"path/filepath"
 	"slices"
-	"strconv"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
-	collectorExecPath = "../../../../bin/dynatrace-otel-collector"
-	configPath        = "../../../../config_examples/feature_flag_enrichment.yaml"
-	featureGatesArg   = "--feature-gates=service.profilesSupport,ottl.functions.enableLambda"
-	testWaitDuration  = "1s"
+	configExample    = "feature_flag_enrichment.yaml"
+	featureGatesArg  = "--feature-gates=service.profilesSupport,ottl.functions.enableLambda"
+	testWaitDuration = "1s"
 )
 
-// prepareConfig reads the example config and adapts it for the test. Each replacement is
-// required to change the config so that edits to the example can't silently break the test.
+// prepareConfig reads the example config and adapts it for the test.
 func prepareConfig(t *testing.T, receiverPort, exporterPort int) string {
-	raw, err := os.ReadFile(configPath)
-	require.NoError(t, err)
-	cfg := string(raw)
-
-	replace := func(name string, f func(string) string) {
-		out := f(cfg)
-		require.NotEqual(t, cfg, out, "config replacement %q had no effect", name)
-		cfg = out
-	}
-	replace("receiver port", func(s string) string { return testutil.ReplaceOtlpGrpcReceiverPort(s, receiverPort) })
-	replace("exporter endpoint", func(s string) string { return testutil.ReplaceDynatraceExporterEndpoint(s, exporterPort) })
-	replace("api token", func(s string) string { return strings.Replace(s, "${env:DT_API_TOKEN}", "", 1) })
-	replace("wait_duration", func(s string) string {
-		return strings.Replace(s, "wait_duration: 60s", "wait_duration: "+testWaitDuration, 1)
-	})
-	replace("sending_queue", func(s string) string {
-		return strings.Replace(s, "  otlp_http:\n    endpoint:", "  otlp_http:\n    sending_queue:\n      enabled: false\n    endpoint:", 1)
-	})
-	// The Collector's internal metrics server binds the fixed port 8888, which would clash with
-	// other Collectors on the machine (or a leftover from an aborted run).
-	replace("internal telemetry", func(s string) string {
-		return strings.Replace(s, "service:\n  pipelines:", "service:\n  telemetry:\n    metrics:\n      level: none\n  pipelines:", 1)
-	})
-	return cfg
-}
-
-func startCollector(t *testing.T, cfg string, receiverPort int) {
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(collectorExecPath))
-	cleanupCfg, err := col.PrepareConfig(t, cfg)
-	require.NoError(t, err)
-	t.Cleanup(cleanupCfg)
-
-	logPath := filepath.Join(t.TempDir(), "collector.log")
-	require.NoError(t, col.Start(testbed.StartParams{
-		Name:        "feature-flags",
-		LogFilePath: logPath,
-		CmdArgs:     []string{featureGatesArg},
-	}))
-	t.Cleanup(func() {
-		_, err := col.Stop()
-		assert.NoError(t, err)
-		if t.Failed() {
-			if b, err := os.ReadFile(logPath); err == nil {
-				t.Logf("collector log:\n%s", b)
-			}
-		}
-	})
-
-	addr := net.JoinHostPort("localhost", strconv.Itoa(receiverPort))
-	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", addr, time.Second)
-		if err != nil {
-			return false
-		}
-		_ = conn.Close()
-		return true
-	}, 30*time.Second, 200*time.Millisecond, "collector did not start listening on %s", addr)
+	return testutil.LoadConfigExample(t, configExample).
+		Replace("receiver port", func(s string) string { return testutil.ReplaceOtlpGrpcReceiverPort(s, receiverPort) }).
+		Replace("exporter endpoint", func(s string) string { return testutil.ReplaceDynatraceExporterEndpoint(s, exporterPort) }).
+		ReplaceString("wait_duration: 60s", "wait_duration: "+testWaitDuration).
+		Replace("sending_queue and retry_on_failure", func(s string) string { return testutil.DisableSendingQueueAndRetry(s, "otlp_http") }).
+		Replace("internal metrics", testutil.DisableInternalMetrics).
+		String()
 }
 
 type spanKey struct {
@@ -149,24 +87,15 @@ func TestFeatureFlagEnrichment(t *testing.T) {
 
 func runMode(t *testing.T, modeIdx int, mode payloadMode, topos []topology) {
 	receiverPort := testutil.GetAvailablePort(t)
-	exporterPort := testutil.GetAvailablePort(t)
-	sinkGrpcPort := testutil.GetAvailablePort(t)
+	sink, sinkPorts := oteltest.StartTracesSink(t)
 
-	sink := new(consumertest.TracesSink)
-	shutdown := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Traces: []*oteltest.TraceSinkConfig{{
-			Consumer: sink,
-			Ports:    &oteltest.ReceiverPorts{Grpc: sinkGrpcPort, Http: exporterPort},
-		}},
+	testutil.StartCollector(t, testutil.CollectorParams{
+		Name:      "feature-flags",
+		Config:    prepareConfig(t, receiverPort, sinkPorts.Http),
+		ReadyPort: receiverPort,
+		Args:      []string{featureGatesArg},
 	})
-	t.Cleanup(shutdown)
-
-	startCollector(t, prepareConfig(t, receiverPort, exporterPort), receiverPort)
-
-	conn, err := grpc.NewClient(fmt.Sprintf("localhost:%d", receiverPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	require.NoError(t, err)
-	t.Cleanup(func() { _ = conn.Close() })
-	client := ptraceotlp.NewGRPCClient(conn)
+	client := oteltest.NewTracesClient(t, receiverPort)
 
 	var sent []ptrace.Traces
 	for _, items := range mode.split(topos) {
@@ -179,8 +108,8 @@ func runMode(t *testing.T, modeIdx int, mode payloadMode, topos []topology) {
 	}
 
 	require.Eventually(t, func() bool {
-		return totalSpans(sink.AllTraces()) >= sentCount
-	}, 60*time.Second, 500*time.Millisecond, "expected %d spans, got %d", sentCount, totalSpans(sink.AllTraces()))
+		return sink.SpanCount() >= sentCount
+	}, 60*time.Second, 500*time.Millisecond, "expected %d spans, got %d", sentCount, sink.SpanCount())
 
 	received := sink.AllTraces()
 

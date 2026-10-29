@@ -204,6 +204,7 @@ func ReplaceDynatraceExporterEndpoint(cfg string, exporterPort int) string {
 	r := strings.NewReplacer(
 		"${env:DT_ENDPOINT}", fmt.Sprintf("http://0.0.0.0:%v", exporterPort),
 		"${env:API_TOKEN}", "",
+		"${env:DT_API_TOKEN}", "",
 	)
 	return r.Replace(cfg)
 }

@@ -180,6 +180,10 @@ func ReplaceOtlpGrpcReceiverPort(cfg string, receiverPort int) string {
 	return replaceEndpointPort(cfg, 4317, receiverPort)
 }
 
+func ReplaceOtlpHttpReceiverPort(cfg string, receiverPort int) string {
+	return replaceEndpointPort(cfg, 4318, receiverPort)
+}
+
 func ReplaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
 	return replaceEndpointPort(cfg, 14250, receiverPort)
 }

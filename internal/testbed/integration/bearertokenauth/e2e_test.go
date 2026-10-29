@@ -4,422 +4,355 @@
 package bearertokenauth
 
 import (
+	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"encoding/json"
+	"encoding/pem"
 	"fmt"
+	"net"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
-	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
-	"github.com/google/uuid"
-	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
+	"github.com/go-jose/go-jose/v4"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/ptrace"
+	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
-// TestE2E_BearerTokenAuth tests the WIF Phase I direct token presentation flow:
-// a DT collector (sender) reads a projected service-account token from a file and
-// attaches it as a Bearer credential on the OTLP/HTTP exporter, while a contrib
-// collector (verifier) validates the token via the oidcauthextension before
-// forwarding telemetry to the test sink.
-//
-// NOTE: the configs in testdata/ are intentionally NOT placed in config_examples/
-// until WIF is generally available to customers.
-func TestE2E_BearerTokenAuth(t *testing.T) {
-	testDir := filepath.Join("testdata")
+const (
+	collectorExecPath = "../../../../bin/dynatrace-otel-collector"
+	configExamplesDir = "../../../../config_examples"
+	// audience is the audience configured in config_examples/oidcauth-receiver.yaml.
+	audience = "my-collector"
+)
 
-	kubeconfigPath := k8stest.TestKubeConfig
-	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
-	}
-
-	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
-	require.NoError(t, err)
-
-	// Create the namespace specific for the test.
-	nsFile := filepath.Join(testDir, "namespace.yaml")
-	buf, err := os.ReadFile(nsFile)
-	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
-
-	testNs := nsObj.GetName()
-	defer func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	}()
-
-	// Start the local OTLP sink that the verifier collector will export data to.
-	tracesConsumer := new(consumertest.TracesSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Traces: []*oteltest.TraceSinkConfig{
-			{
-				Consumer: tracesConsumer,
-			},
-		},
-	})
-	defer shutdownSinks()
-
-	host := otelk8stest.HostEndpoint(t)
-
-	// Deploy the verifier first so its service name is known before the sender config is rendered.
-	verifierTestID := uuid.NewString()[:8]
-	verifierSvcEndpoint := fmt.Sprintf("http://otelcol-%s.%s:4318", verifierTestID, testNs)
-
-	// Load the verifier config from config_examples, overlaying the test-specific audience and
-	// stripping the DT auth header (the sink does not require authentication).
-	verifierConfigPath := filepath.Join("../../../../config_examples", "oidcauth-receiver.yaml")
-	verifierConfig, err := k8stest.GetCollectorConfig(verifierConfigPath, k8stest.ConfigTemplate{
-		Host: host,
-		Templates: []string{
-			k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "verifier-local.yaml")),
-		},
-	})
-	require.NoErrorf(t, err, "failed to read verifier config from %s", verifierConfigPath)
-
-	verifierObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		verifierTestID,
-		filepath.Join(testDir, "collector-verifier"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   verifierConfig,
-		},
-		host,
-	)
-	defer func() {
-		for _, obj := range verifierObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	// Load the sender config, overriding the exporter endpoint with the verifier's service address.
-	senderTestID := uuid.NewString()[:8]
-	senderConfigPath := filepath.Join("../../../../config_examples", "bearertokenauth-sender.yaml")
-	endpointOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "sender-endpoint.yaml")), verifierSvcEndpoint)
-	senderConfig, err := k8stest.GetCollectorConfig(senderConfigPath, k8stest.ConfigTemplate{
-		Host:      host,
-		Templates: []string{endpointOverlay},
-	})
-	require.NoErrorf(t, err, "failed to read sender config from %s", senderConfigPath)
-
-	senderObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		senderTestID,
-		filepath.Join(testDir, "collector-sender"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   senderConfig,
-		},
-		host,
-	)
-	defer func() {
-		for _, obj := range senderObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	// Send traces through the two-collector chain via telemetrygen.
-	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
-		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
-		TestID:       senderTestID,
-		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", senderTestID, testNs),
-		DataTypes:    []string{"traces"},
-	}
-	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
-	defer func() {
-		for _, obj := range telemetryGenObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	for _, info := range telemetryGenObjInfos {
-		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
-	}
-
-	// If bearer token auth worked end-to-end, traces will arrive at the sink.
-	wantEntries := 5
-	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
+// ports holds the ports a locally started Collector and its sink use.
+type ports struct {
+	grpc     int
+	http     int
+	health   int
+	exporter int
 }
 
-// TestE2E_BearerTokenAuthReceiver tests the receiver-side bearer token auth:
-// the DT collector protects its OTLP/gRPC ingestion endpoint with
-// bearertokenauthextension (file-based token), and only telemetrygen
-// presenting the correct Bearer token can deliver traces through it.
+// startSink starts a traces sink that the Collector under test exports to and returns
+// the sink together with the ports of the Collector.
+func startSink(t *testing.T) (*consumertest.TracesSink, ports) {
+	p := ports{
+		grpc:     testutil.GetAvailablePort(t),
+		http:     testutil.GetAvailablePort(t),
+		health:   testutil.GetAvailablePort(t),
+		exporter: testutil.GetAvailablePort(t),
+	}
+	sink := new(consumertest.TracesSink)
+	shutdown := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
+		Traces: []*oteltest.TraceSinkConfig{{
+			Consumer: sink,
+			Ports:    &oteltest.ReceiverPorts{Grpc: testutil.GetAvailablePort(t), Http: p.exporter},
+		}},
+	})
+	t.Cleanup(shutdown)
+	return sink, p
+}
+
+// prepareConfig reads an example config and adapts it for the test. Each replacement is
+// required to change the config so that edits to the example can't silently break the test.
+// The returned replace function can be used for further, test specific adaptations.
+func prepareConfig(t *testing.T, example string, p ports) (cfg *string, replace func(name string, f func(string) string)) {
+	raw, err := os.ReadFile(filepath.Join(configExamplesDir, example))
+	require.NoError(t, err)
+	out := string(raw)
+	cfg = &out
+
+	replace = func(name string, f func(string) string) {
+		res := f(*cfg)
+		require.NotEqual(t, *cfg, res, "config replacement %q had no effect", name)
+		*cfg = res
+	}
+	replace("grpc receiver port", func(s string) string { return testutil.ReplaceOtlpGrpcReceiverPort(s, p.grpc) })
+	replace("http receiver port", func(s string) string { return testutil.ReplaceOtlpHttpReceiverPort(s, p.http) })
+	replace("health_check port", func(s string) string {
+		return strings.Replace(s, "0.0.0.0:13133", "0.0.0.0:"+strconv.Itoa(p.health), 1)
+	})
+	replace("exporter endpoint", func(s string) string { return testutil.ReplaceDynatraceExporterEndpoint(s, p.exporter) })
+	replace("api token", func(s string) string { return strings.Replace(s, "${env:DT_API_TOKEN}", "", 1) })
+	// Export results should be synchronous so that failures show up immediately.
+	replace("sending_queue and retry_on_failure", func(s string) string {
+		return strings.Replace(s, "  otlp_http:\n    endpoint:",
+			"  otlp_http:\n    retry_on_failure:\n      enabled: false\n    sending_queue:\n      enabled: false\n    endpoint:", 1)
+	})
+	// The Collector's internal metrics server binds the fixed port 8888, which would clash with
+	// other Collectors on the machine (or a leftover from an aborted run).
+	replace("internal telemetry", func(s string) string {
+		return strings.Replace(s, "service:\n", "service:\n  telemetry:\n    metrics:\n      level: none\n", 1)
+	})
+	return cfg, replace
+}
+
+func startCollector(t *testing.T, name, cfg string, readyPort int) {
+	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(collectorExecPath))
+	cleanupCfg, err := col.PrepareConfig(t, cfg)
+	require.NoError(t, err)
+	t.Cleanup(cleanupCfg)
+
+	logPath := filepath.Join(t.TempDir(), "collector.log")
+	require.NoError(t, col.Start(testbed.StartParams{
+		Name:        name,
+		LogFilePath: logPath,
+	}))
+	t.Cleanup(func() {
+		_, err := col.Stop()
+		assert.NoError(t, err)
+		if t.Failed() {
+			if b, err := os.ReadFile(logPath); err == nil {
+				t.Logf("collector log:\n%s", b)
+			}
+		}
+	})
+
+	addr := net.JoinHostPort("localhost", strconv.Itoa(readyPort))
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", addr, time.Second)
+		if err != nil {
+			return false
+		}
+		_ = conn.Close()
+		return true
+	}, 30*time.Second, 200*time.Millisecond, "collector did not start listening on %s", addr)
+}
+
+// newTraceClient returns an OTLP/gRPC traces client connected to the Collector's receiver.
+func newTraceClient(t *testing.T, port int) ptraceotlp.GRPCClient {
+	conn, err := grpc.NewClient(fmt.Sprintf("localhost:%d", port), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = conn.Close() })
+	return ptraceotlp.NewGRPCClient(conn)
+}
+
+// export sends a single span, setting the authorization header if it is not empty.
+func export(client ptraceotlp.GRPCClient, authorization string) error {
+	td := ptrace.NewTraces()
+	span := td.ResourceSpans().AppendEmpty().ScopeSpans().AppendEmpty().Spans().AppendEmpty()
+	span.SetName("auth-test")
+	span.SetTraceID([16]byte{1})
+	span.SetSpanID([8]byte{1})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if authorization != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authorization)
+	}
+	_, err := client.Export(ctx, ptraceotlp.NewExportRequestFromTraces(td))
+	return err
+}
+
+func spanCount(sink *consumertest.TracesSink) int {
+	n := 0
+	for _, td := range sink.AllTraces() {
+		n += td.SpanCount()
+	}
+	return n
+}
+
+func waitForSpans(t *testing.T, sink *consumertest.TracesSink, want int) {
+	require.Eventually(t, func() bool {
+		return spanCount(sink) >= want
+	}, 30*time.Second, 200*time.Millisecond, "expected %d spans, got %d", want, spanCount(sink))
+}
+
+// TestE2E_BearerTokenAuthReceiver tests the receiver-side bearer token auth: the DT
+// Collector protects its OTLP/gRPC ingestion endpoint with bearertokenauthextension
+// (file-based token), and only clients presenting the correct Bearer token can deliver traces.
 // The config under test is config_examples/bearertokenauth-receiver.yaml.
 func TestE2E_BearerTokenAuthReceiver(t *testing.T) {
-	testDir := filepath.Join("testdata")
-	configExamplesDir := "../../../../config_examples"
+	const token = "s3cr3t-token"
+	tokenFile := filepath.Join(t.TempDir(), "auth-token")
+	require.NoError(t, os.WriteFile(tokenFile, []byte(token), 0o600))
 
-	kubeconfigPath := k8stest.TestKubeConfig
-	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
-	}
+	sink, p := startSink(t)
+	cfg, replace := prepareConfig(t, "bearertokenauth-receiver.yaml", p)
+	replace("token file", func(s string) string { return strings.Replace(s, "/etc/otelcol/auth-token", tokenFile, 1) })
+	startCollector(t, "bearertokenauth-receiver", *cfg, p.grpc)
 
-	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
-	require.NoError(t, err)
+	client := newTraceClient(t, p.grpc)
 
-	// Create the namespace specific for the test.
-	nsFile := filepath.Join(testDir, "namespace.yaml")
-	buf, err := os.ReadFile(nsFile)
-	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
-
-	testNs := nsObj.GetName()
-	defer func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	}()
-
-	// Start the local OTLP sink the receiver collector will forward data to.
-	tracesConsumer := new(consumertest.TracesSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Traces: []*oteltest.TraceSinkConfig{
-			{
-				Consumer: tracesConsumer,
-			},
-		},
+	t.Run("valid", func(t *testing.T) {
+		require.NoError(t, export(client, "Bearer "+token))
+		waitForSpans(t, sink, 1)
 	})
-	defer shutdownSinks()
 
-	host := otelk8stest.HostEndpoint(t)
+	rejected := []struct {
+		name          string
+		authorization string
+	}{
+		{"wrong token", "Bearer nope"},
+		{"wrong scheme", "Basic " + token},
+		{"missing", ""},
+	}
+	for _, tc := range rejected {
+		t.Run(tc.name, func(t *testing.T) {
+			err := export(client, tc.authorization)
+			require.Error(t, err)
+			assert.Equal(t, codes.Unauthenticated, status.Code(err), "unexpected error: %v", err)
+		})
+	}
 
-	// Load the receiver config from config_examples.
-	// GetCollectorConfig replaces ${env:DT_ENDPOINT} → http://<HOST>:4318 (the test sink)
-	// and ${env:DT_API_TOKEN} → "" (not needed for the sink).
-	// The overlay strips the DT-specific Authorization header and disables retry so
-	// export failures surface immediately during the test.
-	receiverConfigPath := filepath.Join(configExamplesDir, "bearertokenauth-receiver.yaml")
-	exporterOverlay := "exporters:\n  otlp_http:\n    headers: {}\n    retry_on_failure:\n      enabled: false\n    sending_queue:\n      enabled: false\n"
-	receiverConfig, err := k8stest.GetCollectorConfig(receiverConfigPath, k8stest.ConfigTemplate{
-		Host:      host,
-		Templates: []string{exporterOverlay},
+	// The example config claims that the token is refreshed without a restart.
+	t.Run("token rotation", func(t *testing.T) {
+		const rotated = "rotated-token"
+		require.NoError(t, os.WriteFile(tokenFile, []byte(rotated), 0o600))
+		require.Eventually(t, func() bool {
+			return export(client, "Bearer "+rotated) == nil
+		}, 30*time.Second, 200*time.Millisecond, "rotated token was not accepted")
+
+		err := export(client, "Bearer "+token)
+		require.Error(t, err)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err), "unexpected error: %v", err)
 	})
-	require.NoErrorf(t, err, "failed to read receiver config from %s", receiverConfigPath)
-
-	receiverTestID := uuid.NewString()[:8]
-	receiverObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		receiverTestID,
-		filepath.Join(testDir, "collector-receiver"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   receiverConfig,
-		},
-		host,
-	)
-	defer func() {
-		for _, obj := range receiverObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	// telemetrygen sends traces with the correct Bearer token in the Authorization header.
-	// The token value matches what is stored in the collector-receiver auth-token ConfigMap.
-	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
-		ManifestsDir: filepath.Join(testDir, "telemetrygen-receiver"),
-		TestID:       receiverTestID,
-		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", receiverTestID, testNs),
-		DataTypes:    []string{"traces"},
-	}
-	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
-	defer func() {
-		for _, obj := range telemetryGenObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	for _, info := range telemetryGenObjInfos {
-		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
-	}
-
-	// Traces arrive only if the Bearer token was accepted by the receiver.
-	wantEntries := 5
-	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
 }
 
-// TestE2E_OIDCAuthRejectsInvalidTokens verifies the negative cases of the WIF
-// agent→gateway flow: the oidcauthextension on the gateway must reject tokens
-// that are missing, carry a wrong audience, or are syntactically invalid.
-// In all three cases zero traces must reach the downstream sink.
-func TestE2E_OIDCAuthRejectsInvalidTokens(t *testing.T) {
-	testDir := filepath.Join("testdata")
+// oidcIssuer is a mock OIDC issuer serving the discovery document and the JWKS over TLS.
+type oidcIssuer struct {
+	server *httptest.Server
+	// key is published in the JWKS, otherKey is not.
+	key, otherKey *rsa.PrivateKey
+	// caPath is the path of the PEM encoded server certificate.
+	caPath string
+}
 
-	kubeconfigPath := k8stest.TestKubeConfig
-	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
+func newOIDCIssuer(t *testing.T) *oidcIssuer {
+	newKey := func() *rsa.PrivateKey {
+		k, err := rsa.GenerateKey(rand.Reader, 2048)
+		require.NoError(t, err)
+		return k
+	}
+	iss := &oidcIssuer{key: newKey(), otherKey: newKey()}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"issuer":   iss.url(),
+			"jwks_uri": iss.url() + "/jwks",
+		})
+	})
+	mux.HandleFunc("/jwks", func(w http.ResponseWriter, _ *http.Request) {
+		jwk := jose.JSONWebKey{Key: &iss.key.PublicKey, KeyID: "test-key", Algorithm: string(jose.RS256), Use: "sig"}
+		_ = json.NewEncoder(w).Encode(jose.JSONWebKeySet{Keys: []jose.JSONWebKey{jwk}})
+	})
+	iss.server = httptest.NewTLSServer(mux)
+	t.Cleanup(iss.server.Close)
+
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: iss.server.Certificate().Raw})
+	iss.caPath = filepath.Join(t.TempDir(), "ca.crt")
+	require.NoError(t, os.WriteFile(iss.caPath, certPEM, 0o600))
+	return iss
+}
+
+func (i *oidcIssuer) url() string { return i.server.URL }
+
+// tokenOpts adapts the claims of a minted token.
+type tokenOpts struct {
+	issuer   string
+	audience string
+	expires  time.Duration
+	// unpublishedKey signs the token with a key that is not part of the JWKS.
+	unpublishedKey bool
+}
+
+// mint signs a JWT. By default it is valid for the issuer and the audience of the example config.
+func (i *oidcIssuer) mint(t *testing.T, mod func(*tokenOpts)) string {
+	opts := tokenOpts{issuer: i.url(), audience: audience, expires: 10 * time.Minute}
+	if mod != nil {
+		mod(&opts)
 	}
 
-	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
+	key := i.key
+	if opts.unpublishedKey {
+		key = i.otherKey
+	}
+	signer, err := jose.NewSigner(
+		jose.SigningKey{Algorithm: jose.RS256, Key: jose.JSONWebKey{Key: key, KeyID: "test-key"}},
+		(&jose.SignerOptions{}).WithType("JWT"),
+	)
 	require.NoError(t, err)
 
-	nsFile := filepath.Join(testDir, "namespace.yaml")
-	buf, err := os.ReadFile(nsFile)
-	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
-
-	testNs := nsObj.GetName()
-	defer func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	}()
-
-	// Sink that the verifier forwards accepted telemetry to.
-	// We assert it stays empty for the duration of the test.
-	tracesConsumer := new(consumertest.TracesSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Traces: []*oteltest.TraceSinkConfig{{Consumer: tracesConsumer}},
+	now := time.Now()
+	payload, err := json.Marshal(map[string]any{
+		"iss": opts.issuer,
+		"aud": opts.audience,
+		"sub": "test-subject",
+		"iat": now.Unix(),
+		"exp": now.Add(opts.expires).Unix(),
 	})
-	defer shutdownSinks()
+	require.NoError(t, err)
+	jws, err := signer.Sign(payload)
+	require.NoError(t, err)
+	token, err := jws.CompactSerialize()
+	require.NoError(t, err)
+	return token
+}
 
-	host := otelk8stest.HostEndpoint(t)
+// TestE2E_OIDCAuthRejectsInvalidTokens verifies that the oidcauthextension of the DT Collector
+// accepts a valid token and rejects tokens that are missing, malformed, have a wrong audience,
+// are expired, are signed with an unknown key or come from a different issuer.
+// The issuer is mocked; the Kubernetes API server as issuer is covered by k8s-bearertokenauth.
+// The config under test is config_examples/oidcauth-receiver.yaml.
+func TestE2E_OIDCAuthRejectsInvalidTokens(t *testing.T) {
+	issuer := newOIDCIssuer(t)
 
-	// Deploy the verifier (oidcauthextension, audience: dynatrace-wif-test).
-	verifierTestID := uuid.NewString()[:8]
-	verifierSvcEndpoint := fmt.Sprintf("http://otelcol-%s.%s:4318", verifierTestID, testNs)
+	sink, p := startSink(t)
+	cfg, replace := prepareConfig(t, "oidcauth-receiver.yaml", p)
+	replace("issuer_url", func(s string) string {
+		return strings.Replace(s, "https://kubernetes.default.svc.cluster.local", issuer.url(), 1)
+	})
+	replace("issuer_ca_path", func(s string) string {
+		return strings.Replace(s, "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt", issuer.caPath, 1)
+	})
+	startCollector(t, "oidcauth-receiver", *cfg, p.grpc)
 
-	verifierConfig, err := k8stest.GetCollectorConfig(
-		filepath.Join("../../../../config_examples", "oidcauth-receiver.yaml"),
-		k8stest.ConfigTemplate{
-			Host: host,
-			Templates: []string{
-				k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "verifier-local.yaml")),
-			},
-		},
-	)
-	require.NoErrorf(t, err, "failed to read verifier config")
+	client := newTraceClient(t, p.grpc)
 
-	verifierObjs := otelk8stest.CreateCollectorObjects(
-		t, k8sClient, verifierTestID,
-		filepath.Join(testDir, "collector-verifier"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   verifierConfig,
-		},
-		host,
-	)
-	defer func() {
-		for _, obj := range verifierObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
+	// The positive control proves that the setup works, so that the rejections below can't be false passes.
+	t.Run("valid", func(t *testing.T) {
+		require.NoError(t, export(client, "Bearer "+issuer.mint(t, nil)))
+		waitForSpans(t, sink, 1)
+	})
 
-	// Overlay that redirects each bad sender's exporter to the verifier.
-	endpointOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "sender-endpoint.yaml")), verifierSvcEndpoint)
-
-	// Three negative cases.  Each uses a distinct rejection path in oidcauthextension:
-	//   wrong-audience  — valid cluster-issued JWT, but aud != "dynatrace-wif-test"
-	//   invalid-token   — static string that is not a parseable JWT (no issuer extraction)
-	//   no-token        — no Authorization header at all
-	cases := []struct {
-		name            string
-		configPath      string
-		saTokenAudience string
+	rejected := []struct {
+		name          string
+		authorization string
 	}{
-		{
-			name:            "wrong-audience",
-			configPath:      filepath.Join(testDir, "sender-wrong-audience-config.yaml"),
-			saTokenAudience: "wrong-audience-wif-test",
-		},
-		{
-			name:            "invalid-token",
-			configPath:      filepath.Join(testDir, "sender-invalid-token-config.yaml"),
-			saTokenAudience: "unused",
-		},
-		{
-			name:            "no-token",
-			configPath:      filepath.Join(testDir, "sender-no-token-config.yaml"),
-			saTokenAudience: "unused",
-		},
+		{"no token", ""},
+		{"not a JWT", "Bearer not.a.valid.jwt"},
+		{"wrong audience", "Bearer " + issuer.mint(t, func(o *tokenOpts) { o.audience = "wrong-audience" })},
+		{"expired", "Bearer " + issuer.mint(t, func(o *tokenOpts) { o.expires = -time.Hour })},
+		{"unknown key", "Bearer " + issuer.mint(t, func(o *tokenOpts) { o.unpublishedKey = true })},
+		{"wrong issuer", "Bearer " + issuer.mint(t, func(o *tokenOpts) { o.issuer = "https://other-issuer.example.com" })},
 	}
-
-	type senderInfo struct {
-		name   string
-		testID string
-	}
-	var senderInfos []senderInfo
-
-	var allTelemetryGenObjInfos []*otelk8stest.TelemetrygenObjInfo
-	for _, tc := range cases {
-		senderTestID := uuid.NewString()[:8]
-		senderInfos = append(senderInfos, senderInfo{name: tc.name, testID: senderTestID})
-
-		senderConfig, err := k8stest.GetCollectorConfig(tc.configPath, k8stest.ConfigTemplate{
-			Host:      host,
-			Templates: []string{endpointOverlay},
+	for _, tc := range rejected {
+		t.Run(tc.name, func(t *testing.T) {
+			err := export(client, tc.authorization)
+			require.Error(t, err)
+			assert.Equal(t, codes.Unauthenticated, status.Code(err), "unexpected error: %v", err)
 		})
-		require.NoErrorf(t, err, "failed to read sender config for case %s", tc.name)
-
-		senderObjs := otelk8stest.CreateCollectorObjects(
-			t, k8sClient, senderTestID,
-			filepath.Join(testDir, "collector-sender-negtest"),
-			map[string]string{
-				"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-				"CollectorConfig":   senderConfig,
-				"SATokenAudience":   tc.saTokenAudience,
-			},
-			host,
-		)
-		defer func() {
-			for _, obj := range senderObjs {
-				require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-			}
-		}()
-
-		teleOpts := &otelk8stest.TelemetrygenCreateOpts{
-			ManifestsDir: filepath.Join(testDir, "telemetrygen"),
-			TestID:       senderTestID,
-			OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", senderTestID, testNs),
-			DataTypes:    []string{"traces"},
-		}
-		teleObjs, teleInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, teleOpts)
-		allTelemetryGenObjInfos = append(allTelemetryGenObjInfos, teleInfos...)
-		defer func() {
-			for _, obj := range teleObjs {
-				require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-			}
-		}()
 	}
 
-	// Wait for all telemetrygen pods to confirm they are running and attempting to send.
-	for _, info := range allTelemetryGenObjInfos {
-		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
-	}
-
-	// Assert the verifier rejected every request: the sink must stay empty.
-	require.Never(t,
-		func() bool { return len(tracesConsumer.AllTraces()) > 0 },
-		90*time.Second, 5*time.Second,
-		"oidcauthextension must reject all invalid tokens; no traces should reach the sink",
-	)
-
-	// Confirm the verifier actually received and logged a rejection for each
-	// negative case — guards against a false pass where senders never sent anything.
-	verifierLogs := otelk8stest.FetchPodLogs(t, k8sClient, testNs, map[string]any{
-		"app.kubernetes.io/name":     "opentelemetry-collector",
-		"app.kubernetes.io/instance": "otelcol-" + verifierTestID,
-	})
-	// sender-no-token-config.yaml: no Authorization header → oidcauthextension rejects at header check
-	require.Contains(t, verifierLogs, "Authentication failed: missing or empty header",
-		"verifier must log rejection for missing Authorization header (no-token case)")
-	// sender-invalid-token-config.yaml: static non-JWT string → oidcauthextension fails issuer extraction
-	require.Contains(t, verifierLogs, "Authentication failed: could not parse issuer from token",
-		"verifier must log rejection for non-JWT bearer value (invalid-token case)")
-	// sender-wrong-audience-config.yaml: valid cluster JWT but wrong audience → oidcauthextension rejects at verification
-	require.Contains(t, verifierLogs, "Authentication failed: token verification failed",
-		"verifier must log rejection for wrong-audience token")
-
-	// Confirm each sender actually reached the verifier and received a 401:
-	// exporterhelper logs "Permanent error" for non-retryable HTTP responses.
-	for _, si := range senderInfos {
-		senderLogs := otelk8stest.FetchPodLogs(t, k8sClient, testNs, map[string]any{
-			"app.kubernetes.io/name":     "opentelemetry-collector",
-			"app.kubernetes.io/instance": "otelcol-" + si.testID,
-		})
-		require.Contains(t, senderLogs, "Permanent error",
-			"sender %q must log a permanent export error after 401 from verifier", si.name)
-	}
+	// Nothing but the span of the positive control may have reached the sink.
+	assert.Equal(t, 1, spanCount(sink), "rejected requests must not reach the sink")
 }

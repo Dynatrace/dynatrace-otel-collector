@@ -4,6 +4,7 @@ go 1.27.3
 
 require (
 	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0
+	github.com/go-jose/go-jose/v4 v4.1.5
 	github.com/google/uuid v1.6.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/core/xidutils v0.163.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.163.0

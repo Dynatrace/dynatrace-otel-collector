@@ -145,9 +145,9 @@ jobs:
       fail-fast: false
       matrix:
         usecase:
-          - bearertokenauth
           - filestorage
           - genainormalizer
+          - k8sbearertokenauth
           - k8scluster
           - k8senrichment
           - k8sobjects
@@ -184,6 +184,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - path: testbed/integration/bearertokenauth
+            module: testbed/integration
           - path: testbed/integration/feature-flags
             module: testbed/integration
           - path: confmap/provider/eecprovider

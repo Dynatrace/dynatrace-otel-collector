@@ -6,7 +6,7 @@
 
 ## 0.60.0
 
-This release includes version v0.164.0 of the upstream Collector components.
+This release includes versions v0.164.0 and v0.164.1 of the upstream Collector components.
 
 The individual upstream Collector changelogs can be found here:
 
@@ -14,6 +14,10 @@ v0.164.0:
 
 - <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.164.0>
 - <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.164.0>
+
+v0.164.1:
+
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.164.1>
 
 ### 🛑 Breaking changes 🛑
 
@@ -58,6 +62,7 @@ v0.164.0:
 
 ### 🧰 Bug fixes 🧰
 
+- `all`: Fix modules requiring the nonexistent v1.2.0 of `pkg/ottl` and `processor/k8sattributesprocessor`. ([#52356](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52356))
 - `exporter/otlp_http`: Report the URL the request was actually sent to in HTTP status error messages when a middleware rewrites the request URL. ([#14673](https://github.com/open-telemetry/opentelemetry-collector/issues/14673))
   Middleware RoundTrippers that clone the request before rewriting its URL left
   the configured placeholder URL in 4xx/5xx error messages. The exporter now

@@ -161,7 +161,6 @@ jobs:
           - resource-detection
           - self-monitoring
           - self-monitoring-prometheus
-          - statsd
           - zipkin
     runs-on: ubuntu-24.04
     needs: docker-build
@@ -187,6 +186,8 @@ jobs:
           - path: testbed/integration/bearertokenauth
             module: testbed/integration
           - path: testbed/integration/feature-flags
+            module: testbed/integration
+          - path: testbed/integration/statsd
             module: testbed/integration
           - path: confmap/provider/eecprovider
             module: confmap/provider/eecprovider

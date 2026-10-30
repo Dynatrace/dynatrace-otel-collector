@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"regexp"
 	"slices"
 	"strconv"
@@ -125,6 +126,41 @@ func StartUpSinks(t *testing.T, sinks ReceiverSinks) func() {
 			f()
 		}
 	}
+}
+
+// availablePort asks the OS for a free port. testutil.GetAvailablePort can't be used because
+// packages of this module can't import each other: the module is named testcommon but is
+// imported under its full path.
+func availablePort(t *testing.T) int {
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer l.Close()
+	return l.Addr().(*net.TCPAddr).Port
+}
+
+func availablePorts(t *testing.T) *ReceiverPorts {
+	return &ReceiverPorts{Grpc: availablePort(t), Http: availablePort(t)}
+}
+
+// StartTracesSink starts a traces sink on free ports until the test ends.
+func StartTracesSink(t *testing.T) (*consumertest.TracesSink, ReceiverPorts) {
+	sink, ports := new(consumertest.TracesSink), availablePorts(t)
+	t.Cleanup(StartUpSinks(t, ReceiverSinks{Traces: []*TraceSinkConfig{{Consumer: sink, Ports: ports}}}))
+	return sink, *ports
+}
+
+// StartMetricsSink starts a metrics sink on free ports until the test ends.
+func StartMetricsSink(t *testing.T) (*consumertest.MetricsSink, ReceiverPorts) {
+	sink, ports := new(consumertest.MetricsSink), availablePorts(t)
+	t.Cleanup(StartUpSinks(t, ReceiverSinks{Metrics: []*MetricSinkConfig{{Consumer: sink, Ports: ports}}}))
+	return sink, *ports
+}
+
+// StartLogsSink starts a logs sink on free ports until the test ends.
+func StartLogsSink(t *testing.T) (*consumertest.LogsSink, ReceiverPorts) {
+	sink, ports := new(consumertest.LogsSink), availablePorts(t)
+	t.Cleanup(StartUpSinks(t, ReceiverSinks{Logs: []*LogSinkConfig{{Consumer: sink, Ports: ports}}}))
+	return sink, *ports
 }
 
 // InsertDefault is a helper function to insert a default value for a configoptional.Optional type.

@@ -155,7 +155,6 @@ jobs:
           - kafka
           - kubeletstats
           - loadbalancing
-          - netflow
           - prometheus
           - redaction
           - resource-detection
@@ -185,6 +184,8 @@ jobs:
       matrix:
         include:
           - path: testbed/integration/bearertokenauth
+            module: testbed/integration
+          - path: testbed/integration/netflow
             module: testbed/integration
           - path: testbed/integration/feature-flags
             module: testbed/integration

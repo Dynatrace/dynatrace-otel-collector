@@ -19,7 +19,6 @@
   "ignoreDeps": [
     "docker.redpanda.com/redpandadata/redpanda",
     "ghcr.io/openzipkin/brave-example",
-    "networkstatic/nflow-generator",
     "rockylinux"
   ],
   "packageRules": [

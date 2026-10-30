@@ -4,6 +4,82 @@
 
 <!-- next version -->
 
+## 0.60.0
+
+This release includes version v0.164.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.164.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.164.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.164.0>
+
+### 🛑 Breaking changes 🛑
+
+- `processor/filter`: remove stable processor.filter.defaultErrorModeIgnore gate ([#52238](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52238))
+- `pkg/ottl`: Remove the stable `ottl.set.allowNil` feature gate. ([#48714](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48714))
+- `receiver/file_log`: Promote the `filelog.protobufCheckpointEncoding` feature gate to stable. Checkpoints are always written as protobuf. ([#43266](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43266), [#52037](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52037))
+  The feature gate can no longer be disabled and will be removed in v0.165.0.
+  Existing JSON checkpoints are still read and are rewritten as protobuf on the next save.
+- `receiver/kubelet_stats`: Remove the deprecated `aws.volume.id`, `fs.type`, `gce.pd.name`, `glusterfs.endpoints.name`, `glusterfs.path` and `partition` resource attributes. ([#40477](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40477))
+- `pkg/zipkin`: Promote "pkg.translator.zipkin.EmitV1HttpConventions", "pkg.translator.zipkin.DontEmitV0HttpConventions", "pkg.translator.zipkin.EmitV1ScopeConventions", and "pkg.translator.zipkin.DontEmitV0ScopeConventions" feature gates to Beta. ([#50909](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50909))
+  This changes the default behavior to emit the new semantic convention attributes instead of the old deprecated ones.
+  The Zipkin translator will now use `http.response.status_code` (replacing `http.status_code`), `otel.scope.name`
+  (replacing `otel.library.name`), and `otel.scope.version` (replacing `otel.library.version`) by default when emitting spans.
+- `receiver/prometheus`: Remove the stable `receiver.prometheusreceiver.IgnoreScopeInfoMetric` feature gate. ([#47312](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47312))
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### ⚠️ Deprecations ⚠️
+
+- `receiver/kafka`: Deprecate the built-in `json` logs encoding in favour of `jsonlogencodingextension`. ([#39113](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39113))
+- `processor/probabilistic_sampler`: Add the `otelcol_processor_probabilistic_sampler_count_spans_processed` metric and deprecate `otelcol_processor_probabilistic_sampler_count_traces_sampled` in favor of it. ([#50954](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50954))
+  The deprecated metric remains available for compatibility.
+- `processor/transform`: Deprecate the `flatten_data` option in favor of the new `flatten.log` option. ([#51766](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51766))
+  Replace `flatten_data: true` with `flatten: {log: true}`. `flatten_data` will be removed in a future release.
+- `receiver/kafka`: Deprecate `partition_processing.max_buffered_batches` in favour of `partition_processing.max_prefetch.batches`. It will be removed in v0.166.0. ([#52253](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52253))
+- `receiver/kafka`: Deprecate the built-in `jaeger_proto` and `jaeger_json` encodings in favour of `jaegerencodingextension`. ([#39113](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/39113))
+
+### 💡 Enhancements 💡
+
+- `processor/resource_detection`: Define EC2 retry defaults locally instead of importing them from the AWS SDK. Defaults remain 3 attempts and 20s maximum backoff. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `pkg/kafka/configkafka`: Add `dial_timeout` configuration option to control the timeout for establishing connections to Kafka brokers. ([#51910](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51910))
+- `receiver/kafka`: Add `partition_processing.max_prefetch.bytes` to cap the bytes of fetched batches waiting for each partition worker. Use it to bound memory when batch sizes vary. ([#52253](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52253))
+- `receiver/kafka`: Add `partition_processing.max_in_flight.bytes` to limit the record bytes each partition holds while it processes records concurrently. Use it to bound memory when record sizes vary. ([#51804](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51804))
+- `receiver/k8s_objects`: Add an opt-in informer-based observer behind the `receiver.k8sobjects.useInformerObserver` feature gate. ([#43602](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/43602))
+- `receiver/kubelet_stats`: Promote `container.cpu.time` to beta stability and align it with Semantic Conventions v1.43.0. ([#52197](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52197))
+- `processor/resource_detection`: Add `attributes.included` and `attributes.excluded` options to the `env` detector to filter which attribute keys from `OTEL_RESOURCE_ATTRIBUTES` are emitted. Both lists support `*` and `?` as wildcards, and `excluded` is applied after `included`. ([#49970](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49970))
+- `receiver/kafka`: Make `max_decompress_batch_bytes` configurable in the Kafka receiver consumer configuration. ([#51845](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51845))
+- `pkg/ottl`: Promote traces, metrics, and logs signals from beta to stable. ([#51068](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51068), [#47305](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47305))
+- `processor/k8s_attributes`: Add experimental kubelet `/pods` polling as an opt-in pod metadata source. ([#14475](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/14475))
+- `receiver/kafka`: Add `partition_processing.max_in_flight.window`. Set it to `cross_fetch` so exporters that wait to fill a batch, for example with `sending_queue.wait_for_result` and `batch.min_size`, get records from more than one fetch instead of sending small batches on the flush timeout. ([#51804](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51804))
+
+### 🧰 Bug fixes 🧰
+
+- `exporter/otlp_http`: Report the URL the request was actually sent to in HTTP status error messages when a middleware rewrites the request URL. ([#14673](https://github.com/open-telemetry/opentelemetry-collector/issues/14673))
+  Middleware RoundTrippers that clone the request before rewriting its URL left
+  the configured placeholder URL in 4xx/5xx error messages. The exporter now
+  reads the destination from the response instead.
+- `pkg/ottl`: Fix context inference for statements that pass an all-uppercase converter name, such as `SHA256`, as a function argument. ([#52192](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52192))
+- `processor/cumulative_to_delta`: Handle NaN sums on exponential histograms like on histograms, so the next sum is no longer emitted as a NaN delta ([#51965](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51965))
+- `processor/resource_detection`: Bypass environment proxies for EKS detector requests to the in-cluster Kubernetes API. ([#52301](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52301))
+  Besides this, the EKS detector configuration now accepts API server configuration to control
+  how it connections to the Kubernetes API server.
+- `receiver/prometheus`: Fix config reload failing for multi-line secrets such as an inline `tls_config.key` ([#52080](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52080))
+- `processor/cumulative_to_delta`: Include the scope attributes in the identity of a stream, so scopes that only differ in their attributes are no longer converted as one stream ([#52162](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52162))
+- `processor/resource_detection`: Fix a panic in the ECS detector when the task ARN has only 5 colon-separated parts ([#52074](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52074))
+  `parseTaskARN` checked for at least 5 parts but read the 6th one, so a task ARN without a resource part
+  caused an index out of range panic during detection.
+
+---
+
+</details>
+
+
+<!-- previous-version -->
+
 ## 0.59.0
 
 This release includes version v0.163.0 of the upstream Collector components.

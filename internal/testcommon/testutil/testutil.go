@@ -137,6 +137,17 @@ func createExclusionsList(t testing.TB, exclusionsText string) []portpair {
 	return exclusions
 }
 
+// GetAvailableUDPPort returns a local UDP port that is currently free.
+func GetAvailableUDPPort(t testing.TB) int {
+	_, port, err := net.SplitHostPort(GetAvailableLocalNetworkAddress(t, "udp"))
+	require.NoError(t, err)
+
+	portInt, err := strconv.Atoi(port)
+	require.NoError(t, err)
+
+	return portInt
+}
+
 func GetAvailablePort(t testing.TB) int {
 	endpoint := GetAvailableLocalAddress(t)
 	_, port, err := net.SplitHostPort(endpoint)

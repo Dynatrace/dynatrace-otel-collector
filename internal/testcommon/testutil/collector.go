@@ -140,7 +140,7 @@ func WaitForListener(t testing.TB, addr string) {
 }
 
 // WaitForHealthCheck waits until the health_check extension on port reports that the Collector
-// is ready, i.e. all pipelines have started. In legacy mode it returns 503 until then.
+// is ready, i.e. all pipelines have started.
 func WaitForHealthCheck(t testing.TB, port int) {
 	t.Helper()
 	url := "http://" + net.JoinHostPort("localhost", strconv.Itoa(port)) + "/"

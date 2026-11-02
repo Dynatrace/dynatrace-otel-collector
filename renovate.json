@@ -18,7 +18,6 @@
   ],
   "ignoreDeps": [
     "docker.redpanda.com/redpandadata/redpanda",
-    "networkstatic/nflow-generator",
     "rockylinux"
   ],
   "packageRules": [

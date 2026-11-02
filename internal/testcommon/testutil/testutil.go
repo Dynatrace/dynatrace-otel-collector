@@ -21,6 +21,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/testbed/testbed"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/featuregate"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
@@ -137,7 +138,7 @@ func createExclusionsList(t testing.TB, exclusionsText string) []portpair {
 	return exclusions
 }
 
-// GetAvailableUDPPort returns a port that is currently free for UDP.
+// GetAvailableUDPPort returns a local UDP port that is currently free.
 func GetAvailableUDPPort(t testing.TB) int {
 	_, port, err := net.SplitHostPort(GetAvailableLocalNetworkAddress(t, "udp"))
 	require.NoError(t, err)
@@ -813,4 +814,12 @@ func mergeMetricDataPoints(dst, src pmetric.Metric) {
 	case pmetric.MetricTypeExponentialHistogram:
 		src.ExponentialHistogram().DataPoints().MoveAndAppendTo(dst.ExponentialHistogram().DataPoints())
 	}
+}
+
+func CountLogRecords(sink *consumertest.LogsSink) int {
+	n := 0
+	for _, l := range sink.AllLogs() {
+		n += l.LogRecordCount()
+	}
+	return n
 }

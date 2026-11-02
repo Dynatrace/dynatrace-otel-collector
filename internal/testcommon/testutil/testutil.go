@@ -137,6 +137,17 @@ func createExclusionsList(t testing.TB, exclusionsText string) []portpair {
 	return exclusions
 }
 
+// GetAvailableUDPPort returns a port that is currently free for UDP.
+func GetAvailableUDPPort(t testing.TB) int {
+	_, port, err := net.SplitHostPort(GetAvailableLocalNetworkAddress(t, "udp"))
+	require.NoError(t, err)
+
+	portInt, err := strconv.Atoi(port)
+	require.NoError(t, err)
+
+	return portInt
+}
+
 func GetAvailablePort(t testing.TB) int {
 	endpoint := GetAvailableLocalAddress(t)
 	_, port, err := net.SplitHostPort(endpoint)
@@ -190,6 +201,10 @@ func ReplaceJaegerGrpcReceiverPort(cfg string, receiverPort int) string {
 
 func ReplaceZipkinReceiverPort(cfg string, receiverPort int) string {
 	return replaceEndpointPort(cfg, 9411, receiverPort)
+}
+
+func ReplaceStatsdReceiverPort(cfg string, receiverPort int) string {
+	return replaceEndpointPort(cfg, 8125, receiverPort)
 }
 
 func ReplaceSyslogHostReceiverPort(cfg string, receiverPort int) string {

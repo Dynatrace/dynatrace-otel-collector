@@ -5,6 +5,7 @@ package testutil
 
 import (
 	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -136,4 +137,20 @@ func WaitForListener(t testing.TB, addr string) {
 		_ = conn.Close()
 		return true
 	}, 30*time.Second, 200*time.Millisecond, "nothing started listening on %s", addr)
+}
+
+// WaitForHealthCheck waits until the health_check extension on port reports that the Collector
+// is ready, i.e. all pipelines have started. In legacy mode it returns 503 until then.
+func WaitForHealthCheck(t testing.TB, port int) {
+	t.Helper()
+	url := "http://" + net.JoinHostPort("localhost", strconv.Itoa(port)) + "/"
+	client := &http.Client{Timeout: time.Second}
+	require.Eventually(t, func() bool {
+		resp, err := client.Get(url)
+		if err != nil {
+			return false
+		}
+		_ = resp.Body.Close()
+		return resp.StatusCode == http.StatusOK
+	}, 30*time.Second, 200*time.Millisecond, "health check on %s did not become ready", url)
 }

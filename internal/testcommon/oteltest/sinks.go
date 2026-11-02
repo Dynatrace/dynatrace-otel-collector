@@ -21,6 +21,7 @@ import (
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/config/configoptional"
 	"go.opentelemetry.io/collector/confmap"
+	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -161,6 +162,59 @@ func StartLogsSink(t *testing.T) (*consumertest.LogsSink, ReceiverPorts) {
 	sink, ports := new(consumertest.LogsSink), availablePorts(t)
 	t.Cleanup(StartUpSinks(t, ReceiverSinks{Logs: []*LogSinkConfig{{Consumer: sink, Ports: ports}}}))
 	return sink, *ports
+}
+
+// Consumers are the consumers served by StartReceiver. A nil consumer means the signal isn't served.
+type Consumers struct {
+	Traces  consumer.Traces
+	Metrics consumer.Metrics
+	Logs    consumer.Logs
+}
+
+// StartReceiver starts a single OTLP receiver on free ports that serves all given consumers, until
+// the test ends. The receivers of all signals share one config, so they share one port pair.
+func StartReceiver(t *testing.T, c Consumers) ReceiverPorts {
+	ports := availablePorts(t)
+	f := otlpreceiver.NewFactory()
+	cfg := f.CreateDefaultConfig().(*otlpreceiver.Config)
+	setupReceiverPorts(cfg, ports)
+	set := receivertest.NewNopSettings(component.MustNewType("otlp"))
+
+	var receivers []component.Component
+	if c.Traces != nil {
+		r, err := f.CreateTraces(context.Background(), set, cfg, c.Traces)
+		require.NoError(t, err, "failed creating traces receiver")
+		receivers = append(receivers, r)
+	}
+	if c.Metrics != nil {
+		r, err := f.CreateMetrics(context.Background(), set, cfg, c.Metrics)
+		require.NoError(t, err, "failed creating metrics receiver")
+		receivers = append(receivers, r)
+	}
+	if c.Logs != nil {
+		r, err := f.CreateLogs(context.Background(), set, cfg, c.Logs)
+		require.NoError(t, err, "failed creating logs receiver")
+		receivers = append(receivers, r)
+	}
+	for _, r := range receivers {
+		require.NoError(t, r.Start(context.Background(), componenttest.NewNopHost()))
+		t.Cleanup(func() { assert.NoError(t, r.Shutdown(context.Background())) })
+	}
+	return *ports
+}
+
+// Sinks holds one sink per signal, all served by the same OTLP receiver.
+type Sinks struct {
+	Traces  *consumertest.TracesSink
+	Metrics *consumertest.MetricsSink
+	Logs    *consumertest.LogsSink
+}
+
+// StartSinks starts a single OTLP receiver on free ports that accepts all three signals, until the test ends.
+func StartSinks(t *testing.T) (Sinks, ReceiverPorts) {
+	sinks := Sinks{Traces: new(consumertest.TracesSink), Metrics: new(consumertest.MetricsSink), Logs: new(consumertest.LogsSink)}
+	ports := StartReceiver(t, Consumers{Traces: sinks.Traces, Metrics: sinks.Metrics, Logs: sinks.Logs})
+	return sinks, ports
 }
 
 // InsertDefault is a helper function to insert a default value for a configoptional.Optional type.

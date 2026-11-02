@@ -182,11 +182,11 @@ jobs:
         include:
           - path: testbed/integration/bearertokenauth
             module: testbed/integration
+          - path: testbed/integration/feature-flags
+            module: testbed/integration
           - path: testbed/integration/netflow
             module: testbed/integration
           - path: testbed/integration/redaction
-            module: testbed/integration
-          - path: testbed/integration/feature-flags
             module: testbed/integration
           - path: testbed/integration/statsd
             module: testbed/integration

@@ -33,15 +33,15 @@ alternateConfig:
     otlphttp/scraper:
       endpoint: "${env:DT_ENDPOINT_SCRAPER}"
       headers:
-        Authorization: "Api-Token ${env:DT_API_TOKEN}"
+        Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
     otlphttp/gateway:
       endpoint: "${env:DT_ENDPOINT_GATEWAY}"
       headers:
-        Authorization: "Api-Token ${env:DT_API_TOKEN}"
+        Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
     otlphttp/allocator:
       endpoint: "${env:DT_ENDPOINT_ALLOCATOR}"
       headers:
-        Authorization: "Api-Token ${env:DT_API_TOKEN}"
+        Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
 
   service:
     extensions:

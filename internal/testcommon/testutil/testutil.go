@@ -204,6 +204,10 @@ func ReplaceZipkinReceiverPort(cfg string, receiverPort int) string {
 	return replaceEndpointPort(cfg, 9411, receiverPort)
 }
 
+func ReplaceStatsdReceiverPort(cfg string, receiverPort int) string {
+	return replaceEndpointPort(cfg, 8125, receiverPort)
+}
+
 func ReplaceSyslogHostReceiverPort(cfg string, receiverPort int) string {
 	return replaceEndpointPort(cfg, 54527, receiverPort)
 }
@@ -215,8 +219,7 @@ func ReplaceSyslogF5ReceiverPort(cfg string, receiverPort int) string {
 func ReplaceDynatraceExporterEndpoint(cfg string, exporterPort int) string {
 	r := strings.NewReplacer(
 		"${env:DT_ENDPOINT}", fmt.Sprintf("http://0.0.0.0:%v", exporterPort),
-		"${env:API_TOKEN}", "",
-		"${env:DT_API_TOKEN}", "",
+		"${env:DT_PLATFORM_TOKEN}", "",
 	)
 	return r.Replace(cfg)
 }

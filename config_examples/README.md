@@ -43,7 +43,7 @@ Before running the samples, make sure you have the following environment variabl
 - `DT_ENDPOINT`: The OTLP HTTP endpoint of your Dynatrace environment.
   - Follow the guide: [Export to ActiveGate](https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport#export-to-dt)
     to see how to get the correct API URL for your environment
-- `API_TOKEN`: The Dynatrace API access token. Follow the guide on [Authentication](https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport#authentication-export-to-activegate) to see the scopes required for ingesting OTLP data.
+- `DT_PLATFORM_TOKEN`: A Dynatrace [platform token](https://docs.dynatrace.com/docs/shortlink/platform-tokens) with the `openpipeline:logs:ingest`, `openpipeline:metrics:ingest` and `openpipeline:traces:ingest` scopes, depending on the signals you export.
 
 ## Trying out the configuration examples
 
@@ -53,7 +53,7 @@ You can try each configuration example by simply passing the file to the collect
 docker run --rm \
   --name dt-otelcol \
   --env DT_ENDPOINT=$DT_ENDPOINT \
-  --env API_TOKEN=$API_TOKEN \
+  --env DT_PLATFORM_TOKEN=$DT_PLATFORM_TOKEN \
   -p 4317:4317 \
   -v $(pwd)/config_examples/tail_sampling.yaml:/collector.yaml \
   ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest \
@@ -66,7 +66,7 @@ Or try it out from the GitHub repo if you don't have it cloned:
 docker run --rm \
   --name dt-otelcol \
   --env DT_ENDPOINT=$DT_ENDPOINT \
-  --env API_TOKEN=$API_TOKEN \
+  --env DT_PLATFORM_TOKEN=$DT_PLATFORM_TOKEN \
   -p 4317:4317 \
   ghcr.io/dynatrace/dynatrace-otel-collector/dynatrace-otel-collector:latest \
   --config https://raw.githubusercontent.com/Dynatrace/dynatrace-otel-collector/main/config_examples/tail_sampling.yaml

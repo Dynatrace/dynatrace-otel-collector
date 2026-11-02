@@ -17,11 +17,11 @@ securityContext:
   runAsGroup: 10001
   privileged: false
 extraEnvs:
-- name: DT_API_TOKEN
+- name: DT_PLATFORM_TOKEN
   valueFrom:
     secretKeyRef:
       name: dynatrace-otelcol-dt-api-credentials
-      key: DT_API_TOKEN
+      key: DT_PLATFORM_TOKEN
 - name: DT_ENDPOINT
   valueFrom:
     secretKeyRef:
@@ -42,7 +42,7 @@ alternateConfig:
     otlp_http:
       endpoint: "${env:DT_ENDPOINT}"
       headers:
-        Authorization: "Api-Token ${env:DT_API_TOKEN}"
+        Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
   extensions:
     health_check:
       endpoint: "${env:MY_POD_IP}:13133"

@@ -5,7 +5,7 @@
 echo "Installing Dynatrace Collector using helm"
 helm version
 
-kubectl create secret generic dynatrace-otelcol-dt-api-credentials --from-literal=DT_ENDPOINT="endpoint" --from-literal=DT_API_TOKEN="token"
+kubectl create secret generic dynatrace-otelcol-dt-api-credentials --from-literal=DT_ENDPOINT="endpoint" --from-literal=DT_PLATFORM_TOKEN="token"
 
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 helm repo update

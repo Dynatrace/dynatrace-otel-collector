@@ -2,7 +2,7 @@ exporters:
   otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
-      Authorization: "Api-Token ${env:DT_API_TOKEN}"
+      Authorization: "Bearer ${env:DT_API_TOKEN}"
 
 extensions:
   health_check:

@@ -145,7 +145,6 @@ jobs:
       fail-fast: false
       matrix:
         usecase:
-          - filestorage
           - genainormalizer
           - k8sbearertokenauth
           - k8scluster
@@ -186,6 +185,8 @@ jobs:
           - path: testbed/integration/netflow
             module: testbed/integration
           - path: testbed/integration/feature-flags
+            module: testbed/integration
+          - path: testbed/integration/filestorage
             module: testbed/integration
           - path: testbed/integration/statsd
             module: testbed/integration

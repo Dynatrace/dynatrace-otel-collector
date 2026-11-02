@@ -166,15 +166,8 @@ func TestE2E_NetflowReceiver(t *testing.T) {
 	_, err = conn.Write(encodeV5(t, recordA, recordB))
 	require.NoError(t, err)
 
-	records := func() int {
-		n := 0
-		for _, l := range sink.AllLogs() {
-			n += l.LogRecordCount()
-		}
-		return n
-	}
-	require.Eventually(t, func() bool { return records() >= 2 }, 30*time.Second, 200*time.Millisecond,
-		"expected 2 log records, got %d", records())
+	require.Eventually(t, func() bool { return testutil.CountLogRecords(sink) >= 2 }, 30*time.Second, 200*time.Millisecond,
+		"expected 2 log records, got %d", testutil.CountLogRecords(sink))
 
 	allLogs := sink.AllLogs()
 	require.Len(t, allLogs, 1, "both flows were sent in one packet")

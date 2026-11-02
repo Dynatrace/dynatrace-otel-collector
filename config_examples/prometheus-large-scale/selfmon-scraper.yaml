@@ -234,7 +234,7 @@ alternateConfig:
     otlphttp/dynatrace:
       endpoint: "${env:DT_ENDPOINT}"
       headers:
-        Authorization: "Bearer ${env:DT_API_TOKEN}"
+        Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
       sending_queue:
         batch:
           min_size: 1000

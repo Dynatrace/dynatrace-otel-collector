@@ -36,7 +36,7 @@ func GetCollectorConfig(path string, template ConfigTemplate) (string, error) {
 
 	replacer := strings.NewReplacer(
 		"${env:DT_ENDPOINT}", fmt.Sprintf("http://%s:4318", template.Host),
-		"${env:DT_API_TOKEN}", "",
+		"${env:DT_PLATFORM_TOKEN}", "",
 		"${env:NAMESPACE}", template.Namespace,
 	)
 

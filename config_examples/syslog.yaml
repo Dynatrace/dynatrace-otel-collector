@@ -37,7 +37,7 @@ exporters:
   otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
-      Authorization: "Bearer ${env:DT_API_TOKEN}"
+      Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
 
 service:
   pipelines:

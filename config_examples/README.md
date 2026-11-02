@@ -43,7 +43,7 @@ Before running the samples, make sure you have the following environment variabl
 - `DT_ENDPOINT`: The OTLP HTTP endpoint of your Dynatrace environment.
   - Follow the guide: [Export to ActiveGate](https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport#export-to-dt)
     to see how to get the correct API URL for your environment
-- `DT_PLATFORM_TOKEN`: A Dynatrace [platform token](https://docs.dynatrace.com/docs/manage/identity-access-management/access-tokens-and-oauth-clients/platform-tokens) with the `openpipeline:logs:ingest`, `openpipeline:metrics:ingest` and `openpipeline:traces:ingest` scopes, depending on the signals you export.
+- `DT_PLATFORM_TOKEN`: A Dynatrace [platform token](https://docs.dynatrace.com/docs/shortlink/platform-tokens) with the `openpipeline:logs:ingest`, `openpipeline:metrics:ingest` and `openpipeline:traces:ingest` scopes, depending on the signals you export.
 
 ## Trying out the configuration examples
 

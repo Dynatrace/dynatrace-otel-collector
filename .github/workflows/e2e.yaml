@@ -155,7 +155,6 @@ jobs:
           - kafka
           - kubeletstats
           - loadbalancing
-          - prometheus
           - redaction
           - resource-detection
           - self-monitoring
@@ -186,6 +185,8 @@ jobs:
           - path: testbed/integration/netflow
             module: testbed/integration
           - path: testbed/integration/feature-flags
+            module: testbed/integration
+          - path: testbed/integration/prometheus
             module: testbed/integration
           - path: testbed/integration/statsd
             module: testbed/integration

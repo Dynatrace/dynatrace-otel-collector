@@ -38,7 +38,7 @@ kubectl apply --server-side -f "${CRD_BASE}/monitoring.coreos.com_probes.yaml"
 kubectl create secret generic dynatrace-otelcol-credentials \
     --namespace "${NAMESPACE}" \
     --from-literal=DT_ENDPOINT="http://${HOST}:4318" \
-    --from-literal=DT_API_TOKEN="" \
+    --from-literal=DT_PLATFORM_TOKEN="" \
     --dry-run=client -o yaml | kubectl apply -f -
 
 # Secret for selfmon-scraper with 3 separate endpoints (one per source)
@@ -49,7 +49,7 @@ kubectl create secret generic selfmon-credentials \
     --from-literal=DT_ENDPOINT_SCRAPER="http://${HOST}:${SELFMON_SCRAPER_HTTP_PORT}" \
     --from-literal=DT_ENDPOINT_GATEWAY="http://${HOST}:${SELFMON_GATEWAY_HTTP_PORT}" \
     --from-literal=DT_ENDPOINT_ALLOCATOR="http://${HOST}:${SELFMON_ALLOCATOR_HTTP_PORT}" \
-    --from-literal=DT_API_TOKEN="" \
+    --from-literal=DT_PLATFORM_TOKEN="" \
     --dry-run=client -o yaml | kubectl apply -f -
 
 # --- RBAC ------------------------------------------------------------------

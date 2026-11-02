@@ -45,7 +45,7 @@ exporters:
   otlp_http:
     endpoint: ${env:DT_ENDPOINT}
     headers:
-      Authorization: "Bearer ${env:API_TOKEN}"
+      Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
     sending_queue:
       batch:
         min_size: 5

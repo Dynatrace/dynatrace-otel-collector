@@ -96,18 +96,17 @@ type CollectorParams struct {
 
 // Collector is a Collector child process started with StartCollector.
 type Collector struct {
-	t       *testing.T
 	runner  testbed.OtelcolRunner
 	name    string
 	logPath string
 }
 
-// Stop sends SIGTERM and waits for the Collector to exit. The testbed sends SIGKILL after 10 s.
+// Stop sends SIGTERM and waits for the Collector to exit.
 // It fails the test if the Collector didn't exit cleanly. Calling it again is a no-op.
-func (c *Collector) Stop() {
-	c.t.Helper()
+func (c *Collector) Stop(t *testing.T) {
+	t.Helper()
 	_, err := c.runner.Stop()
-	require.NoError(c.t, err)
+	require.NoError(t, err)
 }
 
 // StartCollector runs the Collector binary as a child process until the test ends or Stop is
@@ -124,7 +123,6 @@ func StartCollector(t *testing.T, p CollectorParams) *Collector {
 	t.Cleanup(cleanupCfg)
 
 	c := &Collector{
-		t:       t,
 		runner:  col,
 		name:    p.Name,
 		logPath: filepath.Join(t.TempDir(), "collector.log"),

@@ -79,14 +79,6 @@ func collectorConfig(t *testing.T, logDir, storageDir string, sinkPort int) (str
 	return cfg.String(), healthPort
 }
 
-func startCollector(t *testing.T, name, cfg string, healthPort int) *testutil.Collector {
-	return testutil.StartCollector(t, testutil.CollectorParams{
-		Name:      name,
-		Config:    cfg,
-		ReadyPort: healthPort,
-	})
-}
-
 // writeEntries appends the numbered lines from..to to the file at path.
 func writeEntries(t *testing.T, path string, from, to int) {
 	var s string
@@ -146,12 +138,6 @@ func requireAllReceived(t *testing.T, from, to int, logs func() []plog.Logs, msg
 	}, waitFor, waitTick, msg)
 }
 
-func requireExactlyOnce(t *testing.T, counts map[int]int, from, to int) {
-	for n := from; n <= to; n++ {
-		require.Equalf(t, 1, counts[n], "entry %d was received %d times", n, counts[n])
-	}
-}
-
 // TestE2E_FileStorageCheckpoint tests that the file_log receiver resumes from the offset stored
 // in file_storage after a Collector restart: lines written while the Collector is down are
 // neither lost nor duplicated.
@@ -163,20 +149,23 @@ func TestE2E_FileStorageCheckpoint(t *testing.T) {
 	logPath := filepath.Join(logDir, "app.log")
 	cfg, healthPort := collectorConfig(t, logDir, filepath.Join(t.TempDir(), "file_storage"), ports.Http)
 
-	c1 := startCollector(t, "filestorage-1", cfg, healthPort)
+	c1 := testutil.StartCollector(t, testutil.CollectorParams{Name: "filestorage-1", Config: cfg, ReadyPort: healthPort})
 	waitForPipeline(t, logPath, b)
 
 	writeEntries(t, logPath, 1, 50)
 	requireAllReceived(t, 1, 50, b.AllLogs, "entries 1..50 did not arrive")
-	c1.Stop()
+	c1.Stop(t)
 
 	writeEntries(t, logPath, 51, 100)
 
-	startCollector(t, "filestorage-2", cfg, healthPort)
+	testutil.StartCollector(t, testutil.CollectorParams{Name: "filestorage-2", Config: cfg, ReadyPort: healthPort})
 	requireAllReceived(t, 51, 100, b.AllLogs, "entries 51..100 did not arrive after restart")
 
 	// Lost lines mean the checkpoint wasn't used, duplicates mean the file was re-read.
-	requireExactlyOnce(t, entryCounts(b.AllLogs()), 1, 100)
+	counts := entryCounts(b.AllLogs())
+	for n := 1; n <= 100; n++ {
+		require.Equalf(t, 1, counts[n], "entry %d was received %d times", n, counts[n])
+	}
 }
 
 // TestE2E_FileStoragePersistentQueue tests that the persistent sending_queue of the exporter
@@ -190,7 +179,7 @@ func TestE2E_FileStoragePersistentQueue(t *testing.T) {
 	logPath := filepath.Join(logDir, "app.log")
 	cfg, healthPort := collectorConfig(t, logDir, filepath.Join(t.TempDir(), "file_storage"), ports.Http)
 
-	c1 := startCollector(t, "filestorage-1", cfg, healthPort)
+	c1 := testutil.StartCollector(t, testutil.CollectorParams{Name: "filestorage-1", Config: cfg, ReadyPort: healthPort})
 	waitForPipeline(t, logPath, b)
 
 	b.setUnavailable(true)
@@ -199,14 +188,17 @@ func TestE2E_FileStoragePersistentQueue(t *testing.T) {
 	requireAllReceived(t, 1, 50, b.rejectedLogs, "entries 1..50 were not dispatched to the backend")
 
 	// Graceful shutdown interrupts the retry and leaves the items in the queue.
-	c1.Stop()
+	c1.Stop(t)
 
 	// From now on the lines can only come from the persistent queue, not from file_log.
 	require.NoError(t, os.Remove(logPath))
 
 	b.setUnavailable(false)
-	startCollector(t, "filestorage-2", cfg, healthPort)
+	testutil.StartCollector(t, testutil.CollectorParams{Name: "filestorage-2", Config: cfg, ReadyPort: healthPort})
 	requireAllReceived(t, 1, 50, b.AllLogs, "entries 1..50 were not delivered after restart")
 
-	requireExactlyOnce(t, entryCounts(b.AllLogs()), 1, 50)
+	counts := entryCounts(b.AllLogs())
+	for n := 1; n <= 50; n++ {
+		require.Equalf(t, 1, counts[n], "entry %d was received %d times", n, counts[n])
+	}
 }

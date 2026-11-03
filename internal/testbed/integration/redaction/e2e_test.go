@@ -45,7 +45,7 @@ func startCollector(t *testing.T, example string, edit func(*testutil.Config)) (
 // export sends the traces and fails the test if the export is not accepted.
 func export(t *testing.T, grpcPort int, td ptrace.Traces) {
 	client := oteltest.NewTracesClient(t, grpcPort)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 	defer cancel()
 	_, err := client.Export(ctx, ptraceotlp.NewExportRequestFromTraces(td))
 	require.NoError(t, err)

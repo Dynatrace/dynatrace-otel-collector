@@ -143,49 +143,6 @@ func availablePorts(t *testing.T) *ReceiverPorts {
 	return &ReceiverPorts{Grpc: availablePort(t), Http: availablePort(t)}
 }
 
-// Consumers receive the signals of an OTLP receiver started with StartReceiver. Signals with a
-// nil consumer are not received.
-type Consumers struct {
-	Traces  consumer.Traces
-	Metrics consumer.Metrics
-	Logs    consumer.Logs
-}
-
-// StartReceiver starts an OTLP receiver on free ports that forwards to cons until the test ends.
-func StartReceiver(t *testing.T, cons Consumers) ReceiverPorts {
-	ports := availablePorts(t)
-	// otlpreceiver shares one server per config pointer, so all signals use the same ports.
-	cfg := otlpreceiver.NewFactory().CreateDefaultConfig().(*otlpreceiver.Config)
-	setupReceiverPorts(cfg, ports)
-	f := otlpreceiver.NewFactory()
-	set := receivertest.NewNopSettings(component.MustNewType("otlp"))
-	ctx := context.Background()
-
-	var receivers []component.Component
-	if cons.Traces != nil {
-		r, err := f.CreateTraces(ctx, set, cfg, cons.Traces)
-		require.NoError(t, err, "failed creating traces receiver")
-		receivers = append(receivers, r)
-	}
-	if cons.Metrics != nil {
-		r, err := f.CreateMetrics(ctx, set, cfg, cons.Metrics)
-		require.NoError(t, err, "failed creating metrics receiver")
-		receivers = append(receivers, r)
-	}
-	if cons.Logs != nil {
-		r, err := f.CreateLogs(ctx, set, cfg, cons.Logs)
-		require.NoError(t, err, "failed creating logs receiver")
-		receivers = append(receivers, r)
-	}
-	for _, r := range receivers {
-		require.NoError(t, r.Start(ctx, componenttest.NewNopHost()))
-		t.Cleanup(func() {
-			assert.NoError(t, r.Shutdown(context.Background()))
-		})
-	}
-	return *ports
-}
-
 // StartTracesSink starts a traces sink on free ports until the test ends.
 func StartTracesSink(t *testing.T) (*consumertest.TracesSink, ReceiverPorts) {
 	sink := new(consumertest.TracesSink)

@@ -150,7 +150,6 @@ jobs:
           - k8senrichment
           - k8sobjects
           - k8spodlogs
-          - kafka
           - kubeletstats
           - loadbalancing
           - prometheus
@@ -189,6 +188,8 @@ jobs:
           - path: testbed/integration/filestorage
             module: testbed/integration
           - path: testbed/integration/genainormalizer
+            module: testbed/integration
+          - path: testbed/integration/kafka
             module: testbed/integration
           - path: testbed/integration/statsd
             module: testbed/integration

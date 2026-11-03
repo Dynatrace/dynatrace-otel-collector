@@ -17,7 +17,6 @@
     "gomodMassage"
   ],
   "ignoreDeps": [
-    "docker.redpanda.com/redpandadata/redpanda",
     "rockylinux"
   ],
   "packageRules": [

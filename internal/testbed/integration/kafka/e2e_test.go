@@ -275,10 +275,11 @@ func TestE2E_KafkaMetricsReceiver(t *testing.T) {
 	require.NoError(t, resp.Error())
 
 	sink, sinkPorts := oteltest.StartMetricsSink(t)
+	healthPort := testutil.GetAvailablePort(t)
 	testutil.StartCollector(t, testutil.CollectorParams{
 		Name:      "kafka-metrics",
 		Config:    metricsReceiverConfig(t, broker, healthPort, sinkPorts.Http),
-		ReadyPort: testutil.GetAvailablePort(t),
+		ReadyPort: healthPort,
 	})
 
 	expectedFile := "testdata/expected-kafka-metrics.assert.yaml"

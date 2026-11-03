@@ -146,7 +146,6 @@ jobs:
       matrix:
         usecase:
           - filestorage
-          - genainormalizer
           - k8sbearertokenauth
           - k8scluster
           - k8senrichment
@@ -185,6 +184,8 @@ jobs:
           - path: testbed/integration/netflow
             module: testbed/integration
           - path: testbed/integration/feature-flags
+            module: testbed/integration
+          - path: testbed/integration/genainormalizer
             module: testbed/integration
           - path: testbed/integration/kafka
             module: testbed/integration

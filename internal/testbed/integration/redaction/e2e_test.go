@@ -80,7 +80,7 @@ func TestE2E_RedactionExample(t *testing.T) {
 
 	td := ptrace.NewTraces()
 	addSpan(td, map[string]any{"service.name": "redaction-example"}, map[string]any{
-		"description":    "card 4111111111111111", // the Visa regex is unanchored
+		"description":    "card 4111111111111111",
 		"name":           "user@example.com",
 		"group":          "10.0.0.1",
 		"safe_attribute": "4111111111111111", // ignored
@@ -88,7 +88,6 @@ func TestE2E_RedactionExample(t *testing.T) {
 	})
 	export(t, grpcPort, td)
 
-	// The example doesn't allow service.name, so the resource can't be looked up by it.
 	oteltest.WaitForTraces(t, 1, sink)
 	require.Equal(t, 1, sink.SpanCount())
 	rs := sink.AllTraces()[0].ResourceSpans().At(0)

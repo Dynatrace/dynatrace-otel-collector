@@ -5,315 +5,361 @@ package selfmonitoring
 
 import (
 	"fmt"
-	"os"
-	"path"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
-	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
-	"github.com/google/uuid"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
-	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/pmetric/pmetricotlp"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
-	testNs := "e2eselfmonitoringk8senrich"
-	expectedk8sEnrichResourceAttributes := map[string]oteltest.ExpectedValue{
-		"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "otelcol-.*"),
-		"k8s.pod.uid":                 oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-		"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-		"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-		"k8s.cluster.uid":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-		"k8s.pod.ip":                  oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.IPRe),
-		"k8s.workload.kind":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "deployment"),
-		"k8s.workload.name":           oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "otelcol-.*"),
-		oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "dynatrace-otel-collector"),
-		"service.instance.id":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-		"service.version":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-	}
-	selfMonitoring_general(t, "self-monitoring-k8s-enrich.yaml", expectedk8sEnrichResourceAttributes, testNs)
+const (
+	collectorServiceName = "dynatrace-otel-collector"
+	testServiceName      = "selfmon-test"
+)
+
+// podEnv replaces the environment that the downward API sets in Kubernetes.
+var podEnv = map[string]string{
+	"MY_POD_NAMESPACE": "e2e-selfmonitoring",
+	"MY_POD_NAME":      "otelcol-local",
+	"MY_NODE_NAME":     "local-node",
+	"MY_POD_IP":        "127.0.0.1",
 }
 
-func Test_Selfmonitoring(t *testing.T) {
-	testNs := "e2eselfmonitoring"
-	expectedResourceAttributes := map[string]oteltest.ExpectedValue{
-		"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, "otelcol-.*"),
-		"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, testNs),
-		"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-		oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "dynatrace-otel-collector"),
-		"service.instance.id":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
-		"service.version":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
-	}
-	selfMonitoring_general(t, "self-monitoring.yaml", expectedResourceAttributes, testNs)
+// startCollector starts the DT Collector with an example config. It sends all its data and its
+// internal metrics to the OTLP/HTTP receiver on sinkHTTPPort. edit adapts the config to the
+// example on top of the common local overrides.
+func startCollector(t *testing.T, example string, sinkHTTPPort, readyPort int, edit func(*testutil.Config)) {
+	healthPort := testutil.GetAvailablePort(t)
+	cfg := testutil.LoadConfigExample(t, example).
+		Replace("health_check port", func(s string) string { return testutil.ReplaceHealthCheckPort(s, healthPort) }).
+		Replace("exporter endpoint", func(s string) string { return testutil.ReplaceDynatraceExporterEndpoint(s, sinkHTTPPort) })
+	edit(cfg)
+
+	testutil.StartCollector(t, testutil.CollectorParams{
+		Name:      strings.TrimSuffix(example, ".yaml"),
+		Config:    cfg.String(),
+		ReadyPort: readyPort,
+		Env:       podEnv,
+	})
+	testutil.WaitForHealthCheck(t, healthPort)
 }
 
-func selfMonitoring_general(t *testing.T, configPath string, expectedAttributes map[string]oteltest.ExpectedValue, testNs string) {
-	testDir := filepath.Join("testdata")
-	configExamplesDir := "../../../../config_examples"
+// fastReader shortens the interval of the periodic metric reader, which only speeds up the test.
+func fastReader(c *testutil.Config) {
+	c.ReplaceString("interval: 10000", "interval: 1000").
+		ReplaceString("timeout: 5000", "timeout: 1000")
+}
 
-	kubeconfigPath := k8stest.TestKubeConfig
-	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
-	}
-
-	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
-	require.NoError(t, err)
-
-	testID := uuid.NewString()[:8]
-	host := otelk8stest.HostEndpoint(t)
-
-	// Create the namespace specific for the test
-	nsObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "namespace"),
-		map[string]string{
-			"Namespace": testNs,
-		},
-		host,
-	)
-
-	defer func() {
-		for _, obj := range nsObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	metricsConsumer := new(consumertest.MetricsSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Metrics: []*oteltest.MetricSinkConfig{
-			{
-				Consumer: metricsConsumer,
-			},
-		},
-	})
-	defer shutdownSinks()
-
-	collectorConfigPath := path.Join(configExamplesDir, configPath)
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host: host,
-	})
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "collector"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfig,
-			"K8sCluster":        "cluster-" + testNs,
-			"Namespace":         testNs,
-		},
-		host,
-	)
-
-	defer func() {
-		for _, obj := range collectorObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
-		}
-	}()
-
-	wantEntries := 1 // Minimal number of metrics to wait for.
-	oteltest.WaitForMetrics(t, wantEntries, metricsConsumer)
-
-	metrics := pmetric.NewMetrics()
-	resource := metrics.ResourceMetrics().AppendEmpty()
-
-	scope1 := resource.ScopeMetrics().AppendEmpty()
-	scope1.Scope().SetName("go.opentelemetry.io/collector/exporter/exporterhelper")
-	scope1.Metrics().AppendEmpty().SetName("otelcol_exporter_queue_capacity")
-	scope1.Metrics().AppendEmpty().SetName("otelcol_exporter_queue_size")
-
-	scope2 := resource.ScopeMetrics().AppendEmpty()
-	scope2.Scope().SetName("go.opentelemetry.io/collector/service")
-	scope2.Metrics().AppendEmpty().SetName("otelcol_process_cpu_seconds")
-	scope2.Metrics().AppendEmpty().SetName("otelcol_process_memory_rss")
-	scope2.Metrics().AppendEmpty().SetName("otelcol_process_runtime_heap_alloc_bytes")
-	scope2.Metrics().AppendEmpty().SetName("otelcol_process_runtime_total_alloc_bytes")
-	scope2.Metrics().AppendEmpty().SetName("otelcol_process_runtime_total_sys_memory_bytes")
-	scope2.Metrics().AppendEmpty().SetName("otelcol_process_uptime")
-
-	m := metricsConsumer.AllMetrics()[0]
-	require.NoError(t, oteltest.AssertExpectedAttributes(m.ResourceMetrics().At(0).Resource().Attributes(), expectedAttributes))
-
-	for i := 0; i < m.ResourceMetrics().At(0).ScopeMetrics().Len(); i++ {
-		s := m.ResourceMetrics().At(0).ScopeMetrics().At(i)
-		if s.Scope().Name() == scope1.Scope().Name() {
-			for j := 0; j < s.Metrics().Len(); j++ {
-				require.True(t, isMetricPresent(s.Metrics().At(j), scope1.Metrics()), "metric with name %s not found in expected output", s.Metrics().At(j).Name())
-			}
-		} else if s.Scope().Name() == scope2.Scope().Name() {
-			for j := 0; j < s.Metrics().Len(); j++ {
-				require.True(t, isMetricPresent(s.Metrics().At(j), scope2.Metrics()), "metric with name %s not found in expected output", s.Metrics().At(j).Name())
+// filterResources returns a copy of the resources of md for which keep returns true for the service name.
+func filterResources(md []pmetric.Metrics, keep func(serviceName string) bool) pmetric.Metrics {
+	out := pmetric.NewMetrics()
+	for _, m := range md {
+		rms := m.ResourceMetrics()
+		for i := 0; i < rms.Len(); i++ {
+			name, _ := rms.At(i).Resource().Attributes().Get("service.name")
+			if keep(name.AsString()) {
+				rms.At(i).CopyTo(out.ResourceMetrics().AppendEmpty())
 			}
 		}
 	}
+	return out
 }
 
-func isMetricPresent(m pmetric.Metric, expected pmetric.MetricSlice) bool {
-	for j := 0; j < expected.Len(); j++ {
-		if m.Name() == expected.At(j).Name() {
-			return true
-		}
-	}
-	return false
+// selfMetrics returns the resources of the Collector's internal metrics from all payloads. The
+// internal SDK uses delta temporality and omits idle streams, so a one-shot event shows up in
+// exactly one payload. Filtering is by resource, because the batcher can merge internal metrics
+// and test data into one request.
+func selfMetrics(sink *consumertest.MetricsSink) pmetric.Metrics {
+	return filterResources(sink.AllMetrics(), func(n string) bool { return n == collectorServiceName })
 }
 
-func Test_Selfmonitoring_checkMetrics(t *testing.T) {
-	testNs := "e2eselfmonitoringcheckmetrics"
-	expectedAssertionFile := "./testdata/e2e/expected-check.assert.yaml"
-	testDir := filepath.Join("testdata")
-	configExamplesDir := "../../../../config_examples"
+// testResources returns the resources of the test data, i.e. the complement of selfMetrics.
+func testResources(sink *consumertest.MetricsSink) pmetric.Metrics {
+	return filterResources(sink.AllMetrics(), func(n string) bool { return n == testServiceName })
+}
 
-	kubeconfigPath := k8stest.TestKubeConfig
-	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
-	}
-
-	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
-	require.NoError(t, err)
-
-	testID := uuid.NewString()[:8]
-	host := otelk8stest.HostEndpoint(t)
-
-	// Create the namespace specific for the test
-	nsObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "namespace"),
-		map[string]string{
-			"Namespace": testNs,
-		},
-		host,
-	)
-
-	defer func() {
-		for _, obj := range nsObjs {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+// sumDelta sums the values of all Sum data points of the metric name whose attributes contain attrs.
+func sumDelta(md pmetric.Metrics, name string, attrs map[string]any) float64 {
+	var sum float64
+	rms := md.ResourceMetrics()
+	for i := 0; i < rms.Len(); i++ {
+		sms := rms.At(i).ScopeMetrics()
+		for j := 0; j < sms.Len(); j++ {
+			ms := sms.At(j).Metrics()
+			for k := 0; k < ms.Len(); k++ {
+				m := ms.At(k)
+				if m.Name() != name || m.Type() != pmetric.MetricTypeSum {
+					continue
+				}
+				dps := m.Sum().DataPoints()
+				for l := 0; l < dps.Len(); l++ {
+					dp := dps.At(l)
+					if !containsAttrs(dp.Attributes(), attrs) {
+						continue
+					}
+					if dp.ValueType() == pmetric.NumberDataPointValueTypeInt {
+						sum += float64(dp.IntValue())
+					} else {
+						sum += dp.DoubleValue()
+					}
+				}
+			}
 		}
-	}()
-
-	// Sink for internal metrics (self-monitoring)
-	metricsConsumer := new(consumertest.MetricsSink)
-	// Sinks for telemetrygen data
-	telemetrygenMetricsConsumer := new(consumertest.MetricsSink)
-	telemetrygenTracesConsumer := new(consumertest.TracesSink)
-	telemetrygenLogsConsumer := new(consumertest.LogsSink)
-
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Metrics: []*oteltest.MetricSinkConfig{
-			{
-				Consumer: metricsConsumer,
-			},
-			{
-				Consumer: telemetrygenMetricsConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4320,
-				},
-			},
-		},
-		Traces: []*oteltest.TraceSinkConfig{
-			{
-				Consumer: telemetrygenTracesConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4321,
-				},
-			},
-		},
-		Logs: []*oteltest.LogSinkConfig{
-			{
-				Consumer: telemetrygenLogsConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4319,
-				},
-			},
-		},
-	})
-	defer shutdownSinks()
-
-	collectorConfigPath := path.Join(configExamplesDir, "self-monitoring-check-metrics.yaml")
-
-	// Read overlay from files
-	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "telemetrygen-receiver-local.yaml")), host)
-
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host: host,
-		Templates: []string{
-			localOverlay,
-		},
-	})
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "collector"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfig,
-			"K8sCluster":        "cluster-" + testNs,
-			"Namespace":         testNs,
-		},
-		host,
-	)
-
-	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
-		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
-		TestID:       testID,
-		OtlpEndpoint: fmt.Sprintf("otelcol-%s", testID),
-		DataTypes:    []string{"traces"},
 	}
-	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
+	return sum
+}
 
-	defer func() {
-		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+func containsAttrs(m pcommon.Map, attrs map[string]any) bool {
+	for k, want := range attrs {
+		got, ok := m.Get(k)
+		if !ok || got.AsRaw() != want {
+			return false
 		}
-	}()
-
-	for _, info := range telemetryGenObjInfos {
-		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
+	return true
+}
 
-	// testing data creating load
-	oteltest.WaitForMetrics(t, 1, telemetrygenMetricsConsumer)
-	oteltest.WaitForTraces(t, 1, telemetrygenTracesConsumer)
-	oteltest.WaitForLogs(t, 1, telemetrygenLogsConsumer)
-
-	// self monitoring metrics
-	oteltest.WaitForMetrics(t, 5, metricsConsumer)
-
-	dpIgnoreList := []string{
-		"server.address",
-		"net.peer.name",
-		"server.port",
+// metricNames returns the names of all metrics in md.
+func metricNames(md pmetric.Metrics) []string {
+	var names []string
+	rms := md.ResourceMetrics()
+	for i := 0; i < rms.Len(); i++ {
+		sms := rms.At(i).ScopeMetrics()
+		for j := 0; j < sms.Len(); j++ {
+			ms := sms.At(j).Metrics()
+			for k := 0; k < ms.Len(); k++ {
+				names = append(names, ms.At(k).Name())
+			}
+		}
 	}
-	resourceIgnoreList := []string{
-		"k8s.node.name",
-		"k8s.pod.name",
-		"service.instance.id",
-		"service.version",
-	}
+	return names
+}
 
+// assertGolden compares md, with the ignored attributes masked and resources deduplicated, to the golden file.
+func assertGolden(t testing.TB, tt assert.TestingT, path string, md pmetric.Metrics, resourceIgnore, dpIgnore []string) {
+	actual := pmetric.NewMetrics()
+	md.CopyTo(actual)
+	testutil.ReplaceAttrValsWithStar(actual, resourceIgnore, dpIgnore)
+	testutil.DeduplicateResources(actual)
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedAssertionFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, path, actual))
+	assert.NoError(tt, pmetricassert.AssertMetrics(path, actual))
+}
 
+// Test_Selfmonitoring tests that the Collector reads the pod environment into the resource of its
+// internal metrics and sends them with the periodic OTLP reader.
+// The config under test is config_examples/self-monitoring.yaml.
+func Test_Selfmonitoring(t *testing.T) {
+	sink, sinkPorts := oteltest.StartMetricsSink(t)
+	httpPort := testutil.GetAvailablePort(t)
+
+	startCollector(t, "self-monitoring.yaml", sinkPorts.Http, httpPort, func(c *testutil.Config) {
+		c.Replace("http receiver port", func(s string) string { return testutil.ReplaceOtlpHttpReceiverPort(s, httpPort) })
+		fastReader(c)
+	})
+
+	oteltest.WaitForMetrics(t, 1, sink)
+	self := selfMetrics(sink)
+	require.NotZero(t, self.ResourceMetrics().Len())
+
+	require.NoError(t, oteltest.AssertExpectedAttributes(self.ResourceMetrics().At(0).Resource().Attributes(), map[string]oteltest.ExpectedValue{
+		"k8s.namespace.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, podEnv["MY_POD_NAMESPACE"]),
+		"k8s.pod.name":                oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, podEnv["MY_POD_NAME"]),
+		"k8s.node.name":               oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, podEnv["MY_NODE_NAME"]),
+		oteltest.ServiceNameAttribute: oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, collectorServiceName),
+		"service.instance.id":         oteltest.NewExpectedValue(oteltest.AttributeMatchTypeRegex, oteltest.UidRe),
+		"service.version":             oteltest.NewExpectedValue(oteltest.AttributeMatchTypeExist, ""),
+	}))
+
+	assert.Subset(t, metricNames(self), []string{
+		"otelcol_exporter_queue_capacity",
+		"otelcol_exporter_queue_size",
+		"otelcol_process_cpu_seconds",
+		"otelcol_process_memory_rss",
+		"otelcol_process_runtime_heap_alloc_bytes",
+		"otelcol_process_runtime_total_alloc_bytes",
+		"otelcol_process_runtime_total_sys_memory_bytes",
+		"otelcol_process_uptime",
+	})
+}
+
+// testTraces, testLogs and addGauge build the test data. Every resource has service.name=selfmon-test.
+func testTraces(names ...string) ptrace.Traces {
+	td := ptrace.NewTraces()
+	rs := td.ResourceSpans().AppendEmpty()
+	rs.Resource().Attributes().PutStr("service.name", testServiceName)
+	spans := rs.ScopeSpans().AppendEmpty().Spans()
+	for i, n := range names {
+		s := spans.AppendEmpty()
+		s.SetName(n)
+		s.SetTraceID([16]byte{1})
+		s.SetSpanID([8]byte{byte(i + 1)})
+	}
+	return td
+}
+
+func testLogs(bodies ...string) plog.Logs {
+	ld := plog.NewLogs()
+	rl := ld.ResourceLogs().AppendEmpty()
+	rl.Resource().Attributes().PutStr("service.name", testServiceName)
+	recs := rl.ScopeLogs().AppendEmpty().LogRecords()
+	for _, b := range bodies {
+		recs.AppendEmpty().Body().SetStr(b)
+	}
+	return ld
+}
+
+// addGauge adds a resource with the label my_label and one gauge data point to md.
+func addGauge(md pmetric.Metrics, name, label string, value int64) {
+	rm := md.ResourceMetrics().AppendEmpty()
+	rm.Resource().Attributes().PutStr("service.name", testServiceName)
+	rm.Resource().Attributes().PutStr("my_label", label)
+	m := rm.ScopeMetrics().AppendEmpty().Metrics().AppendEmpty()
+	m.SetName(name)
+	dp := m.SetEmptyGauge().DataPoints().AppendEmpty()
+	dp.SetIntValue(value)
+	dp.SetTimestamp(pcommon.NewTimestampFromTime(time.Now()))
+}
+
+// Test_Selfmonitoring_checkMetrics tests the loop of the example: telemetry sent to the HTTP
+// receiver goes through filter into the gRPC receiver, and again through filter to the sink.
+// The internal metrics are checked for exact values on each hop and against a golden file.
+// The config under test is config_examples/self-monitoring-check-metrics.yaml.
+func Test_Selfmonitoring_checkMetrics(t *testing.T) {
+	sinks, sinkPorts := oteltest.StartSinks(t)
+	grpcPort := testutil.GetAvailablePort(t)
+	httpPort := testutil.GetAvailablePort(t)
+
+	startCollector(t, "self-monitoring-check-metrics.yaml", sinkPorts.Http, httpPort, func(c *testutil.Config) {
+		c.Replace("grpc receiver port", func(s string) string { return testutil.ReplaceOtlpGrpcReceiverPort(s, grpcPort) }).
+			Replace("http receiver port", func(s string) string { return testutil.ReplaceOtlpHttpReceiverPort(s, httpPort) })
+		fastReader(c)
+	})
+
+	oteltest.ExportTracesHTTP(t, httpPort, testTraces("keep-1", "keep-2", "app_3"))
+	oteltest.ExportLogsHTTP(t, httpPort, testLogs("hello", "world", "my password is hunter2"))
+	md := pmetric.NewMetrics()
+	addGauge(md, "my.metric", "abc123", 1) // dropped by the filter
+	addGauge(md, "my.metric", "other", 2)
+	addGauge(md, "other.metric", "abc123", 3)
+	oteltest.ExportMetricsHTTP(t, httpPort, md)
+
+	// Data path. The filtered items were in the same requests, so they would have arrived too.
+	dataPoints := func() []string {
+		var names []string
+		rms := testResources(sinks.Metrics).ResourceMetrics()
+		for i := 0; i < rms.Len(); i++ {
+			names = append(names, rms.At(i).ScopeMetrics().At(0).Metrics().At(0).Name())
+		}
+		return names
+	}
+	require.Eventually(t, func() bool {
+		return sinks.Traces.SpanCount() >= 2 && len(dataPoints()) >= 2 && sinks.Logs.LogRecordCount() >= 2
+	}, 60*time.Second, 200*time.Millisecond, "data did not reach the sinks")
+	// Without filtering, a late request could still be in flight.
+	time.Sleep(time.Second)
+
+	var spans []string
+	for _, td := range sinks.Traces.AllTraces() {
+		for i := 0; i < td.ResourceSpans().Len(); i++ {
+			for j := 0; j < td.ResourceSpans().At(i).ScopeSpans().Len(); j++ {
+				ss := td.ResourceSpans().At(i).ScopeSpans().At(j).Spans()
+				for k := 0; k < ss.Len(); k++ {
+					spans = append(spans, ss.At(k).Name())
+				}
+			}
+		}
+	}
+	assert.ElementsMatch(t, []string{"keep-1", "keep-2"}, spans)
+	assert.ElementsMatch(t, []string{"my.metric", "other.metric"}, dataPoints())
+	var bodies []string
+	for _, ld := range sinks.Logs.AllLogs() {
+		for i := 0; i < ld.ResourceLogs().Len(); i++ {
+			for j := 0; j < ld.ResourceLogs().At(i).ScopeLogs().Len(); j++ {
+				recs := ld.ResourceLogs().At(i).ScopeLogs().At(j).LogRecords()
+				for k := 0; k < recs.Len(); k++ {
+					bodies = append(bodies, recs.At(k).Body().Str())
+				}
+			}
+		}
+	}
+	assert.ElementsMatch(t, []string{"hello", "world"}, bodies)
+
+	// Values and shape of the internal metrics.
+	type hop struct {
+		accepted, filtered, sent string
+	}
+	signals := map[string]hop{
+		"spans":         {"otelcol_receiver_accepted_spans", "otelcol_processor_filter_spans.filtered", "otelcol_exporter_sent_spans"},
+		"logs":          {"otelcol_receiver_accepted_log_records", "otelcol_processor_filter_logs.filtered", "otelcol_exporter_sent_log_records"},
+		"metric points": {"otelcol_receiver_accepted_metric_points", "otelcol_processor_filter_datapoints.filtered", "otelcol_exporter_sent_metric_points"},
+	}
 	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		actual := metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]
-		actualForAssert := pmetric.NewMetrics()
-		actual.CopyTo(actualForAssert)
-		testutil.ReplaceAttrValsWithStar(actualForAssert, resourceIgnoreList, dpIgnoreList)
-		testutil.DeduplicateResources(actualForAssert)
-		assert.NoError(tt, pmetricassert.AssertMetrics(expectedAssertionFile, actualForAssert))
-	}, 3*time.Minute, 1*time.Second)
+		self := selfMetrics(sinks.Metrics)
+		for name, h := range signals {
+			assert.EqualValues(tt, 3, sumDelta(self, h.accepted, map[string]any{"receiver": "otlp/2", "transport": "http"}), "%s accepted by otlp/2", name)
+			assert.EqualValues(tt, 1, sumDelta(self, h.filtered, map[string]any{"filter": "filter"}), "%s filtered", name)
+			assert.EqualValues(tt, 2, sumDelta(self, h.accepted, map[string]any{"receiver": "otlp", "transport": "grpc"}), "%s accepted by otlp", name)
+			assert.EqualValues(tt, 2, sumDelta(self, h.sent, map[string]any{"exporter": "otlp_grpc/self"}), "%s sent by otlp_grpc/self", name)
+			assert.EqualValues(tt, 2, sumDelta(self, h.sent, map[string]any{"exporter": "otlp_http"}), "%s sent by otlp_http", name)
+		}
+		assertGolden(t, tt, filepath.Join("testdata", "expected-check-metrics.assert.yaml"), self,
+			[]string{"service.instance.id", "service.version"},
+			[]string{"server.address", "net.peer.name", "server.port"})
+	}, 60*time.Second, time.Second)
+}
+
+// Test_Selfmonitoring_Prometheus_checkMetrics tests that the Collector's internal metrics, scraped
+// from its Prometheus endpoint, are renamed, converted to delta and exported with correct values.
+// The config under test is config_examples/self-monitoring-prometheus-check-metrics.yaml.
+func Test_Selfmonitoring_Prometheus_checkMetrics(t *testing.T) {
+	sink, sinkPorts := oteltest.StartMetricsSink(t)
+	grpcPort := testutil.GetAvailablePort(t)
+	promPort := testutil.GetAvailablePort(t)
+
+	startCollector(t, "self-monitoring-prometheus-check-metrics.yaml", sinkPorts.Http, grpcPort, func(c *testutil.Config) {
+		c.Replace("grpc receiver port", func(s string) string { return testutil.ReplaceOtlpGrpcReceiverPort(s, grpcPort) }).
+			ReplaceString("port: 8888", fmt.Sprintf("port: %d", promPort)).
+			ReplaceString(`"localhost:8888"`, fmt.Sprintf(`"localhost:%d"`, promPort)).
+			ReplaceString("scrape_interval: 15s", "scrape_interval: 2s")
+	})
+
+	client := oteltest.NewMetricsClient(t, grpcPort)
+	send := func(values ...int64) {
+		md := pmetric.NewMetrics()
+		for i, v := range values {
+			addGauge(md, "test.gauge", fmt.Sprintf("p%d", i), v)
+		}
+		_, err := client.Export(t.Context(), pmetricotlp.NewExportRequestFromMetrics(md))
+		require.NoError(t, err)
+	}
+	accepted := map[string]any{"receiver": "otlp", "transport": "grpc"}
+
+	// cumulative_to_delta drops the first point of every stream, so the first round is lost by
+	// design. The second round must come out exactly.
+	send(1)
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.Contains(tt, metricNames(selfMetrics(sink)), "otelcol_receiver_accepted_metric_points")
+	}, 60*time.Second, time.Second)
+
+	send(1, 2, 3)
+	require.EventuallyWithT(t, func(tt *assert.CollectT) {
+		assert.Equal(tt, 4, testResources(sink).DataPointCount(), "test data points")
+		self := selfMetrics(sink)
+		assert.EqualValues(tt, 3, sumDelta(self, "otelcol_receiver_accepted_metric_points", accepted))
+		assertGolden(t, tt, filepath.Join("testdata", "expected-prometheus-check-metrics.assert.yaml"), self,
+			[]string{"server.port", "service.instance.id", "service.version"},
+			[]string{"server.address", "server.port"})
+	}, 60*time.Second, time.Second)
 }

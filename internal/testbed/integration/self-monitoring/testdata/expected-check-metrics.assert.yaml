@@ -2,9 +2,9 @@ version: 1
 signal: metrics
 resources:
     - attributes:
-        k8s.namespace.name: e2eselfmonitoringcheckmetrics
-        k8s.node.name: '*'
-        k8s.pod.name: '*'
+        k8s.namespace.name: e2e-selfmonitoring
+        k8s.node.name: local-node
+        k8s.pod.name: otelcol-local
         service.instance.id: '*'
         service.name: dynatrace-otel-collector
         service.version: '*'
@@ -52,11 +52,7 @@ resources:
                 - attributes:
                     exporter: otlp_grpc/self
                 - attributes:
-                    exporter: otlp_http/logs
-                - attributes:
-                    exporter: otlp_http/metrics
-                - attributes:
-                    exporter: otlp_http/traces
+                    exporter: otlp_http
             - name: otelcol_exporter_enqueue_size_bytes
               type: histogram
               unit: By
@@ -65,11 +61,7 @@ resources:
                 - attributes:
                     exporter: otlp_grpc/self
                 - attributes:
-                    exporter: otlp_http/logs
-                - attributes:
-                    exporter: otlp_http/metrics
-                - attributes:
-                    exporter: otlp_http/traces
+                    exporter: otlp_http
             - name: otelcol_exporter_in_flight_requests
               type: sum
               unit: '{request}'
@@ -84,7 +76,7 @@ resources:
                     exporter: otlp_grpc/self
                 - attributes:
                     data_type: logs
-                    exporter: otlp_http/logs
+                    exporter: otlp_http
                 - attributes:
                     data_type: metrics
                     exporter: debug
@@ -93,7 +85,7 @@ resources:
                     exporter: otlp_grpc/self
                 - attributes:
                     data_type: metrics
-                    exporter: otlp_http/metrics
+                    exporter: otlp_http
                 - attributes:
                     data_type: traces
                     exporter: debug
@@ -102,7 +94,7 @@ resources:
                     exporter: otlp_grpc/self
                 - attributes:
                     data_type: traces
-                    exporter: otlp_http/traces
+                    exporter: otlp_http
             - name: otelcol_exporter_queue_batch_send_size
               type: histogram
               unit: '{unit}'
@@ -113,17 +105,17 @@ resources:
                     server.address: '*'
                     server.port: '*'
                 - attributes:
-                    exporter: otlp_http/logs
+                    exporter: otlp_http
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/logs
                 - attributes:
-                    exporter: otlp_http/metrics
+                    exporter: otlp_http
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/metrics
                 - attributes:
-                    exporter: otlp_http/traces
+                    exporter: otlp_http
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/traces
@@ -137,17 +129,17 @@ resources:
                     server.address: '*'
                     server.port: '*'
                 - attributes:
-                    exporter: otlp_http/logs
+                    exporter: otlp_http
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/logs
                 - attributes:
-                    exporter: otlp_http/metrics
+                    exporter: otlp_http
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/metrics
                 - attributes:
-                    exporter: otlp_http/traces
+                    exporter: otlp_http
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/traces
@@ -160,19 +152,19 @@ resources:
                     exporter: otlp_grpc/self
                 - attributes:
                     data_type: logs
-                    exporter: otlp_http/logs
+                    exporter: otlp_http
                 - attributes:
                     data_type: metrics
                     exporter: otlp_grpc/self
                 - attributes:
                     data_type: metrics
-                    exporter: otlp_http/metrics
+                    exporter: otlp_http
                 - attributes:
                     data_type: traces
                     exporter: otlp_grpc/self
                 - attributes:
                     data_type: traces
-                    exporter: otlp_http/traces
+                    exporter: otlp_http
             - name: otelcol_exporter_queue_size
               type: gauge
               unit: '{batch}'
@@ -182,19 +174,19 @@ resources:
                     exporter: otlp_grpc/self
                 - attributes:
                     data_type: logs
-                    exporter: otlp_http/logs
+                    exporter: otlp_http
                 - attributes:
                     data_type: metrics
                     exporter: otlp_grpc/self
                 - attributes:
                     data_type: metrics
-                    exporter: otlp_http/metrics
+                    exporter: otlp_http
                 - attributes:
                     data_type: traces
                     exporter: otlp_grpc/self
                 - attributes:
                     data_type: traces
-                    exporter: otlp_http/traces
+                    exporter: otlp_http
             - name: otelcol_exporter_sent_log_records
               type: sum
               unit: '{record}'
@@ -208,7 +200,7 @@ resources:
                     server.address: '*'
                     server.port: '*'
                 - attributes:
-                    exporter: otlp_http/logs
+                    exporter: otlp_http
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/logs
@@ -225,7 +217,7 @@ resources:
                     server.address: '*'
                     server.port: '*'
                 - attributes:
-                    exporter: otlp_http/metrics
+                    exporter: otlp_http
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/metrics
@@ -242,7 +234,7 @@ resources:
                     server.address: '*'
                     server.port: '*'
                 - attributes:
-                    exporter: otlp_http/traces
+                    exporter: otlp_http
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/traces

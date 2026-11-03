@@ -208,7 +208,7 @@ func TestE2E_KafkaExporterReceiver(t *testing.T) {
 	})
 
 	sentTraces, sentMetrics, sentLogs := buildTraces(), buildMetrics(), buildLogs()
-	ctx := context.Background()
+	ctx := t.Context()
 	_, err := oteltest.NewTracesClient(t, grpcPort).Export(ctx, ptraceotlp.NewExportRequestFromTraces(sentTraces))
 	require.NoError(t, err)
 	_, err = oteltest.NewMetricsClient(t, grpcPort).Export(ctx, pmetricotlp.NewExportRequestFromMetrics(sentMetrics))

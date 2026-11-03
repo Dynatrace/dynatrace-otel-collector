@@ -145,7 +145,6 @@ jobs:
       fail-fast: false
       matrix:
         usecase:
-          - filestorage
           - k8sbearertokenauth
           - k8scluster
           - k8senrichment
@@ -154,7 +153,6 @@ jobs:
           - kubeletstats
           - loadbalancing
           - prometheus
-          - redaction
           - resource-detection
           - self-monitoring
           - self-monitoring-prometheus
@@ -181,9 +179,13 @@ jobs:
         include:
           - path: testbed/integration/bearertokenauth
             module: testbed/integration
+          - path: testbed/integration/feature-flags
+            module: testbed/integration
           - path: testbed/integration/netflow
             module: testbed/integration
-          - path: testbed/integration/feature-flags
+          - path: testbed/integration/redaction
+            module: testbed/integration
+          - path: testbed/integration/filestorage
             module: testbed/integration
           - path: testbed/integration/genainormalizer
             module: testbed/integration

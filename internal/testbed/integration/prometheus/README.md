@@ -1,17 +1,19 @@
-# Enrich from Kubernetes
+# Scrape data from Prometheus
 
 This is the e2e test for the Collector use-case:
 [Scrape data from Prometheus](https://docs.dynatrace.com/docs/shortlink/otel-collector-cases-prometheus).
 
 ## Requirements to run the tests
 
-- Docker
-- Kind
+- The Collector binary: run `make build` in the repository root.
 
-The tests require a running Kind k8s cluster. During the tests,
-a Dynatrace distribution of the OpenTelemetry Collector along with a
-Prometheus node exporter are deployed on the k8s cluster with
-configurations as per the Dynatrace documentation page.
+No Docker or Kubernetes cluster is needed. The test runs the Collector with
+`config_examples/prometheus.yaml` as a local process. The scrape targets are an in-process
+HTTP server serving a Prometheus registry with known values, and the Collector's own internal
+metrics. The Collector exports to an in-process OTLP sink, where the test asserts the scraped
+metrics, the `cumulative_to_delta` output and the start timestamps.
 
-The Prometheus receiver scrapes the metrics which then are exported by the collector
-to the test where a few metrics are asserted.
+```sh
+cd internal/testbed/integration/prometheus
+go test -v
+```

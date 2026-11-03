@@ -73,6 +73,16 @@ func DisableInternalMetrics(cfg string) string {
 	return strings.Replace(cfg, "service:\n", "service:\n  telemetry:\n    metrics:\n      level: none\n", 1)
 }
 
+// SetInternalMetricsPort moves the Collector's internal metrics server from the fixed port 8888
+// to the given port on 127.0.0.1. Use it instead of DisableInternalMetrics when the test scrapes
+// the internal metrics. The config must not have a service.telemetry section. The reader keeps the
+// defaults of the built-in one, so metric names and scopes are unchanged.
+func SetInternalMetricsPort(cfg string, port int) string {
+	reader := "service:\n  telemetry:\n    metrics:\n      readers:\n        - pull:\n            exporter:\n" +
+		"              prometheus:\n                host: 127.0.0.1\n                port: " + strconv.Itoa(port) + "\n"
+	return strings.Replace(cfg, "service:\n", reader, 1)
+}
+
 // DisableSendingQueueAndRetry makes the results of the given exporter synchronous, so that
 // export failures are returned to the client and show up immediately.
 func DisableSendingQueueAndRetry(cfg, exporter string) string {

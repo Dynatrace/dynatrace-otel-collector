@@ -4,301 +4,296 @@
 package kafka
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
+	"context"
 	"testing"
 	"time"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/plogtest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetricassert"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/ptracetest"
-	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/consumer/consumertest"
+	"github.com/twmb/franz-go/pkg/kadm"
+	"github.com/twmb/franz-go/pkg/kfake"
+	"github.com/twmb/franz-go/pkg/kgo"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
+	"go.opentelemetry.io/collector/pdata/plog/plogotlp"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/pmetric/pmetricotlp"
 	"go.opentelemetry.io/collector/pdata/ptrace"
+	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
 )
 
-func TestE2E_Kafka(t *testing.T) {
-	// Paths
-	testDir := filepath.Join("testdata")
-	expectedLogsFile := filepath.Join(testDir, "e2e", "expected-logs.yaml")
-	expectedTracesFile := filepath.Join(testDir, "e2e", "expected-traces.yaml")
-	expectedMetricsAssertFile := filepath.Join(testDir, "e2e", "expected-metrics.assert.yaml")
-	expectedKMetricsAssertFile := filepath.Join(testDir, "e2e", "expected-kafka-metrics.assert.yaml")
-	configExamplesDir := filepath.Join("..", "..", "..", "..", "config_examples")
+const (
+	topicSpans   = "otlp_spans"
+	topicMetrics = "otlp_metrics"
+	topicLogs    = "otlp_logs"
 
-	// K8s client
-	kubeconfigPath := k8stest.KubeconfigFromEnvOrDefault()
-	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
+	brokerAddressVar = "${env:BROKER_ADDRESS}"
+	waitTimeout      = 60 * time.Second
+	waitTick         = 500 * time.Millisecond
+)
+
+// startBroker starts an in-process Kafka broker with the default topics of the exporter and
+// receiver and returns its address.
+func startBroker(t *testing.T) string {
+	c, err := kfake.NewCluster(
+		kfake.NumBrokers(1),
+		kfake.SeedTopics(1, topicSpans, topicMetrics, topicLogs),
+	)
 	require.NoError(t, err)
+	t.Cleanup(c.Close)
+	return c.ListenAddrs()[0]
+}
 
-	// Namespace
-	nsObj := k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "namespace.yaml"))
-	testNs := nsObj.GetName()
-	defer func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	}()
+func exporterConfig(t *testing.T, broker string, grpcPort, healthPort int) string {
+	return testutil.LoadConfigExample(t, "kafka-exporter.yaml").
+		ReplaceString(brokerAddressVar, broker).
+		Replace("receiver port", func(s string) string { return testutil.ReplaceOtlpGrpcReceiverPort(s, grpcPort) }).
+		Replace("health check port", func(s string) string { return testutil.ReplaceHealthCheckPort(s, healthPort) }).
+		Replace("internal metrics", testutil.DisableInternalMetrics).
+		ReplaceString("flush_timeout: 30s", "flush_timeout: 1s").
+		String()
+}
 
-	metricsConsumer := new(consumertest.MetricsSink)
-	kmetricsConsumer := new(consumertest.MetricsSink)
-	tracesConsumer := new(consumertest.TracesSink)
-	logsConsumer := new(consumertest.LogsSink)
+func receiverConfig(t *testing.T, broker string, healthPort, sinkPort int) string {
+	return testutil.LoadConfigExample(t, "kafka-receiver.yaml").
+		ReplaceString(brokerAddressVar, broker).
+		Replace("health check port", func(s string) string { return testutil.ReplaceHealthCheckPort(s, healthPort) }).
+		Replace("exporter endpoint", func(s string) string { return testutil.ReplaceDynatraceExporterEndpoint(s, sinkPort) }).
+		Replace("sending_queue and retry_on_failure", func(s string) string { return testutil.DisableSendingQueueAndRetry(s, "otlp_http") }).
+		Replace("internal metrics", testutil.DisableInternalMetrics).
+		// With the default of "latest", records produced before the consumer group has resolved its offsets are skipped.
+		ReplaceString("  kafka:\n    tls:\n", "  kafka:\n    initial_offset: earliest\n    tls:\n").
+		String()
+}
 
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Logs: []*oteltest.LogSinkConfig{
-			{
-				Consumer: logsConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4319,
-				},
-			},
-		},
-		Metrics: []*oteltest.MetricSinkConfig{
-			{
-				Consumer: metricsConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4320,
-				},
-			},
-			{
-				Consumer: kmetricsConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4322,
-				},
-			},
-		},
-		Traces: []*oteltest.TraceSinkConfig{
-			{
-				Consumer: tracesConsumer,
-				Ports: &oteltest.ReceiverPorts{
-					Http: 4321,
-				},
-			},
-		},
+func metricsReceiverConfig(t *testing.T, broker string, healthPort, sinkPort int) string {
+	return testutil.LoadConfigExample(t, "kafka-metrics-receiver.yaml").
+		ReplaceString(brokerAddressVar, broker).
+		Replace("health check port", func(s string) string { return testutil.ReplaceHealthCheckPort(s, healthPort) }).
+		Replace("exporter endpoint", func(s string) string { return testutil.ReplaceDynatraceExporterEndpoint(s, sinkPort) }).
+		Replace("sending_queue and retry_on_failure", func(s string) string { return testutil.DisableSendingQueueAndRetry(s, "otlp_http") }).
+		Replace("internal metrics", testutil.DisableInternalMetrics).
+		ReplaceString("collection_interval: 5s", "collection_interval: 1s").
+		String()
+}
+
+var (
+	ts0 = pcommon.NewTimestampFromTime(time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC))
+	ts1 = ts0 + pcommon.Timestamp(time.Second)
+)
+
+func buildTraces() ptrace.Traces {
+	td := ptrace.NewTraces()
+	rs := td.ResourceSpans().AppendEmpty()
+	rs.Resource().Attributes().PutStr("service.name", "kafka-traces-test")
+	ss := rs.ScopeSpans().AppendEmpty()
+	ss.Scope().SetName("kafka-test-scope")
+
+	traceID := pcommon.TraceID{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+	parent := ss.Spans().AppendEmpty()
+	parent.SetTraceID(traceID)
+	parent.SetSpanID(pcommon.SpanID{1, 1, 1, 1, 1, 1, 1, 1})
+	parent.SetName("parent")
+	parent.SetKind(ptrace.SpanKindServer)
+	parent.SetStartTimestamp(ts0)
+	parent.SetEndTimestamp(ts1)
+	parent.Attributes().PutStr("http.request.method", "GET")
+	parent.Status().SetCode(ptrace.StatusCodeError)
+	parent.Status().SetMessage("failed")
+	ev := parent.Events().AppendEmpty()
+	ev.SetName("exception")
+	ev.SetTimestamp(ts0 + 1)
+	ev.Attributes().PutStr("exception.message", "boom")
+	link := parent.Links().AppendEmpty()
+	link.SetTraceID(pcommon.TraceID{16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1})
+	link.SetSpanID(pcommon.SpanID{9, 9, 9, 9, 9, 9, 9, 9})
+	link.Attributes().PutStr("link.key", "link-value")
+
+	child := ss.Spans().AppendEmpty()
+	child.SetTraceID(traceID)
+	child.SetSpanID(pcommon.SpanID{2, 2, 2, 2, 2, 2, 2, 2})
+	child.SetParentSpanID(parent.SpanID())
+	child.SetName("child")
+	child.SetKind(ptrace.SpanKindClient)
+	child.SetStartTimestamp(ts0 + 2)
+	child.SetEndTimestamp(ts1 - 2)
+	return td
+}
+
+func buildMetrics() pmetric.Metrics {
+	md := pmetric.NewMetrics()
+	rm := md.ResourceMetrics().AppendEmpty()
+	rm.Resource().Attributes().PutStr("service.name", "kafka-metrics-test")
+	sm := rm.ScopeMetrics().AppendEmpty()
+	sm.Scope().SetName("kafka-test-scope")
+
+	g := sm.Metrics().AppendEmpty()
+	g.SetName("test.gauge")
+	g.SetUnit("1")
+	dp := g.SetEmptyGauge().DataPoints().AppendEmpty()
+	dp.SetTimestamp(ts1)
+	dp.SetDoubleValue(1.5)
+	dp.Attributes().PutStr("key", "value")
+
+	s := sm.Metrics().AppendEmpty()
+	s.SetName("test.sum")
+	s.SetUnit("By")
+	sum := s.SetEmptySum()
+	sum.SetIsMonotonic(true)
+	sum.SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	sdp := sum.DataPoints().AppendEmpty()
+	sdp.SetStartTimestamp(ts0)
+	sdp.SetTimestamp(ts1)
+	sdp.SetIntValue(42)
+
+	h := sm.Metrics().AppendEmpty()
+	h.SetName("test.histogram")
+	h.SetUnit("ms")
+	hist := h.SetEmptyHistogram()
+	hist.SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	hdp := hist.DataPoints().AppendEmpty()
+	hdp.SetStartTimestamp(ts0)
+	hdp.SetTimestamp(ts1)
+	hdp.SetCount(4)
+	hdp.SetSum(10)
+	hdp.SetMin(1)
+	hdp.SetMax(5)
+	hdp.ExplicitBounds().FromRaw([]float64{2, 4})
+	hdp.BucketCounts().FromRaw([]uint64{1, 2, 1})
+	return md
+}
+
+func buildLogs() plog.Logs {
+	ld := plog.NewLogs()
+	rl := ld.ResourceLogs().AppendEmpty()
+	rl.Resource().Attributes().PutStr("service.name", "kafka-logs-test")
+	sl := rl.ScopeLogs().AppendEmpty()
+	sl.Scope().SetName("kafka-test-scope")
+	lr := sl.LogRecords().AppendEmpty()
+	lr.SetTimestamp(ts0)
+	lr.SetObservedTimestamp(ts1)
+	lr.SetSeverityNumber(plog.SeverityNumberWarn)
+	lr.SetSeverityText("WARN")
+	lr.SetTraceID(pcommon.TraceID{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16})
+	lr.SetSpanID(pcommon.SpanID{1, 1, 1, 1, 1, 1, 1, 1})
+	lr.Attributes().PutStr("key", "value")
+	body := lr.Body().SetEmptyMap()
+	body.PutStr("message", "hello")
+	body.PutInt("count", 3)
+	return ld
+}
+
+func TestE2E_KafkaExporterReceiver(t *testing.T) {
+	broker := startBroker(t)
+	sinks, sinkPorts := oteltest.StartSinks(t)
+
+	receiverHealth := testutil.GetAvailablePort(t)
+	testutil.StartCollector(t, testutil.CollectorParams{
+		Name:      "kafka-receiver",
+		Config:    receiverConfig(t, broker, receiverHealth, sinkPorts.Http),
+		ReadyPort: receiverHealth,
 	})
 
-	defer func() {
-		// give some more time to the collector to finish exporting before stopping the sinks
-		// so we do not have any dropped data after the test is finished
-		time.Sleep(10 * time.Second)
-		shutdownSinks()
-	}()
+	grpcPort := testutil.GetAvailablePort(t)
+	testutil.StartCollector(t, testutil.CollectorParams{
+		Name:      "kafka-exporter",
+		Config:    exporterConfig(t, broker, grpcPort, testutil.GetAvailablePort(t)),
+		ReadyPort: grpcPort,
+	})
 
-	// Kafka server (deployment + service)
-	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-deployment.yaml"))
-	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "kafka-service.yaml"))
-
-	// Wait for Kafka to accept connections before starting collectors.
-	// Without this, collectors reach "Ready" (health-check HTTP up) while Kafka
-	// is still initialising: the exporter drops/queues messages it can't deliver
-	// and the receiver never registers its consumer group, causing the
-	// kafka-metrics assertion to time out.
-	err = k8stest.WaitForDeploymentPods(k8sClient.DynamicClient, testNs, "redpanda", 5*time.Minute)
-	require.NoError(t, err, "Kafka broker (Redpanda) did not become ready in time")
-
-	// Host endpoint for the receiver exporters
-	host := otelk8stest.HostEndpoint(t)
-
-	// Receiver collector
-	testIDReceiver, err := testutil.GenerateRandomString(10)
+	sentTraces, sentMetrics, sentLogs := buildTraces(), buildMetrics(), buildLogs()
+	ctx := t.Context()
+	_, err := oteltest.NewTracesClient(t, grpcPort).Export(ctx, ptraceotlp.NewExportRequestFromTraces(sentTraces))
+	require.NoError(t, err)
+	_, err = oteltest.NewMetricsClient(t, grpcPort).Export(ctx, pmetricotlp.NewExportRequestFromMetrics(sentMetrics))
+	require.NoError(t, err)
+	_, err = oteltest.NewLogsClient(t, grpcPort).Export(ctx, plogotlp.NewExportRequestFromLogs(sentLogs))
 	require.NoError(t, err)
 
-	collectorConfigPathReceiver := filepath.Join(configExamplesDir, "kafka-receiver.yaml")
-
-	// Read overlays from files
-	localOverlay := fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "receiver-local.yaml")), host)
-
-	collectorConfigReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathReceiver, k8stest.ConfigTemplate{
-		Host: host,
-		Templates: []string{
-			localOverlay,
-		},
+	t.Run("traces", func(t *testing.T) {
+		require.EventuallyWithT(t, func(c *assert.CollectT) {
+			got := ptrace.NewTraces()
+			for _, td := range sinks.Traces.AllTraces() {
+				td.ResourceSpans().MoveAndAppendTo(got.ResourceSpans())
+			}
+			assert.NoError(c, ptracetest.CompareTraces(sentTraces, got,
+				ptracetest.IgnoreResourceSpansOrder(), ptracetest.IgnoreScopeSpansOrder(), ptracetest.IgnoreSpansOrder()))
+		}, waitTimeout, waitTick)
 	})
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathReceiver)
+	t.Run("metrics", func(t *testing.T) {
+		require.EventuallyWithT(t, func(c *assert.CollectT) {
+			got := pmetric.NewMetrics()
+			for _, md := range sinks.Metrics.AllMetrics() {
+				md.ResourceMetrics().MoveAndAppendTo(got.ResourceMetrics())
+			}
+			assert.NoError(c, pmetrictest.CompareMetrics(sentMetrics, got,
+				pmetrictest.IgnoreResourceMetricsOrder(), pmetrictest.IgnoreScopeMetricsOrder(),
+				pmetrictest.IgnoreMetricsOrder(), pmetrictest.IgnoreMetricDataPointsOrder()))
+		}, waitTimeout, waitTick)
+	})
+	t.Run("logs", func(t *testing.T) {
+		require.EventuallyWithT(t, func(c *assert.CollectT) {
+			got := plog.NewLogs()
+			for _, ld := range sinks.Logs.AllLogs() {
+				ld.ResourceLogs().MoveAndAppendTo(got.ResourceLogs())
+			}
+			assert.NoError(c, plogtest.CompareLogs(sentLogs, got,
+				plogtest.IgnoreResourceLogsOrder(), plogtest.IgnoreScopeLogsOrder(), plogtest.IgnoreLogRecordsOrder()))
+		}, waitTimeout, waitTick)
+	})
+}
 
-	_ = otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testIDReceiver,
-		filepath.Join(testDir, "collector-receiver"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfigReceiver,
-		},
-		host,
-	)
+func TestE2E_KafkaMetricsReceiver(t *testing.T) {
+	const group = "otel-collector"
+	broker := startBroker(t)
 
-	// KafkaMetrics Receiver collector
-	testIDKMReceiver, err := testutil.GenerateRandomString(10)
+	// Produced records per topic and committed offset (same for all topics).
+	produced := map[string]int{topicSpans: 3, topicMetrics: 2, topicLogs: 1}
+	const committed = 1
+
+	cl, err := kgo.NewClient(kgo.SeedBrokers(broker))
 	require.NoError(t, err)
-	collectorConfigPathKMReceiver := filepath.Join(configExamplesDir, "kafka-metrics-receiver.yaml")
-
-	// Read overlays from files
-	localOverlay = fmt.Sprintf(k8stest.MustRead(t, filepath.Join(testDir, "config-overlays", "kafkametrics-receiver-local.yaml")), host)
-
-	collectorConfigKMReceiver, err := k8stest.GetCollectorConfig(collectorConfigPathKMReceiver, k8stest.ConfigTemplate{
-		Host: host,
-		Templates: []string{
-			localOverlay,
-		},
-	})
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathKMReceiver)
-
-	k8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testIDKMReceiver,
-		filepath.Join(testDir, "collector-kafka"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfigKMReceiver,
-		},
-		host,
-	)
-
-	// Exporter collector
-	testIDExporter, err := testutil.GenerateRandomString(10)
+	t.Cleanup(cl.Close)
+	ctx := context.Background()
+	for topic, n := range produced {
+		for range n {
+			require.NoError(t, cl.ProduceSync(ctx, &kgo.Record{Topic: topic, Value: []byte("x")}).FirstErr())
+		}
+	}
+	offsets := kadm.Offsets{}
+	for topic := range produced {
+		offsets.Add(kadm.Offset{Topic: topic, Partition: 0, At: committed})
+	}
+	resp, err := kadm.NewClient(cl).CommitOffsets(ctx, group, offsets)
 	require.NoError(t, err)
+	require.NoError(t, resp.Error())
 
-	collectorConfigPathExporter := filepath.Join(configExamplesDir, "kafka-exporter.yaml")
-	collectorConfigExporter, err := k8stest.GetCollectorConfig(collectorConfigPathExporter, k8stest.ConfigTemplate{
-		Host: host,
+	sink, sinkPorts := oteltest.StartMetricsSink(t)
+	healthPort := testutil.GetAvailablePort(t)
+	testutil.StartCollector(t, testutil.CollectorParams{
+		Name:      "kafka-metrics",
+		Config:    metricsReceiverConfig(t, broker, healthPort, sinkPorts.Http),
+		ReadyPort: healthPort,
 	})
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPathExporter)
 
-	otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testIDExporter,
-		filepath.Join(testDir, "collector-exporter"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfigExporter,
-		},
-		host,
-	)
-
-	// Create Telemetries
-	k8stest.CreateObjectFromFile(t, k8sClient, filepath.Join(testDir, "testobjects", "telemetrygen.yaml"))
-
-	// Wait for telemetrygen pods to be running before starting assertions,
-	// so the compare window is not consumed by a slow image pull or scheduler delay.
-	err = k8stest.WaitForDeploymentPods(k8sClient.DynamicClient, testNs, "temeletrygen-deployment", 3*time.Minute)
-	require.NoError(t, err, "telemetrygen did not become ready in time")
-
-	// Compare timeouts
-	const (
-		compareTimeout   = 3 * time.Minute
-		compareTick      = 3 * time.Second
-		compareTraceTick = 1 * time.Second
-	)
-
-	// Metrics
-	t.Logf("Checking metrics...")
-	oteltest.WaitForMetrics(t, 1, metricsConsumer)
+	expectedFile := "testdata/expected-kafka-metrics.assert.yaml"
+	oteltest.WaitForMetrics(t, 1, sink)
 
 	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedMetricsAssertFile, metricsConsumer.AllMetrics()[len(metricsConsumer.AllMetrics())-1]))
+	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedFile, sink.AllMetrics()[len(sink.AllMetrics())-1], pmetricassert.IncludeValues()))
 
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		all := metricsConsumer.AllMetrics()
-		actual := all[len(all)-1]
-		actualForAssert := pmetric.NewMetrics()
-		actual.CopyTo(actualForAssert)
-		testutil.ReplaceAttrValsWithStar(actualForAssert, nil, nil)
-		testutil.DeduplicateResources(actualForAssert)
-		assert.NoError(tt, pmetricassert.AssertMetrics(expectedMetricsAssertFile, actualForAssert))
-	}, compareTimeout, compareTick)
-
-	t.Logf("Metrics checked successfully")
-
-	// Logs
-	t.Logf("Checking logs...")
-	oteltest.WaitForLogs(t, 1, logsConsumer)
-
-	// The exporter batches by time, so the number of identical log records per
-	// payload varies. Compare only the distinct records.
-	// the commented line below writes the received list of logs to the expected.yaml
-	// got := plog.NewLogs(); logsConsumer.AllLogs()[len(logsConsumer.AllLogs())-1].CopyTo(got); testutil.DeduplicateLogs(got); require.Nil(t, golden.WriteLogs(t, expectedLogsFile, got))
-
-	expectedLogs, err := golden.ReadLogs(expectedLogsFile)
-	require.NoError(t, err)
-
-	logCompareOptions := []plogtest.CompareLogsOption{
-		plogtest.IgnoreTimestamp(),
-	}
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		all := logsConsumer.AllLogs()
-		require.NotEmpty(tt, all)
-		got := plog.NewLogs()
-		all[len(all)-1].CopyTo(got)
-		testutil.DeduplicateLogs(got)
-		assert.NoError(tt, plogtest.CompareLogs(expectedLogs, got, logCompareOptions...))
-	}, compareTimeout, compareTick)
-
-	t.Logf("Logs checked successfully")
-
-	// Traces
-	t.Log("Checking traces...")
-	oteltest.WaitForTraces(t, 1, tracesConsumer)
-
-	// The exporter batches by time, so the number of identical spans per payload
-	// varies and a trace may be split across payloads. Compare only the distinct spans.
-	// the commented line below writes the received list of traces to the expected.yaml
-	// got := ptrace.NewTraces(); tracesConsumer.AllTraces()[len(tracesConsumer.AllTraces())-1].CopyTo(got); testutil.DeduplicateTraces(got); require.Nil(t, golden.WriteTraces(t, expectedTracesFile, got))
-
-	traceCompareOptions := []ptracetest.CompareTracesOption{
-		ptracetest.IgnoreStartTimestamp(),
-		ptracetest.IgnoreEndTimestamp(),
-		ptracetest.IgnoreTraceID(),
-		ptracetest.IgnoreSpanID(),
-		ptracetest.IgnoreResourceSpansOrder(),
-		ptracetest.IgnoreScopeSpansOrder(),
-		ptracetest.IgnoreSpansOrder(),
-	}
-
-	expectedTraces, err := golden.ReadTraces(expectedTracesFile)
-	require.NoError(t, err)
-	testutil.MaskParentSpanID(expectedTraces)
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		all := tracesConsumer.AllTraces()
-		require.NotEmpty(tt, all)
-		got := ptrace.NewTraces()
-		all[len(all)-1].CopyTo(got)
-		testutil.DeduplicateTraces(got)
-		testutil.MaskParentSpanID(got)
-		assert.NoError(tt, ptracetest.CompareTraces(expectedTraces, got, traceCompareOptions...))
-	}, compareTimeout, compareTraceTick)
-
-	t.Logf("Traces checked successfully")
-
-	// KMetrics
-	t.Logf("Checking kafka metrics...")
-	oteltest.WaitForMetrics(t, 10, kmetricsConsumer)
-
-	// To regenerate: uncomment, run the test once, re-comment.
-	// require.NoError(t, pmetricassert.WriteAssertionFile(t, expectedKMetricsAssertFile, kmetricsConsumer.AllMetrics()[len(kmetricsConsumer.AllMetrics())-1]))
-
-	require.EventuallyWithT(t, func(tt *assert.CollectT) {
-		allKMetrics := kmetricsConsumer.AllMetrics()
-		actualKMetrics := allKMetrics[len(allKMetrics)-1]
-		actualForAssert := pmetric.NewMetrics()
-		actualKMetrics.CopyTo(actualForAssert)
-		testutil.ReplaceAttrValsWithStar(actualForAssert, nil, nil)
-		testutil.DeduplicateResources(actualForAssert)
-		assert.NoError(tt, pmetricassert.AssertMetrics(expectedKMetricsAssertFile, actualForAssert))
-	}, compareTimeout, compareTick)
-
-	t.Logf("Kafka Metrics checked successfully")
-
+	require.EventuallyWithT(t, func(c *assert.CollectT) {
+		all := sink.AllMetrics()
+		actual := pmetric.NewMetrics()
+		all[len(all)-1].CopyTo(actual)
+		testutil.ReplaceAttrValsWithStar(actual, nil, nil)
+		testutil.DeduplicateResources(actual)
+		assert.NoError(c, pmetricassert.AssertMetrics(expectedFile, actual))
+	}, waitTimeout, waitTick)
 }

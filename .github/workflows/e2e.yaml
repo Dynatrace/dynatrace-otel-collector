@@ -145,18 +145,13 @@ jobs:
       fail-fast: false
       matrix:
         usecase:
-          - filestorage
-          - genainormalizer
           - k8sbearertokenauth
           - k8scluster
           - k8senrichment
           - k8sobjects
           - k8spodlogs
-          - kafka
           - kubeletstats
           - loadbalancing
-          - redaction
-          - resource-detection
           - self-monitoring
           - self-monitoring-prometheus
     runs-on: ubuntu-24.04
@@ -182,11 +177,19 @@ jobs:
         include:
           - path: testbed/integration/bearertokenauth
             module: testbed/integration
-          - path: testbed/integration/netflow
-            module: testbed/integration
           - path: testbed/integration/feature-flags
             module: testbed/integration
+          - path: testbed/integration/filestorage
+            module: testbed/integration
+          - path: testbed/integration/genainormalizer
+            module: testbed/integration
+          - path: testbed/integration/kafka
+            module: testbed/integration
+          - path: testbed/integration/netflow
+            module: testbed/integration
           - path: testbed/integration/prometheus
+            module: testbed/integration
+          - path: testbed/integration/redaction
             module: testbed/integration
           - path: testbed/integration/statsd
             module: testbed/integration

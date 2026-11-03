@@ -104,9 +104,24 @@ type CollectorParams struct {
 	Args []string
 }
 
-// StartCollector runs the Collector binary as a child process until the test ends. Its log
-// is written to the test output if the test fails.
-func StartCollector(t *testing.T, p CollectorParams) {
+// Collector is a Collector child process started with StartCollector.
+type Collector struct {
+	runner  testbed.OtelcolRunner
+	name    string
+	logPath string
+}
+
+// Stop sends SIGTERM and waits for the Collector to exit.
+// It fails the test if the Collector didn't exit cleanly. Calling it again is a no-op.
+func (c *Collector) Stop(t *testing.T) {
+	t.Helper()
+	_, err := c.runner.Stop()
+	require.NoError(t, err)
+}
+
+// StartCollector runs the Collector binary as a child process until the test ends or Stop is
+// called. Its log is written to the test output if the test fails.
+func StartCollector(t *testing.T, p CollectorParams) *Collector {
 	t.Helper()
 	execPath := p.ExecPath
 	if execPath == "" {
@@ -117,23 +132,28 @@ func StartCollector(t *testing.T, p CollectorParams) {
 	require.NoError(t, err)
 	t.Cleanup(cleanupCfg)
 
-	logPath := filepath.Join(t.TempDir(), "collector.log")
+	c := &Collector{
+		runner:  col,
+		name:    p.Name,
+		logPath: filepath.Join(t.TempDir(), "collector.log"),
+	}
 	require.NoError(t, col.Start(testbed.StartParams{
 		Name:        p.Name,
-		LogFilePath: logPath,
+		LogFilePath: c.logPath,
 		CmdArgs:     p.Args,
 	}))
 	t.Cleanup(func() {
 		_, err := col.Stop()
 		assert.NoError(t, err)
 		if t.Failed() {
-			if b, err := os.ReadFile(logPath); err == nil {
-				t.Logf("%s log:\n%s", p.Name, b)
+			if b, err := os.ReadFile(c.logPath); err == nil {
+				t.Logf("%s log:\n%s", c.name, b)
 			}
 		}
 	})
 
 	WaitForListener(t, net.JoinHostPort("localhost", strconv.Itoa(p.ReadyPort)))
+	return c
 }
 
 // WaitForListener waits until addr accepts TCP connections.

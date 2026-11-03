@@ -153,7 +153,6 @@ jobs:
           - k8sselfmonitoring
           - kubeletstats
           - loadbalancing
-          - prometheus
           - resource-detection
     runs-on: ubuntu-24.04
     needs: docker-build
@@ -180,19 +179,21 @@ jobs:
             module: testbed/integration
           - path: testbed/integration/feature-flags
             module: testbed/integration
-          - path: testbed/integration/netflow
-            module: testbed/integration
-          - path: testbed/integration/redaction
-            module: testbed/integration
           - path: testbed/integration/filestorage
             module: testbed/integration
           - path: testbed/integration/genainormalizer
             module: testbed/integration
           - path: testbed/integration/kafka
             module: testbed/integration
-          - path: testbed/integration/self-monitoring
+          - path: testbed/integration/netflow
+            module: testbed/integration
+          - path: testbed/integration/prometheus
+            module: testbed/integration
+          - path: testbed/integration/redaction
             module: testbed/integration
           - path: testbed/integration/statsd
+            module: testbed/integration
+          - path: testbed/integration/self-monitoring
             module: testbed/integration
           - path: testbed/integration/zipkin
             module: testbed/integration

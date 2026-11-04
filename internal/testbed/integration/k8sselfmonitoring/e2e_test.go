@@ -8,10 +8,10 @@ import (
 	"path"
 	"path/filepath"
 	"testing"
+	"uuid"
 
 	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
 	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
-	"github.com/google/uuid"
 	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -48,7 +48,7 @@ func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
 	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
 	require.NoError(t, err)
 
-	testID := uuid.NewString()[:8]
+	testID := uuid.New().String()[:8]
 	host := otelk8stest.HostEndpoint(t)
 
 	// Create the namespace specific for the test
@@ -63,11 +63,11 @@ func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
 		host,
 	)
 
-	defer func() {
+	t.Cleanup(func() {
 		for _, obj := range nsObjs {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
-	}()
+	})
 
 	metricsConsumer := new(consumertest.MetricsSink)
 	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
@@ -77,7 +77,7 @@ func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
 			},
 		},
 	})
-	defer shutdownSinks()
+	t.Cleanup(shutdownSinks)
 
 	collectorConfigPath := path.Join(configExamplesDir, "self-monitoring-k8s-enrich.yaml")
 	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
@@ -97,11 +97,11 @@ func Test_Selfmonitoring_withK8sEnrichment(t *testing.T) {
 		host,
 	)
 
-	defer func() {
+	t.Cleanup(func() {
 		for _, obj := range collectorObjs {
 			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
 		}
-	}()
+	})
 
 	oteltest.WaitForMetrics(t, 1, metricsConsumer)
 

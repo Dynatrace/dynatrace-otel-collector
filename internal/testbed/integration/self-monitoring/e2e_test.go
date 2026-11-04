@@ -267,8 +267,6 @@ func Test_Selfmonitoring_checkMetrics(t *testing.T) {
 	require.Eventually(t, func() bool {
 		return sinks.Traces.SpanCount() >= 2 && len(dataPoints()) >= 2 && sinks.Logs.LogRecordCount() >= 2
 	}, 60*time.Second, 200*time.Millisecond, "data did not reach the sinks")
-	// Without filtering, a late request could still be in flight.
-	time.Sleep(time.Second)
 
 	var spans []string
 	for _, td := range sinks.Traces.AllTraces() {

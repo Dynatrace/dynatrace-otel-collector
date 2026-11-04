@@ -14,7 +14,7 @@ require (
 	github.com/openzipkin/zipkin-go v0.4.3
 	github.com/prometheus/client_golang v1.25.0
 	github.com/stretchr/testify v1.12.1
-	github.com/twmb/franz-go v1.22.1
+	github.com/twmb/franz-go v1.22.2
 	github.com/twmb/franz-go/pkg/kadm v1.19.0
 	github.com/twmb/franz-go/pkg/kfake v0.0.0-20261022190701-123ec885bc97
 	go.opentelemetry.io/collector/consumer/consumertest v0.164.0

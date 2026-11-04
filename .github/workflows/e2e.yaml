@@ -150,12 +150,9 @@ jobs:
           - k8senrichment
           - k8sobjects
           - k8spodlogs
-          - kafka
+          - k8sselfmonitoring
           - kubeletstats
           - loadbalancing
-          - prometheus
-          - self-monitoring
-          - self-monitoring-prometheus
     runs-on: ubuntu-24.04
     needs: docker-build
     steps:
@@ -181,15 +178,21 @@ jobs:
             module: testbed/integration
           - path: testbed/integration/feature-flags
             module: testbed/integration
-          - path: testbed/integration/netflow
-            module: testbed/integration
-          - path: testbed/integration/redaction
-            module: testbed/integration
           - path: testbed/integration/filestorage
             module: testbed/integration
           - path: testbed/integration/genainormalizer
             module: testbed/integration
+          - path: testbed/integration/kafka
+            module: testbed/integration
+          - path: testbed/integration/netflow
+            module: testbed/integration
+          - path: testbed/integration/prometheus
+            module: testbed/integration
+          - path: testbed/integration/redaction
+            module: testbed/integration
           - path: testbed/integration/statsd
+            module: testbed/integration
+          - path: testbed/integration/self-monitoring
             module: testbed/integration
           - path: testbed/integration/zipkin
             module: testbed/integration

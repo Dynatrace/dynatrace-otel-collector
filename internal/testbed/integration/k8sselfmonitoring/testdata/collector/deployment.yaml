@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}
-  namespace: e2ekafka
+  namespace: {{ .Namespace }}
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: opentelemetry-collector
@@ -13,17 +14,27 @@ spec:
       labels:
         app.kubernetes.io/name: opentelemetry-collector
         app.kubernetes.io/instance: {{ .Name }}
-        type: km-receiver
     spec:
       serviceAccountName: {{ .Name }}
       containers:
         - name: opentelemetry-collector
-          args:
+          command:
+            - /dynatrace-otel-collector
             - --config=/conf/relay.yaml
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
+          ports:
+            - name: otlp
+              containerPort: 4318
+              protocol: TCP
+            - name: otlpgrpc
+              containerPort: 4317
+              protocol: TCP
           env:
-            - name: BROKER_ADDRESS
-              value: redpanda.e2ekafka.svc.cluster.local:9092
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
           livenessProbe:
             httpGet:
               path: /
@@ -35,12 +46,9 @@ spec:
               port: 13133
             initialDelaySeconds: 3
           resources:
-            requests:
-              memory: "128Mi" # Reduce memory request
-              cpu: "100m"     # Reduce CPU request
             limits:
-              memory: "256Mi" # Optional: Set memory limit
-              cpu: "200m"
+              cpu: 128m
+              memory: 256Mi
           volumeMounts:
             - mountPath: /conf
               name: opentelemetry-collector-configmap

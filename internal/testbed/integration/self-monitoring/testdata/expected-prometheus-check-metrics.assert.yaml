@@ -2,10 +2,10 @@ version: 1
 signal: metrics
 resources:
     - attributes:
-        k8s.namespace.name: e2eselfmonitoringpromcheck
-        k8s.node.name: '*'
-        k8s.pod.name: '*'
-        server.port: "8888"
+        k8s.namespace.name: e2e-selfmonitoring
+        k8s.node.name: local-node
+        k8s.pod.name: otelcol-local
+        server.port: '*'
         service.instance.id: '*'
         service.name: dynatrace-otel-collector
         service.version: '*'
@@ -62,25 +62,18 @@ resources:
               datapoints:
                 - attributes:
                     exporter: otlp_http
-                - attributes:
-                    exporter: otlp_http/selfmon
             - name: otelcol_exporter_enqueue_size_bytes
               type: histogram
               temporality: delta
               datapoints:
                 - attributes:
                     exporter: otlp_http
-                - attributes:
-                    exporter: otlp_http/selfmon
             - name: otelcol_exporter_in_flight_requests
               type: gauge
               datapoints:
                 - attributes:
                     data_type: metrics
                     exporter: otlp_http
-                - attributes:
-                    data_type: metrics
-                    exporter: otlp_http/selfmon
             - name: otelcol_exporter_queue_batch_send_size
               type: histogram
               temporality: delta
@@ -105,18 +98,12 @@ resources:
                 - attributes:
                     data_type: metrics
                     exporter: otlp_http
-                - attributes:
-                    data_type: metrics
-                    exporter: otlp_http/selfmon
             - name: otelcol_exporter_queue_size
               type: gauge
               datapoints:
                 - attributes:
                     data_type: metrics
                     exporter: otlp_http
-                - attributes:
-                    data_type: metrics
-                    exporter: otlp_http/selfmon
             - name: otelcol_exporter_sent_metric_points
               type: sum
               temporality: delta
@@ -124,11 +111,6 @@ resources:
               datapoints:
                 - attributes:
                     exporter: otlp_http
-                    server.address: '*'
-                    server.port: '*'
-                    url.path: /v1/metrics
-                - attributes:
-                    exporter: otlp_http/selfmon
                     server.address: '*'
                     server.port: '*'
                     url.path: /v1/metrics

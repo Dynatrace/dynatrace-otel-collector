@@ -31,8 +31,3 @@ it for Linux (for example with `GOOS=linux`) before building the image.
 Rebuild the image after changing the Collector; the test uses whatever
 `dynatrace-otel-collector:e2e-test` is available locally. If it is missing, the test fails with
 the build command.
-
-## Notes
-
-- On Linux, the test adds `host.docker.internal:host-gateway` to the container. Podman uses
-  `host.containers.internal` instead, which the test doesn't handle.

@@ -96,7 +96,7 @@ func exportResources(t *testing.T, port int, resources map[string]map[string]any
 		span.SetSpanID([8]byte{1})
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 	defer cancel()
 	_, err := oteltest.NewTracesClient(t, port).Export(ctx, ptraceotlp.NewExportRequestFromTraces(td))
 	require.NoError(t, err)

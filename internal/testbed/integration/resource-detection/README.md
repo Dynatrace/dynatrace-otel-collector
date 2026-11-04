@@ -14,7 +14,7 @@ test process, reached through `host.docker.internal`.
 Docker is required. From the repository root, build the Collector and the image the test uses:
 
 ```sh
-make build
+make build GOOS=linux
 docker build -t dynatrace-otel-collector:e2e-test -f Dockerfile bin
 ```
 
@@ -36,5 +36,3 @@ the build command.
 
 - On Linux, the test adds `host.docker.internal:host-gateway` to the container. Podman uses
   `host.containers.internal` instead, which the test doesn't handle.
-- In CI this runs in the `resource-detection-e2e-test` job of `.github/workflows/e2e.yaml`,
-  using the image built by the `docker-build` job.

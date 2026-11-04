@@ -150,10 +150,9 @@ jobs:
           - k8senrichment
           - k8sobjects
           - k8spodlogs
+          - k8sselfmonitoring
           - kubeletstats
           - loadbalancing
-          - self-monitoring
-          - self-monitoring-prometheus
     runs-on: ubuntu-26.04
     needs: docker-build
     steps:
@@ -192,6 +191,8 @@ jobs:
           - path: testbed/integration/redaction
             module: testbed/integration
           - path: testbed/integration/statsd
+            module: testbed/integration
+          - path: testbed/integration/self-monitoring
             module: testbed/integration
           - path: testbed/integration/zipkin
             module: testbed/integration
@@ -268,12 +269,40 @@ jobs:
           cd internal/testbed/integration/hostmetrics
           go test -v --tags=e2e
 
+  resource-detection-e2e-test:
+    name: Test resource detection
+    runs-on: ubuntu-24.04
+    needs: docker-build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: internal/testbed/integration/go.sum
+
+      - name: Download image artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dynatrace-otel-collector-image
+          path: /tmp
+
+      - name: Load image into Docker
+        run: docker load -i /tmp/dynatrace-otel-collector.tar
+
+      - name: Run e2e tests
+        run: |
+          cd internal/testbed/integration/resource-detection
+          go test -v
+
   # Single required status check. Skipped jobs (docs-only changes, merge queue)
   # count as success, failed or cancelled ones fail this job.
   e2e-success:
     name: E2E Success
     if: always()
-    needs: [detect-changes, docker-build, k8s-multinode-matrix, k8s-e2e-test-matrix, e2e-test-matrix, hostmetrics-e2e-test]
+    needs: [detect-changes, docker-build, k8s-multinode-matrix, k8s-e2e-test-matrix, e2e-test-matrix, hostmetrics-e2e-test, resource-detection-e2e-test]
     runs-on: ubuntu-26.04
     steps:
       - name: Check results
@@ -285,7 +314,7 @@ jobs:
 
   notify-slack-e2e-tests:
     runs-on: ubuntu-26.04
-    needs: [k8s-e2e-test-matrix, e2e-test-matrix, k8s-multinode-matrix, hostmetrics-e2e-test]
+    needs: [k8s-e2e-test-matrix, e2e-test-matrix, k8s-multinode-matrix, hostmetrics-e2e-test, resource-detection-e2e-test]
     if: failure() && github.event_name == 'push'
     steps:
       - name: Slack Notification

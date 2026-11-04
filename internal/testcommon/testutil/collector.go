@@ -102,6 +102,8 @@ type CollectorParams struct {
 	ExecPath string
 	// Args are additional command line arguments, e.g. feature gates.
 	Args []string
+	// Env is added to the environment of the Collector process.
+	Env map[string]string
 }
 
 // Collector is a Collector child process started with StartCollector.
@@ -127,7 +129,11 @@ func StartCollector(t *testing.T, p CollectorParams) *Collector {
 	if execPath == "" {
 		execPath = SubpackageCollectorExecPath
 	}
-	col := testbed.NewChildProcessCollector(testbed.WithAgentExePath(execPath))
+	opts := []testbed.ChildProcessOption{testbed.WithAgentExePath(execPath)}
+	for k, v := range p.Env {
+		opts = append(opts, testbed.WithEnvVar(k, v))
+	}
+	col := testbed.NewChildProcessCollector(opts...)
 	cleanupCfg, err := col.PrepareConfig(t, p.Config)
 	require.NoError(t, err)
 	t.Cleanup(cleanupCfg)

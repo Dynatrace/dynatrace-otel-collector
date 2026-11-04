@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}
-  namespace: e2eresourcedetection
+  namespace: {{ .Namespace }}
 spec:
   replicas: 1
   selector:
@@ -24,6 +24,9 @@ spec:
           image: "{{ .ContainerRegistry }}dynatrace-otel-collector:e2e-test"
           ports:
             - name: otlp
+              containerPort: 4318
+              protocol: TCP
+            - name: otlpgrpc
               containerPort: 4317
               protocol: TCP
           env:
@@ -49,8 +52,6 @@ spec:
           volumeMounts:
             - mountPath: /conf
               name: opentelemetry-collector-configmap
-            - mountPath: /var/lib/dynatrace/enrichment
-              name: dynatrace-enrichment-file
           securityContext:
             privileged: false
             readOnlyRootFilesystem: true
@@ -62,7 +63,7 @@ spec:
               type: RuntimeDefault
             capabilities:
               drop:
-                - ALL
+                - ALL  
       volumes:
         - name: opentelemetry-collector-configmap
           configMap:
@@ -70,9 +71,3 @@ spec:
             items:
               - key: relay
                 path: relay.yaml
-        - name: dynatrace-enrichment-file
-          configMap:
-            name: {{ .Name }}-enrichment-file
-            items:
-              - key: dt_host_metadata.properties
-                path: dt_host_metadata.properties

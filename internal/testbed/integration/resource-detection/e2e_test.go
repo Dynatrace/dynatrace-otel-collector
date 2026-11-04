@@ -1,141 +1,174 @@
 // Copyright Dynatrace LLC
 // SPDX-License-Identifier: Apache-2.0
 
-package resource_detection
+package resourcedetection
 
 import (
-	"fmt"
-	"os"
-	"path"
-	"path/filepath"
+	"context"
+	"strings"
 	"testing"
+	"time"
 
-	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/k8stest"
-	oteltest "github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
-	"github.com/google/uuid"
-	otelk8stest "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/xk8stest"
+	"github.com/moby/moby/api/types/container"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
+
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/oteltest"
+	"github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon/testutil"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pdata/ptrace"
+	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
 )
 
-func TestE2E_ResourceDetectionProcessor(t *testing.T) {
-	testDir := filepath.Join("testdata")
-	configExamplesDir := "../../../../config_examples"
+// image is built by the docker-build CI job; locally build it from the repository root with
+// docker build -t dynatrace-otel-collector:e2e-test -f Dockerfile bin
+const image = "dynatrace-otel-collector:e2e-test"
 
-	kubeconfigPath := k8stest.TestKubeConfig
-	if kubeConfigFromEnv := os.Getenv(k8stest.KubeConfigEnvVar); kubeConfigFromEnv != "" {
-		kubeconfigPath = kubeConfigFromEnv
+const (
+	enrichmentFile = "/var/lib/dynatrace/enrichment/dt_host_metadata.properties"
+
+	enrichmentContent = `dt.entity.host=my-host-from-properties
+host.name=my-host-from-properties
+dt.entity.host_group=my-host-group-from-properties
+dt.foo=bar
+dt.smartscape.host=my-smartscape-host-from-properties
+not-a-property
+`
+)
+
+// startCollector starts the DT Collector image with config_examples/resource-detection.yaml.
+// If enrichment is not empty, it is the content of the dt_host_metadata.properties file in the
+// container. It returns the host port of the OTLP/gRPC receiver and the sink the Collector exports to.
+func startCollector(t *testing.T, enrichment string) (int, *consumertest.TracesSink) {
+	sink, sinkPorts := oteltest.StartTracesSink(t)
+
+	// The Collector runs in a container: it listens on all interfaces and reaches the sink
+	// on the host through host.docker.internal.
+	cfg := testutil.LoadConfigExample(t, "resource-detection.yaml").
+		ReplaceString("${env:MY_POD_IP}", "0.0.0.0").
+		Replace("exporter endpoint", func(s string) string { return testutil.ReplaceDynatraceExporterEndpoint(s, sinkPorts.Http) }).
+		ReplaceString("http://0.0.0.0:", "http://host.docker.internal:").
+		Replace("sending_queue and retry_on_failure", func(s string) string { return testutil.DisableSendingQueueAndRetry(s, "otlp_http") })
+
+	files := []testcontainers.ContainerFile{{
+		Reader:            strings.NewReader(cfg.String()),
+		ContainerFilePath: "/etc/otelcol/config.yaml",
+		FileMode:          0o644,
+	}}
+	if enrichment != "" {
+		files = append(files, testcontainers.ContainerFile{
+			Reader:            strings.NewReader(enrichment),
+			ContainerFilePath: enrichmentFile,
+			FileMode:          0o644,
+		})
 	}
 
-	k8sClient, err := otelk8stest.NewK8sClient(kubeconfigPath)
-	require.NoError(t, err)
-
-	// Create the namespace specific for the test
-	nsFile := filepath.Join(testDir, "namespace.yaml")
-	buf, err := os.ReadFile(nsFile)
-	require.NoErrorf(t, err, "failed to read namespace object file %s", nsFile)
-	nsObj, err := otelk8stest.CreateObject(k8sClient, buf)
-	require.NoErrorf(t, err, "failed to create k8s namespace from file %s", nsFile)
-
-	testNs := nsObj.GetName()
-	defer func() {
-		require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, nsObj), "failed to delete namespace %s", testNs)
-	}()
-
-	tracesConsumer := new(consumertest.TracesSink)
-	shutdownSinks := oteltest.StartUpSinks(t, oteltest.ReceiverSinks{
-		Traces: []*oteltest.TraceSinkConfig{
-			{
-				Consumer: tracesConsumer,
-			},
-		},
-	})
-	defer shutdownSinks()
-
-	testID := uuid.NewString()[:8]
-	collectorConfigPath := path.Join(configExamplesDir, "resource-detection.yaml")
-	host := otelk8stest.HostEndpoint(t)
-	collectorConfig, err := k8stest.GetCollectorConfig(collectorConfigPath, k8stest.ConfigTemplate{
-		Host: host,
-	})
-	require.NoErrorf(t, err, "Failed to read collector config from file %s", collectorConfigPath)
-	collectorObjs := otelk8stest.CreateCollectorObjects(
-		t,
-		k8sClient,
-		testID,
-		filepath.Join(testDir, "collector"),
-		map[string]string{
-			"ContainerRegistry": os.Getenv("CONTAINER_REGISTRY"),
-			"CollectorConfig":   collectorConfig,
-		},
-		host,
+	// Detection runs in the processor's Start, so once the Collector is ready it is done.
+	// The image has no shell, so wait for the log line instead of a port check.
+	ctr, err := testcontainers.Run(t.Context(), image,
+		testcontainers.WithExposedPorts("4317/tcp"),
+		testcontainers.WithFiles(files...),
+		testcontainers.WithHostConfigModifier(func(hc *container.HostConfig) {
+			hc.ExtraHosts = append(hc.ExtraHosts, "host.docker.internal:host-gateway")
+		}),
+		testcontainers.WithWaitStrategy(wait.ForLog("Everything is ready").WithStartupTimeout(time.Minute)),
 	)
+	testcontainers.CleanupContainer(t, ctr)
+	require.NoError(t, err, "failed to start %s; build it with: docker build -t %s -f Dockerfile bin", image, image)
 
-	createTeleOpts := &otelk8stest.TelemetrygenCreateOpts{
-		ManifestsDir: filepath.Join(testDir, "telemetrygen"),
-		TestID:       testID,
-		OtlpEndpoint: fmt.Sprintf("otelcol-%s.%s:4317", testID, testNs),
-		DataTypes:    []string{"traces"},
+	port, err := ctr.MappedPort(t.Context(), "4317/tcp")
+	require.NoError(t, err)
+	return int(port.Num()), sink
+}
+
+// exportResources sends one span per resource, in a single export.
+func exportResources(t *testing.T, port int, resources map[string]map[string]any) {
+	td := ptrace.NewTraces()
+	for service, attrs := range resources {
+		rs := td.ResourceSpans().AppendEmpty()
+		require.NoError(t, rs.Resource().Attributes().FromRaw(attrs))
+		rs.Resource().Attributes().PutStr("service.name", service)
+		span := rs.ScopeSpans().AppendEmpty().Spans().AppendEmpty()
+		span.SetName(service)
+		span.SetTraceID([16]byte{1})
+		span.SetSpanID([8]byte{1})
 	}
-	telemetryGenObjs, telemetryGenObjInfos := otelk8stest.CreateTelemetryGenObjects(t, k8sClient, createTeleOpts)
-	defer func() {
-		for _, obj := range append(collectorObjs, telemetryGenObjs...) {
-			require.NoErrorf(t, otelk8stest.DeleteObject(k8sClient, obj), "failed to delete object %s", obj.GetName())
+
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
+	defer cancel()
+	_, err := oteltest.NewTracesClient(t, port).Export(ctx, ptraceotlp.NewExportRequestFromTraces(td))
+	require.NoError(t, err)
+}
+
+// receivedResources returns the resource attributes of the received traces, by service.name.
+func receivedResources(t *testing.T, sink *consumertest.TracesSink, want int) map[string]map[string]any {
+	oteltest.WaitForTraces(t, 1, sink)
+	got := map[string]map[string]any{}
+	for _, td := range sink.AllTraces() {
+		for i := range td.ResourceSpans().Len() {
+			attrs := td.ResourceSpans().At(i).Resource().Attributes().AsRaw()
+			service, _ := attrs["service.name"].(string)
+			require.NotContains(t, got, service, "duplicate resource")
+			got[service] = attrs
 		}
-	}()
-
-	for _, info := range telemetryGenObjInfos {
-		otelk8stest.WaitForTelemetryGenToStart(t, k8sClient, info.Namespace, info.PodLabelSelectors, info.Workload, info.DataType)
 	}
+	require.Len(t, got, want)
+	require.Equal(t, want, sink.SpanCount())
+	return got
+}
 
-	wantEntries := 30 // Minimal number of traces to wait for.
-	oteltest.WaitForTraces(t, wantEntries, tracesConsumer)
+// TestE2E_ResourceDetectionProcessor tests the dynatrace detector of the resource detection
+// processor: it adds the host properties from dt_host_metadata.properties to resources and,
+// with override: false, keeps existing values. The config under test is
+// config_examples/resource-detection.yaml.
+//
+// The detector reads a hard-coded path, so the Collector runs in a container with that file
+// copied in. This needs Docker and the image (see image).
+func TestE2E_ResourceDetectionProcessor(t *testing.T) {
+	t.Run("file present", func(t *testing.T) {
+		port, sink := startCollector(t, enrichmentContent)
 
-	tcs := []struct {
-		name    string
-		service string
-		attrs   map[string]oteltest.ExpectedValue
-	}{
-		{
-			name:    "traces-job",
-			service: "test-traces-job",
-			attrs: map[string]oteltest.ExpectedValue{
-				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-from-properties"),
+		exportResources(t, port, map[string]map[string]any{
+			"rd-none-set": {},
+			"rd-all-set": {
+				"host.name":          "my-host-not-overridden",
+				"dt.entity.host":     "my-host-not-overridden",
+				"dt.smartscape.host": "my-smartscape-host-not-overridden",
 			},
-		},
-		{
-			name:    "traces-statefulset",
-			service: "test-traces-statefulset",
-			attrs: map[string]oteltest.ExpectedValue{
-				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
-				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-not-overridden"),
-				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-not-overridden"),
-			},
-		},
-		{
-			name:    "traces-deployment",
-			service: "test-traces-deployment",
-			attrs: map[string]oteltest.ExpectedValue{
-				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-from-properties"),
-			},
-		},
-		{
-			name:    "traces-daemonset",
-			service: "test-traces-daemonset",
-			attrs: map[string]oteltest.ExpectedValue{
-				"dt.entity.host":     oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"host.name":          oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-host-from-properties"),
-				"dt.smartscape.host": oteltest.NewExpectedValue(oteltest.AttributeMatchTypeEqual, "my-smartscape-host-from-properties"),
-			},
-		},
-	}
+			"rd-host-name-set": {"host.name": "my-host-not-overridden"},
+		})
 
-	for _, tc := range tcs {
-		oteltest.ScanTracesForAttributes(t, tracesConsumer, tc.service, tc.attrs, nil)
-	}
+		got := receivedResources(t, sink, 3)
+		assert.Equal(t, map[string]any{
+			"service.name":       "rd-none-set",
+			"dt.entity.host":     "my-host-from-properties",
+			"host.name":          "my-host-from-properties",
+			"dt.smartscape.host": "my-smartscape-host-from-properties",
+		}, got["rd-none-set"])
+		assert.Equal(t, map[string]any{
+			"service.name":       "rd-all-set",
+			"host.name":          "my-host-not-overridden",
+			"dt.entity.host":     "my-host-not-overridden",
+			"dt.smartscape.host": "my-smartscape-host-not-overridden",
+		}, got["rd-all-set"])
+		// override: false applies per key.
+		assert.Equal(t, map[string]any{
+			"service.name":       "rd-host-name-set",
+			"host.name":          "my-host-not-overridden",
+			"dt.entity.host":     "my-host-from-properties",
+			"dt.smartscape.host": "my-smartscape-host-from-properties",
+		}, got["rd-host-name-set"])
+	})
 
+	// Without OneAgent the Collector starts and passes data through unchanged.
+	t.Run("file absent", func(t *testing.T) {
+		port, sink := startCollector(t, "")
+
+		exportResources(t, port, map[string]map[string]any{"rd-none-set": {}})
+
+		got := receivedResources(t, sink, 1)
+		assert.Equal(t, map[string]any{"service.name": "rd-none-set"}, got["rd-none-set"])
+	})
 }

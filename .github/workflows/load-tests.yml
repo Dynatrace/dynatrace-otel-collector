@@ -17,7 +17,7 @@ env:
 jobs:
   setup-environment:
     timeout-minutes: 30
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -101,7 +101,7 @@ jobs:
           path: internal/testbed/load/tests/results/load-tests.json
 
   notify-slack:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [loadtest]
     if: failure() && (github.event_name == 'push' || github.event_name == 'schedule')
     steps:
@@ -115,7 +115,7 @@ jobs:
           SLACK_ICON: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/github.png"
 
   update-benchmarks:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: write # push results to the benchmarks branch
     needs: [loadtest]

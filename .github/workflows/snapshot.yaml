@@ -27,7 +27,7 @@ jobs:
   # The merge queue only builds and tests linux/amd64 to keep queue times short.
   select-targets:
     name: Select build and package test targets
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       build: ${{ steps.matrix.outputs.build }}
       package-tests: ${{ steps.matrix.outputs.package-tests }}
@@ -58,7 +58,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [detect-changes, select-targets]
     if: needs.detect-changes.outputs.skip != 'true'
     strategy:
@@ -147,7 +147,7 @@ jobs:
 
   linux-package-tests:
     name: Test Linux Packages
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [select-targets, build]
     strategy:
       matrix: ${{ fromJson(needs.select-targets.outputs.package-tests) }}
@@ -194,7 +194,7 @@ jobs:
     name: Snapshot Success
     if: always()
     needs: [detect-changes, select-targets, build, linux-package-tests]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Check results
         env:

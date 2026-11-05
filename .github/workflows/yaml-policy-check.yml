@@ -25,7 +25,7 @@ jobs:
     uses: ./.github/workflows/detect-changes.yaml
 
   kyverno-yaml-check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [detect-changes]
     if: needs.detect-changes.outputs.skip != 'true'
     steps:

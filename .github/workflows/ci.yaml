@@ -26,7 +26,7 @@ jobs:
 
   build:
     name: Build and Test
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [detect-changes]
     if: needs.detect-changes.outputs.skip != 'true'
     steps:
@@ -62,7 +62,7 @@ jobs:
         run: make test
 
   notify-slack:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [build]
     if: failure() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/'))
     steps:

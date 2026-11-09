@@ -54,7 +54,7 @@ extraEnvs:
   - name: K8S_SERVICE_NAME
     value: "{{ include \"opentelemetry-collector.fullname\" . }}"
   - name: K8S_CLUSTER_NAME
-    value: "tiered-otelcol-ta-test"
+    value: "${CLUSTER_NAME}"
   - name: K8S_NODE_NAME
     valueFrom:
       fieldRef:

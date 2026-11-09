@@ -41,7 +41,7 @@ extraEnvsFrom:
       name: dynatrace-otelcol-credentials
 extraEnvs:
   - name: K8S_CLUSTER_NAME
-    value: "tiered-otelcol-ta-test"
+    value: "${CLUSTER_NAME}"
   - name: K8S_NODE_NAME
     valueFrom:
       fieldRef:

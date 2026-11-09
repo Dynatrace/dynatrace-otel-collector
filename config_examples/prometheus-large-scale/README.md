@@ -13,7 +13,7 @@ Tiered OTel Collector setup for scraping Prometheus targets at scale and shippin
 
 ## Deploy
 
-Set `NAMESPACE` and apply RBAC + ScrapeConfig, then install Helm charts:
+The values files use a `${CLUSTER_NAME}` placeholder for the `K8S_CLUSTER_NAME` env var. Replace it with your cluster name (for example with `sed`) before installing. Set `NAMESPACE` and apply RBAC + ScrapeConfig, then install Helm charts:
 
 ```sh
 kubectl apply -f rbac.yaml

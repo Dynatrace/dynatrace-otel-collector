@@ -23,15 +23,6 @@ echo "  Host:            ${HOST}"
 echo "  Config dir:      ${CONFIG_DIR}"
 echo "  Collector image: ${COLLECTOR_IMAGE}:${COLLECTOR_TAG}"
 
-# Render a values file, substituting the ${CLUSTER_NAME} placeholder.
-RENDER_DIR="$(mktemp -d)"
-trap 'rm -rf "${RENDER_DIR}"' EXIT
-render_values() {
-    local out="${RENDER_DIR}/$(basename "$1")"
-    sed "s|\${CLUSTER_NAME}|${CLUSTER_NAME}|g" "$1" > "${out}"
-    echo "${out}"
-}
-
 # --- namespaces -----------------------------------------------------------
 kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
 
@@ -89,8 +80,9 @@ if [[ -n "${HELM_OVERRIDE_DIR}" && -f "${HELM_OVERRIDE_DIR}/tier2-gateway-overri
 fi
 helm upgrade --install otel-gateway open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
-    -f "$(render_values "${CONFIG_DIR}/tier2-gateway.values.yaml")" \
+    -f "${CONFIG_DIR}/tier2-gateway.values.yaml" \
     "${GATEWAY_HELM_ARGS[@]+"${GATEWAY_HELM_ARGS[@]}"}" \
+    --set "global.clusterName=${CLUSTER_NAME}" \
     --set "image.repository=${COLLECTOR_IMAGE}" \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "autoscaling.enabled=false" \
@@ -105,8 +97,9 @@ if [[ -n "${HELM_OVERRIDE_DIR}" && -f "${HELM_OVERRIDE_DIR}/tier1-scraper-overri
 fi
 helm upgrade --install otel-scraper open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
-    -f "$(render_values "${CONFIG_DIR}/tier1-scraper.values.yaml")" \
+    -f "${CONFIG_DIR}/tier1-scraper.values.yaml" \
     "${SCRAPER_HELM_ARGS[@]+"${SCRAPER_HELM_ARGS[@]}"}" \
+    --set "global.clusterName=${CLUSTER_NAME}" \
     --set "image.repository=${COLLECTOR_IMAGE}" \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "autoscaling.enabled=false" \
@@ -121,8 +114,9 @@ if [[ -n "${HELM_OVERRIDE_DIR}" && -f "${HELM_OVERRIDE_DIR}/selfmon-scraper-over
 fi
 helm upgrade --install otel-selfmon open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
-    -f "$(render_values "${CONFIG_DIR}/selfmon-scraper.yaml")" \
+    -f "${CONFIG_DIR}/selfmon-scraper.yaml" \
     -f "${SELFMON_VALUES}" \
+    --set "global.clusterName=${CLUSTER_NAME}" \
     --set "image.repository=${COLLECTOR_IMAGE}" \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "extraEnvsFrom[0].secretRef.name=selfmon-credentials" \

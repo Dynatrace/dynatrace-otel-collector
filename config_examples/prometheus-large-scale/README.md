@@ -13,7 +13,7 @@ Tiered OTel Collector setup for scraping Prometheus targets at scale and shippin
 
 ## Deploy
 
-The values files use a `${CLUSTER_NAME}` placeholder for the `K8S_CLUSTER_NAME` env var. Replace it with your cluster name (for example with `sed`) before installing. Set `NAMESPACE` and apply RBAC + ScrapeConfig, then install Helm charts:
+Set `NAMESPACE` and apply RBAC + ScrapeConfig, then install Helm charts. The cluster name reported as `k8s.cluster.name` comes from `global.clusterName` in each values file; override it with `--set global.clusterName=<your-cluster>`:
 
 ```sh
 kubectl apply -f rbac.yaml

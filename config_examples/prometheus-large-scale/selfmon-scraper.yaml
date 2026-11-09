@@ -36,12 +36,17 @@ serviceAccount:
   create: false
   name: tiered-otel-scraper  # reuse existing SA with pod list permissions
 
+global:
+  # Used for the k8s.cluster.name resource attribute (K8S_CLUSTER_NAME env var).
+  # Override at install time: --set global.clusterName=<your-cluster>
+  clusterName: "my-cluster"
+
 extraEnvsFrom:
   - secretRef:
       name: dynatrace-otelcol-credentials
 extraEnvs:
   - name: K8S_CLUSTER_NAME
-    value: "${CLUSTER_NAME}"
+    value: "{{ .Values.global.clusterName }}"
   - name: K8S_NODE_NAME
     valueFrom:
       fieldRef:

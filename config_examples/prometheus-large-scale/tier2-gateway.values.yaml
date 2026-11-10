@@ -45,6 +45,11 @@ serviceAccount:
   create: false
   name: tiered-otel-gateway
 
+global:
+  # Used for the k8s.cluster.name resource attribute (K8S_CLUSTER_NAME env var).
+  # Intentionally empty, set it at install time: --set global.clusterName=<your-cluster>
+  clusterName: ""
+
 extraEnvsFrom:
   - secretRef:
       name: dynatrace-otelcol-credentials
@@ -52,7 +57,7 @@ extraEnvs:
   - name: K8S_SERVICE_NAME
     value: "{{ include \"opentelemetry-collector.fullname\" . }}"
   - name: K8S_CLUSTER_NAME
-    value: "tiered-otelcol-ta-test"
+    value: "{{ .Values.global.clusterName }}"
   - name: K8S_NODE_NAME
     valueFrom:
       fieldRef:

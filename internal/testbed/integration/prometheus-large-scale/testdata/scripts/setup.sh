@@ -9,6 +9,7 @@ HOST="${HOST:-localhost}"
 CONTAINER_REGISTRY="${CONTAINER_REGISTRY:-}"
 CONFIG_DIR="${CONFIG_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/config_examples/prometheus-large-scale}"
 HELM_OVERRIDE_DIR="${HELM_OVERRIDE_DIR:-}"
+CLUSTER_NAME="${CLUSTER_NAME:-tiered-otelcol-ta-test}"
 SELFMON_SCRAPER_HTTP_PORT="${SELFMON_SCRAPER_HTTP_PORT:-4328}"
 SELFMON_GATEWAY_HTTP_PORT="${SELFMON_GATEWAY_HTTP_PORT:-4330}"
 SELFMON_ALLOCATOR_HTTP_PORT="${SELFMON_ALLOCATOR_HTTP_PORT:-4332}"
@@ -81,6 +82,7 @@ helm upgrade --install otel-gateway open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
     -f "${CONFIG_DIR}/tier2-gateway.values.yaml" \
     "${GATEWAY_HELM_ARGS[@]+"${GATEWAY_HELM_ARGS[@]}"}" \
+    --set "global.clusterName=${CLUSTER_NAME}" \
     --set "image.repository=${COLLECTOR_IMAGE}" \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "autoscaling.enabled=false" \
@@ -97,6 +99,7 @@ helm upgrade --install otel-scraper open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
     -f "${CONFIG_DIR}/tier1-scraper.values.yaml" \
     "${SCRAPER_HELM_ARGS[@]+"${SCRAPER_HELM_ARGS[@]}"}" \
+    --set "global.clusterName=${CLUSTER_NAME}" \
     --set "image.repository=${COLLECTOR_IMAGE}" \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "autoscaling.enabled=false" \
@@ -113,6 +116,7 @@ helm upgrade --install otel-selfmon open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
     -f "${CONFIG_DIR}/selfmon-scraper.yaml" \
     -f "${SELFMON_VALUES}" \
+    --set "global.clusterName=${CLUSTER_NAME}" \
     --set "image.repository=${COLLECTOR_IMAGE}" \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "extraEnvsFrom[0].secretRef.name=selfmon-credentials" \

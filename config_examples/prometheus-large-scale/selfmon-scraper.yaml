@@ -38,8 +38,8 @@ serviceAccount:
 
 global:
   # Used for the k8s.cluster.name resource attribute (K8S_CLUSTER_NAME env var).
-  # Override at install time: --set global.clusterName=<your-cluster>
-  clusterName: "my-cluster"
+  # Intentionally empty, set it at install time: --set global.clusterName=<your-cluster>
+  clusterName: ""
 
 extraEnvsFrom:
   - secretRef:

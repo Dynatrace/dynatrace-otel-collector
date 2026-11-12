@@ -1,8 +1,8 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/changelog-generator
 
-go 1.27.3
+go 1.27.4
 
 require (
-	golang.org/x/mod v0.42.0
+	golang.org/x/mod v0.43.0
 	gopkg.in/yaml.v3 v3.0.1
 )

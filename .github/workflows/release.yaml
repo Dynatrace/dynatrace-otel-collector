@@ -11,11 +11,11 @@ permissions:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.27.3"
+  GO_VERSION: "1.27.4"
   # renovate: datasource=go depName=github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod
   CYCLONEDX_VERSION: "v1.12.0"
   # renovate: datasource=github-releases depName=goreleaser/goreleaser-pro
-  GORELEASER_PRO_VERSION: v2.20.0
+  GORELEASER_PRO_VERSION: v2.20.1
   # renovate: datasource=github-releases depName=sigstore/cosign
   COSIGN_VERSION: v3.1.4
 

@@ -20,7 +20,7 @@ permissions:
 
 env:
   # renovate: datasource=golang-version depName=go
-  GO_VERSION: "1.27.3"
+  GO_VERSION: "1.27.4"
 
 jobs:
   generate-changelog:
@@ -58,7 +58,7 @@ jobs:
           ./bin/changelog-generator ${{ inputs.pr_urls }}
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: changelog/v${{ env.DIST_VERSION }}

@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/integration
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0
@@ -18,7 +18,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.45.0
 	github.com/twmb/franz-go v1.22.3
 	github.com/twmb/franz-go/pkg/kadm v1.19.0
-	github.com/twmb/franz-go/pkg/kfake v0.0.0-20261022190701-123ec885bc97
+	github.com/twmb/franz-go/pkg/kfake v0.0.0-20261109062748-d6ea02a174bc
 	go.opentelemetry.io/collector/consumer/consumertest v0.164.0
 	go.opentelemetry.io/collector/pdata v1.70.0
 	go.opentelemetry.io/otel v1.47.0

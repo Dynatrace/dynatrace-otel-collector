@@ -1,6 +1,6 @@
 module testcommon
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.161.0
@@ -11,6 +11,7 @@ require (
 	go.opentelemetry.io/collector/component/componenttest v0.164.0
 	go.opentelemetry.io/collector/config/configoptional v1.70.0
 	go.opentelemetry.io/collector/confmap v1.70.0
+	go.opentelemetry.io/collector/consumer v1.70.0
 	go.opentelemetry.io/collector/consumer/consumertest v0.164.0
 	go.opentelemetry.io/collector/featuregate v1.70.0
 	go.opentelemetry.io/collector/pdata v1.70.0
@@ -123,7 +124,6 @@ require (
 	go.opentelemetry.io/collector/connector v0.164.0 // indirect
 	go.opentelemetry.io/collector/connector/connectortest v0.164.0 // indirect
 	go.opentelemetry.io/collector/connector/xconnector v0.164.0 // indirect
-	go.opentelemetry.io/collector/consumer v1.70.0 // indirect
 	go.opentelemetry.io/collector/consumer/consumererror v0.164.0 // indirect
 	go.opentelemetry.io/collector/consumer/consumererror/xconsumererror v0.164.0 // indirect
 	go.opentelemetry.io/collector/consumer/xconsumer v0.164.0 // indirect

@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/smoke
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/testbed v0.164.1

@@ -1,6 +1,6 @@
 module github.com/Dynatrace/dynatrace-otel-collector/internal/testbed/integration
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/Dynatrace/dynatrace-otel-collector/internal/testcommon v0.0.0

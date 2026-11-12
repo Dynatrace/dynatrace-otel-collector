@@ -4,6 +4,144 @@
 
 <!-- next version -->
 
+## 0.61.0
+
+This release includes version v0.165.0 of the upstream Collector components.
+
+The individual upstream Collector changelogs can be found here:
+
+v0.165.0:
+
+- <https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.165.0>
+- <https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.165.0>
+
+### 🛑 Breaking changes 🛑
+
+- `receiver/prometheus`: `__scheme__` and `__metrics_path__` labels on scraped samples are no longer dropped from datapoint attributes. ([#52736](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52736))
+- `processor/resource_detection`: The `system` and `docker` detectors now set `os.type` to `zos` instead of the deprecated `z_os` on z/OS. ([#52804](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52804))
+- `receiver/kafka_metrics`: Remove stable receiver.kafkametricsreceiver.UseFranzGo gate ([#52241](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52241))
+- `receiver/file_log`: Remove stable gate filelog.protobufCheckpointEncoding ([#52387](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52387))
+- `processor/transform`: Remove the deprecated `flatten_data` config option. Use `flatten.log` instead. ([#32080](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32080))
+- `pkg/zipkin`: Promote "pkg.translator.zipkin.EmitV1CloudResourceConventions" and "pkg.translator.zipkin.DontEmitV0CloudResourceConventions" feature gates to Beta. ([#52148](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52148))
+  The Zipkin translator now emits `cloud.resource_id` instead of the deprecated `faas.id` by default.
+- `pkg/zipkin`: Promote "pkg.translator.zipkin.EmitV1NetworkConventions" and "pkg.translator.zipkin.DontEmitV0NetworkConventions" feature gates to Stable. ([#52250](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52250))
+  The gates can no longer be disabled. The Zipkin translator now always emits `network.local.address`,
+  `network.peer.address`, and `service.peer.name`, and no longer emits the deprecated `net.host.ip`,
+  `net.peer.ip`, and `peer.service` attributes.
+- `all`: Remove the deprecated SignalFx receiver. Use the OTLP receiver instead. ([#51934](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51934))
+
+<details>
+<summary>Highlights from the upstream Collector changelog</summary>
+
+### ⚠️ Deprecations ⚠️
+
+- `processor/resource_detection`: Deprecate the `azure.resourcegroup.name` resource attribute in favor of `azure.resource_group.name`, behind the `processor.azuredetector.RenameResourceGroupAttribute` feature gate ([#49079](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49079))
+  The new `processor.azuredetector.RenameResourceGroupAttribute` feature gate is alpha
+  and disabled by default, so the azure detector continues to emit `azure.resourcegroup.name` and
+  there is no change in behavior. Enabling the gate makes the detector emit
+  `azure.resource_group.name` instead, matching the naming convention used by other semantic
+  convention attributes such as `cloud.availability_zone`. The gate is intended to be promoted to
+  beta, and enabled by default, in a future release, giving users time to migrate any
+  configuration that filters or routes on `azure.resourcegroup.name`.
+- `processor/resource_detection`: The `system` detector adds the `os.build_id` resource attribute and deprecates `os.build.id`. ([#52806](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52806))
+
+### 💡 Enhancements 💡
+
+- `processor/memory_limiter`: Add `garbage_collector` config section to allow disabling forced garbage collection via `enabled` field. ([#15081](https://github.com/open-telemetry/opentelemetry-collector/issues/15081))
+- `pkg/service`: Warn at startup when a pipeline combines the batch processor with exporterhelper batching. ([#15965](https://github.com/open-telemetry/opentelemetry-collector/issues/15965))
+  Detection does not cross connectors or inspect exporter wrappers that hide exporterhelper's batching capability.
+- `pkg/service`: Service now supports configuring additional resource detectors for internal telemetry as per the update to otelconf v0.26.0. ([#15869](https://github.com/open-telemetry/opentelemetry-collector/issues/15869))
+- `processor/resource_detection`: Keep Kubernetes and OpenShift clients out of resource detector configuration imports. ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `processor/resource_detection`: Add opt-in `host.id` attribute to the `k8s_api` detector, set from the node's `status.nodeInfo.machineID`. ([#52194](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52194))
+- `pkg/ottl`: Improve StandardStringLikeGetter performance by adding direct string conversion for int64 and bool values, avoiding unnecessary JSON marshaling. ([#52596](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52596))
+- `pkg/ottl`: Use substring matching for literal-only patterns in IsMatch, delete_matching_keys, keep_matching_keys, replace_pattern and replace_all_patterns without changing regex semantics. ([#52593](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52593))
+- `receiver/kafka`: Pass message metadata to opt-in message encoding extensions for all signals. ([#51752](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51752))
+- `pkg/kafka/configkafka`: Add `producer::max_inflight_requests_per_broker` to configure the number of produce requests kept in flight per broker. ([#52780](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52780))
+  Defaults to 1, preserving the previous behavior. Only takes effect with `required_acks` 0 or 1;
+  values above 1 are rejected with `required_acks: all`.
+- `processor/transform`: Add the `processor.transform.enableExperimentalFunctions` feature gate, which new transform processor functions will require while they are experimental. ([#52523](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52523))
+- `processor/redaction`: Adds the `masking_string` configuration to allow for configurable masking ([#50801](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50801))
+- `exporter/load_balancing`: Route logs without `service.name` by a hash of their resource attributes with `routing_key: service`, instead of sending all of them to one backend. ([#52483](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52483))
+  Logs without `service.name` now spread over several backends instead of one. Setups with stateful processing behind the exporter will see a one-time rebalance after the upgrade.
+- `processor/redaction`: Reject `hash_function` values `md5` and `sha1` at startup when the collector runs in FIPS 140-3 mode. ([#52501](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52501))
+  MD5 and SHA-1 are not FIPS 140-3 approved. A collector built with the Go FIPS module and run with
+  `GODEBUG=fips140=on` would mark itself non-compliant on the first masked value and `GODEBUG=fips140=only`
+  would panic. The processor now fails configuration validation in FIPS mode. Nothing changes outside FIPS mode.
+- `connector/span_metrics`: Reduce consume-path allocations by reusing shared metric keys, avoiding per-event attribute map copies, and filtering resource key attributes without a full map copy. ([#49860](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49860))
+  When `calls_dimensions` and `histogram.dimensions` are both empty, the duration
+  histogram reuses the calls metric key. Delta timestamp maps are allocated only
+  for delta temporality. With `events.enabled`, dimensions are resolved from span,
+  event, and resource attributes without building a merged map per event. When
+  `resource_metrics_key_attributes` is set, only the configured attributes are
+  copied into the resource key hash.
+- `receiver/host_metrics`: Suppress warnings on Windows for not ready removable disks ([#52723](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52723))
+- `pkg/stanza`: Add an `otelcol` operator that parses the collector's own self-logs, promoting `ts`, `level`, `msg`, and `resource` onto the log record's Timestamp, Severity, Body, and Resource. ([#49525](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49525))
+- `extension/bearertokenauth`: Expose the configured token as an OAuth2 token so the extension can be used as a token source ([#50574](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50574))
+  This allows `bearertokenauth` to be referenced as the `oauthbearer_token_source` of the Kafka
+  exporter and receiver, so a SASL/OAUTHBEARER token can be read from a file that is populated
+  out of band, such as a Kubernetes projected service account token.
+- `pkg/ottl`: Allow converters and paths as keys in map literals, e.g. `{ToUpperCase("key"): "value"}`. ([#52210](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52210))
+  Enable the `pkg.ottl.enableDynamicMapKeys` feature gate to use this feature.
+- `pkg/ottl/contexts/xspanlink`: Add `ottlspanlink` context, in the new experimental `xspanlink` module, exposing per-span-link fields (`trace_id`, `span_id`, `trace_state`, `attributes`, `dropped_attributes_count`, `flags`) for use in OTTL statements. ([#26660](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/26660))
+- `pkg/ottl/xottl`: Add the experimental `ToValidUTF8` converter to replace invalid UTF-8 byte sequences in a string with a replacement string ([#51717](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51717))
+- `processor/resource_detection`: Trimmed builds no longer link dependencies for resource detectors that are not compiled ([#47218](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47218))
+- `receiver/prometheus`: Introduce alpha feature gate `receiver.prometheus.UseTargetUrlForServerAddress` to populate `server.address`, `server.port`, and `url.scheme` from post-relabeling `__address__` and `__scheme__` target labels instead of parsing `instance` and pre-relabeling service discovery labels. ([#52565](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52565), [#52570](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52570))
+- `processor/resource_detection`: Add the `processor.resourcedetection.openshift.removeCloudNameRegion` feature gate to stop the `openshift` detector from reporting `cloud.region` on Azure and OpenStack clusters. ([#48159](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48159))
+  The value was the Azure cloud environment name (e.g. `azurepubliccloud`) or the name of the OpenStack `clouds.yaml` entry, not a region. The `openshift` detector now uses the go-contrib SDK detector; while the gate is disabled the legacy value is still reported. It will be removed once the gate is stable.
+
+### 🧰 Bug fixes 🧰
+
+- `pkg/service`: Skip graph nodes that have not been built during shutdown to prevent a panic when a partial receiver reload fails to build a receiver. ([#16261](https://github.com/open-telemetry/opentelemetry-collector/issues/16261))
+- `pkg/exporterhelper`: With `wait_for_result`, canceling a request that the sending queue already accepted no longer returns early ([#16255](https://github.com/open-telemetry/opentelemetry-collector/issues/16255))
+  Previously a canceled context made it return `context.Canceled` while the request was still
+  delivered, so callers could report a failure for data that had been sent. Canceling still takes
+  effect while nothing has been done with the request.
+- `pkg/exporterhelper`: Fix a `Cannot unref freed data` panic when a persistent sending queue forwards requests into another pipeline ([#15256](https://github.com/open-telemetry/opentelemetry-collector/issues/15256))
+- `processor/redaction`: Mask a whole multi-line value matched by blocked_key_patterns with a single mask or hash. ([#50296](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50296))
+- `processor/cumulative_to_delta`: Return an error when an invalid regexp is configured in `include` or `exclude` instead of panicking on the first metric batch ([#51963](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51963))
+- `pkg/ottl`: Make the `MD5`, `SHA1` and `CommunityID` converters work when the collector runs in strict FIPS 140-3 mode (`GODEBUG=fips140=only`). ([#52479](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52479))
+  These converters hash telemetry data for non-security purposes. The digest is now computed with
+  `crypto/fips140.WithoutEnforcement`, so a collector built with the Go FIPS 140-3 module and run with
+  `GODEBUG=fips140=only` no longer fails or panics when a statement uses them. The algorithms themselves
+  are still not FIPS approved and must not be used for any security function.
+- `receiver/k8s_cluster`: Don't emit container entity events for containers that don't have a container ID yet. ([#52722](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52722))
+- `processor/tail_sampling`: Preserve resource and scope schema URLs when splitting incoming spans by trace ID. ([#51524](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51524))
+- `pkg/stanza`: Preserve multiline message bodies in the syslog parser for RFC3164 records without octet counting. ([#51554](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51554))
+- `receiver/k8s_cluster`: Use the pod spec image for `container.image.name` and `container.image.tag`, consistent with `k8sattributesprocessor`. ([#46541](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46541))
+  Previously the status image was used, which some runtimes report as a bare digest (`sha256:<hex>`).
+  Values may change for images without a fully qualified registry (e.g. `nginx` instead of `docker.io/library/nginx`).
+  Previously the status image was used, which some runtimes report as a bare digest (`sha256:<hex>`).
+  Values may change for images without a fully qualified registry (e.g. `nginx` instead of `docker.io/library/nginx`).
+- `processor/redaction`: Record the `body` key in the redaction summary attributes when a string log body matches an allowed value ([#50417](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/50417))
+  Previously the processor returned early without recording the allowed value, so an
+  allowed string log body was never reflected in `redaction.body.allowed.keys` /
+  `redaction.body.allowed.count`.
+- `receiver/prometheus`: Keep credentials in `proxy_url` and other URL fields on config reload instead of replacing the password with `xxxxx`. ([#52337](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52337))
+- `processor/resource_detection`: The `eks`, `k8s_api` and `kubeadm` detectors no longer fail at startup when the Collector is not running in Kubernetes; they return no attributes, or fail detection when `fail_on_missing_metadata` is enabled. ([#52552](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52552))
+- `connector/span_metrics`: Fix delta timestamp collisions between resources with matching dimensions, preventing downstream cumulative counters from resetting. ([#52145](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52145))
+  Metric names, attributes, and delta values are unchanged.
+  When unset, `metric_timestamp_cache_size` now defaults to 10 times `resource_metrics_cache_size`, with a minimum of 1000 (10000 with default settings).
+  Users who explicitly set `metric_timestamp_cache_size` may need to increase it because cache entries now include resource identity.
+  The "Evicting cached delta timestamp" log level changes from Info to Debug.
+- `pkg/fileconsumer`: Fix log loss on graceful shutdown under back pressure ([#52067](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/52067))
+  Logs interrupted by shutdown are now re-read after restart instead of being skipped, so delivery is at-least-once and some logs may be duplicated.
+  This only holds with the `stanza.synchronousLogEmitter` feature gate enabled; with the default batching emitter, buffered logs can still be lost on shutdown.
+  For gzip files, the whole interrupted file chunk is re-read instead of being skipped.
+
+---
+
+</details>
+
+
+#### Dynatrace distribution changelog:
+
+### 💡 Enhancements 💡
+
+- `config_examples/prometheus-large-scale`: Set the cluster name of the prometheus-large-scale example via `--set global.clusterName=<cluster>` in the `helm install`/`helm upgrade` command, without editing the values files (#1324)
+  The `k8s.cluster.name` value is no longer hardcoded in the tier 1 scraper, tier 2 gateway and selfmon scraper Helm values.
+
+<!-- previous-version -->
+
 ## 0.60.0
 
 This release includes versions v0.164.0 and v0.164.1 of the upstream Collector components.

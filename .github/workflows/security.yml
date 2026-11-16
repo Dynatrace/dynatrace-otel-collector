@@ -47,11 +47,22 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
           # Release branches get their own Snyk snapshot so they do not overwrite main's.
-          if [[ "$GITHUB_REF_NAME" == "main" ]]; then
-            snyk monitor --file=build/go.mod
-          else
-            snyk monitor --file=build/go.mod --target-reference="$GITHUB_REF_NAME"
+          target_ref_args=()
+          if [[ "$GITHUB_REF_NAME" != "main" ]]; then
+            target_ref_args=(--target-reference="$GITHUB_REF_NAME")
           fi
+
+          # build/go.mod is the generated (OCB) module of the shipped collector.
+          # All other committed go.mod files (internal tools, test modules) are
+          # monitored too, so their dependencies are visible in Snyk.
+          mapfile -t go_mods < <(git ls-files '*go.mod')
+          status=0
+          for go_mod in build/go.mod "${go_mods[@]}"; do
+            echo "::group::snyk monitor ${go_mod}"
+            snyk monitor --file="${go_mod}" "${target_ref_args[@]}" || status=1
+            echo "::endgroup::"
+          done
+          exit "${status}"
 
   notify-slack:
     runs-on: ubuntu-26.04

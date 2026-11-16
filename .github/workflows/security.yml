@@ -2,7 +2,7 @@ name: Security check
 
 on:
   push:
-    branches: [main, "release/*"]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,6 +15,8 @@ env:
 jobs:
   build:
     name: Check for security vulnerabilities
+    # Snyk tracks main only; a manual run on another branch would overwrite main's snapshot.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-26.04
     steps:
       - name: Checkout
@@ -47,15 +49,8 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
           # build/go.mod is the generated (OCB) module of the shipped collector.
-          if [[ "$GITHUB_REF_NAME" != "main" ]]; then
-            # Release branches only track what we ship, in their own Snyk snapshot
-            # so they do not overwrite main's.
-            snyk monitor --file=build/go.mod --target-reference="$GITHUB_REF_NAME"
-            exit
-          fi
-
-          # On main, all other committed go.mod files (internal tools, test
-          # modules) are monitored too, so their dependencies are visible in Snyk.
+          # All other committed go.mod files (internal tools, test modules) are
+          # monitored too, so their dependencies are visible in Snyk.
           mapfile -t go_mods < <(git ls-files '*go.mod')
           status=0
           for go_mod in build/go.mod "${go_mods[@]}"; do

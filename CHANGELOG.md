@@ -28,7 +28,6 @@ v0.165.0:
   The gates can no longer be disabled. The Zipkin translator now always emits `network.local.address`,
   `network.peer.address`, and `service.peer.name`, and no longer emits the deprecated `net.host.ip`,
   `net.peer.ip`, and `peer.service` attributes.
-- `all`: Remove the deprecated SignalFx receiver. Use the OTLP receiver instead. ([#51934](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51934))
 
 <details>
 <summary>Highlights from the upstream Collector changelog</summary>

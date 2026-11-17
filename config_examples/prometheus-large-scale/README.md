@@ -15,12 +15,31 @@ Tiered OTel Collector setup for scraping Prometheus targets at scale and shippin
 
 Set `NAMESPACE` and apply RBAC + ScrapeConfig, then install Helm charts. The cluster name reported as `k8s.cluster.name` comes from `global.clusterName` in each values file; set it with `--set global.clusterName=<your-cluster>`:
 
-```sh
-kubectl apply -f rbac.yaml
-kubectl apply -f scrapeconfig.yaml
+`kubectl` and `helm` do not expand environment variables, so substitute `${NAMESPACE}` with `envsubst` first:
 
-helm install otel-allocator open-telemetry/opentelemetry-target-allocator -f allocator.values.yaml
-helm install otel-scraper   open-telemetry/opentelemetry-collector       -f tier1-scraper.values.yaml
-helm install otel-gateway   open-telemetry/opentelemetry-collector       -f tier2-gateway.values.yaml
-helm install otel-selfmon   open-telemetry/opentelemetry-collector       -f selfmon-scraper.yaml
+```sh
+export NAMESPACE=<your-namespace>
+kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+
+# ScrapeConfig CRD from the Prometheus Operator (skip if already installed)
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.79.2/example/prometheus-operator-crd/monitoring.coreos.com_scrapeconfigs.yaml
+
+envsubst '${NAMESPACE}' < rbac.yaml         | kubectl apply -f -
+envsubst '${NAMESPACE}' < scrapeconfig.yaml | kubectl apply -f -
+
+kubectl create secret generic dynatrace-otelcol-credentials -n "$NAMESPACE" \
+  --from-literal=DT_ENDPOINT=https://<your-environment-id>.live.dynatrace.com/api/v2/otlp \
+  --from-literal=DT_PLATFORM_TOKEN=<your-token>
+
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+helm repo update
+
+envsubst '${NAMESPACE}' < allocator.values.yaml | \
+  helm install otel-allocator open-telemetry/opentelemetry-target-allocator -n "$NAMESPACE" -f -
+envsubst '${NAMESPACE}' < tier1-scraper.values.yaml | \
+  helm install otel-scraper open-telemetry/opentelemetry-collector -n "$NAMESPACE" -f -
+envsubst '${NAMESPACE}' < tier2-gateway.values.yaml | \
+  helm install otel-gateway open-telemetry/opentelemetry-collector -n "$NAMESPACE" -f -
+envsubst '${NAMESPACE}' < selfmon-scraper.yaml | \
+  helm install otel-selfmon open-telemetry/opentelemetry-collector -n "$NAMESPACE" -f -
 ```

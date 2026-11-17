@@ -85,7 +85,7 @@ alternateConfig:
               - role: pod
                 namespaces:
                   names:
-                    - otel-ta
+                    - ${NAMESPACE}
             relabel_configs:
               # Keep only pods with scrape annotation
               - source_labels: [__meta_kubernetes_pod_annotation_metrics_dynatrace_com_scrape]

@@ -1,7 +1,7 @@
 # Tier 1: Scraper — scrapes Prometheus targets via TA, load-balances to tier 2.
 # Deploy with:
 #   helm install otel-scraper open-telemetry/opentelemetry-collector \
-#     --namespace otel-ta -f tier1-scraper.values.yaml
+#     --namespace $NAMESPACE -f tier1-scraper.values.yaml
 
 fullnameOverride: "tiered-scraper"
 
@@ -129,7 +129,7 @@ alternateConfig:
           timeout: 10s
       resolver:
         k8s:
-          service: "tiered-gateway.otel-ta"
+          service: "tiered-gateway.${NAMESPACE}"
           ports:
             - 4317
 

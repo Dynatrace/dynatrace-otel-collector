@@ -98,12 +98,12 @@ jobs:
         run: |
           # build/go.mod is the generated (OCB) module of the shipped collector.
           # All other committed go.mod files (internal tools, test modules) are tested too.
-          # Only high/critical findings are reported and fail the job.
+          # Findings of all severities (low and above) are reported and fail the job.
           mapfile -t go_mods < <(git ls-files '*go.mod')
           status=0
           for go_mod in build/go.mod "${go_mods[@]}"; do
             echo "::group::snyk test ${go_mod}"
-            snyk test --severity-threshold=high --file="${go_mod}" || status=1
+            snyk test --severity-threshold=low --file="${go_mod}" || status=1
             echo "::endgroup::"
           done
           exit "${status}"

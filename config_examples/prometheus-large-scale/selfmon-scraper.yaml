@@ -248,6 +248,20 @@ alternateConfig:
   service:
     extensions:
       - health_check
+    # Push this collector's own telemetry into its own OTLP receiver so it shows up
+    # alongside the scraper and gateway tiers.
+    telemetry:
+      metrics:
+        level: normal
+        readers:
+          - periodic:
+              interval: 10000
+              timeout: 5000
+              exporter:
+                otlp:
+                  protocol: http/protobuf
+                  temporality_preference: delta
+                  endpoint: http://${env:MY_POD_IP}:4318
     pipelines:
       metrics:
         receivers:

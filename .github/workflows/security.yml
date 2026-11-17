@@ -60,6 +60,53 @@ jobs:
           done
           exit "${status}"
 
+  test:
+    name: Test for security vulnerabilities (no upload)
+    # Manual runs on other branches only report locally via `snyk test`;
+    # `snyk monitor` (build job) is reserved for main.
+    if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main'
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      
+      - uses: snyk/actions/setup@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
+
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: true
+          cache: false
+
+      - name: Cache collector source code
+        id: cache-collector-source
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build
+          key: ci-build-${{ runner.os }}-${{ hashFiles('manifest.yaml', 'internal/confmap/provider/eecprovider') }}
+
+      - name: Generate source files
+        if: steps.cache-collector-source.outputs.cache-hit != 'true'
+        run: make generate
+
+      - name: Run Snyk
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          # build/go.mod is the generated (OCB) module of the shipped collector.
+          # All other committed go.mod files (internal tools, test modules) are tested too.
+          mapfile -t go_mods < <(git ls-files '*go.mod')
+          status=0
+          for go_mod in build/go.mod "${go_mods[@]}"; do
+            echo "::group::snyk test ${go_mod}"
+            snyk test --file="${go_mod}" || status=1
+            echo "::endgroup::"
+          done
+          exit "${status}"
+
   notify-slack:
     runs-on: ubuntu-26.04
     needs: [build]

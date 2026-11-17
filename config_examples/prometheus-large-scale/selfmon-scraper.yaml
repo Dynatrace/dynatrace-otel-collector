@@ -1,7 +1,7 @@
 # Selfmon Scraper — scrapes collector/allocator metrics, exports direct to DT
 # Deploy with:
 #   helm install otel-selfmon open-telemetry/opentelemetry-collector \
-#     --namespace otel-ta -f selfmon-scraper.values.yaml
+#     --namespace $NAMESPACE -f selfmon-scraper.values.yaml
 
 fullnameOverride: "selfmon-scraper"
 
@@ -179,9 +179,9 @@ alternateConfig:
 
         - context: datapoint
           statements:
-            - set(resource.attributes["k8s.pod.name"], attributes["k8s_pod_name"]) where attributes["k8s_pod_name"] != nil
-            - set(resource.attributes["k8s.namespace.name"], attributes["k8s_namespace_name"]) where attributes["k8s_namespace_name"] != nil
-            - set(resource.attributes["k8s.pod.ip"], attributes["k8s_pod_ip"]) where attributes["k8s_pod_ip"] != nil
+            - set(resource.attributes["k8s.pod.name"], datapoint.attributes["k8s_pod_name"]) where datapoint.attributes["k8s_pod_name"] != nil
+            - set(resource.attributes["k8s.namespace.name"], datapoint.attributes["k8s_namespace_name"]) where datapoint.attributes["k8s_namespace_name"] != nil
+            - set(resource.attributes["k8s.pod.ip"], datapoint.attributes["k8s_pod_ip"]) where datapoint.attributes["k8s_pod_ip"] != nil
 
         - context: resource
           statements:
@@ -235,6 +235,122 @@ alternateConfig:
             - merge_maps(resource.attributes, ParseJSON(resource.attributes["metadata.dynatrace.com"]), "upsert") where IsMatch(resource.attributes["metadata.dynatrace.com"], "^\\{")
             - delete_key(resource.attributes, "metadata.dynatrace.com")
 
+    # Allowlist of self-monitoring metrics. Union of:
+    #   - Customer-facing/Local/Remote SFM list (customer tenant column)
+    #     https://dt-rnd.atlassian.net/wiki/spaces/PPX/pages/3154018602
+    #   - SFM metrics for Prometheus integration in Kubernetes (dashboard metrics)
+    #     https://dt-rnd.atlassian.net/wiki/spaces/ICP/pages/3429630181
+    # Everything not listed here is dropped.
+    # Prometheus-scraped histograms arrive without the "_bucket" suffix; counters
+    # may or may not keep "_total" depending on prometheus receiver feature gates,
+    # so both variants are listed where relevant.
+    filter/selfmon_allowlist:
+      error_mode: ignore
+      metrics:
+        metric:
+          - |
+            not ContainsValue([
+              "otelcol_process_uptime",
+              "otelcol_process_cpu_seconds",
+              "otelcol_process_memory_rss",
+              "otelcol_process_runtime_heap_alloc_bytes",
+              "otelcol_process_runtime_total_alloc_bytes",
+              "otelcol_process_runtime_total_sys_memory_bytes",
+              "otelcol_receiver_accepted_log_records",
+              "otelcol_receiver_refused_log_records",
+              "otelcol_receiver_failed_log_records",
+              "otelcol_receiver_accepted_metric_points",
+              "otelcol_receiver_refused_metric_points",
+              "otelcol_receiver_failed_metric_points",
+              "otelcol_receiver_accepted_spans",
+              "otelcol_receiver_refused_spans",
+              "otelcol_receiver_failed_spans",
+              "otelcol_exporter_sent_log_records",
+              "otelcol_exporter_send_failed_log_records",
+              "otelcol_exporter_sent_metric_points",
+              "otelcol_exporter_send_failed_metric_points",
+              "otelcol_exporter_sent_spans",
+              "otelcol_exporter_send_failed_spans",
+              "otelcol_exporter_queue_size",
+              "otelcol_exporter_queue_capacity",
+              "otelcol_exporter_queue_batch_send_size",
+              "otelcol_exporter_queue_batch_send_size_bytes",
+              "otelcol_exporter_raw_bytes",
+              "otelcol_processor_filter_logs.filtered",
+              "otelcol_processor_filter_datapoints.filtered",
+              "otelcol_processor_filter_spans.filtered",
+              "otelcol_processor_internal_duration",
+              "otelcol_processor_incoming_items",
+              "otelcol_processor_outgoing_items",
+              "otelcol.k8s.watcher.pod_cache.size",
+              "otelcol_otelsvc_k8s_pod_table_size",
+              "otelcol_loadbalancer_backend_latency",
+              "otelcol_loadbalancer_backend_outcome",
+              "otelcol_loadbalancer_num_backends",
+              "http.server.request.duration",
+              "http.server.request.body.size",
+              "http.client.request.duration",
+              "http.client.request.body.size",
+              "rpc.server.call.duration",
+              "rpc.client.call.duration",
+              "otelcol_dtedgeprocessing_receive_batch_compressed_size",
+              "otelcol_dtedgeprocessing_receive_batch_uncompressed_size",
+              "otelcol_dtedgeprocessing_receive_request_size",
+              "otelcol_dtedgeprocessing_receive_batch_deserialization_duration",
+              "otelcol_dtedgeprocessing_export_batch_compressed_size",
+              "otelcol_dtedgeprocessing_export_batch_uncompressed_size",
+              "otelcol_dtedgeprocessing_export_raw_bytes",
+              "otelcol_dtedgeprocessing_export_conversion_duration",
+              "opentelemetry_allocator_collectors_allocatable",
+              "opentelemetry_allocator_collectors_discovered",
+              "opentelemetry_allocator_http_duration_seconds",
+              "opentelemetry_allocator_process_target_groups_duration_seconds",
+              "opentelemetry_allocator_process_targets_duration_seconds",
+              "opentelemetry_allocator_targets_per_collector",
+              "opentelemetry_allocator_targets_remaining",
+              "opentelemetry_allocator_time_to_allocate",
+              "process_cpu_seconds",
+              "process_cpu_seconds_total",
+              "process_resident_memory_bytes",
+              "scrape_duration_seconds",
+              "scrape_samples_post_metric_relabeling",
+              "up"
+            ], metric.name)
+
+    # Strips all attributes that are not explicitly allowed, then tags the data.
+    transform/selfmon_attributes:
+      error_mode: ignore
+      metric_statements:
+        # Resource attributes are shared by all metrics of a resource, so this is
+        # the union of what both lists need. k8s.pod.name is required by the
+        # Prometheus dashboard list; service.version by otelcol_process_uptime.
+        - context: resource
+          statements:
+            - keep_keys(resource.attributes, ["service.name", "service.instance.id", "service.version", "k8s.cluster.name", "k8s.namespace.name", "k8s.workload.name", "k8s.pod.name"])
+            # TODO: double-check whether "dynatrace-operator" is what we want here, or
+            # whether we should/can include the Operator version (e.g. "dynatrace-operator/<version>").
+            - set(resource.attributes["dt.managed_by"], "dynatrace-operator")
+
+        # Data point attributes: keep only the metric-specific dimensions.
+        - context: datapoint
+          statements:
+            - keep_keys(datapoint.attributes, ["receiver", "transport"]) where IsMatch(metric.name, "^otelcol_receiver_")
+            - keep_keys(datapoint.attributes, ["exporter", "data_type"]) where metric.name == "otelcol_exporter_queue_size" or metric.name == "otelcol_exporter_queue_capacity"
+            - keep_keys(datapoint.attributes, ["exporter", "configuration"]) where metric.name == "otelcol_exporter_raw_bytes"
+            - keep_keys(datapoint.attributes, ["exporter"]) where IsMatch(metric.name, "^otelcol_exporter_") and not ContainsValue(["otelcol_exporter_queue_size", "otelcol_exporter_queue_capacity", "otelcol_exporter_raw_bytes"], metric.name)
+            - keep_keys(datapoint.attributes, ["filter"]) where IsMatch(metric.name, "^otelcol_processor_filter_")
+            - keep_keys(datapoint.attributes, ["processor", "otel.signal"]) where metric.name == "otelcol_processor_internal_duration"
+            - keep_keys(datapoint.attributes, ["processor"]) where metric.name == "otelcol_processor_incoming_items" or metric.name == "otelcol_processor_outgoing_items"
+            - keep_keys(datapoint.attributes, ["success"]) where metric.name == "otelcol_loadbalancer_backend_outcome"
+            - keep_keys(datapoint.attributes, ["http.request.method", "http.response.status_code", "http.route", "url.scheme", "network.protocol.name", "network.protocol.version"]) where IsMatch(metric.name, "^http\\.server\\.")
+            - keep_keys(datapoint.attributes, ["http.request.method", "http.response.status_code", "url.scheme", "network.protocol.name", "network.protocol.version"]) where IsMatch(metric.name, "^http\\.client\\.")
+            - keep_keys(datapoint.attributes, ["rpc.grpc.status_code", "rpc.response.status_code", "rpc.method", "rpc.service", "rpc.system", "network.protocol.name", "network.protocol.version"]) where IsMatch(metric.name, "^rpc\\.(server|client)\\.call\\.duration$")
+            - keep_keys(datapoint.attributes, ["configuration"]) where IsMatch(metric.name, "^otelcol_dtedgeprocessing_")
+            - keep_keys(datapoint.attributes, ["path"]) where metric.name == "opentelemetry_allocator_http_duration_seconds"
+            - keep_keys(datapoint.attributes, ["collector_name"]) where metric.name == "opentelemetry_allocator_targets_per_collector"
+            # All remaining allowlisted metrics carry no data point dimensions.
+            - keep_keys(datapoint.attributes, []) where not (IsMatch(metric.name, "^(otelcol_receiver_|otelcol_exporter_|otelcol_processor_|otelcol_dtedgeprocessing_|http\\.(server|client)\\.|rpc\\.(server|client)\\.)") or ContainsValue(["otelcol_loadbalancer_backend_outcome", "opentelemetry_allocator_http_duration_seconds", "opentelemetry_allocator_targets_per_collector"], metric.name))
+
   exporters:
     otlphttp/dynatrace:
       endpoint: "${env:DT_ENDPOINT}"
@@ -269,11 +385,13 @@ alternateConfig:
           - prometheus
         processors:
           - memory_limiter
+          - filter/selfmon_allowlist
           - transform/selfmon_rename
           - metric_start_time
           - cumulative_to_delta
           - k8s_attributes
           - transform
+          - transform/selfmon_attributes
         exporters:
           - otlphttp/dynatrace
 ports:

@@ -103,6 +103,38 @@ alternateConfig:
       limit_percentage: 95
       spike_limit_percentage: 5
 
+    # The prometheus receiver emits up/scrape_* metrics on the same resource as the
+    # target's own metrics, so they inherit the target's identity. These metrics
+    # describe the scrape itself, so they are split into their own pipeline and their
+    # k8s.* resource attributes are rewritten to describe this scraper collector.
+    # service.name (job), service.instance.id (instance) and the pod/namespace/container
+    # labels still identify the target.
+    filter/drop_scrape_meta:
+      error_mode: ignore
+      metrics:
+        metric:
+          - metric.name == "up" or IsMatch(metric.name, "^scrape_")
+    filter/keep_scrape_meta:
+      error_mode: ignore
+      metrics:
+        metric:
+          - not (metric.name == "up" or IsMatch(metric.name, "^scrape_"))
+    transform/scraper_identity:
+      error_mode: ignore
+      metric_statements:
+        - context: resource
+          statements:
+            - set(resource.attributes["k8s.cluster.name"], "${env:K8S_CLUSTER_NAME}")
+            - set(resource.attributes["k8s.namespace.name"], "${env:K8S_NAMESPACE_NAME}")
+            - set(resource.attributes["k8s.pod.name"], "${env:K8S_POD_NAME}")
+            - set(resource.attributes["k8s.pod.uid"], "${env:K8S_POD_UID}")
+            - set(resource.attributes["k8s.node.name"], "${env:K8S_NODE_NAME}")
+            # Drop any target-derived k8s.* the gateway would otherwise keep (it never overwrites).
+            - delete_matching_keys(resource.attributes, "^k8s\\.(pod\\.ip|container\\.name|deployment|replicaset|statefulset|daemonset|job|cronjob|workload)")
+
+  connectors:
+    forward/split_scrape_meta:
+
   exporters:
     debug:
       verbosity: basic
@@ -142,6 +174,21 @@ alternateConfig:
           - prometheus
         processors:
           - memory_limiter
+        exporters:
+          - forward/split_scrape_meta
+      metrics/targets:
+        receivers:
+          - forward/split_scrape_meta
+        processors:
+          - filter/drop_scrape_meta
+        exporters:
+          - load_balancing
+      metrics/scrape_meta:
+        receivers:
+          - forward/split_scrape_meta
+        processors:
+          - filter/keep_scrape_meta
+          - transform/scraper_identity
         exporters:
           - load_balancing
     telemetry:

@@ -110,6 +110,13 @@ alternateConfig:
               #  Add namespace
               - source_labels: [ __meta_kubernetes_namespace ]
                 target_label: k8s_namespace_name
+              # Identify the scrape target on up/scrape_*
+              - source_labels: [ __meta_kubernetes_namespace ]
+                target_label: namespace
+              - source_labels: [ __meta_kubernetes_pod_name ]
+                target_label: pod
+              - source_labels: [ __meta_kubernetes_pod_container_name ]
+                target_label: container
 
   processors:
     memory_limiter:
@@ -179,9 +186,10 @@ alternateConfig:
 
         - context: datapoint
           statements:
-            - set(resource.attributes["k8s.pod.name"], datapoint.attributes["k8s_pod_name"]) where datapoint.attributes["k8s_pod_name"] != nil
-            - set(resource.attributes["k8s.namespace.name"], datapoint.attributes["k8s_namespace_name"]) where datapoint.attributes["k8s_namespace_name"] != nil
-            - set(resource.attributes["k8s.pod.ip"], datapoint.attributes["k8s_pod_ip"]) where datapoint.attributes["k8s_pod_ip"] != nil
+            # Not for up/scrape_*: their k8s.* describe this collector (see transform/scraper_identity).
+            - set(resource.attributes["k8s.pod.name"], datapoint.attributes["k8s_pod_name"]) where datapoint.attributes["k8s_pod_name"] != nil and not (metric.name == "up" or IsMatch(metric.name, "^scrape_"))
+            - set(resource.attributes["k8s.namespace.name"], datapoint.attributes["k8s_namespace_name"]) where datapoint.attributes["k8s_namespace_name"] != nil and not (metric.name == "up" or IsMatch(metric.name, "^scrape_"))
+            - set(resource.attributes["k8s.pod.ip"], datapoint.attributes["k8s_pod_ip"]) where datapoint.attributes["k8s_pod_ip"] != nil and not (metric.name == "up" or IsMatch(metric.name, "^scrape_"))
 
         - context: resource
           statements:
@@ -236,10 +244,6 @@ alternateConfig:
             - delete_key(resource.attributes, "metadata.dynatrace.com")
 
     # Allowlist of self-monitoring metrics. Union of:
-    #   - Customer-facing/Local/Remote SFM list (customer tenant column)
-    #     https://dt-rnd.atlassian.net/wiki/spaces/PPX/pages/3154018602
-    #   - SFM metrics for Prometheus integration in Kubernetes (dashboard metrics)
-    #     https://dt-rnd.atlassian.net/wiki/spaces/ICP/pages/3429630181
     # Everything not listed here is dropped.
     # Prometheus-scraped histograms arrive without the "_bucket" suffix; counters
     # may or may not keep "_total" depending on prometheus receiver feature gates,
@@ -314,6 +318,8 @@ alternateConfig:
               "process_resident_memory_bytes",
               "scrape_duration_seconds",
               "scrape_samples_post_metric_relabeling",
+              "scrape_samples_scraped",
+              "scrape_series_added",
               "up"
             ], metric.name)
 
@@ -348,8 +354,49 @@ alternateConfig:
             - keep_keys(datapoint.attributes, ["configuration"]) where IsMatch(metric.name, "^otelcol_dtedgeprocessing_")
             - keep_keys(datapoint.attributes, ["path"]) where metric.name == "opentelemetry_allocator_http_duration_seconds"
             - keep_keys(datapoint.attributes, ["collector_name"]) where metric.name == "opentelemetry_allocator_targets_per_collector"
+            # Scrape metadata: k8s.* describes the scraper, these labels identify the target.
+            - keep_keys(datapoint.attributes, ["scrape_target.namespace", "scrape_target.pod", "scrape_target.container"]) where metric.name == "up" or IsMatch(metric.name, "^scrape_")
             # All remaining allowlisted metrics carry no data point dimensions.
-            - keep_keys(datapoint.attributes, []) where not (IsMatch(metric.name, "^(otelcol_receiver_|otelcol_exporter_|otelcol_processor_|otelcol_dtedgeprocessing_|http\\.(server|client)\\.|rpc\\.(server|client)\\.)") or ContainsValue(["otelcol_loadbalancer_backend_outcome", "opentelemetry_allocator_http_duration_seconds", "opentelemetry_allocator_targets_per_collector"], metric.name))
+            - keep_keys(datapoint.attributes, []) where not (IsMatch(metric.name, "^(otelcol_receiver_|otelcol_exporter_|otelcol_processor_|otelcol_dtedgeprocessing_|http\\.(server|client)\\.|rpc\\.(server|client)\\.|scrape_)") or ContainsValue(["up", "otelcol_loadbalancer_backend_outcome", "opentelemetry_allocator_http_duration_seconds", "opentelemetry_allocator_targets_per_collector"], metric.name))
+
+    # Same split as in tier1-scraper: up/scrape_* from this collector's own scrapes
+    # share a resource with the target's metrics, so they get their own pipeline
+    # where k8s.* is rewritten to describe this collector.
+    filter/drop_scrape_meta:
+      error_mode: ignore
+      metrics:
+        metric:
+          - metric.name == "up" or IsMatch(metric.name, "^scrape_")
+    filter/keep_scrape_meta:
+      error_mode: ignore
+      metrics:
+        metric:
+          - not (metric.name == "up" or IsMatch(metric.name, "^scrape_"))
+    transform/scraper_identity:
+      error_mode: ignore
+      metric_statements:
+        - context: resource
+          statements:
+            - set(resource.attributes["k8s.cluster.name"], "${env:K8S_CLUSTER_NAME}")
+            - set(resource.attributes["k8s.namespace.name"], "${env:K8S_NAMESPACE_NAME}")
+            - set(resource.attributes["k8s.pod.name"], "${env:K8S_POD_NAME}")
+            - set(resource.attributes["k8s.pod.uid"], "${env:K8S_POD_UID}")
+            - set(resource.attributes["k8s.node.name"], "${env:K8S_NODE_NAME}")
+            - delete_matching_keys(resource.attributes, "^k8s\\.(pod\\.ip|container\\.name|deployment|replicaset|statefulset|daemonset|job|cronjob|workload)")
+        # Name the scrape target explicitly, so these labels can't be mistaken for the
+        # scraper's own identity in k8s.*.
+        - context: datapoint
+          statements:
+            - set(datapoint.attributes["scrape_target.namespace"], datapoint.attributes["namespace"]) where datapoint.attributes["namespace"] != nil
+            - set(datapoint.attributes["scrape_target.pod"], datapoint.attributes["pod"]) where datapoint.attributes["pod"] != nil
+            - set(datapoint.attributes["scrape_target.container"], datapoint.attributes["container"]) where datapoint.attributes["container"] != nil
+            - delete_key(datapoint.attributes, "namespace")
+            - delete_key(datapoint.attributes, "pod")
+            - delete_key(datapoint.attributes, "container")
+
+  connectors:
+    forward/split_scrape_meta:
+    forward/selfmon:
 
   exporters:
     otlphttp/dynatrace:
@@ -379,10 +426,32 @@ alternateConfig:
                   temporality_preference: delta
                   endpoint: http://${env:MY_POD_IP}:4318
     pipelines:
+      metrics/self_scrape:
+        receivers:
+          - prometheus
+        processors:
+          - memory_limiter
+        exporters:
+          - forward/split_scrape_meta
+      metrics/self_scrape_targets:
+        receivers:
+          - forward/split_scrape_meta
+        processors:
+          - filter/drop_scrape_meta
+        exporters:
+          - forward/selfmon
+      metrics/self_scrape_meta:
+        receivers:
+          - forward/split_scrape_meta
+        processors:
+          - filter/keep_scrape_meta
+          - transform/scraper_identity
+        exporters:
+          - forward/selfmon
       metrics:
         receivers:
           - otlp
-          - prometheus
+          - forward/selfmon
         processors:
           - memory_limiter
           - filter/selfmon_allowlist

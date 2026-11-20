@@ -131,6 +131,16 @@ alternateConfig:
             - set(resource.attributes["k8s.node.name"], "${env:K8S_NODE_NAME}")
             # Drop any target-derived k8s.* the gateway would otherwise keep (it never overwrites).
             - delete_matching_keys(resource.attributes, "^k8s\\.(pod\\.ip|container\\.name|deployment|replicaset|statefulset|daemonset|job|cronjob|workload)")
+        # Name the scrape target explicitly, so these labels can't be mistaken for the
+        # scraper's own identity in k8s.*.
+        - context: datapoint
+          statements:
+            - set(datapoint.attributes["scrape_target.namespace"], datapoint.attributes["namespace"]) where datapoint.attributes["namespace"] != nil
+            - set(datapoint.attributes["scrape_target.pod"], datapoint.attributes["pod"]) where datapoint.attributes["pod"] != nil
+            - set(datapoint.attributes["scrape_target.container"], datapoint.attributes["container"]) where datapoint.attributes["container"] != nil
+            - delete_key(datapoint.attributes, "namespace")
+            - delete_key(datapoint.attributes, "pod")
+            - delete_key(datapoint.attributes, "container")
 
   connectors:
     forward/split_scrape_meta:
@@ -138,6 +148,10 @@ alternateConfig:
   exporters:
     debug:
       verbosity: basic
+    # up/scrape_* describe the scrape itself, so they go to the selfmon collector
+    # together with the other collector self-monitoring data.
+    otlp_http/selfmon:
+      endpoint: http://selfmon-scraper:4318
     load_balancing:
       routing_key: "resource"
       timeout: 10s
@@ -190,7 +204,7 @@ alternateConfig:
           - filter/keep_scrape_meta
           - transform/scraper_identity
         exporters:
-          - load_balancing
+          - otlp_http/selfmon
     telemetry:
       resource:
         k8s.cluster.name: "${env:K8S_CLUSTER_NAME}"

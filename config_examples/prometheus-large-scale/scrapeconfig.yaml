@@ -50,3 +50,12 @@ spec:
         - __meta_kubernetes_pod_phase
       action: drop
       regex: (Failed|Succeeded)
+    # Identify the scrape target, like ServiceMonitor/PodMonitor do by default.
+    # These labels stay on up/scrape_* even though their k8s.* attributes
+    # describe the scraping collector.
+    - sourceLabels: [__meta_kubernetes_namespace]
+      targetLabel: namespace
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      targetLabel: pod
+    - sourceLabels: [__meta_kubernetes_pod_container_name]
+      targetLabel: container

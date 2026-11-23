@@ -6,7 +6,7 @@ require (
 	github.com/google/addlicense v1.2.0
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	github.com/sigstore/cosign/v3 v3.1.4
-	go.opentelemetry.io/build-tools/chloggen v0.30.0
+	go.opentelemetry.io/build-tools/chloggen v0.31.0
 	go.opentelemetry.io/collector/cmd/builder v0.165.0
 )
 
@@ -228,7 +228,7 @@ require (
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/spf13/cobra v1.10.2 // indirect
-	github.com/spf13/pflag v1.0.10 // indirect
+	github.com/spf13/pflag v1.1.0 // indirect
 	github.com/spf13/viper v1.21.0 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.8.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect

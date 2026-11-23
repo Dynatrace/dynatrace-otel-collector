@@ -658,8 +658,8 @@ github.com/spf13/cast v1.10.0/go.mod h1:jNfB8QC9IA6ZuY2ZjDp0KtFO2LZZlg4S/7bzP6qq
 github.com/spf13/cobra v1.10.2 h1:DMTTonx5m65Ic0GOoRY2c16WCbHxOOw6xxezuLaBpcU=
 github.com/spf13/cobra v1.10.2/go.mod h1:7C1pvHqHw5A4vrJfjNwvOdzYu0Gml16OCs2GRiTUUS4=
 github.com/spf13/pflag v1.0.9/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
-github.com/spf13/pflag v1.0.10 h1:4EBh2KAYBwaONj6b2Ye1GiHfwjqyROoF4RwYO+vPwFk=
-github.com/spf13/pflag v1.0.10/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
+github.com/spf13/pflag v1.1.0 h1:6W6MbVUrnMb8PEhjkqwsVLY7ryuzRfFHF4mQd7L94ag=
+github.com/spf13/pflag v1.1.0/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
 github.com/spf13/viper v1.21.0 h1:x5S+0EU27Lbphp4UKm1C+1oQO+rKx36vfCoaVebLFSU=
 github.com/spf13/viper v1.21.0/go.mod h1:P0lhsswPGWD/1lZJ9ny3fYnVqxiegrlNrEmgLjbTCAY=
 github.com/spiffe/go-spiffe/v2 v2.8.2 h1:jUEsvCMD6fH25J8K/w3q/XnIx8W1lb8+YLaEEHIjHmc=
@@ -745,8 +745,8 @@ gitlab.com/gitlab-org/api/client-go/v3 v3.13.0 h1:CTUXvcL6OrGjYNafbws5C1lJwlXrxG
 gitlab.com/gitlab-org/api/client-go/v3 v3.13.0/go.mod h1:k7uYxRoIeuSqyWZSJfAPZlf0L32OH0lUBImAl4gWUFc=
 go.opentelemetry.io/auto/sdk v1.2.1 h1:jXsnJ4Lmnqd11kwkBV2LgLoFMZKizbCi5fNZ/ipaZ64=
 go.opentelemetry.io/auto/sdk v1.2.1/go.mod h1:KRTj+aOaElaLi+wW1kO/DZRXwkF4C5xPbEe3ZiIhN7Y=
-go.opentelemetry.io/build-tools/chloggen v0.30.0 h1:vAHRnY59kRHqIUrsnmBYAcJ0+p8ukaenHostePk3Hf8=
-go.opentelemetry.io/build-tools/chloggen v0.30.0/go.mod h1:7ZVQIvfBkhncKSyk6WY1F0Kkg/9ibxRZkUrHP7EJ9XY=
+go.opentelemetry.io/build-tools/chloggen v0.31.0 h1:t1RtrLK5W0czG3sP05gdDVi0SVV5/CnDyFUPFnq/tUo=
+go.opentelemetry.io/build-tools/chloggen v0.31.0/go.mod h1:wsDnhTTZMeA1GlCAkVFVc7X+eDqKyFyRaWrqSL0S8l0=
 go.opentelemetry.io/collector/cmd/builder v0.165.0 h1:UKsS/BX+7hEP1MwjHYTPB8yB7z0LSVAC5BTlrSKgpY0=
 go.opentelemetry.io/collector/cmd/builder v0.165.0/go.mod h1:6InvBAKSGzyIfFzNca4NqL1VMdXUkEZYtzI74wrYCI4=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.70.0 h1:oECp5f+hN7nkwjU/8BxQ/q23bGPb8FIrD839owX222E=

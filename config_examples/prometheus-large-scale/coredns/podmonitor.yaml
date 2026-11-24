@@ -1,0 +1,41 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: coredns-monitor
+  namespace: ${NAMESPACE}
+  labels:
+    prometheus.dynatrace.com: "true"
+spec:
+  selector:
+    matchLabels:
+      k8s-app: kube-dns
+  namespaceSelector:
+    matchNames: ["kube-system"]
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      scheme: http
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          action: keep
+          # One metric name per line - every line except the last must end with "|\".
+          regex: "\
+            coredns_health_request_duration_seconds(_bucket|_sum|_count)?|\
+            coredns_proxy_request_duration_seconds(_bucket|_sum|_count)?|\
+            coredns_dns_response_size_bytes(_bucket|_sum|_count)?|\
+            coredns_dns_request_size_bytes(_bucket|_sum|_count)?|\
+            coredns_dns_request_duration_seconds(_bucket|_sum|_count)?|\
+            coredns_plugin_enabled|\
+            coredns_panics_total|\
+            coredns_health_request_failures_total|\
+            coredns_forward_max_concurrent_rejects_total|\
+            coredns_proxy_healthcheck_failures_total|\
+            coredns_proxy_conn_cache_misses_total|\
+            coredns_proxy_conn_cache_hits_total|\
+            coredns_dns_responses_total|\
+            coredns_dns_requests_total|\
+            coredns_cache_entries|\
+            coredns_cache_hits_total|\
+            coredns_cache_misses_total|\
+            coredns_build_info"

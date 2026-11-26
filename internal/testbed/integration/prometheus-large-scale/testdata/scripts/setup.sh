@@ -57,8 +57,9 @@ kubectl create secret generic selfmon-credentials \
 sed "s|\${NAMESPACE}|${NAMESPACE}|g" "${CONFIG_DIR}/rbac.yaml" | kubectl apply -f -
 
 # --- Scrape CRs (ScrapeConfig + technology PodMonitors/ServiceMonitors) ----
-for f in scrapeconfig.yaml coredns.yaml; do
-    sed "s|\${NAMESPACE}|${NAMESPACE}|g" "${CONFIG_DIR}/${f}" | kubectl apply -f -
+for f in "${CONFIG_DIR}/scrapeconfig.yaml" "${CONFIG_DIR}"/monitor-examples/*.yaml; do
+    [[ -e "${f}" ]] || continue
+    sed "s|\${NAMESPACE}|${NAMESPACE}|g" "${f}" | kubectl apply -f -
 done
 
 # --- Helm repos ------------------------------------------------------------

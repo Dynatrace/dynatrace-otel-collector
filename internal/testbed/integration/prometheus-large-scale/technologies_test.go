@@ -12,8 +12,9 @@ import (
 
 // technology describes a third-party technology scraped through the shared
 // collector stack. Its monitor manifest lives in
-// config_examples/prometheus-large-scale/<name>.yaml and is applied by
-// testdata/scripts/setup.sh together with the ScrapeConfig.
+// config_examples/prometheus-large-scale/monitor-examples/<kind>-<name>.yaml
+// (e.g. podmonitor-coredns.yaml) and is applied by testdata/scripts/setup.sh
+// together with the ScrapeConfig.
 type technology struct {
 	name string
 	// metric proves that scraping works end to end.
@@ -21,7 +22,8 @@ type technology struct {
 }
 
 // technologies are run as subtests against the shared collector stack.
-// Adding a technology: add its manifest, list it in setup.sh and add an entry here.
+// Adding a technology: add its manifest to monitor-examples/ (setup.sh applies
+// all of them) and add an entry here.
 var technologies = []technology{
 	{name: "coredns", metric: "coredns_build_info"},
 }

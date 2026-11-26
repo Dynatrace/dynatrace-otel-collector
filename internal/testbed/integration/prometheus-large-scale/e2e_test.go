@@ -100,13 +100,11 @@ func TestE2E_PrometheusLargeScale(t *testing.T) {
 		testLargeScale(t, normalConsumer, scraperSelfmonConsumer, gatewaySelfmonConsumer, allocatorSelfmonConsumer)
 	})
 
-	// Per-technology subtests share the stack deployed above and install into
-	// their own namespace, so adding a technology does not redeploy the collectors.
-	workloadDir, err := filepath.Abs("./testdata/technologies")
-	require.NoError(t, err)
+	// Technology monitors are deployed by setup.sh together with the stack;
+	// the per-technology subtests only assert that their metrics arrive.
 	for _, tc := range technologies {
 		t.Run(tc.name, func(t *testing.T) {
-			testTechnology(t, tc, configDir, workloadDir, normalConsumer)
+			testTechnology(t, tc, normalConsumer)
 		})
 	}
 }

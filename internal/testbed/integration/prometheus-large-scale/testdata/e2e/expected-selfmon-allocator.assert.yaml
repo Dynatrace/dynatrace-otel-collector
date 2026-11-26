@@ -354,6 +354,11 @@ resources:
                     k8s_namespace_name: otel-ta
                     k8s_pod_ip: '*'
                     k8s_pod_name: '*'
+                - attributes:
+                    config: podMonitor/otel-ta/coredns-monitor/0
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
             - name: prometheus_sd_dns_lookup_failures_total
               type: sum
               temporality: delta
@@ -568,6 +573,11 @@ resources:
                     k8s_namespace_name: otel-ta
                     k8s_pod_ip: '*'
                     k8s_pod_name: '*'
+                - attributes:
+                    config: podMonitor/otel-ta/coredns-monitor/0
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
             - name: prometheus_sd_linode_failures_total
               type: sum
               temporality: delta
@@ -775,6 +785,11 @@ resources:
                     k8s_namespace_name: otel-ta
                     k8s_pod_ip: '*'
                     k8s_pod_name: '*'
+                - attributes:
+                    job_name: podMonitor/otel-ta/coredns-monitor/0
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
             - name: opentelemetry_allocator_process_targets_duration_seconds
               type: histogram
               temporality: delta
@@ -788,6 +803,11 @@ resources:
               datapoints:
                 - attributes:
                     job_name: scrapeConfig/otel-ta/dynatrace-com
+                    k8s_namespace_name: otel-ta
+                    k8s_pod_ip: '*'
+                    k8s_pod_name: '*'
+                - attributes:
+                    job_name: podMonitor/otel-ta/coredns-monitor/0
                     k8s_namespace_name: otel-ta
                     k8s_pod_ip: '*'
                     k8s_pod_name: '*'

@@ -9,6 +9,7 @@ Tiered OTel Collector setup for scraping Prometheus targets at scale and shippin
 - **Target Allocator** (`allocator.values.yaml`): distributes scrape targets across tier 1 replicas (consistent-hashing).
 - **Selfmon Scraper** (`selfmon-scraper.yaml`): scrapes collector/allocator self-metrics direct to Dynatrace.
 - **ScrapeConfig** (`scrapeconfig.yaml`): example Prometheus Operator `ScrapeConfig` CR consumed by TA.
+- **CoreDNS** (`coredns.yaml`): example `PodMonitor` CR that scrapes the CoreDNS pods in `kube-system`.
 - **RBAC** (`rbac.yaml`): ServiceAccounts + roles for scraper, gateway, sink, allocator.
 
 ## Deploy
@@ -18,6 +19,7 @@ Set `NAMESPACE` and apply RBAC + ScrapeConfig, then install Helm charts. The clu
 ```sh
 kubectl apply -f rbac.yaml
 kubectl apply -f scrapeconfig.yaml
+kubectl apply -f coredns.yaml
 
 helm install otel-allocator open-telemetry/opentelemetry-target-allocator -f allocator.values.yaml
 helm install otel-scraper   open-telemetry/opentelemetry-collector       -f tier1-scraper.values.yaml

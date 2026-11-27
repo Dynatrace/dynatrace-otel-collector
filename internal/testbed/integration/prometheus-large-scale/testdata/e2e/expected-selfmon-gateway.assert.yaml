@@ -2,17 +2,12 @@ version: 1
 signal: metrics
 resources:
     - attributes:
-        k8s.cluster.name: tiered-otelcol-ta-test
-        k8s.cluster.uid: '*'
-        k8s.container.name: opentelemetry-collector
+        k8s.cluster.name: prometheus-large-scale-test
         k8s.namespace.name: otel-ta
         k8s.node.name: '*'
-        k8s.pod.ip: '*'
         k8s.pod.name: '*'
         k8s.pod.uid: '*'
-        k8s.workload.kind: statefulset
-        k8s.workload.name: tiered-gateway
-        k8s.workload.uid: '*'
+        k8s.workload.name: dtp-gateway
         service.instance.id: '*'
         service.name: dynatrace-otel-collector
         service.version: '*'
@@ -142,7 +137,7 @@ resources:
               datapoints:
                 - attributes:
                     otel.signal: metrics
-                    processor: cumulative_to_delta
+                    processor: cumulativetodelta
                 - attributes:
                     otel.signal: metrics
                     processor: k8s_attributes
@@ -163,7 +158,7 @@ resources:
               datapoints:
                 - attributes:
                     otel.signal: metrics
-                    processor: cumulative_to_delta
+                    processor: cumulativetodelta
                 - attributes:
                     otel.signal: metrics
                     processor: k8s_attributes

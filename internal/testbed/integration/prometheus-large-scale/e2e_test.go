@@ -37,10 +37,11 @@ const (
 )
 
 // TestE2E_PrometheusLargeScale deploys the full tiered prometheus-large-scale
-// setup (allocator + tier1-scraper + tier2-gateway + selfmon-scraper + avalanche)
-// on a pre-existing Kind cluster and verifies that metrics flow through both the
+// setup (allocator + tier1-scraper + tier2-gateway + avalanche) on a
+// pre-existing Kind cluster and verifies that metrics flow through both the
 // normal data path (avalanche → scraper → gateway → sink) and the self-monitoring
-// path (selfmon-scraper → 3 separate sinks, one per source).
+// path (each component pushes self-telemetry directly to its own sink, no self-monitoring
+// collector in between).
 func TestE2E_PrometheusLargeScale(t *testing.T) {
 	configDir, err := filepath.Abs("../../../../config_examples/prometheus-large-scale")
 	require.NoError(t, err)

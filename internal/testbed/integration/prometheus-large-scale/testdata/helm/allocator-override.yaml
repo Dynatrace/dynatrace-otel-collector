@@ -1,0 +1,18 @@
+# Test-only override: redirect Target Allocator self-telemetry directly to
+# the allocator selfmon sink (port {{SELFMON_ALLOCATOR_HTTP_PORT}}).
+# {{HOST}} and {{SELFMON_ALLOCATOR_HTTP_PORT}} are substituted by setup.sh.
+targetAllocator:
+  config:
+    telemetry:
+      metrics:
+        readers:
+          - periodic:
+              interval: 15000
+              timeout: 10000
+              exporter:
+                otlp_http:
+                  endpoint: "http://{{HOST}}:{{SELFMON_ALLOCATOR_HTTP_PORT}}"
+                  temporality_preference: delta
+                  headers:
+                    - name: Authorization
+                      value: "Bearer "

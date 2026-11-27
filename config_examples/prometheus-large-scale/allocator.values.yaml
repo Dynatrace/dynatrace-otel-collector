@@ -1,28 +1,87 @@
-nameOverride: ""
-fullnameOverride: "tiered-allocator"
+# Target Allocator: distributes Prometheus scrape targets across the tier 1 scraper replicas
+# (consistent-hashing) and pushes its own self-telemetry over OTLP directly to Dynatrace.
+#
+#   helm install dtp-allocator open-telemetry/opentelemetry-target-allocator \
+#     --namespace <namespace> -f allocator.values.yaml \
+#     --set targetAllocator.config.collector_namespace=<namespace>
+#
+# OTLP self-telemetry requires a Target Allocator built from upstream
+# opentelemetry-operator v0.157.0 or later (open-telemetry/opentelemetry-operator#5294).
+
+# Operator-generated name shape: <cr-name>-prometheus-allocator, CR name "dtp".
+fullnameOverride: "dtp-prometheus-allocator"
 
 replicaCount: 2
 
 targetAllocator:
-  podAnnotations:
-    metrics.dynatrace.com/scrape: "true"
-    metrics.dynatrace.com/port: "8080"
   image:
     repository: ghcr.io/dynatrace/otel-target-allocator/target-allocator
     # renovate: datasource=docker depName=ghcr.io/dynatrace/otel-target-allocator/target-allocator
     tag: 0.11.0@sha256:ead7f32d9ce98140cb31ec58217e0813ae18e0a620383ba8d67cf2a8e16411d7
+    pullPolicy: IfNotPresent
+
+  # The TA pushes its self-telemetry over OTLP; nothing scrapes its /metrics.
+  podAnnotations:
+    metrics.dynatrace.com/scrape: "false"
+
   serviceAccount:
     create: false
-    name: "tiered-otel-allocator"
-  service:
-    port: 8080
+    name: "dtp-otel-allocator"
+
+  # Resource attributes come from the downward API + static env.
+  # Kubernetes expands $(VAR) inside a later env entry, so OTEL_RESOURCE_ATTRIBUTES must be
+  # declared AFTER the vars it references.
+  extraEnvs:
+    - name: K8S_POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: K8S_NAMESPACE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: K8S_POD_UID
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.uid
+    - name: K8S_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    # Static, deploy-time. Operator source: DynaKube.Status.KubernetesClusterName.
+    # The Target Allocator chart does not template extraEnvs, so the value is read from a
+    # ConfigMap: kubectl create configmap dynatrace-otelcol-cluster-info \
+    #   --from-literal=K8S_CLUSTER_NAME=<your-cluster>
+    - name: K8S_CLUSTER_NAME
+      valueFrom:
+        configMapKeyRef:
+          name: dynatrace-otelcol-cluster-info
+          key: K8S_CLUSTER_NAME
+    # Static, deploy-time. Operator source: the Deployment name the TA reconciler computes.
+    - name: K8S_WORKLOAD_NAME
+      value: "dtp-prometheus-allocator"
+    - name: DT_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          name: dynatrace-otelcol-credentials
+          key: DT_ENDPOINT
+    - name: DT_PLATFORM_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: dynatrace-otelcol-credentials
+          key: DT_PLATFORM_TOKEN
+    - name: OTEL_SERVICE_NAME
+      value: "target-allocator"
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "k8s.pod.name=$(K8S_POD_NAME),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.pod.uid=$(K8S_POD_UID),k8s.node.name=$(K8S_NODE_NAME),k8s.cluster.name=$(K8S_CLUSTER_NAME),k8s.workload.name=$(K8S_WORKLOAD_NAME)"
+
   config:
     allocation_strategy: consistent-hashing
     collector_namespace: ${NAMESPACE}
     collector_selector:
       matchlabels:
         app.kubernetes.io/name: opentelemetry-collector
-        app.kubernetes.io/instance: otel-scraper
+        app.kubernetes.io/instance: dtp-scraper
     prometheus_cr:
       enabled: true
       scrapeInterval: 15s
@@ -35,6 +94,24 @@ targetAllocator:
       scrape_config_selector:
         matchlabels:
           prometheus.dynatrace.com: "true"
+
+    # Released v0.157.0+ schema. Endpoint is the BASE URL: the TA appends /v1/metrics itself
+    # (telemetry.go newHTTPMetricReader). Headers are a name/value LIST, not a map.
+    # ${env:VAR} is expanded at runtime in endpoint and header values, so the token stays
+    # out of the ConfigMap.
+    telemetry:
+      metrics:
+        readers:
+          - periodic:
+              interval: 15000   # milliseconds
+              timeout: 10000    # milliseconds
+              exporter:
+                otlp_http:
+                  endpoint: "${env:DT_ENDPOINT}"
+                  temporality_preference: delta
+                  headers:
+                    - name: Authorization
+                      value: "Bearer ${env:DT_PLATFORM_TOKEN}"
 
   resources:
     limits:

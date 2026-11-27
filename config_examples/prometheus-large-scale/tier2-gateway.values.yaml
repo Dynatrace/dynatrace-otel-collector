@@ -1,9 +1,11 @@
-# Tier 2: Gateway — receives OTLP from tier 1, enriches data, forwards to tier 3.
-# Deploy with:
-#   helm install otel-gateway open-telemetry/opentelemetry-collector \
-#     --namespace otel-ta -f tier2-gateway.values.yaml
+# Tier 2 Gateway: receives OTLP from tier 1, enriches the scraped metrics (k8sattributes +
+# transform) and exports them to Dynatrace. Self-telemetry is pushed over OTLP directly to
+# Dynatrace (service.telemetry below).
+#
+#   helm install dtp-gateway open-telemetry/opentelemetry-collector \
+#     --namespace <namespace> -f tier2-gateway.values.yaml --set global.clusterName=<your-cluster>
 
-fullnameOverride: "tiered-gateway"
+fullnameOverride: "dtp-gateway"
 
 podAnnotations:
   metrics.dynatrace.com/scrape: "false"
@@ -43,7 +45,7 @@ clusterRole:
 
 serviceAccount:
   create: false
-  name: tiered-otel-gateway
+  name: dtp-otel-gateway
 
 global:
   # Used for the k8s.cluster.name resource attribute (K8S_CLUSTER_NAME env var).
@@ -54,10 +56,23 @@ extraEnvsFrom:
   - secretRef:
       name: dynatrace-otelcol-credentials
 extraEnvs:
+  # Delta temporality for internal telemetry via the SDK env var (this collector build
+  # ignores the readers' temporality_preference for self-telemetry). Required or DT rejects
+  # the cumulative otelcol_* counters/histograms.
+  - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+    value: delta
   - name: K8S_SERVICE_NAME
     value: "{{ include \"opentelemetry-collector.fullname\" . }}"
+  # Static, deploy-time. Operator source: DynaKube.Status.KubernetesClusterName.
   - name: K8S_CLUSTER_NAME
     value: "{{ .Values.global.clusterName }}"
+  # Static, deploy-time. Operator source: the StatefulSet name the gateway reconciler computes.
+  - name: K8S_WORKLOAD_NAME
+    value: "dtp-gateway"
+  # Referenced by the customer-path transform below; declared explicitly so the
+  # ${env:...} reference always resolves. Set to a cluster ME id if entity mapping is wanted.
+  - name: DT_ENTITY_KUBERNETES_CLUSTER
+    value: ""
   - name: K8S_NODE_NAME
     valueFrom:
       fieldRef:
@@ -93,21 +108,12 @@ alternateConfig:
           endpoint: "${env:MY_POD_IP}:4318"
 
   processors:
-    # Memory limiter math (with 8GiB memory limit):
-    #   hard limit = 95% of 8GiB = 7.6 GiB
-    #   spike buffer = 5% of 8GiB = 0.4 GiB
-    #   soft limit = (95% - 5%) = 90% of 8GiB = 7.2 GiB
-    # Data is refused when memory exceeds the soft limit (7.2 GiB).
-    # A lower spike_limit_percentage raises the soft limit, giving more
-    # headroom before refusals start during load spikes.
     memory_limiter:
       check_interval: 1s
       limit_percentage: 95
       spike_limit_percentage: 5
     metric_start_time:
-    cumulative_to_delta:
-      # max_staleness should be greater than scrape interval in allocator to avoid metric drops due to staleness, but not too high to avoid large spikes from state resets
-      # it's computed as 10x the scrape interval in allocator plus some buffer for delays
+    cumulativetodelta:
       max_staleness: 10m
       initial_value: drop
     k8s_attributes:
@@ -201,15 +207,12 @@ alternateConfig:
             - set(attributes["k8s.workload.uid"], attributes["k8s.daemonset.uid"]) where IsString(attributes["k8s.daemonset.uid"])
             - set(attributes["k8s.workload.uid"], attributes["k8s.cronjob.uid"]) where IsString(attributes["k8s.cronjob.uid"])
 
-            # experimental attributes
-            # https://docs.dynatrace.com/docs/discover-dynatrace/references/semantic-dictionary/fields#kubernetes
             - delete_key(attributes, "k8s.statefulset.name")
             - delete_key(attributes, "k8s.replicaset.name")
             - delete_key(attributes, "k8s.job.name")
             - delete_key(attributes, "k8s.deployment.name")
             - delete_key(attributes, "k8s.daemonset.name")
             - delete_key(attributes, "k8s.cronjob.name")
-            #
             - delete_key(attributes, "k8s.statefulset.uid")
             - delete_key(attributes, "k8s.replicaset.uid")
             - delete_key(attributes, "k8s.deployment.uid")
@@ -238,6 +241,7 @@ alternateConfig:
     debug:
       verbosity: basic
     otlp_http:
+      # Base endpoint: the collector's otlphttp exporter appends /v1/metrics itself.
       endpoint: ${env:DT_ENDPOINT}
       headers:
         Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
@@ -257,18 +261,22 @@ alternateConfig:
         processors:
           - memory_limiter
           - metric_start_time
-          - cumulative_to_delta
+          - cumulativetodelta
           - k8s_attributes
           - transform
         exporters:
           - otlp_http
     telemetry:
+      # Self-monitoring resource attributes from downward API + static env (no k8sattributes).
+      # This is the gateway's OWN telemetry; the customer-metrics pipeline above still uses
+      # k8s_attributes because those targets are arbitrary scraped workloads.
       resource:
         k8s.cluster.name: "${env:K8S_CLUSTER_NAME}"
         k8s.namespace.name: "${env:K8S_NAMESPACE_NAME}"
         k8s.pod.name: "${env:K8S_POD_NAME}"
         k8s.pod.uid: "${env:K8S_POD_UID}"
         k8s.node.name: "${env:K8S_NODE_NAME}"
+        k8s.workload.name: "${env:K8S_WORKLOAD_NAME}"
       metrics:
         level: normal
         readers:
@@ -279,7 +287,9 @@ alternateConfig:
                 otlp:
                   protocol: http/protobuf
                   temporality_preference: delta
-                  endpoint: http://selfmon-scraper:4318
+                  endpoint: ${env:DT_ENDPOINT}/v1/metrics
+                  headers:
+                    Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
 
 ports:
   otlp:

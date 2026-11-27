@@ -1,5 +1,6 @@
-# Test-only override: redirect tier1-scraper telemetry to selfmon port 4320
-# so it lands in the separate metrics/scraper pipeline.
+# Test-only override: redirect dtp-scraper self-telemetry directly to the
+# scraper selfmon sink (port {{SELFMON_SCRAPER_HTTP_PORT}}).
+# {{HOST}} and {{SELFMON_SCRAPER_HTTP_PORT}} are substituted by setup.sh.
 alternateConfig:
   service:
     telemetry:
@@ -12,4 +13,4 @@ alternateConfig:
                 otlp:
                   protocol: http/protobuf
                   temporality_preference: delta
-                  endpoint: http://selfmon-scraper:4320
+                  endpoint: http://{{HOST}}:{{SELFMON_SCRAPER_HTTP_PORT}}

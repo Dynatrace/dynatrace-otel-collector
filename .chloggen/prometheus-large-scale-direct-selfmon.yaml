@@ -1,0 +1,19 @@
+# One of 'breaking', 'deprecation', 'new_component', 'enhancement', 'bug_fix'
+change_type: breaking
+
+# The name of the component, or a single word describing the area of concern, (e.g. filelogreceiver)
+component: config_examples/prometheus-large-scale
+
+# A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
+note: The Target Allocator, tier 1 scraper and tier 2 gateway now push their self-telemetry over OTLP directly to Dynatrace; the selfmon scraper collector is removed
+
+# Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
+issues: [1167]
+
+# (Optional) One or more lines of additional information to render under the primary note.
+# These lines will be padded with 2 spaces and then inserted directly into the document.
+# Use pipe (|) for multiline entries.
+subtext: |
+  The workloads are renamed to `dtp-prometheus-allocator`, `dtp-scraper` and `dtp-gateway` (ServiceAccounts `dtp-otel-*`)
+  to match the layout the Dynatrace Operator creates. The Target Allocator reads its cluster name from the
+  `dynatrace-otelcol-cluster-info` ConfigMap and needs a build based on upstream v0.157.0 or later.

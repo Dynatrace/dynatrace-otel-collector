@@ -121,8 +121,8 @@ alternateConfig:
       spike_limit_percentage: 5
     metric_start_time:
     cumulative_to_delta:
-      # max_staleness should be greater than scrape interval in allocator to avoid metric drops due to staleness, but not too high to avoid large spikes from state resets
-      # it's computed as 10x the scrape interval in allocator plus some buffer for delays
+      # max_staleness should be greater than the scrape interval to avoid metric drops due to staleness, but not too high to avoid large spikes from state resets
+      # it's computed as 10x the ScrapeConfig scrape interval (60s in scrapeconfig.yaml)
       max_staleness: 10m
       initial_value: drop
     k8s_attributes:

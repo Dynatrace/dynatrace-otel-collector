@@ -71,7 +71,8 @@ collector build honors that SDK env var for internal telemetry, not the reader's
 
 The Target Allocator takes its attributes through `OTEL_SERVICE_NAME` +
 `OTEL_RESOURCE_ATTRIBUTES` instead of a `resource` block. `resource.WithFromEnv()` is applied last
-in the TA, so those env vars win on conflict.
+in the TA, so those env vars win on conflict. The TA does not report `service.version` itself, so
+the example sets it in `OTEL_RESOURCE_ATTRIBUTES`; keep it in sync with the image tag.
 
 ## Two endpoint conventions — do not mix them up
 

@@ -72,8 +72,9 @@ targetAllocator:
           key: DT_PLATFORM_TOKEN
     - name: OTEL_SERVICE_NAME
       value: "target-allocator"
+    # The TA does not set service.version itself. Keep in sync with image.tag above.
     - name: OTEL_RESOURCE_ATTRIBUTES
-      value: "k8s.pod.name=$(K8S_POD_NAME),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.pod.uid=$(K8S_POD_UID),k8s.node.name=$(K8S_NODE_NAME),k8s.cluster.name=$(K8S_CLUSTER_NAME),k8s.workload.name=$(K8S_WORKLOAD_NAME)"
+      value: "service.version=0.11.0,k8s.pod.name=$(K8S_POD_NAME),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.pod.uid=$(K8S_POD_UID),k8s.node.name=$(K8S_NODE_NAME),k8s.cluster.name=$(K8S_CLUSTER_NAME),k8s.workload.name=$(K8S_WORKLOAD_NAME)"
 
   config:
     allocation_strategy: consistent-hashing

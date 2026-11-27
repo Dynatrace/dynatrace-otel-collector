@@ -56,11 +56,6 @@ extraEnvsFrom:
   - secretRef:
       name: dynatrace-otelcol-credentials
 extraEnvs:
-  # Delta temporality for internal telemetry via the SDK env var (this collector build
-  # ignores the readers' temporality_preference for self-telemetry). Required or DT rejects
-  # the cumulative otelcol_* counters/histograms.
-  - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
-    value: delta
   - name: K8S_SERVICE_NAME
     value: "{{ include \"opentelemetry-collector.fullname\" . }}"
   # Static, deploy-time. Operator source: DynaKube.Status.KubernetesClusterName.

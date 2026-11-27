@@ -61,11 +61,6 @@ extraEnvsFrom:
 extraEnvs:
   - name: K8S_SERVICE_NAME
     value: "{{ include \"opentelemetry-collector.fullname\" . }}"
-  # This collector build honors the SDK env var for internal-telemetry temporality, NOT the
-  # readers' temporality_preference field. Delta is required or Dynatrace rejects the
-  # cumulative otelcol_* counters (UNSUPPORTED_METRIC_TYPE_MONOTONIC_CUMULATIVE_SUM).
-  - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
-    value: delta
   # Static, deploy-time. Operator source: DynaKube.Status.KubernetesClusterName.
   - name: K8S_CLUSTER_NAME
     value: "{{ .Values.global.clusterName }}"

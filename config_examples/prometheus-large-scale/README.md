@@ -63,10 +63,8 @@ uses: `k8s.cluster.name`, `k8s.namespace.name`, `k8s.pod.name`, `k8s.workload.na
 | `DT_ENDPOINT` | secret | base OTLP endpoint, e.g. `https://<env-id>.live.dynatrace.com/api/v2/otlp` |
 | `DT_PLATFORM_TOKEN` | secret | bare token, no `Bearer ` prefix (the configs add it) |
 
-Collectors additionally need `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=delta`: this
-collector build honors that SDK env var for internal telemetry, not the reader's
-`temporality_preference`, and Dynatrace rejects cumulative `otelcol_*` counters
-(`UNSUPPORTED_METRIC_TYPE_MONOTONIC_CUMULATIVE_SUM`).
+Collector readers set `temporality_preference: delta`: Dynatrace rejects cumulative `otelcol_*`
+counters (`UNSUPPORTED_METRIC_TYPE_MONOTONIC_CUMULATIVE_SUM`).
 
 The Target Allocator takes its attributes through `OTEL_SERVICE_NAME` +
 `OTEL_RESOURCE_ATTRIBUTES` instead of a `resource` block. `resource.WithFromEnv()` is applied last

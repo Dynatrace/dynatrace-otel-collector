@@ -1,8 +1,8 @@
 # Target Allocator pushes OTLP self-telemetry directly (no self-monitoring collector).
 # Resource attributes come from OTEL_RESOURCE_ATTRIBUTES + OTEL_SERVICE_NAME env vars.
 #
-# NOTE: regenerate this file by uncommenting WriteAssertionFile in validateSelfmonSource
-# and running the test once to capture the actual OTLP output.
+# Only the targetallocator scope is asserted. The go.opentelemetry.io/contrib/bridges/prometheus
+# scope carries Go runtime/process metrics that vary by environment, so scopes/include is used.
 version: 1
 signal: metrics
 resources:
@@ -19,13 +19,66 @@ resources:
         telemetry.sdk.language: go
         telemetry.sdk.name: opentelemetry
         telemetry.sdk.version: '*'
-      scopes:
+      scopes/include:
         - name: targetallocator
           metrics:
+            - name: opentelemetry_allocator_collectors_allocatable
+              type: gauge
+              datapoints:
+                - attributes:
+                    strategy: consistent-hashing
             - name: opentelemetry_allocator_collectors_discovered
               type: gauge
+            - name: opentelemetry_allocator_events
+              type: sum
+              temporality: delta
+              monotonic: true
+              datapoints:
+                - attributes:
+                    source: EventSourcePrometheusCR
+            - name: opentelemetry_allocator_http_duration_seconds
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    path: /jobs/:job_id/targets
+                - attributes:
+                    path: /livez
+                - attributes:
+                    path: /metrics
+                - attributes:
+                    path: /readyz
+                - attributes:
+                    path: /scrape_configs
+            - name: opentelemetry_allocator_process_target_groups_duration_seconds
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    job.name: scrapeConfig/otel-ta/dynatrace-com
+            - name: opentelemetry_allocator_process_targets_duration_seconds
+              type: histogram
+              temporality: delta
             - name: opentelemetry_allocator_targets
               type: gauge
               datapoints:
                 - attributes:
-                    job_name: scrapeConfig/otel-ta/dynatrace-com
+                    job.name: scrapeConfig/otel-ta/dynatrace-com
+            - name: opentelemetry_allocator_targets_per_collector
+              type: gauge
+              datapoints:
+                - attributes:
+                    collector_name: '*'
+                    strategy: consistent-hashing
+            - name: opentelemetry_allocator_targets_remaining
+              type: gauge
+            - name: opentelemetry_allocator_time_to_allocate
+              type: histogram
+              temporality: delta
+              datapoints:
+                - attributes:
+                    method: SetCollectors
+                    strategy: consistent-hashing
+                - attributes:
+                    method: SetTargets
+                    strategy: consistent-hashing

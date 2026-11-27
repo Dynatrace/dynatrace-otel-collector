@@ -45,8 +45,6 @@ resources:
                 - attributes:
                     path: /livez
                 - attributes:
-                    path: /metrics
-                - attributes:
                     path: /readyz
                 - attributes:
                     path: /scrape_configs

@@ -15,5 +15,5 @@ issues: [1355]
 # Use pipe (|) for multiline entries.
 subtext: |
   The workloads are renamed to `dtp-prometheus-allocator`, `dtp-scraper` and `dtp-gateway` (ServiceAccounts `dtp-otel-*`)
-  to match the layout the Dynatrace Operator creates. The Target Allocator reads its cluster name from the
-  `dynatrace-otelcol-cluster-info` ConfigMap and needs a build based on upstream v0.157.0 or later.
+  to match the layout the Dynatrace Operator creates. The Target Allocator gets its cluster name by
+  substituting `${CLUSTER_NAME}` in its values file and needs a build based on upstream v0.157.0 or later.

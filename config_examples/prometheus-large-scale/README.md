@@ -34,14 +34,13 @@ kubectl create namespace "${NAMESPACE}"
 kubectl create secret generic dynatrace-otelcol-credentials --namespace "${NAMESPACE}" \
   --from-literal=DT_ENDPOINT="https://<env-id>.live.dynatrace.com/api/v2/otlp" \
   --from-literal=DT_PLATFORM_TOKEN="<your-token>"
-kubectl create configmap dynatrace-otelcol-cluster-info --namespace "${NAMESPACE}" \
-  --from-literal=K8S_CLUSTER_NAME="${CLUSTER_NAME}"
 
 envsubst < rbac.yaml | kubectl apply -f -
 envsubst < scrapeconfig.yaml | kubectl apply -f -
 
-helm install dtp-allocator open-telemetry/opentelemetry-target-allocator --namespace "${NAMESPACE}" \
-  -f allocator.values.yaml --set targetAllocator.config.collector_namespace="${NAMESPACE}"
+envsubst '${CLUSTER_NAME}' < allocator.values.yaml | \
+  helm install dtp-allocator open-telemetry/opentelemetry-target-allocator --namespace "${NAMESPACE}" \
+  -f - --set targetAllocator.config.collector_namespace="${NAMESPACE}"
 helm install dtp-gateway open-telemetry/opentelemetry-collector --namespace "${NAMESPACE}" \
   -f tier2-gateway.values.yaml --set global.clusterName="${CLUSTER_NAME}"
 helm install dtp-scraper open-telemetry/opentelemetry-collector --namespace "${NAMESPACE}" \
@@ -59,7 +58,7 @@ uses: `k8s.cluster.name`, `k8s.namespace.name`, `k8s.pod.name`, `k8s.workload.na
 | `K8S_NAMESPACE_NAME` | downward API | `metadata.namespace` |
 | `K8S_POD_UID` | downward API | `metadata.uid` |
 | `K8S_NODE_NAME` | downward API | `spec.nodeName` |
-| `K8S_CLUSTER_NAME` | static | cluster name (`global.clusterName` for the collectors, ConfigMap `dynatrace-otelcol-cluster-info` for the Target Allocator) |
+| `K8S_CLUSTER_NAME` | static | cluster name (`global.clusterName` for the collectors; `${CLUSTER_NAME}` substituted with `envsubst` for the Target Allocator, whose chart does not template `extraEnvs`) |
 | `K8S_WORKLOAD_NAME` | static | the Deployment/StatefulSet name the reconciler computes |
 | `DT_ENDPOINT` | secret | base OTLP endpoint, e.g. `https://<env-id>.live.dynatrace.com/api/v2/otlp` |
 | `DT_PLATFORM_TOKEN` | secret | bare token, no `Bearer ` prefix (the configs add it) |

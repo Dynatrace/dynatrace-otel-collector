@@ -1,8 +1,9 @@
 # Target Allocator: distributes Prometheus scrape targets across the tier 1 scraper replicas
 # (consistent-hashing) and pushes its own self-telemetry over OTLP directly to Dynatrace.
 #
+#   envsubst '${CLUSTER_NAME}' < allocator.values.yaml | \
 #   helm install dtp-allocator open-telemetry/opentelemetry-target-allocator \
-#     --namespace <namespace> -f allocator.values.yaml \
+#     --namespace <namespace> -f - \
 #     --set targetAllocator.config.collector_namespace=<namespace>
 #
 # OTLP self-telemetry requires a Target Allocator built from upstream
@@ -49,14 +50,10 @@ targetAllocator:
         fieldRef:
           fieldPath: spec.nodeName
     # Static, deploy-time. Operator source: DynaKube.Status.KubernetesClusterName.
-    # The Target Allocator chart does not template extraEnvs, so the value is read from a
-    # ConfigMap: kubectl create configmap dynatrace-otelcol-cluster-info \
-    #   --from-literal=K8S_CLUSTER_NAME=<your-cluster>
+    # The Target Allocator chart does not template extraEnvs (no global.clusterName), so
+    # substitute it before install: envsubst '${CLUSTER_NAME}' < allocator.values.yaml
     - name: K8S_CLUSTER_NAME
-      valueFrom:
-        configMapKeyRef:
-          name: dynatrace-otelcol-cluster-info
-          key: K8S_CLUSTER_NAME
+      value: "${CLUSTER_NAME}"
     # Static, deploy-time. Operator source: the Deployment name the TA reconciler computes.
     - name: K8S_WORKLOAD_NAME
       value: "dtp-prometheus-allocator"

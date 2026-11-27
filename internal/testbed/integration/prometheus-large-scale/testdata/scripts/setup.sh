@@ -58,12 +58,6 @@ kubectl create secret generic dynatrace-otelcol-credentials \
     --from-literal=DT_PLATFORM_TOKEN="" \
     --dry-run=client -o yaml | kubectl apply -f -
 
-# Cluster name for the Target Allocator (its chart does not template extraEnvs).
-kubectl create configmap dynatrace-otelcol-cluster-info \
-    --namespace "${NAMESPACE}" \
-    --from-literal=K8S_CLUSTER_NAME="${CLUSTER_NAME}" \
-    --dry-run=client -o yaml | kubectl apply -f -
-
 # --- RBAC ------------------------------------------------------------------
 sed "s|\${NAMESPACE}|${NAMESPACE}|g" "${CONFIG_DIR}/rbac.yaml" | kubectl apply -f -
 
@@ -76,13 +70,15 @@ helm repo update
 
 # --- Target Allocator ------------------------------------------------------
 echo "Installing Target Allocator..."
+# The Target Allocator chart does not template extraEnvs: substitute the cluster name.
+sed "s|\${CLUSTER_NAME}|${CLUSTER_NAME}|g" "${CONFIG_DIR}/allocator.values.yaml" > "${TMPDIR}/allocator.values.yaml"
 ALLOCATOR_HELM_ARGS=()
 if [[ -f "${TMPDIR}/allocator-override.yaml" ]]; then
     ALLOCATOR_HELM_ARGS+=(-f "${TMPDIR}/allocator-override.yaml")
 fi
 helm upgrade --install dtp-allocator open-telemetry/opentelemetry-target-allocator \
     --namespace "${NAMESPACE}" \
-    -f "${CONFIG_DIR}/allocator.values.yaml" \
+    -f "${TMPDIR}/allocator.values.yaml" \
     "${ALLOCATOR_HELM_ARGS[@]+"${ALLOCATOR_HELM_ARGS[@]}"}" \
     --set "targetAllocator.config.collector_namespace=${NAMESPACE}" \
     --set "replicaCount=1" \

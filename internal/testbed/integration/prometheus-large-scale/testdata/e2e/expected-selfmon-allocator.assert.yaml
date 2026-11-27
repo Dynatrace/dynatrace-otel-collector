@@ -15,7 +15,9 @@ resources:
         k8s.workload.name: dtp-prometheus-allocator
         service.instance.id: '*'
         service.name: target-allocator
-        service.version: '*'
+        telemetry.sdk.language: go
+        telemetry.sdk.name: opentelemetry
+        telemetry.sdk.version: '*'
       scopes:
         - name: targetallocator
           metrics:

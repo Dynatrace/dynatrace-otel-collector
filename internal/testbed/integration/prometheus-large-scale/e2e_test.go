@@ -96,6 +96,21 @@ func TestE2E_PrometheusLargeScale(t *testing.T) {
 	err = runSetup(configDir, helmOverrideDir, host, containerRegistry)
 	require.NoError(t, err, "failed to set up prometheus-large-scale components")
 
+	t.Run("large-scale", func(t *testing.T) {
+		testLargeScale(t, normalConsumer, scraperSelfmonConsumer, gatewaySelfmonConsumer, allocatorSelfmonConsumer)
+	})
+
+	// Technology monitors are deployed by setup.sh together with the stack;
+	// the per-technology subtests only assert that their metrics arrive.
+	for _, tc := range technologies {
+		t.Run(tc.name, func(t *testing.T) {
+			testTechnology(t, tc, normalConsumer)
+		})
+	}
+}
+
+// testLargeScale verifies the selfmon sinks and the avalanche data path.
+func testLargeScale(t *testing.T, normalConsumer, scraperSelfmonConsumer, gatewaySelfmonConsumer, allocatorSelfmonConsumer *consumertest.MetricsSink) {
 	// Wait for metrics on all sinks
 	wantEntries := 1
 

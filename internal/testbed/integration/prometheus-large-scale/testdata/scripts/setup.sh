@@ -56,8 +56,11 @@ kubectl create secret generic selfmon-credentials \
 # --- RBAC ------------------------------------------------------------------
 sed "s|\${NAMESPACE}|${NAMESPACE}|g" "${CONFIG_DIR}/rbac.yaml" | kubectl apply -f -
 
-# --- ScrapeConfig ----------------------------------------------------------
-sed "s|\${NAMESPACE}|${NAMESPACE}|g" "${CONFIG_DIR}/scrapeconfig.yaml" | kubectl apply -f -
+# --- Scrape CRs (ScrapeConfig + technology PodMonitors/ServiceMonitors) ----
+for f in "${CONFIG_DIR}/scrapeconfig.yaml" "${CONFIG_DIR}"/monitor-examples/*.yaml; do
+    [[ -e "${f}" ]] || continue
+    sed "s|\${NAMESPACE}|${NAMESPACE}|g" "${f}" | kubectl apply -f -
+done
 
 # --- Helm repos ------------------------------------------------------------
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts

@@ -2,36 +2,28 @@ apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
-  name: tiered-otel-scraper
+  name: dtp-otel-scraper
   namespace: ${NAMESPACE}
 ---
 apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
-  name: tiered-otel-gateway
+  name: dtp-otel-gateway
   namespace: ${NAMESPACE}
 ---
 apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
-  name: tiered-otel-sink
-  namespace: ${NAMESPACE}
----
-apiVersion: v1
-automountServiceAccountToken: true
-kind: ServiceAccount
-metadata:
-  name: tiered-otel-allocator
+  name: dtp-otel-allocator
   namespace: ${NAMESPACE}
 ---
 # Scraper (tier 1): k8s resolver for loadbalancing exporter
-# Also used by selfmon-scraper for k8s_attributes processor
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: tiered-otel-scraper
+  name: dtp-otel-scraper
 rules:
   - apiGroups: [""]
     resources:
@@ -62,29 +54,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: tiered-otel-gateway
-rules:
-  - apiGroups: [""]
-    resources:
-      - pods
-      - namespaces
-      - nodes
-    verbs: [get, watch, list]
-  - apiGroups: [apps]
-    resources:
-      - replicasets
-    verbs: [get, watch, list]
-  - apiGroups: [batch]
-    resources:
-      - jobs
-      - cronjobs
-    verbs: [get, watch, list]
----
-# Sink (tier 3): k8s_attributes processor
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: tiered-otel-sink
+  name: dtp-otel-gateway
 rules:
   - apiGroups: [""]
     resources:
@@ -106,7 +76,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: tiered-otel-allocator
+  name: dtp-otel-allocator
 rules:
   - apiGroups: [""]
     resources:
@@ -124,11 +94,6 @@ rules:
     resources:
       - configmaps
     verbs: [get]
-  # TA v0.150+ watches secrets to resolve credentials referenced from
-  # Prometheus CRDs (ServiceMonitor / PodMonitor / ScrapeConfig / Probe —
-  # e.g. bearer tokens, basic-auth, TLS material). Without this it logs
-  # "secrets is forbidden" errors on a loop and silently disables any
-  # scrape config that references a secret.
   - apiGroups: [""]
     resources:
       - secrets
@@ -154,51 +119,38 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: tiered-otel-scraper
+  name: dtp-otel-scraper
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: tiered-otel-scraper
+  name: dtp-otel-scraper
 subjects:
   - kind: ServiceAccount
-    name: tiered-otel-scraper
+    name: dtp-otel-scraper
     namespace: ${NAMESPACE}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: tiered-otel-gateway
+  name: dtp-otel-gateway
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: tiered-otel-gateway
+  name: dtp-otel-gateway
 subjects:
   - kind: ServiceAccount
-    name: tiered-otel-gateway
+    name: dtp-otel-gateway
     namespace: ${NAMESPACE}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: tiered-otel-sink
+  name: dtp-otel-allocator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: tiered-otel-sink
+  name: dtp-otel-allocator
 subjects:
   - kind: ServiceAccount
-    name: tiered-otel-sink
-    namespace: ${NAMESPACE}
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: tiered-otel-allocator
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: tiered-otel-allocator
-subjects:
-  - kind: ServiceAccount
-    name: tiered-otel-allocator
+    name: dtp-otel-allocator
     namespace: ${NAMESPACE}

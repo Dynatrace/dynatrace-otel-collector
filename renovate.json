@@ -49,6 +49,12 @@
         "github.com/goreleaser/goreleaser-pro"
       ],
       "groupName": "GoReleaser Pro"
+    },
+    {
+      "matchPackageNames": [
+        "ghcr.io/dynatrace/otel-target-allocator/target-allocator"
+      ],
+      "groupName": "Dynatrace Target Allocator"
     }
   ],
   "ocb": {
@@ -74,6 +80,18 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\s.*(:|=|\\?=|:=|\\+=) ?\\\"?(?<currentValue>.+?)?\\\"?\\s"
       ]
+    },
+    {
+      "customType": "regex",
+      "description": "Target Allocator service.version resource attribute, kept in sync with its image tag",
+      "managerFilePatterns": [
+        "/config_examples/prometheus-large-scale/allocator\\.values\\.yaml$/"
+      ],
+      "matchStrings": [
+        "service\\.version=(?<currentValue>[^,\\\"]+)"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/dynatrace/otel-target-allocator/target-allocator"
     }
   ]
 }

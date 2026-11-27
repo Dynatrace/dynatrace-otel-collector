@@ -1,10 +1,15 @@
-# Tier 1: Scraper — scrapes Prometheus targets via TA, load-balances to tier 2.
-# Deploy with:
-#   helm install otel-scraper open-telemetry/opentelemetry-collector \
-#     --namespace otel-ta -f tier1-scraper.values.yaml
+# Tier 1 Scraper: scrapes the Prometheus targets assigned by the Target Allocator and
+# load-balances OTLP to the tier 2 gateway. Self-telemetry is pushed over OTLP directly to Dynatrace.
+#
+#   helm install dtp-scraper open-telemetry/opentelemetry-collector \
+#     --namespace <namespace> -f tier1-scraper.values.yaml --set global.clusterName=<your-cluster>
 
-fullnameOverride: "tiered-scraper"
+# Operator-generated name shape: <cr-name>-scraper, CR name "dtp".
+fullnameOverride: "dtp-scraper"
 
+mode: deployment
+
+# Self-telemetry is pushed via OTLP; nothing scrapes this collector's /metrics.
 podAnnotations:
   metrics.dynatrace.com/scrape: "false"
 
@@ -34,8 +39,6 @@ image:
 command:
   name: dynatrace-otel-collector
 
-mode: deployment
-
 service:
   enabled: true
   type: ClusterIP
@@ -45,7 +48,7 @@ clusterRole:
 
 serviceAccount:
   create: false
-  name: tiered-otel-scraper
+  name: dtp-otel-scraper
 
 global:
   # Used for the k8s.cluster.name resource attribute (K8S_CLUSTER_NAME env var).
@@ -58,8 +61,12 @@ extraEnvsFrom:
 extraEnvs:
   - name: K8S_SERVICE_NAME
     value: "{{ include \"opentelemetry-collector.fullname\" . }}"
+  # Static, deploy-time. Operator source: DynaKube.Status.KubernetesClusterName.
   - name: K8S_CLUSTER_NAME
     value: "{{ .Values.global.clusterName }}"
+  # Static, deploy-time. Operator source: the Deployment name the scraper reconciler computes.
+  - name: K8S_WORKLOAD_NAME
+    value: "dtp-scraper"
   - name: K8S_NODE_NAME
     valueFrom:
       fieldRef:
@@ -87,15 +94,16 @@ alternateConfig:
       config: {}
       target_allocator:
         collector_id: ${K8S_POD_NAME}
-        endpoint: http://tiered-allocator-ta
+        # TA chart exposes the service as <fullname>-ta on port 80.
+        endpoint: http://dtp-prometheus-allocator-ta
         interval: 15s
 
   processors:
-    # Memory limiter math (with 3GiB memory limit):
-    #   hard limit = 95% of 3GiB = 2.85 GiB
-    #   spike buffer = 5% of 3GiB = 0.15 GiB
-    #   soft limit = (95% - 5%) = 90% of 3GiB = 2.7 GiB
-    # Data is refused when memory exceeds the soft limit (2.7 GiB).
+    # Memory limiter math (with 6GiB memory limit):
+    #   hard limit = 95% of 6GiB = 5.7 GiB
+    #   spike buffer = 5% of 6GiB = 0.3 GiB
+    #   soft limit = (95% - 5%) = 90% of 6GiB = 5.4 GiB
+    # Data is refused when memory exceeds the soft limit (5.4 GiB).
     # A lower spike_limit_percentage raises the soft limit, giving more
     # headroom before refusals start during load spikes.
     memory_limiter:
@@ -129,7 +137,8 @@ alternateConfig:
           timeout: 10s
       resolver:
         k8s:
-          service: "tiered-gateway.otel-ta"
+          # <gateway-service>.<namespace>
+          service: "dtp-gateway.${env:K8S_NAMESPACE_NAME}"
           ports:
             - 4317
 
@@ -145,12 +154,16 @@ alternateConfig:
         exporters:
           - load_balancing
     telemetry:
+      # Every attribute the self-monitoring dashboard needs, set by this collector itself:
+      # downward API for pod/namespace/node/uid, static env for cluster + workload name.
+      # No k8sattributes, no transform, no selfmon collector.
       resource:
         k8s.cluster.name: "${env:K8S_CLUSTER_NAME}"
         k8s.namespace.name: "${env:K8S_NAMESPACE_NAME}"
         k8s.pod.name: "${env:K8S_POD_NAME}"
         k8s.pod.uid: "${env:K8S_POD_UID}"
         k8s.node.name: "${env:K8S_NODE_NAME}"
+        k8s.workload.name: "${env:K8S_WORKLOAD_NAME}"
       metrics:
         level: normal
         readers:
@@ -161,7 +174,10 @@ alternateConfig:
                 otlp:
                   protocol: http/protobuf
                   temporality_preference: delta
-                  endpoint: http://selfmon-scraper:4318
+                  # Collector readers do NOT append the signal path; give the full URL.
+                  endpoint: ${env:DT_ENDPOINT}/v1/metrics
+                  headers:
+                    Authorization: "Bearer ${env:DT_PLATFORM_TOKEN}"
 
 ports:
   otlp:

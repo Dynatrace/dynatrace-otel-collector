@@ -9,10 +9,7 @@ HOST="${HOST:-localhost}"
 CONTAINER_REGISTRY="${CONTAINER_REGISTRY:-}"
 CONFIG_DIR="${CONFIG_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/config_examples/prometheus-large-scale}"
 HELM_OVERRIDE_DIR="${HELM_OVERRIDE_DIR:-}"
-CLUSTER_NAME="${CLUSTER_NAME:-tiered-otelcol-ta-test}"
-SELFMON_SCRAPER_HTTP_PORT="${SELFMON_SCRAPER_HTTP_PORT:-4328}"
-SELFMON_GATEWAY_HTTP_PORT="${SELFMON_GATEWAY_HTTP_PORT:-4330}"
-SELFMON_ALLOCATOR_HTTP_PORT="${SELFMON_ALLOCATOR_HTTP_PORT:-4332}"
+CLUSTER_NAME="${CLUSTER_NAME:-prometheus-large-scale-test}"
 
 COLLECTOR_IMAGE="${CONTAINER_REGISTRY}dynatrace-otel-collector"
 COLLECTOR_TAG="e2e-test"
@@ -21,7 +18,24 @@ echo "=== Setting up prometheus-large-scale test ==="
 echo "  Namespace:       ${NAMESPACE}"
 echo "  Host:            ${HOST}"
 echo "  Config dir:      ${CONFIG_DIR}"
+echo "  Cluster name:    ${CLUSTER_NAME}"
 echo "  Collector image: ${COLLECTOR_IMAGE}:${COLLECTOR_TAG}"
+
+# Private scratch dir for rendered override files. 0700 via mktemp -d,
+# removed on exit including on error.
+TMPDIR="$(mktemp -d)"
+chmod 700 "${TMPDIR}"
+trap 'rm -rf "${TMPDIR}"' EXIT
+
+# Render the {{ .HostEndpoint }} placeholder into override files
+if [[ -n "${HELM_OVERRIDE_DIR}" ]]; then
+    for tpl in tier1-scraper-override tier2-gateway-override allocator-override; do
+        if [[ -f "${HELM_OVERRIDE_DIR}/${tpl}.yaml" ]]; then
+            sed -e "s|{{ .HostEndpoint }}|${HOST}|g" \
+                "${HELM_OVERRIDE_DIR}/${tpl}.yaml" > "${TMPDIR}/${tpl}.yaml"
+        fi
+    done
+fi
 
 # --- namespaces -----------------------------------------------------------
 kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
@@ -35,21 +49,12 @@ kubectl apply --server-side -f "${CRD_BASE}/monitoring.coreos.com_podmonitors.ya
 kubectl apply --server-side -f "${CRD_BASE}/monitoring.coreos.com_probes.yaml"
 
 # --- secrets ---------------------------------------------------------------
-# Secret for tier1-scraper, tier2-gateway, allocator  → sink 1 (default OTLP ports)
+# Each component exports self-telemetry directly via OTLP. One secret covers
+# both the scraped-data exporter (otlp_http → normal sink) and the
+# self-telemetry readers (redirected per component via the helm overrides).
 kubectl create secret generic dynatrace-otelcol-credentials \
     --namespace "${NAMESPACE}" \
     --from-literal=DT_ENDPOINT="http://${HOST}:4318" \
-    --from-literal=DT_PLATFORM_TOKEN="" \
-    --dry-run=client -o yaml | kubectl apply -f -
-
-# Secret for selfmon-scraper with 3 separate endpoints (one per source)
-# DT_ENDPOINT is kept for the base otlphttp/dynatrace exporter (unused but validated)
-kubectl create secret generic selfmon-credentials \
-    --namespace "${NAMESPACE}" \
-    --from-literal=DT_ENDPOINT="http://${HOST}:${SELFMON_SCRAPER_HTTP_PORT}" \
-    --from-literal=DT_ENDPOINT_SCRAPER="http://${HOST}:${SELFMON_SCRAPER_HTTP_PORT}" \
-    --from-literal=DT_ENDPOINT_GATEWAY="http://${HOST}:${SELFMON_GATEWAY_HTTP_PORT}" \
-    --from-literal=DT_ENDPOINT_ALLOCATOR="http://${HOST}:${SELFMON_ALLOCATOR_HTTP_PORT}" \
     --from-literal=DT_PLATFORM_TOKEN="" \
     --dry-run=client -o yaml | kubectl apply -f -
 
@@ -65,9 +70,16 @@ helm repo update
 
 # --- Target Allocator ------------------------------------------------------
 echo "Installing Target Allocator..."
-helm upgrade --install otel-allocator open-telemetry/opentelemetry-target-allocator \
+# The Target Allocator chart does not template extraEnvs: substitute the cluster name.
+sed "s|\${CLUSTER_NAME}|${CLUSTER_NAME}|g" "${CONFIG_DIR}/allocator.values.yaml" > "${TMPDIR}/allocator.values.yaml"
+ALLOCATOR_HELM_ARGS=()
+if [[ -f "${TMPDIR}/allocator-override.yaml" ]]; then
+    ALLOCATOR_HELM_ARGS+=(-f "${TMPDIR}/allocator-override.yaml")
+fi
+helm upgrade --install dtp-allocator open-telemetry/opentelemetry-target-allocator \
     --namespace "${NAMESPACE}" \
-    -f "${CONFIG_DIR}/allocator.values.yaml" \
+    -f "${TMPDIR}/allocator.values.yaml" \
+    "${ALLOCATOR_HELM_ARGS[@]+"${ALLOCATOR_HELM_ARGS[@]}"}" \
     --set "targetAllocator.config.collector_namespace=${NAMESPACE}" \
     --set "replicaCount=1" \
     --wait --timeout 180s
@@ -75,10 +87,10 @@ helm upgrade --install otel-allocator open-telemetry/opentelemetry-target-alloca
 # --- Tier 2 Gateway (install before scraper so LB target exists) -----------
 echo "Installing Tier 2 Gateway..."
 GATEWAY_HELM_ARGS=()
-if [[ -n "${HELM_OVERRIDE_DIR}" && -f "${HELM_OVERRIDE_DIR}/tier2-gateway-override.yaml" ]]; then
-    GATEWAY_HELM_ARGS+=(-f "${HELM_OVERRIDE_DIR}/tier2-gateway-override.yaml")
+if [[ -f "${TMPDIR}/tier2-gateway-override.yaml" ]]; then
+    GATEWAY_HELM_ARGS+=(-f "${TMPDIR}/tier2-gateway-override.yaml")
 fi
-helm upgrade --install otel-gateway open-telemetry/opentelemetry-collector \
+helm upgrade --install dtp-gateway open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
     -f "${CONFIG_DIR}/tier2-gateway.values.yaml" \
     "${GATEWAY_HELM_ARGS[@]+"${GATEWAY_HELM_ARGS[@]}"}" \
@@ -92,10 +104,10 @@ helm upgrade --install otel-gateway open-telemetry/opentelemetry-collector \
 # --- Tier 1 Scraper --------------------------------------------------------
 echo "Installing Tier 1 Scraper..."
 SCRAPER_HELM_ARGS=()
-if [[ -n "${HELM_OVERRIDE_DIR}" && -f "${HELM_OVERRIDE_DIR}/tier1-scraper-override.yaml" ]]; then
-    SCRAPER_HELM_ARGS+=(-f "${HELM_OVERRIDE_DIR}/tier1-scraper-override.yaml")
+if [[ -f "${TMPDIR}/tier1-scraper-override.yaml" ]]; then
+    SCRAPER_HELM_ARGS+=(-f "${TMPDIR}/tier1-scraper-override.yaml")
 fi
-helm upgrade --install otel-scraper open-telemetry/opentelemetry-collector \
+helm upgrade --install dtp-scraper open-telemetry/opentelemetry-collector \
     --namespace "${NAMESPACE}" \
     -f "${CONFIG_DIR}/tier1-scraper.values.yaml" \
     "${SCRAPER_HELM_ARGS[@]+"${SCRAPER_HELM_ARGS[@]}"}" \
@@ -104,22 +116,6 @@ helm upgrade --install otel-scraper open-telemetry/opentelemetry-collector \
     --set "image.tag=${COLLECTOR_TAG}" \
     --set "autoscaling.enabled=false" \
     --set "replicaCount=1" \
-    --wait --timeout 180s
-
-# --- Selfmon Scraper (override secret → selfmon sink) ----------------------
-echo "Installing Selfmon Scraper..."
-SELFMON_VALUES="${CONFIG_DIR}/selfmon-scraper.yaml"
-if [[ -n "${HELM_OVERRIDE_DIR}" && -f "${HELM_OVERRIDE_DIR}/selfmon-scraper-override.yaml" ]]; then
-    SELFMON_VALUES="${HELM_OVERRIDE_DIR}/selfmon-scraper-override.yaml"
-fi
-helm upgrade --install otel-selfmon open-telemetry/opentelemetry-collector \
-    --namespace "${NAMESPACE}" \
-    -f "${CONFIG_DIR}/selfmon-scraper.yaml" \
-    -f "${SELFMON_VALUES}" \
-    --set "global.clusterName=${CLUSTER_NAME}" \
-    --set "image.repository=${COLLECTOR_IMAGE}" \
-    --set "image.tag=${COLLECTOR_TAG}" \
-    --set "extraEnvsFrom[0].secretRef.name=selfmon-credentials" \
     --wait --timeout 180s
 
 # --- avalanche (load generator) — deploy last so system is ready -----------
@@ -137,11 +133,11 @@ kubectl rollout status deployment/avalanche -n avalanche --timeout=120s
 # Fix: trigger the underlying events so the counters increment at least once
 # while the test's 3-minute assertion retry window is open.
 #
-# 1. otelcol_otelsvc_k8s_namespace_added (gateway k8sattributesprocessor):
+# 1. otelcol.k8s.watcher.namespace.added (gateway k8sattributesprocessor):
 #    Create a temporary namespace — the k8s informer fires an Add event, which
 #    increments the counter.
 echo "Priming event-driven metrics: creating trigger namespace..."
-kubectl create namespace otel-ta-event-trigger --dry-run=client -o yaml | kubectl apply -f -
+kubectl create namespace "${NAMESPACE}-event-trigger" --dry-run=client -o yaml | kubectl apply -f -
 
 # 2. otelcol_loadbalancer_num_resolutions + otelcol_loadbalancer_num_backend_updates
 #    (scraper load_balancing exporter, k8s resolver):
@@ -150,6 +146,6 @@ kubectl create namespace otel-ta-event-trigger --dry-run=client -o yaml | kubect
 #    increment. "--wait=false" returns immediately; the pods finish in the
 #    background while the Go test's assertion window is running.
 echo "Priming event-driven metrics: restarting gateway to trigger LB re-resolution..."
-kubectl rollout restart statefulset/tiered-gateway -n "${NAMESPACE}"
+kubectl rollout restart statefulset/dtp-gateway -n "${NAMESPACE}"
 
 echo "=== Setup complete ==="

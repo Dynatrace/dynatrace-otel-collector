@@ -4,7 +4,6 @@
 package prometheus_large_scale
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -37,10 +36,11 @@ const (
 )
 
 // TestE2E_PrometheusLargeScale deploys the full tiered prometheus-large-scale
-// setup (allocator + tier1-scraper + tier2-gateway + selfmon-scraper + avalanche)
-// on a pre-existing Kind cluster and verifies that metrics flow through both the
+// setup (allocator + tier1-scraper + tier2-gateway + avalanche) on a
+// pre-existing Kind cluster and verifies that metrics flow through both the
 // normal data path (avalanche → scraper → gateway → sink) and the self-monitoring
-// path (selfmon-scraper → 3 separate sinks, one per source).
+// path (each component pushes self-telemetry directly to its own sink, no self-monitoring
+// collector in between).
 func TestE2E_PrometheusLargeScale(t *testing.T) {
 	configDir, err := filepath.Abs("../../../../config_examples/prometheus-large-scale")
 	require.NoError(t, err)
@@ -226,9 +226,6 @@ func runSetup(configDir, helmOverrideDir, host, containerRegistry string) error 
 		"CONTAINER_REGISTRY="+containerRegistry,
 		"CONFIG_DIR="+configDir,
 		"HELM_OVERRIDE_DIR="+helmOverrideDir,
-		fmt.Sprintf("SELFMON_SCRAPER_HTTP_PORT=%d", selfmonScraperHttpPort),
-		fmt.Sprintf("SELFMON_GATEWAY_HTTP_PORT=%d", selfmonGatewayHttpPort),
-		fmt.Sprintf("SELFMON_ALLOCATOR_HTTP_PORT=%d", selfmonAllocatorHttpPort),
 	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

@@ -1,0 +1,18 @@
+# Test-only override: redirect Target Allocator self-telemetry directly to
+# the allocator selfmon sink (port 4332).
+# {{ .HostEndpoint }} is substituted by setup.sh; port 4332 = selfmonAllocatorHttpPort in e2e_test.go.
+targetAllocator:
+  config:
+    telemetry:
+      metrics:
+        readers:
+          - periodic:
+              interval: 15000
+              timeout: 10000
+              exporter:
+                otlp_http:
+                  endpoint: "http://{{ .HostEndpoint }}:4332"
+                  temporality_preference: delta
+                  headers:
+                    - name: Authorization
+                      value: "Bearer "

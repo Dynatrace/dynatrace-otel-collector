@@ -1,6 +1,6 @@
 # Test-only override: redirect dtp-gateway self-telemetry directly to the
-# gateway selfmon sink (port {{SELFMON_GATEWAY_HTTP_PORT}}).
-# {{HOST}} and {{SELFMON_GATEWAY_HTTP_PORT}} are substituted by setup.sh.
+# gateway selfmon sink (port 4330).
+# {{ .HostEndpoint }} is substituted by setup.sh; port 4330 = selfmonGatewayHttpPort in e2e_test.go.
 alternateConfig:
   service:
     telemetry:
@@ -13,4 +13,4 @@ alternateConfig:
                 otlp:
                   protocol: http/protobuf
                   temporality_preference: delta
-                  endpoint: http://{{HOST}}:{{SELFMON_GATEWAY_HTTP_PORT}}
+                  endpoint: http://{{ .HostEndpoint }}:4330

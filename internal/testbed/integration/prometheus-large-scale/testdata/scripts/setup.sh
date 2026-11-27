@@ -9,9 +9,6 @@ HOST="${HOST:-localhost}"
 CONTAINER_REGISTRY="${CONTAINER_REGISTRY:-}"
 CONFIG_DIR="${CONFIG_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/config_examples/prometheus-large-scale}"
 HELM_OVERRIDE_DIR="${HELM_OVERRIDE_DIR:-}"
-SELFMON_SCRAPER_HTTP_PORT="${SELFMON_SCRAPER_HTTP_PORT:-4328}"
-SELFMON_GATEWAY_HTTP_PORT="${SELFMON_GATEWAY_HTTP_PORT:-4330}"
-SELFMON_ALLOCATOR_HTTP_PORT="${SELFMON_ALLOCATOR_HTTP_PORT:-4332}"
 CLUSTER_NAME="${CLUSTER_NAME:-prometheus-large-scale-test}"
 
 COLLECTOR_IMAGE="${CONTAINER_REGISTRY}dynatrace-otel-collector"
@@ -30,15 +27,11 @@ TMPDIR="$(mktemp -d)"
 chmod 700 "${TMPDIR}"
 trap 'rm -rf "${TMPDIR}"' EXIT
 
-# Render HOST and port placeholders into override files
+# Render the {{ .HostEndpoint }} placeholder into override files
 if [[ -n "${HELM_OVERRIDE_DIR}" ]]; then
     for tpl in tier1-scraper-override tier2-gateway-override allocator-override; do
         if [[ -f "${HELM_OVERRIDE_DIR}/${tpl}.yaml" ]]; then
-            sed \
-                -e "s|{{HOST}}|${HOST}|g" \
-                -e "s|{{SELFMON_SCRAPER_HTTP_PORT}}|${SELFMON_SCRAPER_HTTP_PORT}|g" \
-                -e "s|{{SELFMON_GATEWAY_HTTP_PORT}}|${SELFMON_GATEWAY_HTTP_PORT}|g" \
-                -e "s|{{SELFMON_ALLOCATOR_HTTP_PORT}}|${SELFMON_ALLOCATOR_HTTP_PORT}|g" \
+            sed -e "s|{{ .HostEndpoint }}|${HOST}|g" \
                 "${HELM_OVERRIDE_DIR}/${tpl}.yaml" > "${TMPDIR}/${tpl}.yaml"
         fi
     done

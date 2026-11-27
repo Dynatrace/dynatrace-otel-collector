@@ -4,7 +4,6 @@
 package prometheus_large_scale
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -227,9 +226,6 @@ func runSetup(configDir, helmOverrideDir, host, containerRegistry string) error 
 		"CONTAINER_REGISTRY="+containerRegistry,
 		"CONFIG_DIR="+configDir,
 		"HELM_OVERRIDE_DIR="+helmOverrideDir,
-		fmt.Sprintf("SELFMON_SCRAPER_HTTP_PORT=%d", selfmonScraperHttpPort),
-		fmt.Sprintf("SELFMON_GATEWAY_HTTP_PORT=%d", selfmonGatewayHttpPort),
-		fmt.Sprintf("SELFMON_ALLOCATOR_HTTP_PORT=%d", selfmonAllocatorHttpPort),
 	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

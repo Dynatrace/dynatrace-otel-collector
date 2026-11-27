@@ -1,6 +1,6 @@
 # Test-only override: redirect dtp-scraper self-telemetry directly to the
-# scraper selfmon sink (port {{SELFMON_SCRAPER_HTTP_PORT}}).
-# {{HOST}} and {{SELFMON_SCRAPER_HTTP_PORT}} are substituted by setup.sh.
+# scraper selfmon sink (port 4328).
+# {{ .HostEndpoint }} is substituted by setup.sh; port 4328 = selfmonScraperHttpPort in e2e_test.go.
 alternateConfig:
   service:
     telemetry:
@@ -13,4 +13,4 @@ alternateConfig:
                 otlp:
                   protocol: http/protobuf
                   temporality_preference: delta
-                  endpoint: http://{{HOST}}:{{SELFMON_SCRAPER_HTTP_PORT}}
+                  endpoint: http://{{ .HostEndpoint }}:4328

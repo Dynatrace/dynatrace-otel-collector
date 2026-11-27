@@ -102,6 +102,13 @@ alternateConfig:
         interval: 15s
 
   processors:
+    # Memory limiter math (with 3GiB memory limit):
+    #   hard limit = 95% of 3GiB = 2.85 GiB
+    #   spike buffer = 5% of 3GiB = 0.15 GiB
+    #   soft limit = (95% - 5%) = 90% of 3GiB = 2.7 GiB
+    # Data is refused when memory exceeds the soft limit (2.7 GiB).
+    # A lower spike_limit_percentage raises the soft limit, giving more
+    # headroom before refusals start during load spikes.
     memory_limiter:
       check_interval: 1s
       limit_percentage: 95

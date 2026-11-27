@@ -108,12 +108,21 @@ alternateConfig:
           endpoint: "${env:MY_POD_IP}:4318"
 
   processors:
+    # Memory limiter math (with 8GiB memory limit):
+    #   hard limit = 95% of 8GiB = 7.6 GiB
+    #   spike buffer = 5% of 8GiB = 0.4 GiB
+    #   soft limit = (95% - 5%) = 90% of 8GiB = 7.2 GiB
+    # Data is refused when memory exceeds the soft limit (7.2 GiB).
+    # A lower spike_limit_percentage raises the soft limit, giving more
+    # headroom before refusals start during load spikes.
     memory_limiter:
       check_interval: 1s
       limit_percentage: 95
       spike_limit_percentage: 5
     metric_start_time:
-    cumulativetodelta:
+    cumulative_to_delta:
+      # max_staleness should be greater than scrape interval in allocator to avoid metric drops due to staleness, but not too high to avoid large spikes from state resets
+      # it's computed as 10x the scrape interval in allocator plus some buffer for delays
       max_staleness: 10m
       initial_value: drop
     k8s_attributes:
@@ -207,6 +216,8 @@ alternateConfig:
             - set(attributes["k8s.workload.uid"], attributes["k8s.daemonset.uid"]) where IsString(attributes["k8s.daemonset.uid"])
             - set(attributes["k8s.workload.uid"], attributes["k8s.cronjob.uid"]) where IsString(attributes["k8s.cronjob.uid"])
 
+            # experimental attributes
+            # https://docs.dynatrace.com/docs/discover-dynatrace/references/semantic-dictionary/fields#kubernetes
             - delete_key(attributes, "k8s.statefulset.name")
             - delete_key(attributes, "k8s.replicaset.name")
             - delete_key(attributes, "k8s.job.name")
@@ -261,7 +272,7 @@ alternateConfig:
         processors:
           - memory_limiter
           - metric_start_time
-          - cumulativetodelta
+          - cumulative_to_delta
           - k8s_attributes
           - transform
         exporters:

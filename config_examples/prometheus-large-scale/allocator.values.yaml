@@ -56,7 +56,7 @@ targetAllocator:
       value: "${CLUSTER_NAME}"
     # Static, deploy-time. Operator source: the Deployment name the TA reconciler computes.
     - name: K8S_WORKLOAD_NAME
-      value: "dtp-prometheus-allocator"
+      value: "dtp-prometheus-allocator-ta"  # TA chart appends -ta to fullnameOverride
     - name: DT_ENDPOINT
       valueFrom:
         secretKeyRef:

@@ -1,8 +1,8 @@
 # Target Allocator pushes OTLP self-telemetry directly (no self-monitoring collector).
 # Resource attributes come from OTEL_RESOURCE_ATTRIBUTES + OTEL_SERVICE_NAME env vars.
 #
-# Only the targetallocator scope is asserted. The go.opentelemetry.io/contrib/bridges/prometheus
-# scope carries Go runtime/process metrics that vary by environment, so scopes/include is used.
+# The targetallocator scope is asserted in full. The go.opentelemetry.io/contrib/bridges/prometheus
+# scope is asserted with metrics/include (see below); scopes/include allows other scopes.
 version: 1
 signal: metrics
 resources:
@@ -12,7 +12,7 @@ resources:
         k8s.node.name: '*'
         k8s.pod.name: '*'
         k8s.pod.uid: '*'
-        k8s.workload.name: dtp-prometheus-allocator
+        k8s.workload.name: dtp-prometheus-allocator-ta
         service.instance.id: '*'
         service.name: target-allocator
         service.version: '*'
@@ -80,3 +80,13 @@ resources:
                 - attributes:
                     method: SetTargets
                     strategy: consistent-hashing
+        # Prometheus bridge scope: Go runtime/process metrics vary by environment, so only the
+        # two used by the Target Allocator CPU/memory dashboard tiles are asserted.
+        - name: go.opentelemetry.io/contrib/bridges/prometheus
+          metrics/include:
+            - name: process_cpu_seconds_total
+              type: sum
+              temporality: delta
+              monotonic: true
+            - name: process_resident_memory_bytes
+              type: gauge

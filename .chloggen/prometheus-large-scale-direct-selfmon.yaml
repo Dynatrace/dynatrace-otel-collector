@@ -8,7 +8,7 @@ component: config_examples/prometheus-large-scale
 note: The Target Allocator, tier 1 scraper and tier 2 gateway now push their self-telemetry over OTLP directly to Dynatrace; the selfmon scraper collector is removed
 
 # Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
-issues: [1167]
+issues: [1355]
 
 # (Optional) One or more lines of additional information to render under the primary note.
 # These lines will be padded with 2 spaces and then inserted directly into the document.
